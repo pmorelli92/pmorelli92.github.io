@@ -6,6 +6,7 @@
     <description>Recent content on Dev and Chill</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
+    <copyright>Pablo Morelli</copyright>
     <lastBuildDate>Wed, 06 Mar 2019 20:43:08 +0100</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
@@ -17,15 +18,15 @@
       <pubDate>Wed, 06 Mar 2019 20:43:08 +0100</pubDate>
       
       <guid>/about/</guid>
-      <description>Hey There I should put some stuff here</description>
+      <description>Hey! Nice to see you around here. I am Pablo Morelli 🧔🏻 and I work as a backend developer at Record Union. Currently living in Stockholm but was born and lived most of my life in Buenos Aires (Argentina). Coding since 2010, and with most of my experience on .NET (and .NET Core) I am looking towards expanding my horizons across other stacks. My aim here is to write (mostly) about tech problems and possible solutions to them.</description>
     </item>
     
     <item>
       <title>Welcome</title>
-      <link>/posts/welcome/</link>
+      <link>/posts/2019/03/welcome/</link>
       <pubDate>Wed, 06 Mar 2019 20:36:15 +0100</pubDate>
       
-      <guid>/posts/welcome/</guid>
+      <guid>/posts/2019/03/welcome/</guid>
       <description>How does this work?</description>
     </item>
     

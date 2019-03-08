@@ -6,15 +6,16 @@
         <description>Recent content in Posts on Dev and Chill</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
+        <copyright>Pablo Morelli</copyright>
         <lastBuildDate>Wed, 06 Mar 2019 20:36:15 +0100</lastBuildDate>
         <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
         
         <item>
             <title>Welcome</title>
-            <link>/posts/welcome/</link>
+            <link>/posts/2019/03/welcome/</link>
             <pubDate>Wed, 06 Mar 2019 20:36:15 +0100</pubDate>
             
-            <guid>/posts/welcome/</guid>
+            <guid>/posts/2019/03/welcome/</guid>
             <description>How does this work?</description>
             <content type="html"><![CDATA[<p>How does this work?</p>
 ]]></content>
