@@ -7,10 +7,19 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Pablo Morelli</copyright>
-    <lastBuildDate>Wed, 06 Mar 2019 20:43:08 +0100</lastBuildDate>
+    <lastBuildDate>Fri, 08 Mar 2019 20:43:08 +0100</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Resume</title>
+      <link>/resume/</link>
+      <pubDate>Fri, 08 Mar 2019 20:43:08 +0100</pubDate>
+      
+      <guid>/resume/</guid>
+      <description>WORKED WITH  DDD, TDD, SOLID, CQRS, .NET Core, Clean Architecture, Event Sourcing, Akka.NET, Docker, Kubernetes, CI/CD, REST API, Microservices, Serverless Functions, AMQP, SQL, NoSQL, Git, Azure, GCP, Kanban, Scrum.  WORK EXPERIENCE Backend Developer @ Record Union 🇸🇪 (06/2018 - Present)  Developed a distributed application with actors, CQRS and Event Sourcing using .NET Core 2 and Akka.NET as primary stack, hosted on GKE and using Kubernetes. Collaborated with CI/CD pipeline configuration and optimisation.</description>
+    </item>
     
     <item>
       <title>About</title>
@@ -18,7 +27,7 @@
       <pubDate>Wed, 06 Mar 2019 20:43:08 +0100</pubDate>
       
       <guid>/about/</guid>
-      <description>Hey! Nice to see you around here. I am Pablo Morelli 🧔🏻 and I work as a backend developer at Record Union. Currently living in Stockholm but was born and lived most of my life in Buenos Aires (Argentina). Coding since 2010, and with most of my experience on .NET (and .NET Core) I am looking towards expanding my horizons across other stacks. My aim here is to write (mostly) about tech problems and possible solutions to them.</description>
+      <description>Hey! Nice to see you around here. I am Pablo Morelli 🧔🏻 and I work as a backend developer at Record Union. Currently living in Stockholm 🇸🇪 but was born and lived most of my life in Buenos Aires 🇦🇷. Coding since 2010, and with most of my experience on .NET (and .NET Core) I am looking towards getting more knowledgeable regarding other stacks. My aim here is to write (mostly) about tech problems and possible solutions to them.</description>
     </item>
     
     <item>
