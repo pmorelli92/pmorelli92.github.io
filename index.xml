@@ -7,10 +7,21 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Pablo Morelli</copyright>
-    <lastBuildDate>Fri, 08 Mar 2019 20:43:08 +0100</lastBuildDate>
+    <lastBuildDate>Wed, 13 Mar 2019 17:07:15 +0100</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>GO Modules: Working outside GOPATH</title>
+      <link>/posts/2019/03/go-modules-working-outside-gopath/</link>
+      <pubDate>Wed, 13 Mar 2019 17:07:15 +0100</pubDate>
+      
+      <guid>/posts/2019/03/go-modules-working-outside-gopath/</guid>
+      <description>When I started learning GOLang (a couple of months ago) one of the things that I concerned most with was the project structure.
+It may sound irrelevant to bother with this when you are learning the language; but, every time I am browsing .net core applications or libraries on GitHub, I find it extremely unappealing when certain projects are not structured in a conventional way.
+My starting point was the following talk:</description>
+    </item>
     
     <item>
       <title>Resume</title>
@@ -28,15 +39,6 @@
       
       <guid>/about/</guid>
       <description>Hey! Nice to see you around here. I am Pablo Morelli 🧔🏻 and I work as a backend developer at Record Union. Currently living in Stockholm 🇸🇪 but was born and lived most of my life in Buenos Aires 🇦🇷. Coding since 2010, and with most of my experience on .NET (and .NET Core) I am looking towards getting more knowledgeable regarding other stacks. My aim here is to write (mostly) about tech problems and possible solutions to them.</description>
-    </item>
-    
-    <item>
-      <title>Welcome</title>
-      <link>/posts/2019/03/welcome/</link>
-      <pubDate>Wed, 06 Mar 2019 20:36:15 +0100</pubDate>
-      
-      <guid>/posts/2019/03/welcome/</guid>
-      <description>How does this work?</description>
     </item>
     
   </channel>

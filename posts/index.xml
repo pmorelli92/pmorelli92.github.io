@@ -7,17 +7,136 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
         <copyright>Pablo Morelli</copyright>
-        <lastBuildDate>Wed, 06 Mar 2019 20:36:15 +0100</lastBuildDate>
+        <lastBuildDate>Wed, 13 Mar 2019 17:07:15 +0100</lastBuildDate>
         <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
         
         <item>
-            <title>Welcome</title>
-            <link>/posts/2019/03/welcome/</link>
-            <pubDate>Wed, 06 Mar 2019 20:36:15 +0100</pubDate>
+            <title>GO Modules: Working outside GOPATH</title>
+            <link>/posts/2019/03/go-modules-working-outside-gopath/</link>
+            <pubDate>Wed, 13 Mar 2019 17:07:15 +0100</pubDate>
             
-            <guid>/posts/2019/03/welcome/</guid>
-            <description>How does this work?</description>
-            <content type="html"><![CDATA[<p>How does this work?</p>
+            <guid>/posts/2019/03/go-modules-working-outside-gopath/</guid>
+            <description>When I started learning GOLang (a couple of months ago) one of the things that I concerned most with was the project structure.
+It may sound irrelevant to bother with this when you are learning the language; but, every time I am browsing .net core applications or libraries on GitHub, I find it extremely unappealing when certain projects are not structured in a conventional way.
+My starting point was the following talk:</description>
+            <content type="html"><![CDATA[<p>When I started learning GOLang (a couple of months ago) one of the things that I concerned most with was the <strong>project structure</strong>.</p>
+
+<p>It may sound irrelevant to bother with this when you are learning the language; but, every time I am browsing .net core applications or libraries on GitHub, I find it extremely unappealing when certain projects are not structured in a conventional way.</p>
+
+<p>My starting point was the following talk:</p>
+
+
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="//www.youtube.com/embed/oL6JBUk6tj0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+</div>
+
+
+<p>Being that I did not know how to manage dependencies, I started investigating and saw that lots of people were using <code>dep</code>, and how bad could it be?</p>
+
+<p>I started building a sample app that that could be containerised (again, just to see how the Dockerfile would look like), and the following happened:</p>
+
+<pre><code class="language-dockerfile">FROM golang:1.11 AS builder
+
+COPY . /go/src/github.com/pmorelli92/go-ddd-cqrs/
+WORKDIR /go/src/github.com/pmorelli92/go-ddd-cqrs/
+
+RUN set -x &amp;&amp; go get github.com/golang/dep/cmd/dep &amp;&amp; dep ensure -v
+
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o goapp ./cmd/server/main.go
+
+FROM scratch
+WORKDIR /root/
+COPY --from=builder /go/src/github.com/pmorelli92/go-ddd-cqrs/goapp .
+
+EXPOSE 8080
+ENTRYPOINT [&quot;./goapp&quot;]
+</code></pre>
+
+<p>That Dockerfile, as ugly as it looks, was the result of some iterations were I was getting path errors, dependency errors, and others. The constraint of only working on <code>GOPATH</code> gave me headaches and I had to use a really bad <code>WORKDIR</code> as you can see above.</p>
+
+<p>But then after some searching, I came across that <a href="https://github.com/golang/go/wiki/Modules">GO Modules</a> was supported from version 1.11, so I decided to give it a try.</p>
+
+<p>And this is how the Dockerfile looks like now:</p>
+
+<pre><code class="language-dockerfile">FROM golang:1.12 AS builder
+
+WORKDIR /app
+
+COPY go.mod .
+COPY go.sum .
+
+RUN go mod download
+
+COPY . .
+
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o goapp ./cmd/main.go
+
+FROM scratch
+COPY --from=builder /app/goapp .
+
+EXPOSE 8080
+ENTRYPOINT [&quot;./goapp&quot;]
+</code></pre>
+
+<p>We can achieve the same using <code>golang:1.11</code> but we wil have to execute an additional step <code>ENV GO111MODULE=on</code> before <code>RUN go mod download</code>.</p>
+
+<p>So how do we achieve this? Easily!</p>
+
+<pre><code>mkdir my-demo // Create a project folder, or clone a github repository
+cd my-demo
+touch main.go // Create a file if we are starting the project
+go mod init my-demo // This will initiate the module
+</code></pre>
+
+<p>After doing this, we can proceed installing dependencies by doing <code>go get -u &lt;path&gt;</code></p>
+
+<pre><code>go get -u github.com/labstack/echo/v4
+</code></pre>
+
+<p>This will be tracked on the <code>go.mod</code> where it will state all the dependencies required for the project:</p>
+
+<pre><code>my-demo &gt; cat go.mod
+module my-demo
+
+go 1.12
+
+require (
+	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/labstack/echo/v4 v4.0.0 // indirect
+	github.com/mattn/go-colorable v0.1.1 // indirect
+	github.com/mattn/go-isatty v0.0.7 // indirect
+	github.com/stretchr/objx v0.1.1 // indirect
+	github.com/valyala/fasttemplate v1.0.0 // indirect
+	golang.org/x/crypto v0.0.0-20190313024323-a1f597ede03a // indirect
+	golang.org/x/sys v0.0.0-20190312061237-fead79001313 // indirect
+)
+</code></pre>
+
+<p>And we are done! Now we can edit the <code>main.go</code> to this:</p>
+
+<pre><code>package main
+
+import &quot;net/http&quot;
+import &quot;github.com/labstack/echo/v4&quot;
+
+func main() {
+	e := echo.New()
+	e.GET(&quot;/hello&quot;, func(c echo.Context) error {
+		return c.JSON(http.StatusOK, &quot;hey there&quot;)
+	})
+
+	_ = e.Start(&quot;:8080&quot;)
+}
+</code></pre>
+
+<p>If now we look again at <code>go.mod</code> we should see that the module <code>github.com/labstack/echo/v4 v4.0.0</code> is no longer indirect, that means that it is being actively used on the code.</p>
+
+<p><strong>Things to remember</strong></p>
+
+<ul>
+<li>Both go.mod and <code>go.sum</code> have to be committed.</li>
+<li>When building a docker file, in order to take advantage of the layered cache steps, we should first copy <code>go.mod</code> and <code>go.sum</code> and then executing <code>RUN go mod download</code>; after that, we can safely copy our code.</li>
+</ul>
 ]]></content>
         </item>
         
