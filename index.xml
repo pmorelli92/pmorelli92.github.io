@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Dev &amp; Chill</title>
-    <link>devandchill.com/</link>
+    <link>/devandchill.com/</link>
     <description>Recent content on Dev &amp; Chill</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Pablo Morelli</copyright>
     <lastBuildDate>Wed, 13 Mar 2019 17:07:15 +0100</lastBuildDate>
     
-	<atom:link href="devandchill.com/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/devandchill.com/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>GO Modules: Working outside GOPATH</title>
-      <link>devandchill.com/posts/2019/03/go-modules-working-outside-gopath/</link>
+      <link>/devandchill.com/posts/2019/03/go-modules-working-outside-gopath/</link>
       <pubDate>Wed, 13 Mar 2019 17:07:15 +0100</pubDate>
       
-      <guid>devandchill.com/posts/2019/03/go-modules-working-outside-gopath/</guid>
+      <guid>/devandchill.com/posts/2019/03/go-modules-working-outside-gopath/</guid>
       <description>When I started learning GOLang (a couple of months ago) one of the things that I concerned most with was the project structure.
 It may sound irrelevant to bother with this when you are learning the language; but, every time I am browsing .net core applications or libraries on GitHub, I find it extremely unappealing when certain projects are not structured in a conventional way.
 My starting point was the following talk:</description>
@@ -25,19 +25,19 @@ My starting point was the following talk:</description>
     
     <item>
       <title>Resume</title>
-      <link>devandchill.com/resume/</link>
+      <link>/devandchill.com/resume/</link>
       <pubDate>Fri, 08 Mar 2019 20:43:08 +0100</pubDate>
       
-      <guid>devandchill.com/resume/</guid>
+      <guid>/devandchill.com/resume/</guid>
       <description>WORKED WITH  DDD, TDD, SOLID, CQRS, .NET Core, Clean Architecture, Event Sourcing, Akka.NET, Docker, Kubernetes, CI/CD, REST API, Microservices, Serverless Functions, AMQP, SQL, NoSQL, Git, Azure, GCP, Kanban, Scrum.  WORK EXPERIENCE Backend Developer 💻 Record Union 🇸🇪  From 06.2018 - Present Developed a distributed application with actors, CQRS and Event Sourcing using .NET Core 2 and Akka.NET as primary stack, hosted on GKE and using Kubernetes. Collaborated with CI/CD pipeline configuration and optimisation.</description>
     </item>
     
     <item>
       <title>About</title>
-      <link>devandchill.com/about/</link>
+      <link>/devandchill.com/about/</link>
       <pubDate>Wed, 06 Mar 2019 20:43:08 +0100</pubDate>
       
-      <guid>devandchill.com/about/</guid>
+      <guid>/devandchill.com/about/</guid>
       <description>Hey! Nice to see you around here. I am Pablo Morelli 🧔🏻 and I work as a backend developer at Record Union. Currently living in Stockholm 🇸🇪 but was born and lived most of my life in Buenos Aires 🇦🇷. Coding since 2010, and with most of my experience on .NET (and .NET Core) I am looking towards getting more knowledgeable regarding other stacks. My aim here is to write (mostly) about tech problems and possible solutions to them.</description>
     </item>
     
