@@ -135,7 +135,7 @@ func main() {
 
 <ul>
 <li>Both go.mod and <code>go.sum</code> have to be committed.</li>
-<li>When building a docker file, in order to take advantage of the layered cache steps, we should first copy <code>go.mod</code> and <code>go.sum</code> and then executing <code>RUN go mod download</code>; after that, we can safely copy our code.</li>
+<li>When building a docker file, in order to take advantage of the layered cache steps, we should first copy <code>go.mod</code> and <code>go.sum</code> and then executing <code>RUN go mod download</code>; after that, we can safely copy our code..</li>
 </ul>
 ]]></content>
         </item>
