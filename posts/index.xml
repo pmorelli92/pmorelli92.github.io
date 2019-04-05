@@ -2,20 +2,20 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>Posts on Dev &amp; Chill</title>
-        <link>devandchill.com/posts/</link>
+        <link>/posts/</link>
         <description>Recent content in Posts on Dev &amp; Chill</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
         <copyright>Pablo Morelli</copyright>
         <lastBuildDate>Wed, 13 Mar 2019 17:07:15 +0100</lastBuildDate>
-        <atom:link href="devandchill.com/posts/index.xml" rel="self" type="application/rss+xml" />
+        <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
         
         <item>
             <title>GO Modules: Working outside GOPATH</title>
-            <link>devandchill.com/posts/2019/03/go-modules-working-outside-gopath/</link>
+            <link>/posts/2019/03/go-modules-working-outside-gopath/</link>
             <pubDate>Wed, 13 Mar 2019 17:07:15 +0100</pubDate>
             
-            <guid>devandchill.com/posts/2019/03/go-modules-working-outside-gopath/</guid>
+            <guid>/posts/2019/03/go-modules-working-outside-gopath/</guid>
             <description>When I started learning GOLang (a couple of months ago) one of the things that I concerned most with was the project structure.
 It may sound irrelevant to bother with this when you are learning the language; but, every time I am browsing .net core applications or libraries on GitHub, I find it extremely unappealing when certain projects are not structured in a conventional way.
 My starting point was the following talk:</description>
@@ -137,6 +137,10 @@ func main() {
 <li>Both go.mod and <code>go.sum</code> have to be committed.</li>
 <li>When building a docker file, in order to take advantage of the layered cache steps, we should first copy <code>go.mod</code> and <code>go.sum</code> and then executing <code>RUN go mod download</code>; after that, we can safely copy our code.</li>
 </ul>
+
+<p><link rel="canonical" href="{{ .Permalink }}">
+<link rel="canonical" href="{{ .Permalink | absURL }}">
+<link rel="canonical" href="{{ .Site.Params.hostName }}{{ .Permalink | absURL }}"></p>
 ]]></content>
         </item>
         
