@@ -3,8 +3,20 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://devandchill.com/</loc>
+    <lastmod>2019-03-13T17:07:15+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://devandchill.com/posts/2019/03/go-modules-working-outside-gopath/</loc>
     <lastmod>2019-03-13T17:07:15+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/posts/</loc>
+    <lastmod>2019-03-13T17:07:15+01:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -19,18 +31,6 @@
   
   <url>
     <loc>https://devandchill.com/categories/</loc>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://devandchill.com/</loc>
-    <lastmod>2019-03-13T17:07:15+01:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://devandchill.com/posts/</loc>
-    <lastmod>2019-03-13T17:07:15+01:00</lastmod>
     <priority>0</priority>
   </url>
   
