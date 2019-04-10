@@ -81,7 +81,7 @@ ENTRYPOINT [&quot;./goapp&quot;]
 
 <p>So how do we achieve this? Easily!</p>
 
-<pre><code>mkdir my-demo // Create a project folder, or clone a github repository
+<pre><code class="language-go">mkdir my-demo // Create a project folder, or clone a github repository
 cd my-demo
 touch main.go // Create a file if we are starting the project
 go mod init my-demo // This will initiate the module
@@ -89,12 +89,12 @@ go mod init my-demo // This will initiate the module
 
 <p>After doing this, we can proceed installing dependencies by doing <code>go get -u &lt;path&gt;</code></p>
 
-<pre><code>go get -u github.com/labstack/echo/v4
+<pre><code class="language-go">go get -u github.com/labstack/echo/v4
 </code></pre>
 
 <p>This will be tracked on the <code>go.mod</code> where it will state all the dependencies required for the project:</p>
 
-<pre><code>my-demo &gt; cat go.mod
+<pre><code class="language-go">my-demo &gt; cat go.mod
 module my-demo
 
 go 1.12
@@ -113,7 +113,7 @@ require (
 
 <p>And we are done! Now we can edit the <code>main.go</code> to this:</p>
 
-<pre><code>package main
+<pre><code class="language-go">package main
 
 import &quot;net/http&quot;
 import &quot;github.com/labstack/echo/v4&quot;
