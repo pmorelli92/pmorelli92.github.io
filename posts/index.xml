@@ -6,8 +6,257 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
         <copyright>Pablo Morelli</copyright>
-        <lastBuildDate>Wed, 13 Mar 2019 17:07:15 +0100</lastBuildDate>
+        <lastBuildDate>Wed, 10 Apr 2019 20:59:47 +0200</lastBuildDate>
         <atom:link href="https://devandchill.com/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>Word Counter: Sync or Concurrent?</title>
+            <link>https://devandchill.com/posts/2019/04/word-counter-sync-or-concurrent/</link>
+            <pubDate>Wed, 10 Apr 2019 20:59:47 +0200</pubDate>
+            
+            <guid>https://devandchill.com/posts/2019/04/word-counter-sync-or-concurrent/</guid>
+            <description>One day I was given the task of doing a whiteboard word counter algorithm. The requirements were:
+ Print on console all the words and the quantity of times they appear on a 40.000 lines input. Make it as fast as possible.  For a start we can do it as simple as possible instead, and then try to see wether we can make it faster:
+func main() { fmt.</description>
+            <content type="html"><![CDATA[
+
+<p>One day I was given the task of doing a whiteboard <code>word counter</code> algorithm. The requirements were:</p>
+
+<ul>
+<li>Print on console all the words and the quantity of times they appear on a 40.000 lines input.</li>
+<li>Make it as fast as possible.</li>
+</ul>
+
+<p>For a start we can do it as simple as possible instead, and then try to see wether we can make it faster:</p>
+
+<pre><code class="language-go">func main() {
+	fmt.Println(wordCounter())
+}
+
+func wordCounter() map[string]int {
+	b, _ := ioutil.ReadFile(&quot;input.txt&quot;)
+	inputText := string(b)
+	mostFrequent := make(map[string]int)
+	removeSpecial := regexp.MustCompile(`(?m)[^a-z]`)
+
+	for _, w := range strings.Split(inputText, &quot; &quot;) {
+		w = strings.ToLower(w)
+		w = removeSpecial.ReplaceAllString(w, &quot;&quot;)
+		mostFrequent[w] = mostFrequent[w] + 1
+	}
+
+	return mostFrequent
+}
+</code></pre>
+
+<p>If I had to explain the code it will be like this:</p>
+
+<ol>
+<li>Read the file and put it on a string variable.</li>
+<li>Create the map structure that will hold a key (word) and a value (quantity)</li>
+<li>Create a regular expression for removing characters like <code>, ! ?</code></li>
+<li>For each word in the text (splitting by spaces)</li>
+<li>Lowercase it + execute the regex + add 1 to the map quantity for that word</li>
+<li>When we finish, we print to the console.</li>
+</ol>
+
+<p>This works fine, but we are using Go and every post you visit is probably talking about <code>goroutines</code> and how easy is to achieve concurrency. So what if I do the following?</p>
+
+<pre><code class="language-go">func main() {
+	fmt.Println(wordCounterConcurrent())
+}
+
+func wordCounterConcurrent() map[string]int {
+	b, _ := ioutil.ReadFile(&quot;input.txt&quot;)
+	inputText := string(b)
+	mostFrequent := make(map[string]int)
+	removeSpecial := regexp.MustCompile(`(?m)[^a-z]`)
+
+	wg := sync.WaitGroup{}
+
+	for _, w := range strings.Split(inputText, &quot; &quot;) {
+		wg.Add(1)
+		go func(w2 string) {
+			defer wg.Done()
+			w2 = strings.ToLower(w2)
+			w2 = removeSpecial.ReplaceAllString(w2, &quot;&quot;)
+			mostFrequent[w2] = mostFrequent[w2] + 1
+		}(w)
+	}
+
+	wg.Wait()
+	return mostFrequent
+}
+</code></pre>
+
+<p>The differences in this snippet and the first one are the following:</p>
+
+<ol>
+<li>We defined a <code>WaitGroup</code> that will allow us to:
+
+<ul>
+<li>Add a counter every time a goroutine is fired.</li>
+<li>Block the main goroutine with the <code>wg.Wait()</code> until all the other goroutines are finished.</li>
+<li><em>Decrease</em> the counter executing <code>wg.Done()</code> every time a goroutine is finished.</li>
+</ul></li>
+<li>We put the functionality that is going to be executed for each word in an <code>anonymous function</code>. So now, we can use the word <code>go</code> to execute that function in a different goroutine.</li>
+</ol>
+
+<p>Does this work? Unfortunately no. If we execute the following:</p>
+
+<pre><code>&gt; go run main.go --race
+fatal error: concurrent map read and map write
+</code></pre>
+
+<p>Basically the race detector is telling us that some of the goroutines can execute this line at the same moment:</p>
+
+<pre><code class="language-go">mostFrequent[w2] = mostFrequent[w2] + 1
+</code></pre>
+
+<p>If the map does not want to be written at the same time by two different goroutines we should use some sort of <code>queue</code> and then consume the values in a single threaded process. Fortunately, Go have us covered with <code>channels</code>.</p>
+
+<p>Doing the following modifications should work:</p>
+
+<pre><code class="language-go">func main() {
+	fmt.Println(wordCounterConcurrent())
+}
+
+func wordCounterConcurrent() map[string]int {
+    runtime.GOMAXPROCS(4) //Make sure we use all processors
+	b, _ := ioutil.ReadFile(&quot;input.txt&quot;)
+	inputText := string(b)
+	mostFrequent := make(map[string]int)
+	removeSpecial := regexp.MustCompile(`(?m)[^a-z]`)
+
+	doneChan := make(chan bool)
+	wordsChan := make(chan string)
+
+	go func() {
+		for {
+			select {
+			case w := &lt;-wordsChan:
+				mostFrequent[w] = mostFrequent[w] + 1
+			case &lt;-doneChan:
+				return
+			}
+		}
+	}()
+
+	wg := sync.WaitGroup{}
+
+	for _, w := range strings.Split(inputText, &quot; &quot;) {
+		wg.Add(1)
+		go func(w1 string) {
+			defer wg.Done()
+			w1 = strings.ToLower(w1)
+			w1 = removeSpecial.ReplaceAllString(w1, &quot;&quot;)
+			wordsChan &lt;- w1
+		}(w)
+	}
+
+	wg.Wait()
+	doneChan &lt;- true
+	return mostFrequent
+}
+</code></pre>
+
+<p>But now the code growth a lot, lets look at it by parts:</p>
+
+<p>In order to declare channels we use the following syntax</p>
+
+<pre><code class="language-go">doneChan := make(chan bool)
+wordsChan := make(chan string)
+</code></pre>
+
+<p>Now, if we go to the words goroutines we can see that instead of performing operations using the map we are just pushing a value into a channel.</p>
+
+<pre><code class="language-go">wordsChan &lt;- w1
+</code></pre>
+
+<p>The operations using the map, then will be performed when we read a value from the channel (blocking action since it is not a buffered channel)</p>
+
+<pre><code class="language-go">w := &lt;-wordsChan:
+</code></pre>
+
+<p>For that we have the following:</p>
+
+<pre><code class="language-go">go func() {
+    for {
+        select {
+        case w := &lt;-wordsChan:
+            mostFrequent[w] = mostFrequent[w] + 1
+        case &lt;-doneChan:
+            return
+        }
+    }
+}()
+</code></pre>
+
+<p>This piece of code will read from the <code>wordsChannel</code> and perform the map operation; and also read from the <code>doneChannel</code> to stop the goroutine.</p>
+
+<p>The message to the <code>doneChannel</code> will only be submitted after all words goroutines are finished.</p>
+
+<pre><code class="language-go">wg.Wait()
+doneChan &lt;- true
+</code></pre>
+
+<p>Now if we run this algorithm we will see that is not failing anymore. Let&rsquo;s then move to benchmarking.</p>
+
+<h2 id="benchmark">Benchmark</h2>
+
+<p>We are going to do this in two different ways: using the command-line utility time and executing an idiomatic Go benchmark.</p>
+
+<pre><code>&gt; go test -run=XXX -bench=.
+</code></pre>
+
+<pre><code>BenchmarkWordCounter-8                       100          16685557 ns/op
+BenchmarkWordCounterConcurrent-8              30          46959704 ns/op
+</code></pre>
+
+<p>This is telling us that the sync version executed <code>100 times</code> and each execution took approx <code>16685557 nanoseconds</code>, meanwhile in the same time the concurrent version only got executed <code>30 times</code> because each execution took approx <code>46959704 nanoseconds</code>.</p>
+
+<p>Wait, What?</p>
+
+<p>Let&rsquo;s do it with this:</p>
+
+<pre><code>&gt; go build
+&gt; time ./go-word-counter
+</code></pre>
+
+<pre><code>(SYNC)
+./go-word-counter  0.02s user 0.00s system 57% cpu 0.048 total
+(CONCURRENT)
+./go-word-counter  0.31s user 0.04s system 362% cpu 0.096 total
+</code></pre>
+
+<p>So the sync version takes approx <code>0.048</code> and <code>57% cpu</code> and the concurrent one <code>0.096</code> and <code>362% cpu</code>.</p>
+
+<p>We are sure that the function is running concurrently (hence the CPU usage), but shouldn&rsquo;t that mean it has to run faster? NO.</p>
+
+<p>If we look at the code we can see that the parts that get executed inside the word goroutines takes less to execute than all the orchestration needed for pulling a word from a channel.</p>
+
+<p>Things would be different if we add a sleep like this:</p>
+
+<pre><code class="language-go">w1 = strings.ToLower(w1)
+w1 = removeSpecial.ReplaceAllString(w1, &quot;&quot;)
+time.Sleep(200)
+</code></pre>
+
+<p>And then the benchmark:</p>
+
+<pre><code>BenchmarkWordCounter-8                        10         171650568 ns/op
+BenchmarkWordCounterConcurrent-8              20          54229310 ns/op
+</code></pre>
+
+<p>In this scenario we can clearly see how the concurrent way outperforms the sync one.</p>
+
+<p>So we started with a single goroutine algorithm, we evolved it to run using more than one goroutine and having an orchestration for the algorithm to work. At the end we did a benchmark and compared the results.</p>
+
+<p>The value we can get out of this is to avoid <code>premature optimization</code>, how to <code>KISS (Keep it simple and stupid)</code>; and the most important one: We learned that concurrent flows are beneficial when the code inside the goroutine is CPU/time intensive.</p>
+
+<p>👉 <a href="https://github.com/pmorelli92/go-word-counter">Repository with source files used</a> 👈</p>
+]]></content>
+        </item>
         
         <item>
             <title>GO Modules: Working outside GOPATH</title>
