@@ -19,7 +19,7 @@
       
       <guid>https://devandchill.com/posts/2019/04/word-counter-sync-or-concurrent/</guid>
       <description>One day I was given the task of doing a whiteboard word counter algorithm. The requirements were:
- Print on console all the words and the quantity of times they appear on a 40.000 lines input. Make it as fast as possible.  For a start we can do it as simple as possible instead, and then try to see wether we can make it faster:
+ Print on console all the words and the quantity of times they appear on a 40.000 lines input. Make it as fast as possible.  For a start we can do it as simple as possible instead, and then try to see whether we can make it faster:
 func main() { fmt.</description>
     </item>
     
