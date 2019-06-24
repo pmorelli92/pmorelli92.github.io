@@ -7,10 +7,20 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Pablo Morelli</copyright>
-    <lastBuildDate>Sun, 09 Jun 2019 20:22:29 +0200</lastBuildDate>
+    <lastBuildDate>Mon, 24 Jun 2019 17:22:29 +0200</lastBuildDate>
     
 	<atom:link href="https://devandchill.com/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>.NET Core 3.0 - Publish single file binary on alpine container</title>
+      <link>https://devandchill.com/posts/2019/06/.net-core-3.0-publish-single-file-binary-on-alpine-container/</link>
+      <pubDate>Mon, 24 Jun 2019 17:22:29 +0200</pubDate>
+      
+      <guid>https://devandchill.com/posts/2019/06/.net-core-3.0-publish-single-file-binary-on-alpine-container/</guid>
+      <description>The newly released dotnet 3 preview 6 has an interesting feature called publish single file where an application can be published as a binary that will run on the platform it was compiled for.
+The difference of a self contained app and publish single file is that the first one is a compressed binary that will be decompressed when ran. The second one is a binary that just contains our application.</description>
+    </item>
     
     <item>
       <title>Sign GitHub commits (using Mac)</title>
@@ -34,12 +44,12 @@ func main() { fmt.</description>
     </item>
     
     <item>
-      <title>GO Modules: Working outside GOPATH</title>
+      <title>Go Modules: Working outside GOPATH</title>
       <link>https://devandchill.com/posts/2019/03/go-modules-working-outside-gopath/</link>
       <pubDate>Wed, 13 Mar 2019 17:07:15 +0100</pubDate>
       
       <guid>https://devandchill.com/posts/2019/03/go-modules-working-outside-gopath/</guid>
-      <description>When I started learning GOLang (a couple of months ago) one of the things that I concerned most with was the project structure.
+      <description>When I started learning Golang (a couple of months ago) one of the things that I concerned most with was the project structure.
 It may sound irrelevant to bother with this when you are learning the language; but, every time I am browsing .net core applications or libraries on GitHub, I find it extremely unappealing when certain projects are not structured in a conventional way.
 My starting point was the following talk:</description>
     </item>

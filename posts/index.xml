@@ -6,8 +6,101 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
         <copyright>Pablo Morelli</copyright>
-        <lastBuildDate>Sun, 09 Jun 2019 20:22:29 +0200</lastBuildDate>
+        <lastBuildDate>Mon, 24 Jun 2019 17:22:29 +0200</lastBuildDate>
         <atom:link href="https://devandchill.com/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>.NET Core 3.0 - Publish single file binary on alpine container</title>
+            <link>https://devandchill.com/posts/2019/06/.net-core-3.0-publish-single-file-binary-on-alpine-container/</link>
+            <pubDate>Mon, 24 Jun 2019 17:22:29 +0200</pubDate>
+            
+            <guid>https://devandchill.com/posts/2019/06/.net-core-3.0-publish-single-file-binary-on-alpine-container/</guid>
+            <description>The newly released dotnet 3 preview 6 has an interesting feature called publish single file where an application can be published as a binary that will run on the platform it was compiled for.
+The difference of a self contained app and publish single file is that the first one is a compressed binary that will be decompressed when ran. The second one is a binary that just contains our application.</description>
+            <content type="html"><![CDATA[
+
+<p>The newly released <code>dotnet 3 preview 6</code> has an interesting feature called <code>publish single file</code> where an application can be published as a binary that will run on the platform it was compiled for.</p>
+
+<p>The difference of a <code>self contained app</code> and <code>publish single file</code> is that the first one is a compressed binary that will be decompressed when ran. The second one is a binary that just contains our application.</p>
+
+<p>In order to add this feature in our <code>.csproj</code>, add the following lines:</p>
+
+<pre><code class="language-xml">&lt;PropertyGroup&gt;
+  &lt;TargetFramework&gt;netcoreapp3.0&lt;/TargetFramework&gt;
+  &lt;PublishTrimmed&gt;true&lt;/PublishTrimmed&gt;
+  &lt;PublishReadyToRun&gt;true&lt;/PublishReadyToRun&gt;
+  &lt;PublishSingleFile&gt;true&lt;/PublishSingleFile&gt;
+  &lt;CrossGenDuringPublish&gt;false&lt;/CrossGenDuringPublish&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+
+<p>There are some flags that may sound weird, let&rsquo;s go through them:</p>
+
+<ul>
+<li><code>PublishTrimmed</code> indicates to remove all the dotnet dependencies that are not being used by our code. When doing this in a real world application, it is very important to test it afterwards in case some dependency that is referenced by code (for example using reflection) is being trimmed as well.</li>
+<li><code>PublishReadyToRun</code> it is supposed to make the start time of our application faster, but in the process it will make the binary heavier.</li>
+<li><code>CrossGenDuringPublish</code> is a workaround that needs to be present for indicating the machine that is running the publish, that it should not bother with compilation for other RID (more about this below)</li>
+</ul>
+
+<p>After these flags had been set, the application is runnable using:</p>
+
+<pre><code>dotnet publish -r osx-x64 -c Release -o ./deploy
+./deploy/&lt;APP_NAME&gt; &lt;- Execute the application
+</code></pre>
+
+<p>When publishing a single file, don&rsquo;t forget to add the <a href="https://docs.microsoft.com/en-us/dotnet/core/rid-catalog">runtime identifier catalog (RID)</a> corresponding to the platform where the application is going to be run. For example: <code>-r osx-x64</code></p>
+
+<p>With the basics of this feature already covered, let&rsquo;s move to the important bit.</p>
+
+<h2 id="deploy-application-on-an-alpine-based-container">Deploy application on an Alpine based container</h2>
+
+<p>One important win using this approach is that the published binary does not need to be run in a container that has dotnet runtime installed. But one caveat for consideration is that those internal dependencies used under the hood by dotnet are still needed. There are two options:</p>
+
+<p>Use plain alpine and install dotnet internal dependencies:</p>
+
+<pre><code class="language-Dockerfile">FROM alpine
+RUN apk update &amp;&amp; apk add libstdc++ &amp;&amp; apk add libintl
+</code></pre>
+
+<p>Use <code>runtime-deps</code> alpine image from <a href="https://hub.docker.com/_/microsoft-dotnet-core-runtime-deps/">Microsoft</a>:</p>
+
+<blockquote>
+<p>This image contains the native dependencies needed by .NET Core. It does not include .NET Core. It is for self-contained applications.</p>
+</blockquote>
+
+<pre><code class="language-Dockerfile">FROM mcr.microsoft.com/dotnet/core/runtime-deps:3.0.0-preview6-alpine3.9
+</code></pre>
+
+<p>With that being said, the next is straightforward:</p>
+
+<pre><code class="language-Dockerfile">FROM mcr.microsoft.com/dotnet/core/sdk:3.0.100-preview6-alpine3.9 AS build
+
+WORKDIR /app
+
+COPY . .
+
+RUN dotnet publish -r linux-musl-x64 -c Release -o ./deploy
+
+FROM mcr.microsoft.com/dotnet/core/runtime-deps:3.0.0-preview6-alpine3.9
+
+COPY --from=build /app/deploy ./app
+
+ENV ASPNETCORE_URLS http://*:5000
+
+EXPOSE 5000
+
+ENTRYPOINT [&quot;./app/&lt;APP_NAME&gt;&quot;]
+</code></pre>
+
+<p>Basically the <code>Dockerfile</code> is publishing the application (as a binary) on an alpine container with dotnet sdk installed. This is important because the <code>builder</code> has to use the same architecture than the runner. It is not possible to build a <code>linux-musk-x64</code> binary on a windows container.</p>
+
+<p>Then the result files (the binary and a single DLL) are copied to an alpine container only having dotnet runtime dependencies.</p>
+
+<p>At the end the <code>ENTRYPOINT</code> line is executed. Check that this one is not doing <code>dotnet app/&lt;APP_NAME&gt;</code> but just <code>./app/&lt;APP_NAME&gt;</code></p>
+
+<p>I did a sample API with this approach, <a href="https://github.com/pmorelli92/dotnet3.executable.api">which can be found my github</a>. The container weighted <code>91MB</code>, used <code>30MB RAM</code> and <code>0.08% CPU</code>. Awesome, right?</p>
+]]></content>
+        </item>
         
         <item>
             <title>Sign GitHub commits (using Mac)</title>
@@ -408,15 +501,15 @@ BenchmarkWordCounterConcurrent-8              20          54229310 ns/op
         </item>
         
         <item>
-            <title>GO Modules: Working outside GOPATH</title>
+            <title>Go Modules: Working outside GOPATH</title>
             <link>https://devandchill.com/posts/2019/03/go-modules-working-outside-gopath/</link>
             <pubDate>Wed, 13 Mar 2019 17:07:15 +0100</pubDate>
             
             <guid>https://devandchill.com/posts/2019/03/go-modules-working-outside-gopath/</guid>
-            <description>When I started learning GOLang (a couple of months ago) one of the things that I concerned most with was the project structure.
+            <description>When I started learning Golang (a couple of months ago) one of the things that I concerned most with was the project structure.
 It may sound irrelevant to bother with this when you are learning the language; but, every time I am browsing .net core applications or libraries on GitHub, I find it extremely unappealing when certain projects are not structured in a conventional way.
 My starting point was the following talk:</description>
-            <content type="html"><![CDATA[<p>When I started learning GOLang (a couple of months ago) one of the things that I concerned most with was the <strong>project structure</strong>.</p>
+            <content type="html"><![CDATA[<p>When I started learning Golang (a couple of months ago) one of the things that I concerned most with was the <strong>project structure</strong>.</p>
 
 <p>It may sound irrelevant to bother with this when you are learning the language; but, every time I am browsing .net core applications or libraries on GitHub, I find it extremely unappealing when certain projects are not structured in a conventional way.</p>
 
