@@ -13,11 +13,11 @@
     
     
     <item>
-      <title>.NET Core 3.0 - Publish single file binary on alpine container</title>
-      <link>https://devandchill.com/posts/2019/06/.net-core-3.0-publish-single-file-binary-on-alpine-container/</link>
+      <title>NET Core 3.0 - Publish single file binary on alpine container</title>
+      <link>https://devandchill.com/posts/2019/06/net-core-3.0-publish-single-file-binary-on-alpine-container/</link>
       <pubDate>Mon, 24 Jun 2019 17:22:29 +0200</pubDate>
       
-      <guid>https://devandchill.com/posts/2019/06/.net-core-3.0-publish-single-file-binary-on-alpine-container/</guid>
+      <guid>https://devandchill.com/posts/2019/06/net-core-3.0-publish-single-file-binary-on-alpine-container/</guid>
       <description>The newly released dotnet 3 preview 6 has an interesting feature called publish single file where an application can be published as a binary that will run on the platform it was compiled for.
 The difference of a self contained app and publish single file is that the first one is a compressed binary that will be decompressed when ran. The second one is a binary that just contains our application.</description>
     </item>
