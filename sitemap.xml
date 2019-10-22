@@ -3,17 +3,22 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://devandchill.com/</loc>
-    <lastmod>2019-06-24T17:22:29+02:00</lastmod>
+    <loc>https://devandchill.com/posts/2019/10/azure-pipelines-build-a-dockerized-app-and-deploy-to-kubernetes/</loc>
+    <lastmod>2019-10-19T22:22:29+02:00</lastmod>
   </url>
   
   <url>
-    <loc>https://devandchill.com/posts/2019/06/net-core-3.0-publish-single-file-binary-on-alpine-container/</loc>
-    <lastmod>2019-06-24T17:22:29+02:00</lastmod>
+    <loc>https://devandchill.com/</loc>
+    <lastmod>2019-10-19T22:22:29+02:00</lastmod>
   </url>
   
   <url>
     <loc>https://devandchill.com/posts/</loc>
+    <lastmod>2019-10-19T22:22:29+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/posts/2019/06/net-core-3.0-publish-single-file-binary-on-alpine-container/</loc>
     <lastmod>2019-06-24T17:22:29+02:00</lastmod>
   </url>
   

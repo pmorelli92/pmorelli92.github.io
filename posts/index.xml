@@ -6,8 +6,250 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
         <copyright>Pablo Morelli</copyright>
-        <lastBuildDate>Mon, 24 Jun 2019 17:22:29 +0200</lastBuildDate>
+        <lastBuildDate>Sat, 19 Oct 2019 22:22:29 +0200</lastBuildDate>
         <atom:link href="https://devandchill.com/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>Azure Pipelines: Build a dockerized app and deploy to kubernetes</title>
+            <link>https://devandchill.com/posts/2019/10/azure-pipelines-build-a-dockerized-app-and-deploy-to-kubernetes/</link>
+            <pubDate>Sat, 19 Oct 2019 22:22:29 +0200</pubDate>
+            
+            <guid>https://devandchill.com/posts/2019/10/azure-pipelines-build-a-dockerized-app-and-deploy-to-kubernetes/</guid>
+            <description>Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&amp;rsquo;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files). Now I am currently working with Travis for CI and Flux for CD but I think it is always good to keep an eye on how the competitors are doing and what they have to offer.</description>
+            <content type="html"><![CDATA[
+
+<p>Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&rsquo;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files). Now I am currently working with Travis for CI and Flux for CD but I think it is always good to keep an eye on how the competitors are doing and what they have to offer.</p>
+
+<p>For this tutorial, I only had to link my github account to Azure Devops in order to use its functionality. That being said, I did not have to put my credit card or billing information so it is safe to say that it is free, at least for hobby usages.</p>
+
+<p>The tutorial will cover:</p>
+
+<ul>
+<li>Go application with Dockerfile</li>
+<li>Build and push to Dockerhub (but it could be any other docker registry)</li>
+<li>Deploy to Kubeseal (which offers a free kubernetes cluster)</li>
+</ul>
+
+<h2 id="the-application">The application</h2>
+
+<p>You can find it on <a href="https://github.com/pmorelli92/go-with-azure">GitHub</a>. It is a rather simple rest application since the purpose here is not to dig into code but on the CI/CD.</p>
+
+<p>It is runnable (downloading modules first with <code>go mod download</code>) executing <code>go run cmd/main.go</code>.
+The only functionality that exposes is a <code>GET /health</code> endpoint which will return a json informing that health is ok.</p>
+
+<p>The application can be dockerized executing <code>docker build -t gwa:local .</code> and then runnable using <code>docker run -p 80:8080 -it gwa:local</code>.</p>
+
+<p>The file <code>azure-pipelines.yml</code> contains the CI/CD configuration but more on that later.</p>
+
+<h2 id="azure-devops">Azure Devops</h2>
+
+<p>An account is needed in order to get access on Azure Pipelines. Linking the github account and giving access to the demo repository should be enough, after this step a project should be set up.</p>
+
+<p>Inside the project, the project settings button should be visible on the bottom left corner.
+Scroll down to service connections and you should see something like this:</p>
+
+
+    <figure class="center" >
+        <img src="/posts/images/project-settings.png"   />
+
+        
+    </figure>
+
+
+
+<p>This is where the credentials for docker and kubernetes are stored.</p>
+
+<p>Select docker registry and complete the steps for docker.</p>
+
+<p>For kubernetes it should be enough selecting Kubeconfig and pasting the kube config that lives under <code>user/.kube/config</code> on the operating system. Beware, in case you have multiple configurations, remove the parts that are not related to the cluster in which you want to deploy.</p>
+
+<h2 id="adding-build-pipeline">Adding build pipeline</h2>
+
+<p>Under the pipeline menu, pick <code>build</code> and <code>add a new pipeline</code>. Follow the steps and give access to the repository (it does not matter if it is public or private). Pick starter pipeline when prompted and proceed to click save and run.</p>
+
+<p>If everything went well a commit should be added to the repository and this will appear on the commit history of the repository:</p>
+
+
+    <figure class="center" >
+        <img src="/posts/images/built-commit.png"   />
+
+        
+    </figure>
+
+
+
+<p>The ✔️ indicates that the CI process ran successfully, when the build is ongoing a yellow circle will appear, and if the build fails ❌ will be shown.</p>
+
+<h2 id="configuring-ci-cd">Configuring CI/CD</h2>
+
+<p>Back to the azure-pipelines.yml:</p>
+
+<pre><code class="language-yml">trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildNumber: 0.0.$(Build.BuildId)
+
+steps:
+- task: Docker@2
+  inputs:
+    containerRegistry: 'pmorelli92-docker-hub'
+    repository: 'pmorelli92/go-with-azure'
+    command: 'buildAndPush'
+    Dockerfile: '**/Dockerfile'
+    tags: |
+      $(buildNumber)
+      latest
+- bash: sed -i &quot;s/latest/$(buildNumber)/g&quot; kubernetes/k8s-deployment.yml
+- task: Kubernetes@0
+  inputs:
+    kubernetesServiceConnection: 'pmorelli92-kubesail'
+    namespace: pmorelli92
+    command: apply
+    arguments: '-f kubernetes/k8s-deployment.yml'
+</code></pre>
+
+<p>Let&rsquo;s split them:</p>
+
+<pre><code class="language-yml">trigger:
+- master
+</code></pre>
+
+<p>Associated on which branch the CI/CD will execute.</p>
+
+<pre><code class="language-yml">pool:
+  vmImage: 'ubuntu-latest'
+</code></pre>
+
+<p>Relates to the machine that will execute the commands.</p>
+
+<pre><code class="language-yml">variables:
+  buildNumber: 0.0.$(Build.BuildId)
+</code></pre>
+
+<p>Global variables that are going to be used on the pipeline.
+In this case, the example repository is using semver for building versions.</p>
+
+<pre><code class="language-yml">steps:
+</code></pre>
+
+<p>Represents a chain of commands that will be executed in order. This is not the full power of pipelines, since it supports a higher order hierarchy where you can specify <code>stages -&gt; jobs -&gt; steps</code>.</p>
+
+<pre><code class="language-yml">- task: Docker@2
+  inputs:
+    containerRegistry: 'pmorelli92-docker-hub'
+    repository: 'pmorelli92/go-with-azure'
+    command: 'buildAndPush'
+    Dockerfile: '**/Dockerfile'
+    tags: |
+      $(buildNumber)
+      latest
+</code></pre>
+
+<p>This is a built-in command of pipelines, where we can (among other things) build and push docker images.</p>
+
+<p>The input named repository indicates the name of the repository on the container registry (which was set up on the project settings).</p>
+
+<p>If this command fails, the other ones will not be invoked.</p>
+
+<pre><code class="language-yml">bash: sed -i &quot;s/latest/$(buildNumber)/g&quot; kubernetes/k8s-deployment.yml
+</code></pre>
+
+<p>A discussion could be hold on whether if a service should self contain information of deployment or be agnostic of it. As a personal preference, I think having everything related to the application on the same repository enables easier discoverability.</p>
+
+<p>Of course, we are not having any secrets here, if that was the case, Azure Pipelines offers a way to store them safely inside the azure devops project.</p>
+
+<p>That being said, the repository contains a <a href="https://github.com/pmorelli92/go-with-azure/blob/master/kubernetes/k8s-deployment.yml">file</a> <code>kubernetes/k8s-deployment.yml</code> which describes:</p>
+
+<ul>
+<li>Deployment (information of the containers to be run)</li>
+<li>Service (enables communication from pods)</li>
+<li>Ingress (enables communication from the outside world to the service)</li>
+</ul>
+
+<p>The deployment needs to specify which version of the docker image is going to be run:</p>
+
+<pre><code class="language-yml">spec:
+containers:
+- name: gwa
+  image: pmorelli92/go-with-azure:latest
+  ports:
+  - name: http
+    containerPort: 80
+</code></pre>
+
+<p>It is definitely not good to use <code>:latest</code> image on stage / production so the sed script will replace <code>:latest</code> with <code>0.0.X</code> (which will be the build number). This is also the same version that will be pushed to the selected docker registry: <a href="https://cloud.docker.com/u/pmorelli92/repository/docker/pmorelli92/go-with-azure">example</a>.</p>
+
+
+    <figure class="center" >
+        <img src="/posts/images/docker-tags.png"   />
+
+        
+    </figure>
+
+
+
+<pre><code class="language-yml">- task: Kubernetes@0
+  inputs:
+    kubernetesServiceConnection: 'pmorelli92-kubesail'
+    namespace: pmorelli92
+    command: apply
+    arguments: '-f kubernetes/k8s-deployment.yml'
+</code></pre>
+
+<p>Finally, <code>kubernetesServiceConnection</code> is for indicating the connection created on the project settings; the namespace refers to a kubernetes namespace, and the command combined with arguments will be the equivalent of: <code>kubectl apply -f kubernetes/k8s-deployment.yml</code></p>
+
+<p>This will create / update the specifications that are living on the folder or file; in this case: the deployment, service and ingress.</p>
+
+<p>If everything goes green, we can check that the pod version matches the latest one added on the docker registry.</p>
+
+
+    <figure class="center" >
+        <img src="/posts/images/pod-version.png"   />
+
+        
+    </figure>
+
+
+
+<p>The logs should display something like this:</p>
+
+
+    <figure class="center" >
+        <img src="/posts/images/cicd-logs.png"   />
+
+        
+    </figure>
+
+
+
+<p>And the demo app is now accessible from the following <a href="http://gwa-ingress.pmorelli92.c1.kubesail.io/health">link</a>.</p>
+
+<h2 id="summary">Summary</h2>
+
+<p>In this tutorial we have seen how easy it is to set up a quick CI/CD pipeline that could be improved further according to the business / technical needs.
+If I were to give a verdict on Azure Pipelines:</p>
+
+<p>Pros</p>
+
+<ul>
+<li>Provides support for CI/CD.</li>
+<li>Component of Azure Devops which also supplies: git repos, agile boards and reports.</li>
+<li>Free to start, specially for startups.</li>
+<li>Documentation is clear and updated.</li>
+<li>Backed by Microsoft.</li>
+</ul>
+
+<p>Cons</p>
+
+<ul>
+<li>Vendor lock in with some commands, that would need to be refactored in order to change CI/CD provider.</li>
+</ul>
+]]></content>
+        </item>
         
         <item>
             <title>NET Core 3.0 - Publish single file binary on alpine container</title>

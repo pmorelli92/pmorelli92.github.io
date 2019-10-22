@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="author"
+    content="">
+<meta name="description"
+    content="Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&amp;rsquo;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files). Now I am currently working with Travis for CI and Flux for CD but I think it is always good to keep an eye on how the competitors are doing and what they have to offer." />
+<meta name="keywords" content="blog, development, programming, tech" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="https://devandchill.com/posts/2019/10/azure-pipelines-build-a-dockerized-app-and-deploy-to-kubernetes/" />
+
+
+<title>
+    
+    Azure Pipelines: Build a dockerized app and deploy to kubernetes :: Dev &amp; Chill  — A blog about coding
+    
+</title>
+
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.2.1/css/flag-icon.min.css" rel="stylesheet"
+    type="text/css">
+
+
+
+<link rel="stylesheet" href="/main.min.c1f0da16d3a4e93649d16fb0d4d27d14e84fdf6d6713fb34351b852f0f9d7bf5.css">
+
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#252627">
+<link rel="shortcut icon" href="/favicon.ico">
+<meta name="theme-color" content="#252627"><meta itemprop="name" content="Azure Pipelines: Build a dockerized app and deploy to kubernetes">
+<meta itemprop="description" content="Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&rsquo;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files). Now I am currently working with Travis for CI and Flux for CD but I think it is always good to keep an eye on how the competitors are doing and what they have to offer.">
+
+
+<meta itemprop="datePublished" content="2019-10-19T22:22:29&#43;02:00" />
+<meta itemprop="dateModified" content="2019-10-19T22:22:29&#43;02:00" />
+<meta itemprop="wordCount" content="1067">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://devandchill.com/"/>
+
+<meta name="twitter:title" content="Azure Pipelines: Build a dockerized app and deploy to kubernetes"/>
+<meta name="twitter:description" content="Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&rsquo;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files). Now I am currently working with Travis for CI and Flux for CD but I think it is always good to keep an eye on how the competitors are doing and what they have to offer."/>
+
+
+
+
+<meta property="article:published_time" content="2019-10-19 22:22:29 &#43;0200 CEST" />
+
+
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138171880-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-138171880-1');
+</script>
+
+    </head>
+
+    <body class="dark-theme">
+        <div class="container">
+            <header class="header">
+    <span class="header__inner">
+        <a href="https://devandchill.com/" style="text-decoration: none;">
+    <div class="logo">
+        
+            <img src="/dev-n-chill-logo.svg" alt="" />
+        
+    </div>
+</a>
+
+
+        <span class="header__right">
+            
+                <nav class="menu">
+    <ul class="menu__inner"><li><a href="https://devandchill.com/about">About</a></li><li><a href="https://devandchill.com/resume">Resume</a></li><li><a href="https://devandchill.com/posts">Posts</a></li>
+    </ul>
+</nav>
+
+                <span class="menu-trigger">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                    </svg>
+                </span>
+            
+
+            
+            <span type=“hidden” class="theme-toggle unselectable"></span>
+        </span>
+    </span>
+</header>
+
+
+            <div class="content">
+                
+    <main class="post">
+
+        <div class="post-info">
+            <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>6 minutes
+
+            
+
+            </p>
+        </div>
+
+        <article>
+            <h1 class="post-title"><a href="https://devandchill.com/posts/2019/10/azure-pipelines-build-a-dockerized-app-and-deploy-to-kubernetes/">Azure Pipelines: Build a dockerized app and deploy to kubernetes</a></h1>
+
+            
+
+            <div class="post-content">
+                
+
+<p>Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&rsquo;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files). Now I am currently working with Travis for CI and Flux for CD but I think it is always good to keep an eye on how the competitors are doing and what they have to offer.</p>
+
+<p>For this tutorial, I only had to link my github account to Azure Devops in order to use its functionality. That being said, I did not have to put my credit card or billing information so it is safe to say that it is free, at least for hobby usages.</p>
+
+<p>The tutorial will cover:</p>
+
+<ul>
+<li>Go application with Dockerfile</li>
+<li>Build and push to Dockerhub (but it could be any other docker registry)</li>
+<li>Deploy to Kubeseal (which offers a free kubernetes cluster)</li>
+</ul>
+
+<h2 id="the-application">The application</h2>
+
+<p>You can find it on <a href="https://github.com/pmorelli92/go-with-azure">GitHub</a>. It is a rather simple rest application since the purpose here is not to dig into code but on the CI/CD.</p>
+
+<p>It is runnable (downloading modules first with <code>go mod download</code>) executing <code>go run cmd/main.go</code>.
+The only functionality that exposes is a <code>GET /health</code> endpoint which will return a json informing that health is ok.</p>
+
+<p>The application can be dockerized executing <code>docker build -t gwa:local .</code> and then runnable using <code>docker run -p 80:8080 -it gwa:local</code>.</p>
+
+<p>The file <code>azure-pipelines.yml</code> contains the CI/CD configuration but more on that later.</p>
+
+<h2 id="azure-devops">Azure Devops</h2>
+
+<p>An account is needed in order to get access on Azure Pipelines. Linking the github account and giving access to the demo repository should be enough, after this step a project should be set up.</p>
+
+<p>Inside the project, the project settings button should be visible on the bottom left corner.
+Scroll down to service connections and you should see something like this:</p>
+
+
+    <figure class="center" >
+        <img src="/posts/images/project-settings.png"   />
+
+        
+    </figure>
+
+
+
+<p>This is where the credentials for docker and kubernetes are stored.</p>
+
+<p>Select docker registry and complete the steps for docker.</p>
+
+<p>For kubernetes it should be enough selecting Kubeconfig and pasting the kube config that lives under <code>user/.kube/config</code> on the operating system. Beware, in case you have multiple configurations, remove the parts that are not related to the cluster in which you want to deploy.</p>
+
+<h2 id="adding-build-pipeline">Adding build pipeline</h2>
+
+<p>Under the pipeline menu, pick <code>build</code> and <code>add a new pipeline</code>. Follow the steps and give access to the repository (it does not matter if it is public or private). Pick starter pipeline when prompted and proceed to click save and run.</p>
+
+<p>If everything went well a commit should be added to the repository and this will appear on the commit history of the repository:</p>
+
+
+    <figure class="center" >
+        <img src="/posts/images/built-commit.png"   />
+
+        
+    </figure>
+
+
+
+<p>The ✔️ indicates that the CI process ran successfully, when the build is ongoing a yellow circle will appear, and if the build fails ❌ will be shown.</p>
+
+<h2 id="configuring-ci-cd">Configuring CI/CD</h2>
+
+<p>Back to the azure-pipelines.yml:</p>
+
+<pre><code class="language-yml">trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildNumber: 0.0.$(Build.BuildId)
+
+steps:
+- task: Docker@2
+  inputs:
+    containerRegistry: 'pmorelli92-docker-hub'
+    repository: 'pmorelli92/go-with-azure'
+    command: 'buildAndPush'
+    Dockerfile: '**/Dockerfile'
+    tags: |
+      $(buildNumber)
+      latest
+- bash: sed -i &quot;s/latest/$(buildNumber)/g&quot; kubernetes/k8s-deployment.yml
+- task: Kubernetes@0
+  inputs:
+    kubernetesServiceConnection: 'pmorelli92-kubesail'
+    namespace: pmorelli92
+    command: apply
+    arguments: '-f kubernetes/k8s-deployment.yml'
+</code></pre>
+
+<p>Let&rsquo;s split them:</p>
+
+<pre><code class="language-yml">trigger:
+- master
+</code></pre>
+
+<p>Associated on which branch the CI/CD will execute.</p>
+
+<pre><code class="language-yml">pool:
+  vmImage: 'ubuntu-latest'
+</code></pre>
+
+<p>Relates to the machine that will execute the commands.</p>
+
+<pre><code class="language-yml">variables:
+  buildNumber: 0.0.$(Build.BuildId)
+</code></pre>
+
+<p>Global variables that are going to be used on the pipeline.
+In this case, the example repository is using semver for building versions.</p>
+
+<pre><code class="language-yml">steps:
+</code></pre>
+
+<p>Represents a chain of commands that will be executed in order. This is not the full power of pipelines, since it supports a higher order hierarchy where you can specify <code>stages -&gt; jobs -&gt; steps</code>.</p>
+
+<pre><code class="language-yml">- task: Docker@2
+  inputs:
+    containerRegistry: 'pmorelli92-docker-hub'
+    repository: 'pmorelli92/go-with-azure'
+    command: 'buildAndPush'
+    Dockerfile: '**/Dockerfile'
+    tags: |
+      $(buildNumber)
+      latest
+</code></pre>
+
+<p>This is a built-in command of pipelines, where we can (among other things) build and push docker images.</p>
+
+<p>The input named repository indicates the name of the repository on the container registry (which was set up on the project settings).</p>
+
+<p>If this command fails, the other ones will not be invoked.</p>
+
+<pre><code class="language-yml">bash: sed -i &quot;s/latest/$(buildNumber)/g&quot; kubernetes/k8s-deployment.yml
+</code></pre>
+
+<p>A discussion could be hold on whether if a service should self contain information of deployment or be agnostic of it. As a personal preference, I think having everything related to the application on the same repository enables easier discoverability.</p>
+
+<p>Of course, we are not having any secrets here, if that was the case, Azure Pipelines offers a way to store them safely inside the azure devops project.</p>
+
+<p>That being said, the repository contains a <a href="https://github.com/pmorelli92/go-with-azure/blob/master/kubernetes/k8s-deployment.yml">file</a> <code>kubernetes/k8s-deployment.yml</code> which describes:</p>
+
+<ul>
+<li>Deployment (information of the containers to be run)</li>
+<li>Service (enables communication from pods)</li>
+<li>Ingress (enables communication from the outside world to the service)</li>
+</ul>
+
+<p>The deployment needs to specify which version of the docker image is going to be run:</p>
+
+<pre><code class="language-yml">spec:
+containers:
+- name: gwa
+  image: pmorelli92/go-with-azure:latest
+  ports:
+  - name: http
+    containerPort: 80
+</code></pre>
+
+<p>It is definitely not good to use <code>:latest</code> image on stage / production so the sed script will replace <code>:latest</code> with <code>0.0.X</code> (which will be the build number). This is also the same version that will be pushed to the selected docker registry: <a href="https://cloud.docker.com/u/pmorelli92/repository/docker/pmorelli92/go-with-azure">example</a>.</p>
+
+
+    <figure class="center" >
+        <img src="/posts/images/docker-tags.png"   />
+
+        
+    </figure>
+
+
+
+<pre><code class="language-yml">- task: Kubernetes@0
+  inputs:
+    kubernetesServiceConnection: 'pmorelli92-kubesail'
+    namespace: pmorelli92
+    command: apply
+    arguments: '-f kubernetes/k8s-deployment.yml'
+</code></pre>
+
+<p>Finally, <code>kubernetesServiceConnection</code> is for indicating the connection created on the project settings; the namespace refers to a kubernetes namespace, and the command combined with arguments will be the equivalent of: <code>kubectl apply -f kubernetes/k8s-deployment.yml</code></p>
+
+<p>This will create / update the specifications that are living on the folder or file; in this case: the deployment, service and ingress.</p>
+
+<p>If everything goes green, we can check that the pod version matches the latest one added on the docker registry.</p>
+
+
+    <figure class="center" >
+        <img src="/posts/images/pod-version.png"   />
+
+        
+    </figure>
+
+
+
+<p>The logs should display something like this:</p>
+
+
+    <figure class="center" >
+        <img src="/posts/images/cicd-logs.png"   />
+
+        
+    </figure>
+
+
+
+<p>And the demo app is now accessible from the following <a href="http://gwa-ingress.pmorelli92.c1.kubesail.io/health">link</a>.</p>
+
+<h2 id="summary">Summary</h2>
+
+<p>In this tutorial we have seen how easy it is to set up a quick CI/CD pipeline that could be improved further according to the business / technical needs.
+If I were to give a verdict on Azure Pipelines:</p>
+
+<p>Pros</p>
+
+<ul>
+<li>Provides support for CI/CD.</li>
+<li>Component of Azure Devops which also supplies: git repos, agile boards and reports.</li>
+<li>Free to start, specially for startups.</li>
+<li>Documentation is clear and updated.</li>
+<li>Backed by Microsoft.</li>
+</ul>
+
+<p>Cons</p>
+
+<ul>
+<li>Vendor lock in with some commands, that would need to be refactored in order to change CI/CD provider.</li>
+</ul>
+
+            </div>
+        </article>
+
+        <hr />
+
+        <div class="post-info">
+
+            <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1067 Words</p>
+
+            <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>2019-10-19 22:22 &#43;0200</p>
+        </div>
+
+        <section class="sharing-sm">
+  
+  <a class="resp-sharing-button__link" href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fdevandchill.com%2fposts%2f2019%2f10%2fazure-pipelines-build-a-dockerized-app-and-deploy-to-kubernetes%2f" target="_blank" rel="noopener" aria-label="Facebook">
+    <div class="resp-sharing-button resp-sharing-button--facebook resp-sharing-button--medium"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.77 7.46H14.5v-1.9c0-.9.6-1.1 1-1.1h3V.5h-4.33C10.24.5 9.5 3.44 9.5 5.32v2.15h-3v4h3v12h5v-12h3.85l.42-4z"/></svg></div>Facebook</div>
+  </a>
+
+  
+  <a class="resp-sharing-button__link" href="https://twitter.com/intent/tweet/?text=Share&amp;url=https%3a%2f%2fdevandchill.com%2fposts%2f2019%2f10%2fazure-pipelines-build-a-dockerized-app-and-deploy-to-kubernetes%2f" target="_blank" rel="noopener" aria-label="Twitter">
+    <div class="resp-sharing-button resp-sharing-button--twitter resp-sharing-button--medium"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M23.44 4.83c-.8.37-1.5.38-2.22.02.93-.56.98-.96 1.32-2.02-.88.52-1.86.9-2.9 1.1-.82-.88-2-1.43-3.3-1.43-2.5 0-4.55 2.04-4.55 4.54 0 .36.03.7.1 1.04-3.77-.2-7.12-2-9.36-4.75-.4.67-.6 1.45-.6 2.3 0 1.56.8 2.95 2 3.77-.74-.03-1.44-.23-2.05-.57v.06c0 2.2 1.56 4.03 3.64 4.44-.67.2-1.37.2-2.06.08.58 1.8 2.26 3.12 4.25 3.16C5.78 18.1 3.37 18.74 1 18.46c2 1.3 4.4 2.04 6.97 2.04 8.35 0 12.92-6.92 12.92-12.93 0-.2 0-.4-.02-.6.9-.63 1.96-1.22 2.56-2.14z"/></svg></div>Twitter</div>
+  </a>
+</section>
+
+        
+
+            <div class="pagination">
+                <div class="pagination__title">
+                    <span class="pagination__title-h">Read other posts</span>
+                    <hr />
+                </div>
+
+                <div class="pagination__buttons">
+                    
+
+                    
+                        <span class="button next">
+                            <a href="https://devandchill.com/posts/2019/06/net-core-3.0-publish-single-file-binary-on-alpine-container/">
+                                <span class="button__text">NET Core 3.0 - Publish single file binary on alpine container</span>
+                                <span class="button__icon">→</span>
+                            </a>
+                        </span>
+                    
+                </div>
+            </div>
+        
+
+        <section class="post-comments">
+    <h3>Comments</h3>
+
+    
+    
+    
+
+    
+      
+    
+      
+    
+
+    
+      <p>Nothing yet.</p>
+    
+
+    <h3>Say something</h3>
+
+    <form class="post-new-comment" method="POST" action="https://dev.staticman.net/v3/entry/github/pmorelli92/devandchill/master/comments">
+      <input type="hidden" name="options[redirect]" value="https://devandchill.com/posts/2019/10/azure-pipelines-build-a-dockerized-app-and-deploy-to-kubernetes/">
+      <input type="hidden" name="options[entryId]" value="df45af7ab3cac79fdce604852613c81e">
+      <input name="fields[name]" type="text" class="post-comment-field" placeholder="Your name">
+      <input name="fields[email]" type="email" class="post-comment-field" placeholder="Your email address for Gravatar (Optional)">
+      <textarea name="fields[body]" class="post-comment-field" placeholder="Your message." rows="3"></textarea>
+      <input type="submit" class="post-comment-field btn" value="Submit for Approval">
+    </form>
+  </section>
+    </main>
+
+            </div>
+
+            
+                <footer class="footer">
+    <div class="footer__inner">
+        <div class="footer__content">
+            <span>&copy; 2019</span>
+            
+            <span>Pablo Morelli</span>
+            <span> <a href="https://devandchill.com/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a></span>
+        </div>
+    </div>
+    <div class="footer__inner">
+        <div class="footer__content">
+
+        </div>
+    </div>
+    <div class="footer__inner">
+        <div class="footer__content">
+            <span>Powered by <a href="http://gohugo.io">Hugo</a></span>
+            <span>Made with &#10084; by <a href="https://github.com/rhazdon">rhazdon</a></span>
+        </div>
+    </div>
+</footer>
+
+            
+        </div>
+
+        
+
+
+
+
+<script type="text/javascript" src="/bundle.min.4c3fb12a087ceed4a52cb5d57068a9795c7069617a01ca70f788052ad66e1791779e6c72686e1dc0ca13dc03b0203204b6566bb0dd1ee80de2b7ff4d8fe53db2.js" integrity="sha512-TD&#43;xKgh87tSlLLXVcGipeVxwaWF6Acpw94gFKtZuF5F3nmxyaG4dwMoT3AOwIDIEtlZrsN0e6A3it/9Nj&#43;U9sg=="></script>
+
+
+
+    </body>
+</html>
