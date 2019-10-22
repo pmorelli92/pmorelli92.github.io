@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Dev &amp; Chill</title>
@@ -61,7 +61,7 @@ My starting point was the following talk:</description>
       <pubDate>Fri, 08 Mar 2019 20:43:08 +0100</pubDate>
       
       <guid>https://devandchill.com/resume/</guid>
-      <description>WORKED WITH  DDD, TDD, SOLID, CQRS, .NET Core, Clean Architecture, Event Sourcing, Akka.NET, Docker, Kubernetes, CI/CD, REST API, Microservices, Serverless Functions, AMQP, SQL, NoSQL, Git, Azure, GCP, Kanban, Scrum.  WORK EXPERIENCE Backend Developer 💻 Lendo 🇸🇪  From 05.2019 - Present Things are just getting started!  Backend Developer 💻 Record Union 🇸🇪  From 06.2018 - Present Developed a distributed application with actors, CQRS and Event Sourcing using .</description>
+      <description>WORKED WITH  DDD, TDD, SOLID, CQRS, .NET Core, Go, Clean Architecture, Event Sourcing, Akka.NET, Docker, Kubernetes, CI/CD, REST API, Microservices, Serverless, AMQP, SQL, NoSQL, Git, Azure, GCP, Kanban, Scrum.  WORK EXPERIENCE Backend Developer 💻 Lendo 🇸🇪  From 05.2019 - Present Developed fin-tech related microservices using Go (Golang)  Backend Developer 💻 Record Union 🇸🇪  From 06.2018 - 04.2019 Developed a distributed application with actors, CQRS and Event Sourcing using .</description>
     </item>
     
     <item>
@@ -70,7 +70,7 @@ My starting point was the following talk:</description>
       <pubDate>Wed, 06 Mar 2019 20:43:08 +0100</pubDate>
       
       <guid>https://devandchill.com/about/</guid>
-      <description>Hey! Nice to see you around here. I am Pablo Morelli 🧔🏻 and I work as a backend developer at Lendo. Currently living in Stockholm 🇸🇪 but was born and lived most of my life in Buenos Aires 🇦🇷. Coding since 2010, and with most of my experience on .NET (and .NET Core) I am looking towards getting more knowledgeable regarding other stacks. My aim here is to write (mostly) about tech problems and possible solutions to them.</description>
+      <description>Hey! Nice to see you around here. I am Pablo Morelli 🧔🏻 and I am working as a backend developer at Lendo. Currently living in Stockholm 🇸🇪 but was born and lived most of my life in Buenos Aires 🇦🇷. Coding since 2010, and with most of my experience on .NET (and .NET Core) but actively coding on Go. My aim here is to write (mostly) about tech, from possible problems to new technologies.</description>
     </item>
     
   </channel>
