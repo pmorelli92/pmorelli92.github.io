@@ -18,7 +18,7 @@
       <pubDate>Sat, 19 Oct 2019 22:22:29 +0200</pubDate>
       
       <guid>https://devandchill.com/posts/2019/10/azure-pipelines-build-a-dockerized-app-and-deploy-to-kubernetes/</guid>
-      <description>Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&amp;rsquo;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files). Now I am currently working with Travis for CI and Flux for CD but I think it is always good to keep an eye on how the competitors are doing and what they have to offer.</description>
+      <description>Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&#39;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files). Now I am currently working with Travis for CI and Flux for CD but I think it is always good to keep an eye on how the competitors are doing and what they have to offer.</description>
     </item>
     
     <item>
@@ -29,7 +29,7 @@
       <guid>https://devandchill.com/posts/2019/06/net-core-3.0-publish-single-file-binary-on-alpine-container/</guid>
       <description>The newly released dotnet 3 preview 6 has an interesting feature called publish single file where an application can be published as a self contained app that will extract and run on the platform it was compiled for.
 In order to add this feature in our .csproj, add the following lines:
-&amp;lt;PropertyGroup&amp;gt; &amp;lt;TargetFramework&amp;gt;netcoreapp3.0&amp;lt;/TargetFramework&amp;gt; &amp;lt;PublishTrimmed&amp;gt;true&amp;lt;/PublishTrimmed&amp;gt; &amp;lt;PublishReadyToRun&amp;gt;true&amp;lt;/PublishReadyToRun&amp;gt; &amp;lt;PublishSingleFile&amp;gt;true&amp;lt;/PublishSingleFile&amp;gt; &amp;lt;CrossGenDuringPublish&amp;gt;false&amp;lt;/CrossGenDuringPublish&amp;gt; &amp;lt;/PropertyGroup&amp;gt;  There are some flags that may sound weird, let&amp;rsquo;s go through them:</description>
+&amp;lt;PropertyGroup&amp;gt; &amp;lt;TargetFramework&amp;gt;netcoreapp3.0&amp;lt;/TargetFramework&amp;gt; &amp;lt;PublishTrimmed&amp;gt;true&amp;lt;/PublishTrimmed&amp;gt; &amp;lt;PublishReadyToRun&amp;gt;true&amp;lt;/PublishReadyToRun&amp;gt; &amp;lt;PublishSingleFile&amp;gt;true&amp;lt;/PublishSingleFile&amp;gt; &amp;lt;CrossGenDuringPublish&amp;gt;false&amp;lt;/CrossGenDuringPublish&amp;gt; &amp;lt;/PropertyGroup&amp;gt; There are some flags that may sound weird, let&#39;s go through them:</description>
     </item>
     
     <item>
@@ -50,7 +50,7 @@ In order to add this feature in our .csproj, add the following lines:
       <guid>https://devandchill.com/posts/2019/04/word-counter-sync-or-concurrent/</guid>
       <description>One day I was given the task of doing a whiteboard word counter algorithm. The requirements were:
  Print on console all the words and the quantity of times they appear on a 40.000 lines input. Make it as fast as possible.  For a start we can do it as simple as possible instead, and then try to see whether we can make it faster:
-func main() { fmt.</description>
+func main() { fmt.Println(wordCounter()) } func wordCounter() map[string]int { b, _ := ioutil.</description>
     </item>
     
     <item>
@@ -70,7 +70,7 @@ My starting point was the following talk:</description>
       <pubDate>Fri, 08 Mar 2019 20:43:08 +0100</pubDate>
       
       <guid>https://devandchill.com/resume/</guid>
-      <description>WORKED WITH  DDD, TDD, SOLID, CQRS, .NET Core, Go, Clean Architecture, Event Sourcing, Akka.NET, Docker, Kubernetes, CI/CD, REST API, Microservices, Serverless, AMQP, SQL, NoSQL, Git, Azure, GCP, Kanban, Scrum.  WORK EXPERIENCE Backend Developer 💻 Lendo 🇸🇪  From 05.2019 - Present Developed fin-tech related microservices using Go (Golang)  Backend Developer 💻 Record Union 🇸🇪  From 06.2018 - 04.2019 Developed a distributed application with actors, CQRS and Event Sourcing using .</description>
+      <description>WORKED WITH   DDD, TDD, SOLID, CQRS, .NET Core, Go, Clean Architecture, Event Sourcing, Akka.NET, Docker, Kubernetes, CI/CD, REST API, Microservices, Serverless, AMQP, SQL, NoSQL, Git, Azure, GCP, Kanban, Scrum.   WORK EXPERIENCE  Backend Developer 💻 Lendo 🇸🇪  From 05.2019 - Present Developed fin-tech related microservices using Go (Golang)  Backend Developer 💻 Record Union 🇸🇪  From 06.2018 - 04.2019 Developed a distributed application with actors, CQRS and Event Sourcing using .</description>
     </item>
     
     <item>

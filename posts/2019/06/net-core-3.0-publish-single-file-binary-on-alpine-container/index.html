@@ -4,22 +4,21 @@
         <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="author"
-    content="">
-<meta name="description"
-    content="The newly released dotnet 3 preview 6 has an interesting feature called publish single file where an application can be published as a self contained app that will extract and run on the platform it was compiled for.
+<meta name="author" content="">
+<meta name="description" content="The newly released dotnet 3 preview 6 has an interesting feature called publish single file where an application can be published as a self contained app that will extract and run on the platform it was compiled for.
 In order to add this feature in our .csproj, add the following lines:
-&amp;lt;PropertyGroup&amp;gt; &amp;lt;TargetFramework&amp;gt;netcoreapp3.0&amp;lt;/TargetFramework&amp;gt; &amp;lt;PublishTrimmed&amp;gt;true&amp;lt;/PublishTrimmed&amp;gt; &amp;lt;PublishReadyToRun&amp;gt;true&amp;lt;/PublishReadyToRun&amp;gt; &amp;lt;PublishSingleFile&amp;gt;true&amp;lt;/PublishSingleFile&amp;gt; &amp;lt;CrossGenDuringPublish&amp;gt;false&amp;lt;/CrossGenDuringPublish&amp;gt; &amp;lt;/PropertyGroup&amp;gt;  There are some flags that may sound weird, let&amp;rsquo;s go through them:" />
+&amp;lt;PropertyGroup&amp;gt; &amp;lt;TargetFramework&amp;gt;netcoreapp3.0&amp;lt;/TargetFramework&amp;gt; &amp;lt;PublishTrimmed&amp;gt;true&amp;lt;/PublishTrimmed&amp;gt; &amp;lt;PublishReadyToRun&amp;gt;true&amp;lt;/PublishReadyToRun&amp;gt; &amp;lt;PublishSingleFile&amp;gt;true&amp;lt;/PublishSingleFile&amp;gt; &amp;lt;CrossGenDuringPublish&amp;gt;false&amp;lt;/CrossGenDuringPublish&amp;gt; &amp;lt;/PropertyGroup&amp;gt; There are some flags that may sound weird, let&#39;s go through them:" />
 <meta name="keywords" content="blog, development, programming, tech" />
 <meta name="robots" content="noodp" />
+<meta name="theme-color" content="" />
 <link rel="canonical" href="https://devandchill.com/posts/2019/06/net-core-3.0-publish-single-file-binary-on-alpine-container/" />
 
 
-<title>
-    
-    NET Core 3.0 - Publish single file binary on alpine container :: Dev &amp; Chill  — A blog about coding
-    
-</title>
+    <title>
+        
+            NET Core 3.0 - Publish single file binary on alpine container :: Dev &amp; Chill  — A blog about coding
+        
+    </title>
 
 
 
@@ -28,41 +27,36 @@ In order to add this feature in our .csproj, add the following lines:
 
 
 
-<link rel="stylesheet" href="/main.min.c1f0da16d3a4e93649d16fb0d4d27d14e84fdf6d6713fb34351b852f0f9d7bf5.css">
+<link rel="stylesheet" href="/main.min.608d8fe647f3fb84414579f3df1b161dbfb868d2a97552ca983aa488ca430202.css">
 
 
 
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="manifest" href="/site.webmanifest">
-<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#252627">
-<link rel="shortcut icon" href="/favicon.ico">
-<meta name="theme-color" content="#252627"><meta itemprop="name" content="NET Core 3.0 - Publish single file binary on alpine container">
+
+<meta itemprop="name" content="NET Core 3.0 - Publish single file binary on alpine container">
 <meta itemprop="description" content="The newly released dotnet 3 preview 6 has an interesting feature called publish single file where an application can be published as a self contained app that will extract and run on the platform it was compiled for.
 In order to add this feature in our .csproj, add the following lines:
-&lt;PropertyGroup&gt; &lt;TargetFramework&gt;netcoreapp3.0&lt;/TargetFramework&gt; &lt;PublishTrimmed&gt;true&lt;/PublishTrimmed&gt; &lt;PublishReadyToRun&gt;true&lt;/PublishReadyToRun&gt; &lt;PublishSingleFile&gt;true&lt;/PublishSingleFile&gt; &lt;CrossGenDuringPublish&gt;false&lt;/CrossGenDuringPublish&gt; &lt;/PropertyGroup&gt;  There are some flags that may sound weird, let&rsquo;s go through them:">
-
-
+&lt;PropertyGroup&gt; &lt;TargetFramework&gt;netcoreapp3.0&lt;/TargetFramework&gt; &lt;PublishTrimmed&gt;true&lt;/PublishTrimmed&gt; &lt;PublishReadyToRun&gt;true&lt;/PublishReadyToRun&gt; &lt;PublishSingleFile&gt;true&lt;/PublishSingleFile&gt; &lt;CrossGenDuringPublish&gt;false&lt;/CrossGenDuringPublish&gt; &lt;/PropertyGroup&gt; There are some flags that may sound weird, let&#39;s go through them:">
 <meta itemprop="datePublished" content="2019-06-24T17:22:29&#43;02:00" />
 <meta itemprop="dateModified" content="2019-06-24T17:22:29&#43;02:00" />
-<meta itemprop="wordCount" content="500">
+<meta itemprop="wordCount" content="482">
+<meta itemprop="image" content="https://devandchill.com/"/>
 
 
 
-<meta itemprop="keywords" content="" />
-<meta name="twitter:card" content="summary_large_image"/>
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://devandchill.com/"/>
 
 <meta name="twitter:title" content="NET Core 3.0 - Publish single file binary on alpine container"/>
 <meta name="twitter:description" content="The newly released dotnet 3 preview 6 has an interesting feature called publish single file where an application can be published as a self contained app that will extract and run on the platform it was compiled for.
 In order to add this feature in our .csproj, add the following lines:
-&lt;PropertyGroup&gt; &lt;TargetFramework&gt;netcoreapp3.0&lt;/TargetFramework&gt; &lt;PublishTrimmed&gt;true&lt;/PublishTrimmed&gt; &lt;PublishReadyToRun&gt;true&lt;/PublishReadyToRun&gt; &lt;PublishSingleFile&gt;true&lt;/PublishSingleFile&gt; &lt;CrossGenDuringPublish&gt;false&lt;/CrossGenDuringPublish&gt; &lt;/PropertyGroup&gt;  There are some flags that may sound weird, let&rsquo;s go through them:"/>
+&lt;PropertyGroup&gt; &lt;TargetFramework&gt;netcoreapp3.0&lt;/TargetFramework&gt; &lt;PublishTrimmed&gt;true&lt;/PublishTrimmed&gt; &lt;PublishReadyToRun&gt;true&lt;/PublishReadyToRun&gt; &lt;PublishSingleFile&gt;true&lt;/PublishSingleFile&gt; &lt;CrossGenDuringPublish&gt;false&lt;/CrossGenDuringPublish&gt; &lt;/PropertyGroup&gt; There are some flags that may sound weird, let&#39;s go through them:"/>
 
 
 
 
-<meta property="article:published_time" content="2019-06-24 17:22:29 &#43;0200 CEST" />
+
+    <meta property="article:published_time" content="2019-06-24 17:22:29 &#43;0200 CEST" />
+
 
 
 
@@ -128,90 +122,64 @@ In order to add this feature in our .csproj, add the following lines:
         </div>
 
         <article>
-            <h1 class="post-title"><a href="https://devandchill.com/posts/2019/06/net-core-3.0-publish-single-file-binary-on-alpine-container/">NET Core 3.0 - Publish single file binary on alpine container</a></h1>
+            <h1 class="post-title">
+                <a href="https://devandchill.com/posts/2019/06/net-core-3.0-publish-single-file-binary-on-alpine-container/">NET Core 3.0 - Publish single file binary on alpine container</a>
+            </h1>
 
             
 
             <div class="post-content">
-                
-
-<p>The newly released <code>dotnet 3 preview 6</code> has an interesting feature called <code>publish single file</code> where an application can be published as a <code>self contained app</code> that will <strong>extract and run</strong> on the platform it was compiled for.</p>
-
+                <p>The newly released <code>dotnet 3 preview 6</code> has an interesting feature called <code>publish single file</code> where an application can be published as a <code>self contained app</code> that will <strong>extract and run</strong> on the platform it was compiled for.</p>
 <p>In order to add this feature in our <code>.csproj</code>, add the following lines:</p>
-
-<pre><code class="language-xml">&lt;PropertyGroup&gt;
-  &lt;TargetFramework&gt;netcoreapp3.0&lt;/TargetFramework&gt;
-  &lt;PublishTrimmed&gt;true&lt;/PublishTrimmed&gt;
-  &lt;PublishReadyToRun&gt;true&lt;/PublishReadyToRun&gt;
-  &lt;PublishSingleFile&gt;true&lt;/PublishSingleFile&gt;
-  &lt;CrossGenDuringPublish&gt;false&lt;/CrossGenDuringPublish&gt;
-&lt;/PropertyGroup&gt;
-</code></pre>
-
-<p>There are some flags that may sound weird, let&rsquo;s go through them:</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;PropertyGroup</span><span style="color:#f92672">&gt;</span>
+  <span style="color:#f92672">&lt;TargetFramework</span><span style="color:#f92672">&gt;</span>netcoreapp3.0<span style="color:#f92672">&lt;/TargetFramework&gt;</span>
+  <span style="color:#f92672">&lt;PublishTrimmed</span><span style="color:#f92672">&gt;</span>true<span style="color:#f92672">&lt;/PublishTrimmed&gt;</span>
+  <span style="color:#f92672">&lt;PublishReadyToRun</span><span style="color:#f92672">&gt;</span>true<span style="color:#f92672">&lt;/PublishReadyToRun&gt;</span>
+  <span style="color:#f92672">&lt;PublishSingleFile</span><span style="color:#f92672">&gt;</span>true<span style="color:#f92672">&lt;/PublishSingleFile&gt;</span>
+  <span style="color:#f92672">&lt;CrossGenDuringPublish</span><span style="color:#f92672">&gt;</span>false<span style="color:#f92672">&lt;/CrossGenDuringPublish&gt;</span>
+<span style="color:#f92672">&lt;/PropertyGroup&gt;</span>
+</code></pre></div><p>There are some flags that may sound weird, let's go through them:</p>
 <ul>
 <li><code>PublishTrimmed</code> indicates to remove all the dotnet dependencies that are not being used by our code. When doing this in a real world application, it is very important to test it afterwards in case some dependency that is referenced by code (for example using reflection) is being trimmed as well.</li>
 <li><code>PublishReadyToRun</code> it is supposed to make the start time of our application faster, but in the process it will make the binary heavier.</li>
 <li><code>CrossGenDuringPublish</code> is a workaround that needs to be present for indicating the machine that is running the publish, that it should not bother with compilation for other RID (more about this below)</li>
 </ul>
-
 <p>After these flags had been set, the application is runnable using:</p>
-
 <pre><code>dotnet publish -r osx-x64 -c Release -o ./deploy
 ./deploy/&lt;APP_NAME&gt; &lt;- Execute the application
-</code></pre>
-
-<p>When publishing a single file, don&rsquo;t forget to add the <a href="https://docs.microsoft.com/en-us/dotnet/core/rid-catalog">runtime identifier catalog (RID)</a> corresponding to the platform where the application is going to be run. For example: <code>-r osx-x64</code></p>
-
-<p>With the basics of this feature already covered, let&rsquo;s move to the important bit.</p>
-
+</code></pre><p>When publishing a single file, don't forget to add the <a href="https://docs.microsoft.com/en-us/dotnet/core/rid-catalog">runtime identifier catalog (RID)</a> corresponding to the platform where the application is going to be run. For example: <code>-r osx-x64</code></p>
+<p>With the basics of this feature already covered, let's move to the important bit.</p>
 <h2 id="deploy-application-on-an-alpine-based-container">Deploy application on an Alpine based container</h2>
-
 <p>One important win using this approach is that the published binary does not need to be run in a container that has dotnet runtime installed. But one caveat for consideration is that those internal dependencies used under the hood by dotnet are still needed. There are two options:</p>
-
 <p>Use plain alpine and install dotnet internal dependencies:</p>
-
-<pre><code class="language-Dockerfile">FROM alpine
-RUN apk update &amp;&amp; apk add libstdc++ &amp;&amp; apk add libintl
-</code></pre>
-
-<p>Use <code>runtime-deps</code> alpine image from <a href="https://hub.docker.com/_/microsoft-dotnet-core-runtime-deps/">Microsoft</a>:</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Dockerfile" data-lang="Dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> alpine</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> apk update <span style="color:#f92672">&amp;&amp;</span> apk add libstdc++ <span style="color:#f92672">&amp;&amp;</span> apk add libintl<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>Use <code>runtime-deps</code> alpine image from <a href="https://hub.docker.com/_/microsoft-dotnet-core-runtime-deps/">Microsoft</a>:</p>
 <blockquote>
 <p>This image contains the native dependencies needed by .NET Core. It does not include .NET Core. It is for self-contained applications.</p>
 </blockquote>
-
-<pre><code class="language-Dockerfile">FROM mcr.microsoft.com/dotnet/core/runtime-deps:3.0.0-preview6-alpine3.9
-</code></pre>
-
-<p>With that being said, the next is straightforward:</p>
-
-<pre><code class="language-Dockerfile">FROM mcr.microsoft.com/dotnet/core/sdk:3.0.100-preview6-alpine3.9 AS build
-
-WORKDIR /app
-
-COPY . .
-
-RUN dotnet publish -r linux-musl-x64 -c Release -o ./deploy
-
-FROM mcr.microsoft.com/dotnet/core/runtime-deps:3.0.0-preview6-alpine3.9
-
-COPY --from=build /app/deploy ./app
-
-ENV ASPNETCORE_URLS http://*:5000
-
-EXPOSE 5000
-
-ENTRYPOINT [&quot;./app/&lt;APP_NAME&gt;&quot;]
-</code></pre>
-
-<p>Basically the <code>Dockerfile</code> is publishing the application (as a binary) on an alpine container with dotnet sdk installed. This is important because the <code>builder</code> has to use the same architecture than the runner. It is not possible to build a <code>linux-musk-x64</code> binary on a windows container.</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Dockerfile" data-lang="Dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> mcr.microsoft.com/dotnet/core/runtime-deps:3.0.0-preview6-alpine3.9</span><span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>With that being said, the next is straightforward:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Dockerfile" data-lang="Dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> mcr.microsoft.com/dotnet/core/sdk:3.0.100-preview6-alpine3.9 AS build</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /app</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> . .<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> dotnet publish -r linux-musl-x64 -c Release -o ./deploy<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> mcr.microsoft.com/dotnet/core/runtime-deps:3.0.0-preview6-alpine3.9</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> --from<span style="color:#f92672">=</span>build /app/deploy ./app<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> ASPNETCORE_URLS http://*:5000<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">EXPOSE</span><span style="color:#e6db74"> 5000</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENTRYPOINT</span> [<span style="color:#e6db74">&#34;./app/&lt;APP_NAME&gt;&#34;</span>]<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>Basically the <code>Dockerfile</code> is publishing the application (as a binary) on an alpine container with dotnet sdk installed. This is important because the <code>builder</code> has to use the same architecture than the runner. It is not possible to build a <code>linux-musk-x64</code> binary on a windows container.</p>
 <p>Then the result files (the binary and a single DLL) are copied to an alpine container only having dotnet runtime dependencies.</p>
-
 <p>At the end the <code>ENTRYPOINT</code> line is executed. Check that this one is not doing <code>dotnet app/&lt;APP_NAME&gt;</code> but just <code>./app/&lt;APP_NAME&gt;</code></p>
-
 <p>I did a sample API with this approach, <a href="https://github.com/pmorelli92/dotnet3.executable.api">which can be found my github</a>. The container weighted <code>91MB</code>, used <code>30MB RAM</code> and <code>0.08% CPU</code>. Awesome, right?</p>
 
             </div>
@@ -221,7 +189,7 @@ ENTRYPOINT [&quot;./app/&lt;APP_NAME&gt;&quot;]
 
         <div class="post-info">
 
-            <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>500 Words</p>
+            <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>482 Words</p>
 
             <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>2019-06-24 17:22 &#43;0200</p>
         </div>
@@ -239,7 +207,6 @@ ENTRYPOINT [&quot;./app/&lt;APP_NAME&gt;&quot;]
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M23.44 4.83c-.8.37-1.5.38-2.22.02.93-.56.98-.96 1.32-2.02-.88.52-1.86.9-2.9 1.1-.82-.88-2-1.43-3.3-1.43-2.5 0-4.55 2.04-4.55 4.54 0 .36.03.7.1 1.04-3.77-.2-7.12-2-9.36-4.75-.4.67-.6 1.45-.6 2.3 0 1.56.8 2.95 2 3.77-.74-.03-1.44-.23-2.05-.57v.06c0 2.2 1.56 4.03 3.64 4.44-.67.2-1.37.2-2.06.08.58 1.8 2.26 3.12 4.25 3.16C5.78 18.1 3.37 18.74 1 18.46c2 1.3 4.4 2.04 6.97 2.04 8.35 0 12.92-6.92 12.92-12.93 0-.2 0-.4-.02-.6.9-.63 1.96-1.22 2.56-2.14z"/></svg></div>Twitter</div>
   </a>
 </section>
-
         
 
             <div class="pagination">
@@ -282,9 +249,20 @@ ENTRYPOINT [&quot;./app/&lt;APP_NAME&gt;&quot;]
     
       
     
-
+      
+        
+        
+          <div class="post-comment">
+            <div class="post-comment-header">
+              <img class="post-comment-avatar" src="https://www.gravatar.com/avatar/5303f48b50925112a86fb470aae6d309?s=100">
+              <p class="post-comment-info"><strong>Terry</strong><br>15/01/2020 23:16</p>
+            </div>
+            Great article.. thank you!
+          </div>
+        
+      
     
-      <p>Nothing yet.</p>
+
     
 
     <h3>Say something</h3>
@@ -306,15 +284,10 @@ ENTRYPOINT [&quot;./app/&lt;APP_NAME&gt;&quot;]
                 <footer class="footer">
     <div class="footer__inner">
         <div class="footer__content">
-            <span>&copy; 2019</span>
+            <span>&copy; 2020</span>
             
             <span>Pablo Morelli</span>
             <span> <a href="https://devandchill.com/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a></span>
-        </div>
-    </div>
-    <div class="footer__inner">
-        <div class="footer__content">
-
         </div>
     </div>
     <div class="footer__inner">
@@ -333,7 +306,7 @@ ENTRYPOINT [&quot;./app/&lt;APP_NAME&gt;&quot;]
 
 
 
-<script type="text/javascript" src="/bundle.min.4c3fb12a087ceed4a52cb5d57068a9795c7069617a01ca70f788052ad66e1791779e6c72686e1dc0ca13dc03b0203204b6566bb0dd1ee80de2b7ff4d8fe53db2.js" integrity="sha512-TD&#43;xKgh87tSlLLXVcGipeVxwaWF6Acpw94gFKtZuF5F3nmxyaG4dwMoT3AOwIDIEtlZrsN0e6A3it/9Nj&#43;U9sg=="></script>
+<script type="text/javascript" src="/bundle.min.2d5469329143160ae2456a69c3c76dc2d0a3b212b46afe291a51bd68650ed6f8697e001dab54f1c272c77ce08092a8c55e5bb4314e0ee334aab4b927ec896638.js" integrity="sha512-LVRpMpFDFgriRWppw8dtwtCjshK0av4pGlG9aGUO1vhpfgAdq1TxwnLHfOCAkqjFXlu0MU4O4zSqtLkn7IlmOA=="></script>
 
 
 

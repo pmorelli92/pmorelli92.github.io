@@ -4,21 +4,20 @@
         <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="author"
-    content="">
-<meta name="description"
-    content="Generally speaking, most organisations do not check if a commit is signed or not. Even worse, more companies do not care about this. It might subjective but I like to have the verified badge.
+<meta name="author" content="">
+<meta name="description" content="Generally speaking, most organisations do not check if a commit is signed or not. Even worse, more companies do not care about this. It might subjective but I like to have the verified badge.
  If you commit from GitHub, for example: adding or editing a README, you will get the verified bagde. The same will happen with the client GitKraken, but if you commit using the git cli this will not happen unless you configure it." />
 <meta name="keywords" content="blog, development, programming, tech" />
 <meta name="robots" content="noodp" />
+<meta name="theme-color" content="" />
 <link rel="canonical" href="https://devandchill.com/posts/2019/06/sign-github-commits-using-mac/" />
 
 
-<title>
-    
-    Sign GitHub commits (using Mac) :: Dev &amp; Chill  — A blog about coding
-    
-</title>
+    <title>
+        
+            Sign GitHub commits (using Mac) :: Dev &amp; Chill  — A blog about coding
+        
+    </title>
 
 
 
@@ -27,29 +26,22 @@
 
 
 
-<link rel="stylesheet" href="/main.min.c1f0da16d3a4e93649d16fb0d4d27d14e84fdf6d6713fb34351b852f0f9d7bf5.css">
+<link rel="stylesheet" href="/main.min.608d8fe647f3fb84414579f3df1b161dbfb868d2a97552ca983aa488ca430202.css">
 
 
 
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="manifest" href="/site.webmanifest">
-<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#252627">
-<link rel="shortcut icon" href="/favicon.ico">
-<meta name="theme-color" content="#252627"><meta itemprop="name" content="Sign GitHub commits (using Mac)">
+
+<meta itemprop="name" content="Sign GitHub commits (using Mac)">
 <meta itemprop="description" content="Generally speaking, most organisations do not check if a commit is signed or not. Even worse, more companies do not care about this. It might subjective but I like to have the verified badge.
  If you commit from GitHub, for example: adding or editing a README, you will get the verified bagde. The same will happen with the client GitKraken, but if you commit using the git cli this will not happen unless you configure it.">
-
-
 <meta itemprop="datePublished" content="2019-06-09T20:22:29&#43;02:00" />
 <meta itemprop="dateModified" content="2019-06-09T20:22:29&#43;02:00" />
 <meta itemprop="wordCount" content="851">
+<meta itemprop="image" content="https://devandchill.com/"/>
 
 
 
-<meta itemprop="keywords" content="" />
-<meta name="twitter:card" content="summary_large_image"/>
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://devandchill.com/"/>
 
 <meta name="twitter:title" content="Sign GitHub commits (using Mac)"/>
@@ -59,7 +51,9 @@
 
 
 
-<meta property="article:published_time" content="2019-06-09 20:22:29 &#43;0200 CEST" />
+
+    <meta property="article:published_time" content="2019-06-09 20:22:29 &#43;0200 CEST" />
+
 
 
 
@@ -125,15 +119,14 @@
         </div>
 
         <article>
-            <h1 class="post-title"><a href="https://devandchill.com/posts/2019/06/sign-github-commits-using-mac/">Sign GitHub commits (using Mac)</a></h1>
+            <h1 class="post-title">
+                <a href="https://devandchill.com/posts/2019/06/sign-github-commits-using-mac/">Sign GitHub commits (using Mac)</a>
+            </h1>
 
             
 
             <div class="post-content">
-                
-
-<p>Generally speaking, most organisations do not check if a commit is signed or not. Even worse, more companies do not care about this. It might subjective but I like to have the <code>verified</code> badge.</p>
-
+                <p>Generally speaking, most organisations do not check if a commit is signed or not. Even worse, more companies do not care about this. It might subjective but I like to have the <code>verified</code> badge.</p>
 
     <figure class="center" >
         <img src="/posts/images/verified-commit.png"   />
@@ -142,53 +135,30 @@
     </figure>
 
 
-
 <p>If you commit from GitHub, for example: adding or editing a README, you will get the verified bagde. The same will happen with the client <code>GitKraken</code>, but if you commit using the <code>git cli</code> this will not happen unless you configure it.</p>
-
 <p>Now, I will assume that you are using a mac but in case you do not, you can google yourself some of the installation steps.</p>
-
 <h2 id="installing-gpg">Installing GPG</h2>
-
 <p>In order to sign a commit you will need to generate a key, and for this you are going to use <a href="https://gnupg.org/">GPG</a>. But first, you need brew to be installed, if you do not have it yet, it is a must have package manager for mac that you can download <a href="https://brew.sh/">here</a>.</p>
-
 <pre><code>&gt; brew install gnupg
 &gt; brew install pinentry-mac
 &gt; echo &quot;pinentry-program /usr/local/bin/pinentry-mac&quot; &gt;&gt; ~/.gnupg/gpg-agent.conf
 &gt; killall gpg-agent
-</code></pre>
-
-<p><a href="https://www.gnupg.org/related_software/pinentry/index.en.html">Pinentry</a> as it is stated on the GPG site it is a collection of dialogs that allows you, for example, to input the passphrase of the private key. In order for this to work we need to indicate the path where it is installed into the GPG configuration and then kill the service (just in case) for it to take the changes.</p>
-
+</code></pre><p><a href="https://www.gnupg.org/related_software/pinentry/index.en.html">Pinentry</a> as it is stated on the GPG site it is a collection of dialogs that allows you, for example, to input the passphrase of the private key. In order for this to work we need to indicate the path where it is installed into the GPG configuration and then kill the service (just in case) for it to take the changes.</p>
 <h2 id="generating-a-set-of-keys">Generating a set of keys</h2>
-
 <pre><code>&gt; gpg --full-generate-key
 (you can customise the key creation or just press enter to use the defaults)
-</code></pre>
-
-<p>Will generate a private key from which you are going to generate and export the public key. The id of the key will be shown when you generate the key or you can fetch it by running:</p>
-
+</code></pre><p>Will generate a private key from which you are going to generate and export the public key. The id of the key will be shown when you generate the key or you can fetch it by running:</p>
 <pre><code>&gt; gpg --list-secret-keys
-</code></pre>
-
-<p>And you will get something like this:</p>
-
+</code></pre><p>And you will get something like this:</p>
 <pre><code>sec   rsa2048 2019-06-07 [SC]
       KEY_ID_HERE
 uid   [  absolut ] Pablo Morelli &lt;devandchill@gmail.com&gt;
 ssb   rsa2048 2019-06-07 [E]
-</code></pre>
-
-<p>After you have your ID, execute:</p>
-
+</code></pre><p>After you have your ID, execute:</p>
 <pre><code>&gt; gpg --export --armor YOUR_KEY_ID 2&gt; cat
-</code></pre>
-
-<p>You will see the public key on the terminal, now you can copy it and go to GitHub.</p>
-
+</code></pre><p>You will see the public key on the terminal, now you can copy it and go to GitHub.</p>
 <h2 id="adding-public-key-to-github-account">Adding public key to GitHub account</h2>
-
 <p>Go to <code>Settings -&gt; SSH and GPG Keys -&gt; New GPG Key</code> and paste the content of your key and after submiting you will see something like this.</p>
-
 
     <figure class="center" >
         <img src="/posts/images/gpg-github.png"   />
@@ -197,60 +167,35 @@ ssb   rsa2048 2019-06-07 [E]
     </figure>
 
 
-
 <h2 id="doing-your-first-verified-commit">Doing your first verified commit</h2>
-
 <p>When you work with the <code>git cli</code> there is a huge probability that you work with different accounts (for example one for work and one personal) and/or that you have more than one GPG key on your system.
 To avoid problems with git not knowing which configuration to pick you will indicate that for the repo where you are standing or for all the repos you will use the GPG key that contains a certain ID.</p>
-
 <pre><code>&gt; git config --local gpg.program &quot;gpg&quot;
 &gt; git config --local user.signingKey &quot;YOUR_KEY_ID_INSIDE_THE_QUOTES&quot; // will apply to the working directory
 
 &gt; git config --global gpg.program &quot;gpg&quot;
 &gt; git config --global user.signingKey &quot;YOUR_KEY_ID_INSIDE_THE_QUOTES&quot; // will apply to the all the repositories except when overriden
-</code></pre>
-
-<p>You are almost ready to go, but you need to know that by default <code>git commit</code> does not sign the commits unless you specify the argument <code>-S</code>. So you have two options:</p>
-
+</code></pre><p>You are almost ready to go, but you need to know that by default <code>git commit</code> does not sign the commits unless you specify the argument <code>-S</code>. So you have two options:</p>
 <pre><code>&gt; git commit -S -m &quot;My commit message&quot;
-</code></pre>
-
-<p>Or you can setup automatic signing for the repository or all the repositories.</p>
-
+</code></pre><p>Or you can setup automatic signing for the repository or all the repositories.</p>
 <pre><code>&gt; git config --local commit.gpgsign &quot;true&quot;
 
 &gt; git config --global commit.gpgsign &quot;true&quot; // if you want to set up for all the repositories
-</code></pre>
-
-<p>If you did the step above, the argument <code>-S</code> is no longer needed.</p>
-
+</code></pre><p>If you did the step above, the argument <code>-S</code> is no longer needed.</p>
 <h2 id="checking-git-configuration">Checking git configuration</h2>
-
 <p>When you are unsure about your configuration you can execute <code>git config --local -l</code> to list the configuration for the working directory and you should see something like this:</p>
-
 <pre><code>gpg.program=gpg
 commit.gpgsign=true
 user.signingkey=YOUR_KEY_ID
-</code></pre>
-
-<h2 id="back-up-your-private-key">Back up your private key</h2>
-
+</code></pre><h2 id="back-up-your-private-key">Back up your private key</h2>
 <p>Keys are passwords, so you should save them somewhere safe and revoke + change periodically.
 It is trivial to revoke and to generate a new key for GitHub but it may be troublesome for some other systems that uses your public key.
-Now lets image that you change your computer, you wont be able to sign because you don&rsquo;t have your key; in this case a backup is recommended.</p>
-
+Now lets image that you change your computer, you wont be able to sign because you don't have your key; in this case a backup is recommended.</p>
 <pre><code>gpg --export-secret-keys YOUR_KEY_ID &gt; some_private_key_name
-</code></pre>
-
-<p>Now you can save this file to some secure vault, and if you ever need to import it on a new machine, execute:</p>
-
+</code></pre><p>Now you can save this file to some secure vault, and if you ever need to import it on a new machine, execute:</p>
 <pre><code>gpg --import some_private_key_name
-</code></pre>
-
-<h2 id="bonus-track">Bonus track</h2>
-
+</code></pre><h2 id="bonus-track">Bonus track</h2>
 <p>As I mentioned before, some times when you work using the <code>git cli</code> you end up mixing accounts, and it could happen to commit like this:</p>
-
 
     <figure class="center" >
         <img src="/posts/images/incorrect-user.png"   />
@@ -259,15 +204,11 @@ Now lets image that you change your computer, you wont be able to sign because y
     </figure>
 
 
-
 <p>You can of course leave it like that or do a rebase of the commit; but you can also check first using <code>git config --local -l</code> which is the <code>user.name</code> and <code>user.email</code> for that working directory.
 In case the email does not match with the email linked in GitHub you can change it doing:</p>
-
 <pre><code>&gt; git config --local user.name &quot;GitHub name&quot;
 &gt; git config --local user.email &quot;my.github@email.com&quot;
-</code></pre>
-
-<p>I hope you liked the post, if so, don&rsquo;t forget to share it so this can reach to more people :)</p>
+</code></pre><p>I hope you liked the post, if so, don't forget to share it so this can reach to more people :)</p>
 
             </div>
         </article>
@@ -294,7 +235,6 @@ In case the email does not match with the email linked in GitHub you can change 
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M23.44 4.83c-.8.37-1.5.38-2.22.02.93-.56.98-.96 1.32-2.02-.88.52-1.86.9-2.9 1.1-.82-.88-2-1.43-3.3-1.43-2.5 0-4.55 2.04-4.55 4.54 0 .36.03.7.1 1.04-3.77-.2-7.12-2-9.36-4.75-.4.67-.6 1.45-.6 2.3 0 1.56.8 2.95 2 3.77-.74-.03-1.44-.23-2.05-.57v.06c0 2.2 1.56 4.03 3.64 4.44-.67.2-1.37.2-2.06.08.58 1.8 2.26 3.12 4.25 3.16C5.78 18.1 3.37 18.74 1 18.46c2 1.3 4.4 2.04 6.97 2.04 8.35 0 12.92-6.92 12.92-12.93 0-.2 0-.4-.02-.6.9-.63 1.96-1.22 2.56-2.14z"/></svg></div>Twitter</div>
   </a>
 </section>
-
         
 
             <div class="pagination">
@@ -337,6 +277,8 @@ In case the email does not match with the email linked in GitHub you can change 
     
       
     
+      
+    
 
     
       <p>Nothing yet.</p>
@@ -361,15 +303,10 @@ In case the email does not match with the email linked in GitHub you can change 
                 <footer class="footer">
     <div class="footer__inner">
         <div class="footer__content">
-            <span>&copy; 2019</span>
+            <span>&copy; 2020</span>
             
             <span>Pablo Morelli</span>
             <span> <a href="https://devandchill.com/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a></span>
-        </div>
-    </div>
-    <div class="footer__inner">
-        <div class="footer__content">
-
         </div>
     </div>
     <div class="footer__inner">
@@ -388,7 +325,7 @@ In case the email does not match with the email linked in GitHub you can change 
 
 
 
-<script type="text/javascript" src="/bundle.min.4c3fb12a087ceed4a52cb5d57068a9795c7069617a01ca70f788052ad66e1791779e6c72686e1dc0ca13dc03b0203204b6566bb0dd1ee80de2b7ff4d8fe53db2.js" integrity="sha512-TD&#43;xKgh87tSlLLXVcGipeVxwaWF6Acpw94gFKtZuF5F3nmxyaG4dwMoT3AOwIDIEtlZrsN0e6A3it/9Nj&#43;U9sg=="></script>
+<script type="text/javascript" src="/bundle.min.2d5469329143160ae2456a69c3c76dc2d0a3b212b46afe291a51bd68650ed6f8697e001dab54f1c272c77ce08092a8c55e5bb4314e0ee334aab4b927ec896638.js" integrity="sha512-LVRpMpFDFgriRWppw8dtwtCjshK0av4pGlG9aGUO1vhpfgAdq1TxwnLHfOCAkqjFXlu0MU4O4zSqtLkn7IlmOA=="></script>
 
 
 

@@ -4,22 +4,21 @@
         <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="author"
-    content="">
-<meta name="description"
-    content="One day I was given the task of doing a whiteboard word counter algorithm. The requirements were:
+<meta name="author" content="">
+<meta name="description" content="One day I was given the task of doing a whiteboard word counter algorithm. The requirements were:
  Print on console all the words and the quantity of times they appear on a 40.000 lines input. Make it as fast as possible.  For a start we can do it as simple as possible instead, and then try to see whether we can make it faster:
-func main() { fmt." />
+func main() { fmt.Println(wordCounter()) } func wordCounter() map[string]int { b, _ := ioutil." />
 <meta name="keywords" content="blog, development, programming, tech" />
 <meta name="robots" content="noodp" />
+<meta name="theme-color" content="" />
 <link rel="canonical" href="https://devandchill.com/posts/2019/04/word-counter-sync-or-concurrent/" />
 
 
-<title>
-    
-    Word Counter: Sync or Concurrent? :: Dev &amp; Chill  — A blog about coding
-    
-</title>
+    <title>
+        
+            Word Counter: Sync or Concurrent? :: Dev &amp; Chill  — A blog about coding
+        
+    </title>
 
 
 
@@ -28,41 +27,36 @@ func main() { fmt." />
 
 
 
-<link rel="stylesheet" href="/main.min.c1f0da16d3a4e93649d16fb0d4d27d14e84fdf6d6713fb34351b852f0f9d7bf5.css">
+<link rel="stylesheet" href="/main.min.608d8fe647f3fb84414579f3df1b161dbfb868d2a97552ca983aa488ca430202.css">
 
 
 
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="manifest" href="/site.webmanifest">
-<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#252627">
-<link rel="shortcut icon" href="/favicon.ico">
-<meta name="theme-color" content="#252627"><meta itemprop="name" content="Word Counter: Sync or Concurrent?">
+
+<meta itemprop="name" content="Word Counter: Sync or Concurrent?">
 <meta itemprop="description" content="One day I was given the task of doing a whiteboard word counter algorithm. The requirements were:
  Print on console all the words and the quantity of times they appear on a 40.000 lines input. Make it as fast as possible.  For a start we can do it as simple as possible instead, and then try to see whether we can make it faster:
-func main() { fmt.">
-
-
+func main() { fmt.Println(wordCounter()) } func wordCounter() map[string]int { b, _ := ioutil.">
 <meta itemprop="datePublished" content="2019-04-10T20:59:47&#43;02:00" />
 <meta itemprop="dateModified" content="2019-04-10T20:59:47&#43;02:00" />
 <meta itemprop="wordCount" content="1058">
+<meta itemprop="image" content="https://devandchill.com/"/>
 
 
 
-<meta itemprop="keywords" content="" />
-<meta name="twitter:card" content="summary_large_image"/>
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://devandchill.com/"/>
 
 <meta name="twitter:title" content="Word Counter: Sync or Concurrent?"/>
 <meta name="twitter:description" content="One day I was given the task of doing a whiteboard word counter algorithm. The requirements were:
  Print on console all the words and the quantity of times they appear on a 40.000 lines input. Make it as fast as possible.  For a start we can do it as simple as possible instead, and then try to see whether we can make it faster:
-func main() { fmt."/>
+func main() { fmt.Println(wordCounter()) } func wordCounter() map[string]int { b, _ := ioutil."/>
 
 
 
 
-<meta property="article:published_time" content="2019-04-10 20:59:47 &#43;0200 CEST" />
+
+    <meta property="article:published_time" content="2019-04-10 20:59:47 &#43;0200 CEST" />
+
 
 
 
@@ -128,44 +122,38 @@ func main() { fmt."/>
         </div>
 
         <article>
-            <h1 class="post-title"><a href="https://devandchill.com/posts/2019/04/word-counter-sync-or-concurrent/">Word Counter: Sync or Concurrent?</a></h1>
+            <h1 class="post-title">
+                <a href="https://devandchill.com/posts/2019/04/word-counter-sync-or-concurrent/">Word Counter: Sync or Concurrent?</a>
+            </h1>
 
             
 
             <div class="post-content">
-                
-
-<p>One day I was given the task of doing a whiteboard <code>word counter</code> algorithm. The requirements were:</p>
-
+                <p>One day I was given the task of doing a whiteboard <code>word counter</code> algorithm. The requirements were:</p>
 <ul>
 <li>Print on console all the words and the quantity of times they appear on a 40.000 lines input.</li>
 <li>Make it as fast as possible.</li>
 </ul>
-
 <p>For a start we can do it as simple as possible instead, and then try to see whether we can make it faster:</p>
-
-<pre><code class="language-go">func main() {
-	fmt.Println(wordCounter())
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">wordCounter</span>())
 }
 
-func wordCounter() map[string]int {
-	b, _ := ioutil.ReadFile(&quot;input.txt&quot;)
-	inputText := string(b)
-	mostFrequent := make(map[string]int)
-	removeSpecial := regexp.MustCompile(`(?m)[^a-z]`)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">wordCounter</span>() <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span> {
+	<span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ioutil</span>.<span style="color:#a6e22e">ReadFile</span>(<span style="color:#e6db74">&#34;input.txt&#34;</span>)
+	<span style="color:#a6e22e">inputText</span> <span style="color:#f92672">:=</span> string(<span style="color:#a6e22e">b</span>)
+	<span style="color:#a6e22e">mostFrequent</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span>)
+	<span style="color:#a6e22e">removeSpecial</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">(?m)[^a-z]</span><span style="color:#e6db74">`</span>)
 
-	for _, w := range strings.Split(inputText, &quot; &quot;) {
-		w = strings.ToLower(w)
-		w = removeSpecial.ReplaceAllString(w, &quot;&quot;)
-		mostFrequent[w] = mostFrequent[w] + 1
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">w</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Split</span>(<span style="color:#a6e22e">inputText</span>, <span style="color:#e6db74">&#34; &#34;</span>) {
+		<span style="color:#a6e22e">w</span> = <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">ToLower</span>(<span style="color:#a6e22e">w</span>)
+		<span style="color:#a6e22e">w</span> = <span style="color:#a6e22e">removeSpecial</span>.<span style="color:#a6e22e">ReplaceAllString</span>(<span style="color:#a6e22e">w</span>, <span style="color:#e6db74">&#34;&#34;</span>)
+		<span style="color:#a6e22e">mostFrequent</span>[<span style="color:#a6e22e">w</span>] = <span style="color:#a6e22e">mostFrequent</span>[<span style="color:#a6e22e">w</span>] <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
 	}
 
-	return mostFrequent
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">mostFrequent</span>
 }
-</code></pre>
-
-<p>If I had to explain the code it will be like this:</p>
-
+</code></pre></div><p>If I had to explain the code it will be like this:</p>
 <ol>
 <li>Read the file and put it on a string variable.</li>
 <li>Create the map structure that will hold a key (word) and a value (quantity)</li>
@@ -174,201 +162,142 @@ func wordCounter() map[string]int {
 <li>Lowercase it + execute the regex + add 1 to the map quantity for that word</li>
 <li>When we finish, we print to the console.</li>
 </ol>
-
 <p>This works fine, but we are using Go and every post you visit is probably talking about <code>goroutines</code> and how easy is to achieve concurrency. So what if I do the following?</p>
-
-<pre><code class="language-go">func main() {
-	fmt.Println(wordCounterConcurrent())
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">wordCounterConcurrent</span>())
 }
 
-func wordCounterConcurrent() map[string]int {
-	b, _ := ioutil.ReadFile(&quot;input.txt&quot;)
-	inputText := string(b)
-	mostFrequent := make(map[string]int)
-	removeSpecial := regexp.MustCompile(`(?m)[^a-z]`)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">wordCounterConcurrent</span>() <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span> {
+	<span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ioutil</span>.<span style="color:#a6e22e">ReadFile</span>(<span style="color:#e6db74">&#34;input.txt&#34;</span>)
+	<span style="color:#a6e22e">inputText</span> <span style="color:#f92672">:=</span> string(<span style="color:#a6e22e">b</span>)
+	<span style="color:#a6e22e">mostFrequent</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span>)
+	<span style="color:#a6e22e">removeSpecial</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">(?m)[^a-z]</span><span style="color:#e6db74">`</span>)
 
-	wg := sync.WaitGroup{}
+	<span style="color:#a6e22e">wg</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">WaitGroup</span>{}
 
-	for _, w := range strings.Split(inputText, &quot; &quot;) {
-		wg.Add(1)
-		go func(w2 string) {
-			defer wg.Done()
-			w2 = strings.ToLower(w2)
-			w2 = removeSpecial.ReplaceAllString(w2, &quot;&quot;)
-			mostFrequent[w2] = mostFrequent[w2] + 1
-		}(w)
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">w</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Split</span>(<span style="color:#a6e22e">inputText</span>, <span style="color:#e6db74">&#34; &#34;</span>) {
+		<span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#ae81ff">1</span>)
+		<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">w2</span> <span style="color:#66d9ef">string</span>) {
+			<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Done</span>()
+			<span style="color:#a6e22e">w2</span> = <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">ToLower</span>(<span style="color:#a6e22e">w2</span>)
+			<span style="color:#a6e22e">w2</span> = <span style="color:#a6e22e">removeSpecial</span>.<span style="color:#a6e22e">ReplaceAllString</span>(<span style="color:#a6e22e">w2</span>, <span style="color:#e6db74">&#34;&#34;</span>)
+			<span style="color:#a6e22e">mostFrequent</span>[<span style="color:#a6e22e">w2</span>] = <span style="color:#a6e22e">mostFrequent</span>[<span style="color:#a6e22e">w2</span>] <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+		}(<span style="color:#a6e22e">w</span>)
 	}
 
-	wg.Wait()
-	return mostFrequent
+	<span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Wait</span>()
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">mostFrequent</span>
 }
-</code></pre>
-
-<p>The differences in this snippet and the first one are the following:</p>
-
+</code></pre></div><p>The differences in this snippet and the first one are the following:</p>
 <ol>
 <li>We defined a <code>WaitGroup</code> that will allow us to:
-
 <ul>
 <li>Add a counter every time a goroutine is fired.</li>
 <li>Block the main goroutine with the <code>wg.Wait()</code> until all the other goroutines are finished.</li>
 <li><em>Decrease</em> the counter executing <code>wg.Done()</code> every time a goroutine is finished.</li>
-</ul></li>
+</ul>
+</li>
 <li>We put the functionality that is going to be executed for each word in an <code>anonymous function</code>. So now, we can use the word <code>go</code> to execute that function in a different goroutine.</li>
 </ol>
-
 <p>Does this work? Unfortunately no. If we execute the following:</p>
-
 <pre><code>&gt; go run main.go --race
 fatal error: concurrent map read and map write
-</code></pre>
-
-<p>Basically the race detector is telling us that some of the goroutines can execute this line at the same moment:</p>
-
-<pre><code class="language-go">mostFrequent[w2] = mostFrequent[w2] + 1
-</code></pre>
-
-<p>If the map does not want to be written at the same time by two different goroutines we should use some sort of <code>queue</code> and then consume the values in a single threaded process. Fortunately, Go have us covered with <code>channels</code>.</p>
-
+</code></pre><p>Basically the race detector is telling us that some of the goroutines can execute this line at the same moment:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">mostFrequent</span>[<span style="color:#a6e22e">w2</span>] = <span style="color:#a6e22e">mostFrequent</span>[<span style="color:#a6e22e">w2</span>] <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+</code></pre></div><p>If the map does not want to be written at the same time by two different goroutines we should use some sort of <code>queue</code> and then consume the values in a single threaded process. Fortunately, Go have us covered with <code>channels</code>.</p>
 <p>Doing the following modifications should work:</p>
-
-<pre><code class="language-go">func main() {
-	fmt.Println(wordCounterConcurrent())
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">wordCounterConcurrent</span>())
 }
 
-func wordCounterConcurrent() map[string]int {
-    runtime.GOMAXPROCS(4) //Make sure we use all processors
-	b, _ := ioutil.ReadFile(&quot;input.txt&quot;)
-	inputText := string(b)
-	mostFrequent := make(map[string]int)
-	removeSpecial := regexp.MustCompile(`(?m)[^a-z]`)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">wordCounterConcurrent</span>() <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span> {
+    <span style="color:#a6e22e">runtime</span>.<span style="color:#a6e22e">GOMAXPROCS</span>(<span style="color:#ae81ff">4</span>) <span style="color:#75715e">//Make sure we use all processors
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ioutil</span>.<span style="color:#a6e22e">ReadFile</span>(<span style="color:#e6db74">&#34;input.txt&#34;</span>)
+	<span style="color:#a6e22e">inputText</span> <span style="color:#f92672">:=</span> string(<span style="color:#a6e22e">b</span>)
+	<span style="color:#a6e22e">mostFrequent</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span>)
+	<span style="color:#a6e22e">removeSpecial</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">(?m)[^a-z]</span><span style="color:#e6db74">`</span>)
 
-	doneChan := make(chan bool)
-	wordsChan := make(chan string)
+	<span style="color:#a6e22e">doneChan</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">bool</span>)
+	<span style="color:#a6e22e">wordsChan</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">string</span>)
 
-	go func() {
-		for {
-			select {
-			case w := &lt;-wordsChan:
-				mostFrequent[w] = mostFrequent[w] + 1
-			case &lt;-doneChan:
-				return
+	<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+		<span style="color:#66d9ef">for</span> {
+			<span style="color:#66d9ef">select</span> {
+			<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">w</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">wordsChan</span>:
+				<span style="color:#a6e22e">mostFrequent</span>[<span style="color:#a6e22e">w</span>] = <span style="color:#a6e22e">mostFrequent</span>[<span style="color:#a6e22e">w</span>] <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+			<span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">doneChan</span>:
+				<span style="color:#66d9ef">return</span>
 			}
 		}
 	}()
 
-	wg := sync.WaitGroup{}
+	<span style="color:#a6e22e">wg</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">WaitGroup</span>{}
 
-	for _, w := range strings.Split(inputText, &quot; &quot;) {
-		wg.Add(1)
-		go func(w1 string) {
-			defer wg.Done()
-			w1 = strings.ToLower(w1)
-			w1 = removeSpecial.ReplaceAllString(w1, &quot;&quot;)
-			wordsChan &lt;- w1
-		}(w)
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">w</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Split</span>(<span style="color:#a6e22e">inputText</span>, <span style="color:#e6db74">&#34; &#34;</span>) {
+		<span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#ae81ff">1</span>)
+		<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">w1</span> <span style="color:#66d9ef">string</span>) {
+			<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Done</span>()
+			<span style="color:#a6e22e">w1</span> = <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">ToLower</span>(<span style="color:#a6e22e">w1</span>)
+			<span style="color:#a6e22e">w1</span> = <span style="color:#a6e22e">removeSpecial</span>.<span style="color:#a6e22e">ReplaceAllString</span>(<span style="color:#a6e22e">w1</span>, <span style="color:#e6db74">&#34;&#34;</span>)
+			<span style="color:#a6e22e">wordsChan</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">w1</span>
+		}(<span style="color:#a6e22e">w</span>)
 	}
 
-	wg.Wait()
-	doneChan &lt;- true
-	return mostFrequent
+	<span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Wait</span>()
+	<span style="color:#a6e22e">doneChan</span> <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">true</span>
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">mostFrequent</span>
 }
-</code></pre>
-
-<p>But now the code growth a lot, lets look at it by parts:</p>
-
+</code></pre></div><p>But now the code growth a lot, lets look at it by parts:</p>
 <p>In order to declare channels we use the following syntax</p>
-
-<pre><code class="language-go">doneChan := make(chan bool)
-wordsChan := make(chan string)
-</code></pre>
-
-<p>Now, if we go to the words goroutines we can see that instead of performing operations using the map we are just pushing a value into a channel.</p>
-
-<pre><code class="language-go">wordsChan &lt;- w1
-</code></pre>
-
-<p>The operations using the map, then will be performed when we read a value from the channel (blocking action since it is not a buffered channel)</p>
-
-<pre><code class="language-go">w := &lt;-wordsChan:
-</code></pre>
-
-<p>For that we have the following:</p>
-
-<pre><code class="language-go">go func() {
-    for {
-        select {
-        case w := &lt;-wordsChan:
-            mostFrequent[w] = mostFrequent[w] + 1
-        case &lt;-doneChan:
-            return
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">doneChan</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">bool</span>)
+<span style="color:#a6e22e">wordsChan</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">string</span>)
+</code></pre></div><p>Now, if we go to the words goroutines we can see that instead of performing operations using the map we are just pushing a value into a channel.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">wordsChan</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">w1</span>
+</code></pre></div><p>The operations using the map, then will be performed when we read a value from the channel (blocking action since it is not a buffered channel)</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">w</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">wordsChan</span>:
+</code></pre></div><p>For that we have the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+    <span style="color:#66d9ef">for</span> {
+        <span style="color:#66d9ef">select</span> {
+        <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">w</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">wordsChan</span>:
+            <span style="color:#a6e22e">mostFrequent</span>[<span style="color:#a6e22e">w</span>] = <span style="color:#a6e22e">mostFrequent</span>[<span style="color:#a6e22e">w</span>] <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+        <span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">doneChan</span>:
+            <span style="color:#66d9ef">return</span>
         }
     }
 }()
-</code></pre>
-
-<p>This piece of code will read from the <code>wordsChannel</code> and perform the map operation; and also read from the <code>doneChannel</code> to stop the goroutine.</p>
-
+</code></pre></div><p>This piece of code will read from the <code>wordsChannel</code> and perform the map operation; and also read from the <code>doneChannel</code> to stop the goroutine.</p>
 <p>The message to the <code>doneChannel</code> will only be submitted after all words goroutines are finished.</p>
-
-<pre><code class="language-go">wg.Wait()
-doneChan &lt;- true
-</code></pre>
-
-<p>Now if we run this algorithm we will see that is not failing anymore. Let&rsquo;s then move to benchmarking.</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Wait</span>()
+<span style="color:#a6e22e">doneChan</span> <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">true</span>
+</code></pre></div><p>Now if we run this algorithm we will see that is not failing anymore. Let's then move to benchmarking.</p>
 <h2 id="benchmark">Benchmark</h2>
-
 <p>We are going to do this in two different ways: using the command-line utility time and executing an idiomatic Go benchmark.</p>
-
 <pre><code>&gt; go test -run=XXX -bench=.
-</code></pre>
-
-<pre><code>BenchmarkWordCounter-8                       100          16685557 ns/op
+</code></pre><pre><code>BenchmarkWordCounter-8                       100          16685557 ns/op
 BenchmarkWordCounterConcurrent-8              30          46959704 ns/op
-</code></pre>
-
-<p>This is telling us that the sync version executed <code>100 times</code> and each execution took approx <code>16685557 nanoseconds</code>, meanwhile in the same time the concurrent version only got executed <code>30 times</code> because each execution took approx <code>46959704 nanoseconds</code>.</p>
-
+</code></pre><p>This is telling us that the sync version executed <code>100 times</code> and each execution took approx <code>16685557 nanoseconds</code>, meanwhile in the same time the concurrent version only got executed <code>30 times</code> because each execution took approx <code>46959704 nanoseconds</code>.</p>
 <p>Wait, What?</p>
-
-<p>Let&rsquo;s do it with this:</p>
-
+<p>Let's do it with this:</p>
 <pre><code>&gt; go build
 &gt; time ./go-word-counter
-</code></pre>
-
-<pre><code>(SYNC)
+</code></pre><pre><code>(SYNC)
 ./go-word-counter  0.02s user 0.00s system 57% cpu 0.048 total
 (CONCURRENT)
 ./go-word-counter  0.31s user 0.04s system 362% cpu 0.096 total
-</code></pre>
-
-<p>So the sync version takes approx <code>0.048</code> and <code>57% cpu</code> and the concurrent one <code>0.096</code> and <code>362% cpu</code>.</p>
-
-<p>We are sure that the function is running concurrently (hence the CPU usage), but shouldn&rsquo;t that mean it has to run faster? NO.</p>
-
+</code></pre><p>So the sync version takes approx <code>0.048</code> and <code>57% cpu</code> and the concurrent one <code>0.096</code> and <code>362% cpu</code>.</p>
+<p>We are sure that the function is running concurrently (hence the CPU usage), but shouldn't that mean it has to run faster? NO.</p>
 <p>If we look at the code we can see that the parts that get executed inside the word goroutines takes less to execute than all the orchestration needed for pulling a word from a channel.</p>
-
 <p>Things would be different if we add a sleep like this:</p>
-
-<pre><code class="language-go">w1 = strings.ToLower(w1)
-w1 = removeSpecial.ReplaceAllString(w1, &quot;&quot;)
-time.Sleep(200)
-</code></pre>
-
-<p>And then the benchmark:</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">w1</span> = <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">ToLower</span>(<span style="color:#a6e22e">w1</span>)
+<span style="color:#a6e22e">w1</span> = <span style="color:#a6e22e">removeSpecial</span>.<span style="color:#a6e22e">ReplaceAllString</span>(<span style="color:#a6e22e">w1</span>, <span style="color:#e6db74">&#34;&#34;</span>)
+<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#ae81ff">200</span>)
+</code></pre></div><p>And then the benchmark:</p>
 <pre><code>BenchmarkWordCounter-8                        10         171650568 ns/op
 BenchmarkWordCounterConcurrent-8              20          54229310 ns/op
-</code></pre>
-
-<p>In this scenario we can clearly see how the concurrent way outperforms the sync one.</p>
-
+</code></pre><p>In this scenario we can clearly see how the concurrent way outperforms the sync one.</p>
 <p>So we started with a single goroutine algorithm, we evolved it to run using more than one goroutine and having an orchestration for the algorithm to work. At the end we did a benchmark and compared the results.</p>
-
 <p>The value we can get out of this is to avoid <code>premature optimization</code>, how to <code>KISS (Keep it simple and stupid)</code>; and the most important one: We learned that concurrent flows are beneficial when the code inside the goroutine is CPU/time intensive.</p>
-
 <p>👉 <a href="https://github.com/pmorelli92/go-word-counter">Repository with source files used</a> 👈</p>
 
             </div>
@@ -396,7 +325,6 @@ BenchmarkWordCounterConcurrent-8              20          54229310 ns/op
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M23.44 4.83c-.8.37-1.5.38-2.22.02.93-.56.98-.96 1.32-2.02-.88.52-1.86.9-2.9 1.1-.82-.88-2-1.43-3.3-1.43-2.5 0-4.55 2.04-4.55 4.54 0 .36.03.7.1 1.04-3.77-.2-7.12-2-9.36-4.75-.4.67-.6 1.45-.6 2.3 0 1.56.8 2.95 2 3.77-.74-.03-1.44-.23-2.05-.57v.06c0 2.2 1.56 4.03 3.64 4.44-.67.2-1.37.2-2.06.08.58 1.8 2.26 3.12 4.25 3.16C5.78 18.1 3.37 18.74 1 18.46c2 1.3 4.4 2.04 6.97 2.04 8.35 0 12.92-6.92 12.92-12.93 0-.2 0-.4-.02-.6.9-.63 1.96-1.22 2.56-2.14z"/></svg></div>Twitter</div>
   </a>
 </section>
-
         
 
             <div class="pagination">
@@ -452,6 +380,8 @@ Enjoyed it alot :)
         
       
     
+      
+    
 
     
 
@@ -474,15 +404,10 @@ Enjoyed it alot :)
                 <footer class="footer">
     <div class="footer__inner">
         <div class="footer__content">
-            <span>&copy; 2019</span>
+            <span>&copy; 2020</span>
             
             <span>Pablo Morelli</span>
             <span> <a href="https://devandchill.com/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a></span>
-        </div>
-    </div>
-    <div class="footer__inner">
-        <div class="footer__content">
-
         </div>
     </div>
     <div class="footer__inner">
@@ -501,7 +426,7 @@ Enjoyed it alot :)
 
 
 
-<script type="text/javascript" src="/bundle.min.4c3fb12a087ceed4a52cb5d57068a9795c7069617a01ca70f788052ad66e1791779e6c72686e1dc0ca13dc03b0203204b6566bb0dd1ee80de2b7ff4d8fe53db2.js" integrity="sha512-TD&#43;xKgh87tSlLLXVcGipeVxwaWF6Acpw94gFKtZuF5F3nmxyaG4dwMoT3AOwIDIEtlZrsN0e6A3it/9Nj&#43;U9sg=="></script>
+<script type="text/javascript" src="/bundle.min.2d5469329143160ae2456a69c3c76dc2d0a3b212b46afe291a51bd68650ed6f8697e001dab54f1c272c77ce08092a8c55e5bb4314e0ee334aab4b927ec896638.js" integrity="sha512-LVRpMpFDFgriRWppw8dtwtCjshK0av4pGlG9aGUO1vhpfgAdq1TxwnLHfOCAkqjFXlu0MU4O4zSqtLkn7IlmOA=="></script>
 
 
 

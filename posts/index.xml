@@ -15,39 +15,25 @@
             <pubDate>Sat, 19 Oct 2019 22:22:29 +0200</pubDate>
             
             <guid>https://devandchill.com/posts/2019/10/azure-pipelines-build-a-dockerized-app-and-deploy-to-kubernetes/</guid>
-            <description>Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&amp;rsquo;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files). Now I am currently working with Travis for CI and Flux for CD but I think it is always good to keep an eye on how the competitors are doing and what they have to offer.</description>
-            <content type="html"><![CDATA[
-
-<p>Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&rsquo;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files). Now I am currently working with Travis for CI and Flux for CD but I think it is always good to keep an eye on how the competitors are doing and what they have to offer.</p>
-
+            <description>Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&#39;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files). Now I am currently working with Travis for CI and Flux for CD but I think it is always good to keep an eye on how the competitors are doing and what they have to offer.</description>
+            <content type="html"><![CDATA[<p>Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I've worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files). Now I am currently working with Travis for CI and Flux for CD but I think it is always good to keep an eye on how the competitors are doing and what they have to offer.</p>
 <p>For this tutorial, I only had to link my github account to Azure Devops in order to use its functionality. That being said, I did not have to put my credit card or billing information so it is safe to say that it is free, at least for hobby usages.</p>
-
 <p>The tutorial will cover:</p>
-
 <ul>
 <li>Go application with Dockerfile</li>
 <li>Build and push to Dockerhub (but it could be any other docker registry)</li>
 <li>Deploy to Kubeseal (which offers a free kubernetes cluster)</li>
 </ul>
-
 <h2 id="the-application">The application</h2>
-
 <p>You can find it on <a href="https://github.com/pmorelli92/go-with-azure">GitHub</a>. It is a rather simple rest application since the purpose here is not to dig into code but on the CI/CD.</p>
-
 <p>It is runnable (downloading modules first with <code>go mod download</code>) executing <code>go run cmd/main.go</code>.
 The only functionality that exposes is a <code>GET /health</code> endpoint which will return a json informing that health is ok.</p>
-
 <p>The application can be dockerized executing <code>docker build -t gwa:local .</code> and then runnable using <code>docker run -p 80:8080 -it gwa:local</code>.</p>
-
 <p>The file <code>azure-pipelines.yml</code> contains the CI/CD configuration but more on that later.</p>
-
 <h2 id="azure-devops">Azure Devops</h2>
-
 <p>An account is needed in order to get access on Azure Pipelines. Linking the github account and giving access to the demo repository should be enough, after this step a project should be set up.</p>
-
 <p>Inside the project, the project settings button should be visible on the bottom left corner.
 Scroll down to service connections and you should see something like this:</p>
-
 
     <figure class="center" >
         <img src="/posts/images/project-settings.png"   />
@@ -56,19 +42,12 @@ Scroll down to service connections and you should see something like this:</p>
     </figure>
 
 
-
 <p>This is where the credentials for docker and kubernetes are stored.</p>
-
 <p>Select docker registry and complete the steps for docker.</p>
-
 <p>For kubernetes it should be enough selecting Kubeconfig and pasting the kube config that lives under <code>user/.kube/config</code> on the operating system. Beware, in case you have multiple configurations, remove the parts that are not related to the cluster in which you want to deploy.</p>
-
 <h2 id="adding-build-pipeline">Adding build pipeline</h2>
-
 <p>Under the pipeline menu, pick <code>build</code> and <code>add a new pipeline</code>. Follow the steps and give access to the repository (it does not matter if it is public or private). Pick starter pipeline when prompted and proceed to click save and run.</p>
-
 <p>If everything went well a commit should be added to the repository and this will appear on the commit history of the repository:</p>
-
 
     <figure class="center" >
         <img src="/posts/images/built-commit.png"   />
@@ -77,112 +56,78 @@ Scroll down to service connections and you should see something like this:</p>
     </figure>
 
 
-
 <p>The ✔️ indicates that the CI process ran successfully, when the build is ongoing a yellow circle will appear, and if the build fails ❌ will be shown.</p>
-
-<h2 id="configuring-ci-cd">Configuring CI/CD</h2>
-
+<h2 id="configuring-cicd">Configuring CI/CD</h2>
 <p>Back to the azure-pipelines.yml:</p>
-
-<pre><code class="language-yml">trigger:
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">trigger:
 - master
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: <span style="color:#e6db74">&#39;ubuntu-latest&#39;</span>
 
 variables:
-  buildNumber: 0.0.$(Build.BuildId)
+  buildNumber: <span style="color:#ae81ff">0.0</span>.$(Build.BuildId)
 
 steps:
-- task: Docker@2
+- task: Docker@<span style="color:#ae81ff">2</span>
   inputs:
-    containerRegistry: 'pmorelli92-docker-hub'
-    repository: 'pmorelli92/go-with-azure'
-    command: 'buildAndPush'
-    Dockerfile: '**/Dockerfile'
-    tags: |
-      $(buildNumber)
+    containerRegistry: <span style="color:#e6db74">&#39;pmorelli92-docker-hub&#39;</span>
+    repository: <span style="color:#e6db74">&#39;pmorelli92/go-with-azure&#39;</span>
+    command: <span style="color:#e6db74">&#39;buildAndPush&#39;</span>
+    Dockerfile: <span style="color:#e6db74">&#39;**/Dockerfile&#39;</span>
+    tags: <span style="color:#e6db74">|
+</span><span style="color:#e6db74">     </span><span style="color:#e6db74"> </span><span style="color:#e6db74">$(buildNumber)</span>
       latest
-- bash: sed -i &quot;s/latest/$(buildNumber)/g&quot; kubernetes/k8s-deployment.yml
-- task: Kubernetes@0
+- bash: sed -i <span style="color:#e6db74">&#34;s/latest/$(buildNumber)/g&#34;</span> kubernetes/k8s-deployment.yml
+- task: Kubernetes@<span style="color:#ae81ff">0</span>
   inputs:
-    kubernetesServiceConnection: 'pmorelli92-kubesail'
+    kubernetesServiceConnection: <span style="color:#e6db74">&#39;pmorelli92-kubesail&#39;</span>
     namespace: pmorelli92
     command: apply
-    arguments: '-f kubernetes/k8s-deployment.yml'
-</code></pre>
-
-<p>Let&rsquo;s split them:</p>
-
-<pre><code class="language-yml">trigger:
+    arguments: <span style="color:#e6db74">&#39;-f kubernetes/k8s-deployment.yml&#39;</span>
+</code></pre></div><p>Let's split them:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">trigger:
 - master
-</code></pre>
-
-<p>Associated on which branch the CI/CD will execute.</p>
-
-<pre><code class="language-yml">pool:
-  vmImage: 'ubuntu-latest'
-</code></pre>
-
-<p>Relates to the machine that will execute the commands.</p>
-
-<pre><code class="language-yml">variables:
-  buildNumber: 0.0.$(Build.BuildId)
-</code></pre>
-
-<p>Global variables that are going to be used on the pipeline.
+</code></pre></div><p>Associated on which branch the CI/CD will execute.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">pool:
+  vmImage: <span style="color:#e6db74">&#39;ubuntu-latest&#39;</span>
+</code></pre></div><p>Relates to the machine that will execute the commands.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">variables:
+  buildNumber: <span style="color:#ae81ff">0.0</span>.$(Build.BuildId)
+</code></pre></div><p>Global variables that are going to be used on the pipeline.
 In this case, the example repository is using semver for building versions.</p>
-
-<pre><code class="language-yml">steps:
-</code></pre>
-
-<p>Represents a chain of commands that will be executed in order. This is not the full power of pipelines, since it supports a higher order hierarchy where you can specify <code>stages -&gt; jobs -&gt; steps</code>.</p>
-
-<pre><code class="language-yml">- task: Docker@2
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">steps:
+</code></pre></div><p>Represents a chain of commands that will be executed in order. This is not the full power of pipelines, since it supports a higher order hierarchy where you can specify <code>stages -&gt; jobs -&gt; steps</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">- task: Docker@<span style="color:#ae81ff">2</span>
   inputs:
-    containerRegistry: 'pmorelli92-docker-hub'
-    repository: 'pmorelli92/go-with-azure'
-    command: 'buildAndPush'
-    Dockerfile: '**/Dockerfile'
-    tags: |
-      $(buildNumber)
+    containerRegistry: <span style="color:#e6db74">&#39;pmorelli92-docker-hub&#39;</span>
+    repository: <span style="color:#e6db74">&#39;pmorelli92/go-with-azure&#39;</span>
+    command: <span style="color:#e6db74">&#39;buildAndPush&#39;</span>
+    Dockerfile: <span style="color:#e6db74">&#39;**/Dockerfile&#39;</span>
+    tags: <span style="color:#e6db74">|
+</span><span style="color:#e6db74">     </span><span style="color:#e6db74"> </span><span style="color:#e6db74">$(buildNumber)</span>
       latest
-</code></pre>
-
-<p>This is a built-in command of pipelines, where we can (among other things) build and push docker images.</p>
-
+</code></pre></div><p>This is a built-in command of pipelines, where we can (among other things) build and push docker images.</p>
 <p>The input named repository indicates the name of the repository on the container registry (which was set up on the project settings).</p>
-
 <p>If this command fails, the other ones will not be invoked.</p>
-
-<pre><code class="language-yml">bash: sed -i &quot;s/latest/$(buildNumber)/g&quot; kubernetes/k8s-deployment.yml
-</code></pre>
-
-<p>A discussion could be hold on whether if a service should self contain information of deployment or be agnostic of it. As a personal preference, I think having everything related to the application on the same repository enables easier discoverability.</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">bash: sed -i <span style="color:#e6db74">&#34;s/latest/$(buildNumber)/g&#34;</span> kubernetes/k8s-deployment.yml
+</code></pre></div><p>A discussion could be hold on whether if a service should self contain information of deployment or be agnostic of it. As a personal preference, I think having everything related to the application on the same repository enables easier discoverability.</p>
 <p>Of course, we are not having any secrets here, if that was the case, Azure Pipelines offers a way to store them safely inside the azure devops project.</p>
-
 <p>That being said, the repository contains a <a href="https://github.com/pmorelli92/go-with-azure/blob/master/kubernetes/k8s-deployment.yml">file</a> <code>kubernetes/k8s-deployment.yml</code> which describes:</p>
-
 <ul>
 <li>Deployment (information of the containers to be run)</li>
 <li>Service (enables communication from pods)</li>
 <li>Ingress (enables communication from the outside world to the service)</li>
 </ul>
-
 <p>The deployment needs to specify which version of the docker image is going to be run:</p>
-
-<pre><code class="language-yml">spec:
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">spec:
 containers:
 - name: gwa
   image: pmorelli92/go-with-azure:latest
   ports:
   - name: http
-    containerPort: 80
-</code></pre>
-
-<p>It is definitely not good to use <code>:latest</code> image on stage / production so the sed script will replace <code>:latest</code> with <code>0.0.X</code> (which will be the build number). This is also the same version that will be pushed to the selected docker registry: <a href="https://cloud.docker.com/u/pmorelli92/repository/docker/pmorelli92/go-with-azure">example</a>.</p>
-
+    containerPort: <span style="color:#ae81ff">80</span>
+</code></pre></div><p>It is definitely not good to use <code>:latest</code> image on stage / production so the sed script will replace <code>:latest</code> with <code>0.0.X</code> (which will be the build number). This is also the same version that will be pushed to the selected docker registry: <a href="https://cloud.docker.com/u/pmorelli92/repository/docker/pmorelli92/go-with-azure">example</a>.</p>
 
     <figure class="center" >
         <img src="/posts/images/docker-tags.png"   />
@@ -191,21 +136,15 @@ containers:
     </figure>
 
 
-
-<pre><code class="language-yml">- task: Kubernetes@0
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">- task: Kubernetes@<span style="color:#ae81ff">0</span>
   inputs:
-    kubernetesServiceConnection: 'pmorelli92-kubesail'
+    kubernetesServiceConnection: <span style="color:#e6db74">&#39;pmorelli92-kubesail&#39;</span>
     namespace: pmorelli92
     command: apply
-    arguments: '-f kubernetes/k8s-deployment.yml'
-</code></pre>
-
-<p>Finally, <code>kubernetesServiceConnection</code> is for indicating the connection created on the project settings; the namespace refers to a kubernetes namespace, and the command combined with arguments will be the equivalent of: <code>kubectl apply -f kubernetes/k8s-deployment.yml</code></p>
-
+    arguments: <span style="color:#e6db74">&#39;-f kubernetes/k8s-deployment.yml&#39;</span>
+</code></pre></div><p>Finally, <code>kubernetesServiceConnection</code> is for indicating the connection created on the project settings; the namespace refers to a kubernetes namespace, and the command combined with arguments will be the equivalent of: <code>kubectl apply -f kubernetes/k8s-deployment.yml</code></p>
 <p>This will create / update the specifications that are living on the folder or file; in this case: the deployment, service and ingress.</p>
-
 <p>If everything goes green, we can check that the pod version matches the latest one added on the docker registry.</p>
-
 
     <figure class="center" >
         <img src="/posts/images/pod-version.png"   />
@@ -214,9 +153,7 @@ containers:
     </figure>
 
 
-
 <p>The logs should display something like this:</p>
-
 
     <figure class="center" >
         <img src="/posts/images/cicd-logs.png"   />
@@ -225,16 +162,11 @@ containers:
     </figure>
 
 
-
 <p>And the demo app is now accessible from the following <a href="http://gwa-ingress.pmorelli92.c1.kubesail.io/health">link</a>.</p>
-
 <h2 id="summary">Summary</h2>
-
 <p>In this tutorial we have seen how easy it is to set up a quick CI/CD pipeline that could be improved further according to the business / technical needs.
 If I were to give a verdict on Azure Pipelines:</p>
-
 <p>Pros</p>
-
 <ul>
 <li>Provides support for CI/CD.</li>
 <li>Component of Azure Devops which also supplies: git repos, agile boards and reports.</li>
@@ -242,9 +174,7 @@ If I were to give a verdict on Azure Pipelines:</p>
 <li>Documentation is clear and updated.</li>
 <li>Backed by Microsoft.</li>
 </ul>
-
 <p>Cons</p>
-
 <ul>
 <li>Vendor lock in with some commands, that would need to be refactored in order to change CI/CD provider.</li>
 </ul>
@@ -259,86 +189,58 @@ If I were to give a verdict on Azure Pipelines:</p>
             <guid>https://devandchill.com/posts/2019/06/net-core-3.0-publish-single-file-binary-on-alpine-container/</guid>
             <description>The newly released dotnet 3 preview 6 has an interesting feature called publish single file where an application can be published as a self contained app that will extract and run on the platform it was compiled for.
 In order to add this feature in our .csproj, add the following lines:
-&amp;lt;PropertyGroup&amp;gt; &amp;lt;TargetFramework&amp;gt;netcoreapp3.0&amp;lt;/TargetFramework&amp;gt; &amp;lt;PublishTrimmed&amp;gt;true&amp;lt;/PublishTrimmed&amp;gt; &amp;lt;PublishReadyToRun&amp;gt;true&amp;lt;/PublishReadyToRun&amp;gt; &amp;lt;PublishSingleFile&amp;gt;true&amp;lt;/PublishSingleFile&amp;gt; &amp;lt;CrossGenDuringPublish&amp;gt;false&amp;lt;/CrossGenDuringPublish&amp;gt; &amp;lt;/PropertyGroup&amp;gt;  There are some flags that may sound weird, let&amp;rsquo;s go through them:</description>
-            <content type="html"><![CDATA[
-
-<p>The newly released <code>dotnet 3 preview 6</code> has an interesting feature called <code>publish single file</code> where an application can be published as a <code>self contained app</code> that will <strong>extract and run</strong> on the platform it was compiled for.</p>
-
+&amp;lt;PropertyGroup&amp;gt; &amp;lt;TargetFramework&amp;gt;netcoreapp3.0&amp;lt;/TargetFramework&amp;gt; &amp;lt;PublishTrimmed&amp;gt;true&amp;lt;/PublishTrimmed&amp;gt; &amp;lt;PublishReadyToRun&amp;gt;true&amp;lt;/PublishReadyToRun&amp;gt; &amp;lt;PublishSingleFile&amp;gt;true&amp;lt;/PublishSingleFile&amp;gt; &amp;lt;CrossGenDuringPublish&amp;gt;false&amp;lt;/CrossGenDuringPublish&amp;gt; &amp;lt;/PropertyGroup&amp;gt; There are some flags that may sound weird, let&#39;s go through them:</description>
+            <content type="html"><![CDATA[<p>The newly released <code>dotnet 3 preview 6</code> has an interesting feature called <code>publish single file</code> where an application can be published as a <code>self contained app</code> that will <strong>extract and run</strong> on the platform it was compiled for.</p>
 <p>In order to add this feature in our <code>.csproj</code>, add the following lines:</p>
-
-<pre><code class="language-xml">&lt;PropertyGroup&gt;
-  &lt;TargetFramework&gt;netcoreapp3.0&lt;/TargetFramework&gt;
-  &lt;PublishTrimmed&gt;true&lt;/PublishTrimmed&gt;
-  &lt;PublishReadyToRun&gt;true&lt;/PublishReadyToRun&gt;
-  &lt;PublishSingleFile&gt;true&lt;/PublishSingleFile&gt;
-  &lt;CrossGenDuringPublish&gt;false&lt;/CrossGenDuringPublish&gt;
-&lt;/PropertyGroup&gt;
-</code></pre>
-
-<p>There are some flags that may sound weird, let&rsquo;s go through them:</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;PropertyGroup</span><span style="color:#f92672">&gt;</span>
+  <span style="color:#f92672">&lt;TargetFramework</span><span style="color:#f92672">&gt;</span>netcoreapp3.0<span style="color:#f92672">&lt;/TargetFramework&gt;</span>
+  <span style="color:#f92672">&lt;PublishTrimmed</span><span style="color:#f92672">&gt;</span>true<span style="color:#f92672">&lt;/PublishTrimmed&gt;</span>
+  <span style="color:#f92672">&lt;PublishReadyToRun</span><span style="color:#f92672">&gt;</span>true<span style="color:#f92672">&lt;/PublishReadyToRun&gt;</span>
+  <span style="color:#f92672">&lt;PublishSingleFile</span><span style="color:#f92672">&gt;</span>true<span style="color:#f92672">&lt;/PublishSingleFile&gt;</span>
+  <span style="color:#f92672">&lt;CrossGenDuringPublish</span><span style="color:#f92672">&gt;</span>false<span style="color:#f92672">&lt;/CrossGenDuringPublish&gt;</span>
+<span style="color:#f92672">&lt;/PropertyGroup&gt;</span>
+</code></pre></div><p>There are some flags that may sound weird, let's go through them:</p>
 <ul>
 <li><code>PublishTrimmed</code> indicates to remove all the dotnet dependencies that are not being used by our code. When doing this in a real world application, it is very important to test it afterwards in case some dependency that is referenced by code (for example using reflection) is being trimmed as well.</li>
 <li><code>PublishReadyToRun</code> it is supposed to make the start time of our application faster, but in the process it will make the binary heavier.</li>
 <li><code>CrossGenDuringPublish</code> is a workaround that needs to be present for indicating the machine that is running the publish, that it should not bother with compilation for other RID (more about this below)</li>
 </ul>
-
 <p>After these flags had been set, the application is runnable using:</p>
-
 <pre><code>dotnet publish -r osx-x64 -c Release -o ./deploy
 ./deploy/&lt;APP_NAME&gt; &lt;- Execute the application
-</code></pre>
-
-<p>When publishing a single file, don&rsquo;t forget to add the <a href="https://docs.microsoft.com/en-us/dotnet/core/rid-catalog">runtime identifier catalog (RID)</a> corresponding to the platform where the application is going to be run. For example: <code>-r osx-x64</code></p>
-
-<p>With the basics of this feature already covered, let&rsquo;s move to the important bit.</p>
-
+</code></pre><p>When publishing a single file, don't forget to add the <a href="https://docs.microsoft.com/en-us/dotnet/core/rid-catalog">runtime identifier catalog (RID)</a> corresponding to the platform where the application is going to be run. For example: <code>-r osx-x64</code></p>
+<p>With the basics of this feature already covered, let's move to the important bit.</p>
 <h2 id="deploy-application-on-an-alpine-based-container">Deploy application on an Alpine based container</h2>
-
 <p>One important win using this approach is that the published binary does not need to be run in a container that has dotnet runtime installed. But one caveat for consideration is that those internal dependencies used under the hood by dotnet are still needed. There are two options:</p>
-
 <p>Use plain alpine and install dotnet internal dependencies:</p>
-
-<pre><code class="language-Dockerfile">FROM alpine
-RUN apk update &amp;&amp; apk add libstdc++ &amp;&amp; apk add libintl
-</code></pre>
-
-<p>Use <code>runtime-deps</code> alpine image from <a href="https://hub.docker.com/_/microsoft-dotnet-core-runtime-deps/">Microsoft</a>:</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Dockerfile" data-lang="Dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> alpine</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> apk update <span style="color:#f92672">&amp;&amp;</span> apk add libstdc++ <span style="color:#f92672">&amp;&amp;</span> apk add libintl<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>Use <code>runtime-deps</code> alpine image from <a href="https://hub.docker.com/_/microsoft-dotnet-core-runtime-deps/">Microsoft</a>:</p>
 <blockquote>
 <p>This image contains the native dependencies needed by .NET Core. It does not include .NET Core. It is for self-contained applications.</p>
 </blockquote>
-
-<pre><code class="language-Dockerfile">FROM mcr.microsoft.com/dotnet/core/runtime-deps:3.0.0-preview6-alpine3.9
-</code></pre>
-
-<p>With that being said, the next is straightforward:</p>
-
-<pre><code class="language-Dockerfile">FROM mcr.microsoft.com/dotnet/core/sdk:3.0.100-preview6-alpine3.9 AS build
-
-WORKDIR /app
-
-COPY . .
-
-RUN dotnet publish -r linux-musl-x64 -c Release -o ./deploy
-
-FROM mcr.microsoft.com/dotnet/core/runtime-deps:3.0.0-preview6-alpine3.9
-
-COPY --from=build /app/deploy ./app
-
-ENV ASPNETCORE_URLS http://*:5000
-
-EXPOSE 5000
-
-ENTRYPOINT [&quot;./app/&lt;APP_NAME&gt;&quot;]
-</code></pre>
-
-<p>Basically the <code>Dockerfile</code> is publishing the application (as a binary) on an alpine container with dotnet sdk installed. This is important because the <code>builder</code> has to use the same architecture than the runner. It is not possible to build a <code>linux-musk-x64</code> binary on a windows container.</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Dockerfile" data-lang="Dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> mcr.microsoft.com/dotnet/core/runtime-deps:3.0.0-preview6-alpine3.9</span><span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>With that being said, the next is straightforward:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Dockerfile" data-lang="Dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> mcr.microsoft.com/dotnet/core/sdk:3.0.100-preview6-alpine3.9 AS build</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /app</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> . .<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> dotnet publish -r linux-musl-x64 -c Release -o ./deploy<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> mcr.microsoft.com/dotnet/core/runtime-deps:3.0.0-preview6-alpine3.9</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> --from<span style="color:#f92672">=</span>build /app/deploy ./app<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> ASPNETCORE_URLS http://*:5000<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">EXPOSE</span><span style="color:#e6db74"> 5000</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENTRYPOINT</span> [<span style="color:#e6db74">&#34;./app/&lt;APP_NAME&gt;&#34;</span>]<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>Basically the <code>Dockerfile</code> is publishing the application (as a binary) on an alpine container with dotnet sdk installed. This is important because the <code>builder</code> has to use the same architecture than the runner. It is not possible to build a <code>linux-musk-x64</code> binary on a windows container.</p>
 <p>Then the result files (the binary and a single DLL) are copied to an alpine container only having dotnet runtime dependencies.</p>
-
 <p>At the end the <code>ENTRYPOINT</code> line is executed. Check that this one is not doing <code>dotnet app/&lt;APP_NAME&gt;</code> but just <code>./app/&lt;APP_NAME&gt;</code></p>
-
 <p>I did a sample API with this approach, <a href="https://github.com/pmorelli92/dotnet3.executable.api">which can be found my github</a>. The container weighted <code>91MB</code>, used <code>30MB RAM</code> and <code>0.08% CPU</code>. Awesome, right?</p>
 ]]></content>
         </item>
@@ -351,10 +253,7 @@ ENTRYPOINT [&quot;./app/&lt;APP_NAME&gt;&quot;]
             <guid>https://devandchill.com/posts/2019/06/sign-github-commits-using-mac/</guid>
             <description>Generally speaking, most organisations do not check if a commit is signed or not. Even worse, more companies do not care about this. It might subjective but I like to have the verified badge.
  If you commit from GitHub, for example: adding or editing a README, you will get the verified bagde. The same will happen with the client GitKraken, but if you commit using the git cli this will not happen unless you configure it.</description>
-            <content type="html"><![CDATA[
-
-<p>Generally speaking, most organisations do not check if a commit is signed or not. Even worse, more companies do not care about this. It might subjective but I like to have the <code>verified</code> badge.</p>
-
+            <content type="html"><![CDATA[<p>Generally speaking, most organisations do not check if a commit is signed or not. Even worse, more companies do not care about this. It might subjective but I like to have the <code>verified</code> badge.</p>
 
     <figure class="center" >
         <img src="/posts/images/verified-commit.png"   />
@@ -363,53 +262,30 @@ ENTRYPOINT [&quot;./app/&lt;APP_NAME&gt;&quot;]
     </figure>
 
 
-
 <p>If you commit from GitHub, for example: adding or editing a README, you will get the verified bagde. The same will happen with the client <code>GitKraken</code>, but if you commit using the <code>git cli</code> this will not happen unless you configure it.</p>
-
 <p>Now, I will assume that you are using a mac but in case you do not, you can google yourself some of the installation steps.</p>
-
 <h2 id="installing-gpg">Installing GPG</h2>
-
 <p>In order to sign a commit you will need to generate a key, and for this you are going to use <a href="https://gnupg.org/">GPG</a>. But first, you need brew to be installed, if you do not have it yet, it is a must have package manager for mac that you can download <a href="https://brew.sh/">here</a>.</p>
-
 <pre><code>&gt; brew install gnupg
 &gt; brew install pinentry-mac
 &gt; echo &quot;pinentry-program /usr/local/bin/pinentry-mac&quot; &gt;&gt; ~/.gnupg/gpg-agent.conf
 &gt; killall gpg-agent
-</code></pre>
-
-<p><a href="https://www.gnupg.org/related_software/pinentry/index.en.html">Pinentry</a> as it is stated on the GPG site it is a collection of dialogs that allows you, for example, to input the passphrase of the private key. In order for this to work we need to indicate the path where it is installed into the GPG configuration and then kill the service (just in case) for it to take the changes.</p>
-
+</code></pre><p><a href="https://www.gnupg.org/related_software/pinentry/index.en.html">Pinentry</a> as it is stated on the GPG site it is a collection of dialogs that allows you, for example, to input the passphrase of the private key. In order for this to work we need to indicate the path where it is installed into the GPG configuration and then kill the service (just in case) for it to take the changes.</p>
 <h2 id="generating-a-set-of-keys">Generating a set of keys</h2>
-
 <pre><code>&gt; gpg --full-generate-key
 (you can customise the key creation or just press enter to use the defaults)
-</code></pre>
-
-<p>Will generate a private key from which you are going to generate and export the public key. The id of the key will be shown when you generate the key or you can fetch it by running:</p>
-
+</code></pre><p>Will generate a private key from which you are going to generate and export the public key. The id of the key will be shown when you generate the key or you can fetch it by running:</p>
 <pre><code>&gt; gpg --list-secret-keys
-</code></pre>
-
-<p>And you will get something like this:</p>
-
+</code></pre><p>And you will get something like this:</p>
 <pre><code>sec   rsa2048 2019-06-07 [SC]
       KEY_ID_HERE
 uid   [  absolut ] Pablo Morelli &lt;devandchill@gmail.com&gt;
 ssb   rsa2048 2019-06-07 [E]
-</code></pre>
-
-<p>After you have your ID, execute:</p>
-
+</code></pre><p>After you have your ID, execute:</p>
 <pre><code>&gt; gpg --export --armor YOUR_KEY_ID 2&gt; cat
-</code></pre>
-
-<p>You will see the public key on the terminal, now you can copy it and go to GitHub.</p>
-
+</code></pre><p>You will see the public key on the terminal, now you can copy it and go to GitHub.</p>
 <h2 id="adding-public-key-to-github-account">Adding public key to GitHub account</h2>
-
 <p>Go to <code>Settings -&gt; SSH and GPG Keys -&gt; New GPG Key</code> and paste the content of your key and after submiting you will see something like this.</p>
-
 
     <figure class="center" >
         <img src="/posts/images/gpg-github.png"   />
@@ -418,60 +294,35 @@ ssb   rsa2048 2019-06-07 [E]
     </figure>
 
 
-
 <h2 id="doing-your-first-verified-commit">Doing your first verified commit</h2>
-
 <p>When you work with the <code>git cli</code> there is a huge probability that you work with different accounts (for example one for work and one personal) and/or that you have more than one GPG key on your system.
 To avoid problems with git not knowing which configuration to pick you will indicate that for the repo where you are standing or for all the repos you will use the GPG key that contains a certain ID.</p>
-
 <pre><code>&gt; git config --local gpg.program &quot;gpg&quot;
 &gt; git config --local user.signingKey &quot;YOUR_KEY_ID_INSIDE_THE_QUOTES&quot; // will apply to the working directory
 
 &gt; git config --global gpg.program &quot;gpg&quot;
 &gt; git config --global user.signingKey &quot;YOUR_KEY_ID_INSIDE_THE_QUOTES&quot; // will apply to the all the repositories except when overriden
-</code></pre>
-
-<p>You are almost ready to go, but you need to know that by default <code>git commit</code> does not sign the commits unless you specify the argument <code>-S</code>. So you have two options:</p>
-
+</code></pre><p>You are almost ready to go, but you need to know that by default <code>git commit</code> does not sign the commits unless you specify the argument <code>-S</code>. So you have two options:</p>
 <pre><code>&gt; git commit -S -m &quot;My commit message&quot;
-</code></pre>
-
-<p>Or you can setup automatic signing for the repository or all the repositories.</p>
-
+</code></pre><p>Or you can setup automatic signing for the repository or all the repositories.</p>
 <pre><code>&gt; git config --local commit.gpgsign &quot;true&quot;
 
 &gt; git config --global commit.gpgsign &quot;true&quot; // if you want to set up for all the repositories
-</code></pre>
-
-<p>If you did the step above, the argument <code>-S</code> is no longer needed.</p>
-
+</code></pre><p>If you did the step above, the argument <code>-S</code> is no longer needed.</p>
 <h2 id="checking-git-configuration">Checking git configuration</h2>
-
 <p>When you are unsure about your configuration you can execute <code>git config --local -l</code> to list the configuration for the working directory and you should see something like this:</p>
-
 <pre><code>gpg.program=gpg
 commit.gpgsign=true
 user.signingkey=YOUR_KEY_ID
-</code></pre>
-
-<h2 id="back-up-your-private-key">Back up your private key</h2>
-
+</code></pre><h2 id="back-up-your-private-key">Back up your private key</h2>
 <p>Keys are passwords, so you should save them somewhere safe and revoke + change periodically.
 It is trivial to revoke and to generate a new key for GitHub but it may be troublesome for some other systems that uses your public key.
-Now lets image that you change your computer, you wont be able to sign because you don&rsquo;t have your key; in this case a backup is recommended.</p>
-
+Now lets image that you change your computer, you wont be able to sign because you don't have your key; in this case a backup is recommended.</p>
 <pre><code>gpg --export-secret-keys YOUR_KEY_ID &gt; some_private_key_name
-</code></pre>
-
-<p>Now you can save this file to some secure vault, and if you ever need to import it on a new machine, execute:</p>
-
+</code></pre><p>Now you can save this file to some secure vault, and if you ever need to import it on a new machine, execute:</p>
 <pre><code>gpg --import some_private_key_name
-</code></pre>
-
-<h2 id="bonus-track">Bonus track</h2>
-
+</code></pre><h2 id="bonus-track">Bonus track</h2>
 <p>As I mentioned before, some times when you work using the <code>git cli</code> you end up mixing accounts, and it could happen to commit like this:</p>
-
 
     <figure class="center" >
         <img src="/posts/images/incorrect-user.png"   />
@@ -480,15 +331,11 @@ Now lets image that you change your computer, you wont be able to sign because y
     </figure>
 
 
-
 <p>You can of course leave it like that or do a rebase of the commit; but you can also check first using <code>git config --local -l</code> which is the <code>user.name</code> and <code>user.email</code> for that working directory.
 In case the email does not match with the email linked in GitHub you can change it doing:</p>
-
 <pre><code>&gt; git config --local user.name &quot;GitHub name&quot;
 &gt; git config --local user.email &quot;my.github@email.com&quot;
-</code></pre>
-
-<p>I hope you liked the post, if so, don&rsquo;t forget to share it so this can reach to more people :)</p>
+</code></pre><p>I hope you liked the post, if so, don't forget to share it so this can reach to more people :)</p>
 ]]></content>
         </item>
         
@@ -500,40 +347,32 @@ In case the email does not match with the email linked in GitHub you can change 
             <guid>https://devandchill.com/posts/2019/04/word-counter-sync-or-concurrent/</guid>
             <description>One day I was given the task of doing a whiteboard word counter algorithm. The requirements were:
  Print on console all the words and the quantity of times they appear on a 40.000 lines input. Make it as fast as possible.  For a start we can do it as simple as possible instead, and then try to see whether we can make it faster:
-func main() { fmt.</description>
-            <content type="html"><![CDATA[
-
-<p>One day I was given the task of doing a whiteboard <code>word counter</code> algorithm. The requirements were:</p>
-
+func main() { fmt.Println(wordCounter()) } func wordCounter() map[string]int { b, _ := ioutil.</description>
+            <content type="html"><![CDATA[<p>One day I was given the task of doing a whiteboard <code>word counter</code> algorithm. The requirements were:</p>
 <ul>
 <li>Print on console all the words and the quantity of times they appear on a 40.000 lines input.</li>
 <li>Make it as fast as possible.</li>
 </ul>
-
 <p>For a start we can do it as simple as possible instead, and then try to see whether we can make it faster:</p>
-
-<pre><code class="language-go">func main() {
-	fmt.Println(wordCounter())
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">wordCounter</span>())
 }
 
-func wordCounter() map[string]int {
-	b, _ := ioutil.ReadFile(&quot;input.txt&quot;)
-	inputText := string(b)
-	mostFrequent := make(map[string]int)
-	removeSpecial := regexp.MustCompile(`(?m)[^a-z]`)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">wordCounter</span>() <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span> {
+	<span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ioutil</span>.<span style="color:#a6e22e">ReadFile</span>(<span style="color:#e6db74">&#34;input.txt&#34;</span>)
+	<span style="color:#a6e22e">inputText</span> <span style="color:#f92672">:=</span> string(<span style="color:#a6e22e">b</span>)
+	<span style="color:#a6e22e">mostFrequent</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span>)
+	<span style="color:#a6e22e">removeSpecial</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">(?m)[^a-z]</span><span style="color:#e6db74">`</span>)
 
-	for _, w := range strings.Split(inputText, &quot; &quot;) {
-		w = strings.ToLower(w)
-		w = removeSpecial.ReplaceAllString(w, &quot;&quot;)
-		mostFrequent[w] = mostFrequent[w] + 1
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">w</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Split</span>(<span style="color:#a6e22e">inputText</span>, <span style="color:#e6db74">&#34; &#34;</span>) {
+		<span style="color:#a6e22e">w</span> = <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">ToLower</span>(<span style="color:#a6e22e">w</span>)
+		<span style="color:#a6e22e">w</span> = <span style="color:#a6e22e">removeSpecial</span>.<span style="color:#a6e22e">ReplaceAllString</span>(<span style="color:#a6e22e">w</span>, <span style="color:#e6db74">&#34;&#34;</span>)
+		<span style="color:#a6e22e">mostFrequent</span>[<span style="color:#a6e22e">w</span>] = <span style="color:#a6e22e">mostFrequent</span>[<span style="color:#a6e22e">w</span>] <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
 	}
 
-	return mostFrequent
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">mostFrequent</span>
 }
-</code></pre>
-
-<p>If I had to explain the code it will be like this:</p>
-
+</code></pre></div><p>If I had to explain the code it will be like this:</p>
 <ol>
 <li>Read the file and put it on a string variable.</li>
 <li>Create the map structure that will hold a key (word) and a value (quantity)</li>
@@ -542,201 +381,142 @@ func wordCounter() map[string]int {
 <li>Lowercase it + execute the regex + add 1 to the map quantity for that word</li>
 <li>When we finish, we print to the console.</li>
 </ol>
-
 <p>This works fine, but we are using Go and every post you visit is probably talking about <code>goroutines</code> and how easy is to achieve concurrency. So what if I do the following?</p>
-
-<pre><code class="language-go">func main() {
-	fmt.Println(wordCounterConcurrent())
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">wordCounterConcurrent</span>())
 }
 
-func wordCounterConcurrent() map[string]int {
-	b, _ := ioutil.ReadFile(&quot;input.txt&quot;)
-	inputText := string(b)
-	mostFrequent := make(map[string]int)
-	removeSpecial := regexp.MustCompile(`(?m)[^a-z]`)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">wordCounterConcurrent</span>() <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span> {
+	<span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ioutil</span>.<span style="color:#a6e22e">ReadFile</span>(<span style="color:#e6db74">&#34;input.txt&#34;</span>)
+	<span style="color:#a6e22e">inputText</span> <span style="color:#f92672">:=</span> string(<span style="color:#a6e22e">b</span>)
+	<span style="color:#a6e22e">mostFrequent</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span>)
+	<span style="color:#a6e22e">removeSpecial</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">(?m)[^a-z]</span><span style="color:#e6db74">`</span>)
 
-	wg := sync.WaitGroup{}
+	<span style="color:#a6e22e">wg</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">WaitGroup</span>{}
 
-	for _, w := range strings.Split(inputText, &quot; &quot;) {
-		wg.Add(1)
-		go func(w2 string) {
-			defer wg.Done()
-			w2 = strings.ToLower(w2)
-			w2 = removeSpecial.ReplaceAllString(w2, &quot;&quot;)
-			mostFrequent[w2] = mostFrequent[w2] + 1
-		}(w)
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">w</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Split</span>(<span style="color:#a6e22e">inputText</span>, <span style="color:#e6db74">&#34; &#34;</span>) {
+		<span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#ae81ff">1</span>)
+		<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">w2</span> <span style="color:#66d9ef">string</span>) {
+			<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Done</span>()
+			<span style="color:#a6e22e">w2</span> = <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">ToLower</span>(<span style="color:#a6e22e">w2</span>)
+			<span style="color:#a6e22e">w2</span> = <span style="color:#a6e22e">removeSpecial</span>.<span style="color:#a6e22e">ReplaceAllString</span>(<span style="color:#a6e22e">w2</span>, <span style="color:#e6db74">&#34;&#34;</span>)
+			<span style="color:#a6e22e">mostFrequent</span>[<span style="color:#a6e22e">w2</span>] = <span style="color:#a6e22e">mostFrequent</span>[<span style="color:#a6e22e">w2</span>] <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+		}(<span style="color:#a6e22e">w</span>)
 	}
 
-	wg.Wait()
-	return mostFrequent
+	<span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Wait</span>()
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">mostFrequent</span>
 }
-</code></pre>
-
-<p>The differences in this snippet and the first one are the following:</p>
-
+</code></pre></div><p>The differences in this snippet and the first one are the following:</p>
 <ol>
 <li>We defined a <code>WaitGroup</code> that will allow us to:
-
 <ul>
 <li>Add a counter every time a goroutine is fired.</li>
 <li>Block the main goroutine with the <code>wg.Wait()</code> until all the other goroutines are finished.</li>
 <li><em>Decrease</em> the counter executing <code>wg.Done()</code> every time a goroutine is finished.</li>
-</ul></li>
+</ul>
+</li>
 <li>We put the functionality that is going to be executed for each word in an <code>anonymous function</code>. So now, we can use the word <code>go</code> to execute that function in a different goroutine.</li>
 </ol>
-
 <p>Does this work? Unfortunately no. If we execute the following:</p>
-
 <pre><code>&gt; go run main.go --race
 fatal error: concurrent map read and map write
-</code></pre>
-
-<p>Basically the race detector is telling us that some of the goroutines can execute this line at the same moment:</p>
-
-<pre><code class="language-go">mostFrequent[w2] = mostFrequent[w2] + 1
-</code></pre>
-
-<p>If the map does not want to be written at the same time by two different goroutines we should use some sort of <code>queue</code> and then consume the values in a single threaded process. Fortunately, Go have us covered with <code>channels</code>.</p>
-
+</code></pre><p>Basically the race detector is telling us that some of the goroutines can execute this line at the same moment:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">mostFrequent</span>[<span style="color:#a6e22e">w2</span>] = <span style="color:#a6e22e">mostFrequent</span>[<span style="color:#a6e22e">w2</span>] <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+</code></pre></div><p>If the map does not want to be written at the same time by two different goroutines we should use some sort of <code>queue</code> and then consume the values in a single threaded process. Fortunately, Go have us covered with <code>channels</code>.</p>
 <p>Doing the following modifications should work:</p>
-
-<pre><code class="language-go">func main() {
-	fmt.Println(wordCounterConcurrent())
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">wordCounterConcurrent</span>())
 }
 
-func wordCounterConcurrent() map[string]int {
-    runtime.GOMAXPROCS(4) //Make sure we use all processors
-	b, _ := ioutil.ReadFile(&quot;input.txt&quot;)
-	inputText := string(b)
-	mostFrequent := make(map[string]int)
-	removeSpecial := regexp.MustCompile(`(?m)[^a-z]`)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">wordCounterConcurrent</span>() <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span> {
+    <span style="color:#a6e22e">runtime</span>.<span style="color:#a6e22e">GOMAXPROCS</span>(<span style="color:#ae81ff">4</span>) <span style="color:#75715e">//Make sure we use all processors
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ioutil</span>.<span style="color:#a6e22e">ReadFile</span>(<span style="color:#e6db74">&#34;input.txt&#34;</span>)
+	<span style="color:#a6e22e">inputText</span> <span style="color:#f92672">:=</span> string(<span style="color:#a6e22e">b</span>)
+	<span style="color:#a6e22e">mostFrequent</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span>)
+	<span style="color:#a6e22e">removeSpecial</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">(?m)[^a-z]</span><span style="color:#e6db74">`</span>)
 
-	doneChan := make(chan bool)
-	wordsChan := make(chan string)
+	<span style="color:#a6e22e">doneChan</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">bool</span>)
+	<span style="color:#a6e22e">wordsChan</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">string</span>)
 
-	go func() {
-		for {
-			select {
-			case w := &lt;-wordsChan:
-				mostFrequent[w] = mostFrequent[w] + 1
-			case &lt;-doneChan:
-				return
+	<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+		<span style="color:#66d9ef">for</span> {
+			<span style="color:#66d9ef">select</span> {
+			<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">w</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">wordsChan</span>:
+				<span style="color:#a6e22e">mostFrequent</span>[<span style="color:#a6e22e">w</span>] = <span style="color:#a6e22e">mostFrequent</span>[<span style="color:#a6e22e">w</span>] <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+			<span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">doneChan</span>:
+				<span style="color:#66d9ef">return</span>
 			}
 		}
 	}()
 
-	wg := sync.WaitGroup{}
+	<span style="color:#a6e22e">wg</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">WaitGroup</span>{}
 
-	for _, w := range strings.Split(inputText, &quot; &quot;) {
-		wg.Add(1)
-		go func(w1 string) {
-			defer wg.Done()
-			w1 = strings.ToLower(w1)
-			w1 = removeSpecial.ReplaceAllString(w1, &quot;&quot;)
-			wordsChan &lt;- w1
-		}(w)
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">w</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Split</span>(<span style="color:#a6e22e">inputText</span>, <span style="color:#e6db74">&#34; &#34;</span>) {
+		<span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#ae81ff">1</span>)
+		<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">w1</span> <span style="color:#66d9ef">string</span>) {
+			<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Done</span>()
+			<span style="color:#a6e22e">w1</span> = <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">ToLower</span>(<span style="color:#a6e22e">w1</span>)
+			<span style="color:#a6e22e">w1</span> = <span style="color:#a6e22e">removeSpecial</span>.<span style="color:#a6e22e">ReplaceAllString</span>(<span style="color:#a6e22e">w1</span>, <span style="color:#e6db74">&#34;&#34;</span>)
+			<span style="color:#a6e22e">wordsChan</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">w1</span>
+		}(<span style="color:#a6e22e">w</span>)
 	}
 
-	wg.Wait()
-	doneChan &lt;- true
-	return mostFrequent
+	<span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Wait</span>()
+	<span style="color:#a6e22e">doneChan</span> <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">true</span>
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">mostFrequent</span>
 }
-</code></pre>
-
-<p>But now the code growth a lot, lets look at it by parts:</p>
-
+</code></pre></div><p>But now the code growth a lot, lets look at it by parts:</p>
 <p>In order to declare channels we use the following syntax</p>
-
-<pre><code class="language-go">doneChan := make(chan bool)
-wordsChan := make(chan string)
-</code></pre>
-
-<p>Now, if we go to the words goroutines we can see that instead of performing operations using the map we are just pushing a value into a channel.</p>
-
-<pre><code class="language-go">wordsChan &lt;- w1
-</code></pre>
-
-<p>The operations using the map, then will be performed when we read a value from the channel (blocking action since it is not a buffered channel)</p>
-
-<pre><code class="language-go">w := &lt;-wordsChan:
-</code></pre>
-
-<p>For that we have the following:</p>
-
-<pre><code class="language-go">go func() {
-    for {
-        select {
-        case w := &lt;-wordsChan:
-            mostFrequent[w] = mostFrequent[w] + 1
-        case &lt;-doneChan:
-            return
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">doneChan</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">bool</span>)
+<span style="color:#a6e22e">wordsChan</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">string</span>)
+</code></pre></div><p>Now, if we go to the words goroutines we can see that instead of performing operations using the map we are just pushing a value into a channel.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">wordsChan</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">w1</span>
+</code></pre></div><p>The operations using the map, then will be performed when we read a value from the channel (blocking action since it is not a buffered channel)</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">w</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">wordsChan</span>:
+</code></pre></div><p>For that we have the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+    <span style="color:#66d9ef">for</span> {
+        <span style="color:#66d9ef">select</span> {
+        <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">w</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">wordsChan</span>:
+            <span style="color:#a6e22e">mostFrequent</span>[<span style="color:#a6e22e">w</span>] = <span style="color:#a6e22e">mostFrequent</span>[<span style="color:#a6e22e">w</span>] <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+        <span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">doneChan</span>:
+            <span style="color:#66d9ef">return</span>
         }
     }
 }()
-</code></pre>
-
-<p>This piece of code will read from the <code>wordsChannel</code> and perform the map operation; and also read from the <code>doneChannel</code> to stop the goroutine.</p>
-
+</code></pre></div><p>This piece of code will read from the <code>wordsChannel</code> and perform the map operation; and also read from the <code>doneChannel</code> to stop the goroutine.</p>
 <p>The message to the <code>doneChannel</code> will only be submitted after all words goroutines are finished.</p>
-
-<pre><code class="language-go">wg.Wait()
-doneChan &lt;- true
-</code></pre>
-
-<p>Now if we run this algorithm we will see that is not failing anymore. Let&rsquo;s then move to benchmarking.</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Wait</span>()
+<span style="color:#a6e22e">doneChan</span> <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">true</span>
+</code></pre></div><p>Now if we run this algorithm we will see that is not failing anymore. Let's then move to benchmarking.</p>
 <h2 id="benchmark">Benchmark</h2>
-
 <p>We are going to do this in two different ways: using the command-line utility time and executing an idiomatic Go benchmark.</p>
-
 <pre><code>&gt; go test -run=XXX -bench=.
-</code></pre>
-
-<pre><code>BenchmarkWordCounter-8                       100          16685557 ns/op
+</code></pre><pre><code>BenchmarkWordCounter-8                       100          16685557 ns/op
 BenchmarkWordCounterConcurrent-8              30          46959704 ns/op
-</code></pre>
-
-<p>This is telling us that the sync version executed <code>100 times</code> and each execution took approx <code>16685557 nanoseconds</code>, meanwhile in the same time the concurrent version only got executed <code>30 times</code> because each execution took approx <code>46959704 nanoseconds</code>.</p>
-
+</code></pre><p>This is telling us that the sync version executed <code>100 times</code> and each execution took approx <code>16685557 nanoseconds</code>, meanwhile in the same time the concurrent version only got executed <code>30 times</code> because each execution took approx <code>46959704 nanoseconds</code>.</p>
 <p>Wait, What?</p>
-
-<p>Let&rsquo;s do it with this:</p>
-
+<p>Let's do it with this:</p>
 <pre><code>&gt; go build
 &gt; time ./go-word-counter
-</code></pre>
-
-<pre><code>(SYNC)
+</code></pre><pre><code>(SYNC)
 ./go-word-counter  0.02s user 0.00s system 57% cpu 0.048 total
 (CONCURRENT)
 ./go-word-counter  0.31s user 0.04s system 362% cpu 0.096 total
-</code></pre>
-
-<p>So the sync version takes approx <code>0.048</code> and <code>57% cpu</code> and the concurrent one <code>0.096</code> and <code>362% cpu</code>.</p>
-
-<p>We are sure that the function is running concurrently (hence the CPU usage), but shouldn&rsquo;t that mean it has to run faster? NO.</p>
-
+</code></pre><p>So the sync version takes approx <code>0.048</code> and <code>57% cpu</code> and the concurrent one <code>0.096</code> and <code>362% cpu</code>.</p>
+<p>We are sure that the function is running concurrently (hence the CPU usage), but shouldn't that mean it has to run faster? NO.</p>
 <p>If we look at the code we can see that the parts that get executed inside the word goroutines takes less to execute than all the orchestration needed for pulling a word from a channel.</p>
-
 <p>Things would be different if we add a sleep like this:</p>
-
-<pre><code class="language-go">w1 = strings.ToLower(w1)
-w1 = removeSpecial.ReplaceAllString(w1, &quot;&quot;)
-time.Sleep(200)
-</code></pre>
-
-<p>And then the benchmark:</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">w1</span> = <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">ToLower</span>(<span style="color:#a6e22e">w1</span>)
+<span style="color:#a6e22e">w1</span> = <span style="color:#a6e22e">removeSpecial</span>.<span style="color:#a6e22e">ReplaceAllString</span>(<span style="color:#a6e22e">w1</span>, <span style="color:#e6db74">&#34;&#34;</span>)
+<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#ae81ff">200</span>)
+</code></pre></div><p>And then the benchmark:</p>
 <pre><code>BenchmarkWordCounter-8                        10         171650568 ns/op
 BenchmarkWordCounterConcurrent-8              20          54229310 ns/op
-</code></pre>
-
-<p>In this scenario we can clearly see how the concurrent way outperforms the sync one.</p>
-
+</code></pre><p>In this scenario we can clearly see how the concurrent way outperforms the sync one.</p>
 <p>So we started with a single goroutine algorithm, we evolved it to run using more than one goroutine and having an orchestration for the algorithm to work. At the end we did a benchmark and compared the results.</p>
-
 <p>The value we can get out of this is to avoid <code>premature optimization</code>, how to <code>KISS (Keep it simple and stupid)</code>; and the most important one: We learned that concurrent flows are beneficial when the code inside the goroutine is CPU/time intensive.</p>
-
 <p>👉 <a href="https://github.com/pmorelli92/go-word-counter">Repository with source files used</a> 👈</p>
 ]]></content>
         </item>
@@ -751,119 +531,91 @@ BenchmarkWordCounterConcurrent-8              20          54229310 ns/op
 It may sound irrelevant to bother with this when you are learning the language; but, every time I am browsing .net core applications or libraries on GitHub, I find it extremely unappealing when certain projects are not structured in a conventional way.
 My starting point was the following talk:</description>
             <content type="html"><![CDATA[<p>When I started learning Golang (a couple of months ago) one of the things that I concerned most with was the <strong>project structure</strong>.</p>
-
 <p>It may sound irrelevant to bother with this when you are learning the language; but, every time I am browsing .net core applications or libraries on GitHub, I find it extremely unappealing when certain projects are not structured in a conventional way.</p>
-
 <p>My starting point was the following talk:</p>
-
 
 <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
   <iframe src="https://www.youtube.com/embed/oL6JBUk6tj0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
 </div>
 
-
 <p>Being that I did not know how to manage dependencies, I started investigating and saw that lots of people were using <code>dep</code>, and how bad could it be?</p>
-
 <p>I started building a sample app that that could be containerised (again, just to see how the Dockerfile would look like), and the following happened:</p>
-
-<pre><code class="language-dockerfile">FROM golang:1.11 AS builder
-
-COPY . /go/src/github.com/pmorelli92/go-ddd-cqrs/
-WORKDIR /go/src/github.com/pmorelli92/go-ddd-cqrs/
-
-RUN set -x &amp;&amp; go get github.com/golang/dep/cmd/dep &amp;&amp; dep ensure -v
-
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o goapp ./cmd/server/main.go
-
-FROM scratch
-WORKDIR /root/
-COPY --from=builder /go/src/github.com/pmorelli92/go-ddd-cqrs/goapp .
-
-EXPOSE 8080
-ENTRYPOINT [&quot;./goapp&quot;]
-</code></pre>
-
-<p>That Dockerfile, as ugly as it looks, was the result of some iterations were I was getting path errors, dependency errors, and others. The constraint of only working on <code>GOPATH</code> gave me headaches and I had to use a really bad <code>WORKDIR</code> as you can see above.</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> golang:1.11 AS builder</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> . /go/src/github.com/pmorelli92/go-ddd-cqrs/<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /go/src/github.com/pmorelli92/go-ddd-cqrs/</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> set -x <span style="color:#f92672">&amp;&amp;</span> go get github.com/golang/dep/cmd/dep <span style="color:#f92672">&amp;&amp;</span> dep ensure -v<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> CGO_ENABLED<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> GOOS<span style="color:#f92672">=</span>linux GOARCH<span style="color:#f92672">=</span>amd64 go build -a -o goapp ./cmd/server/main.go<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> scratch</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /root/</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> --from<span style="color:#f92672">=</span>builder /go/src/github.com/pmorelli92/go-ddd-cqrs/goapp .<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">EXPOSE</span><span style="color:#e6db74"> 8080</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENTRYPOINT</span> [<span style="color:#e6db74">&#34;./goapp&#34;</span>]<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>That Dockerfile, as ugly as it looks, was the result of some iterations were I was getting path errors, dependency errors, and others. The constraint of only working on <code>GOPATH</code> gave me headaches and I had to use a really bad <code>WORKDIR</code> as you can see above.</p>
 <p>But then after some searching, I came across that <a href="https://github.com/golang/go/wiki/Modules">GO Modules</a> was supported from version 1.11, so I decided to give it a try.</p>
-
 <p>And this is how the Dockerfile looks like now:</p>
-
-<pre><code class="language-dockerfile">FROM golang:1.12 AS builder
-
-WORKDIR /app
-
-COPY go.mod .
-COPY go.sum .
-
-RUN go mod download
-
-COPY . .
-
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o goapp ./cmd/main.go
-
-FROM scratch
-COPY --from=builder /app/goapp .
-
-EXPOSE 8080
-ENTRYPOINT [&quot;./goapp&quot;]
-</code></pre>
-
-<p>We can achieve the same using <code>golang:1.11</code> but we wil have to execute an additional step <code>ENV GO111MODULE=on</code> before <code>RUN go mod download</code>.</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> golang:1.12 AS builder</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /app</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> go.mod .<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> go.sum .<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> go mod download<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> . .<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> CGO_ENABLED<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> GOOS<span style="color:#f92672">=</span>linux GOARCH<span style="color:#f92672">=</span>amd64 go build -a -o goapp ./cmd/main.go<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> scratch</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> --from<span style="color:#f92672">=</span>builder /app/goapp .<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">EXPOSE</span><span style="color:#e6db74"> 8080</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENTRYPOINT</span> [<span style="color:#e6db74">&#34;./goapp&#34;</span>]<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>We can achieve the same using <code>golang:1.11</code> but we wil have to execute an additional step <code>ENV GO111MODULE=on</code> before <code>RUN go mod download</code>.</p>
 <p>So how do we achieve this? Easily!</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">mkdir</span> <span style="color:#a6e22e">my</span><span style="color:#f92672">-</span><span style="color:#a6e22e">demo</span> <span style="color:#75715e">// Create a project folder, or clone a github repository
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">cd</span> <span style="color:#a6e22e">my</span><span style="color:#f92672">-</span><span style="color:#a6e22e">demo</span>
+<span style="color:#a6e22e">touch</span> <span style="color:#a6e22e">main</span>.<span style="color:#66d9ef">go</span> <span style="color:#75715e">// Create a file if we are starting the project
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">go</span> <span style="color:#a6e22e">mod</span> <span style="color:#a6e22e">init</span> <span style="color:#a6e22e">my</span><span style="color:#f92672">-</span><span style="color:#a6e22e">demo</span> <span style="color:#75715e">// This will initiate the module
+</span></code></pre></div><p>After doing this, we can proceed installing dependencies by doing <code>go get -u &lt;path&gt;</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">go</span> <span style="color:#a6e22e">get</span> <span style="color:#f92672">-</span><span style="color:#a6e22e">u</span> <span style="color:#a6e22e">github</span>.<span style="color:#a6e22e">com</span><span style="color:#f92672">/</span><span style="color:#a6e22e">labstack</span><span style="color:#f92672">/</span><span style="color:#a6e22e">echo</span><span style="color:#f92672">/</span><span style="color:#a6e22e">v4</span>
+</code></pre></div><p>This will be tracked on the <code>go.mod</code> where it will state all the dependencies required for the project:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">my</span><span style="color:#f92672">-</span><span style="color:#a6e22e">demo</span> &gt; <span style="color:#a6e22e">cat</span> <span style="color:#66d9ef">go</span>.<span style="color:#a6e22e">mod</span>
+<span style="color:#a6e22e">module</span> <span style="color:#a6e22e">my</span><span style="color:#f92672">-</span><span style="color:#a6e22e">demo</span>
 
-<pre><code class="language-go">mkdir my-demo // Create a project folder, or clone a github repository
-cd my-demo
-touch main.go // Create a file if we are starting the project
-go mod init my-demo // This will initiate the module
-</code></pre>
+<span style="color:#66d9ef">go</span> <span style="color:#ae81ff">1.12</span>
 
-<p>After doing this, we can proceed installing dependencies by doing <code>go get -u &lt;path&gt;</code></p>
+<span style="color:#a6e22e">require</span> (
+	<span style="color:#a6e22e">github</span>.<span style="color:#a6e22e">com</span><span style="color:#f92672">/</span><span style="color:#a6e22e">davecgh</span><span style="color:#f92672">/</span><span style="color:#66d9ef">go</span><span style="color:#f92672">-</span><span style="color:#a6e22e">spew</span> <span style="color:#a6e22e">v1</span><span style="color:#ae81ff">.1</span><span style="color:#ae81ff">.1</span> <span style="color:#75715e">// indirect
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">github</span>.<span style="color:#a6e22e">com</span><span style="color:#f92672">/</span><span style="color:#a6e22e">labstack</span><span style="color:#f92672">/</span><span style="color:#a6e22e">echo</span><span style="color:#f92672">/</span><span style="color:#a6e22e">v4</span> <span style="color:#a6e22e">v4</span><span style="color:#ae81ff">.0</span><span style="color:#ae81ff">.0</span> <span style="color:#75715e">// indirect
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">github</span>.<span style="color:#a6e22e">com</span><span style="color:#f92672">/</span><span style="color:#a6e22e">mattn</span><span style="color:#f92672">/</span><span style="color:#66d9ef">go</span><span style="color:#f92672">-</span><span style="color:#a6e22e">colorable</span> <span style="color:#a6e22e">v0</span><span style="color:#ae81ff">.1</span><span style="color:#ae81ff">.1</span> <span style="color:#75715e">// indirect
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">github</span>.<span style="color:#a6e22e">com</span><span style="color:#f92672">/</span><span style="color:#a6e22e">mattn</span><span style="color:#f92672">/</span><span style="color:#66d9ef">go</span><span style="color:#f92672">-</span><span style="color:#a6e22e">isatty</span> <span style="color:#a6e22e">v0</span><span style="color:#ae81ff">.0</span><span style="color:#ae81ff">.7</span> <span style="color:#75715e">// indirect
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">github</span>.<span style="color:#a6e22e">com</span><span style="color:#f92672">/</span><span style="color:#a6e22e">stretchr</span><span style="color:#f92672">/</span><span style="color:#a6e22e">objx</span> <span style="color:#a6e22e">v0</span><span style="color:#ae81ff">.1</span><span style="color:#ae81ff">.1</span> <span style="color:#75715e">// indirect
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">github</span>.<span style="color:#a6e22e">com</span><span style="color:#f92672">/</span><span style="color:#a6e22e">valyala</span><span style="color:#f92672">/</span><span style="color:#a6e22e">fasttemplate</span> <span style="color:#a6e22e">v1</span><span style="color:#ae81ff">.0</span><span style="color:#ae81ff">.0</span> <span style="color:#75715e">// indirect
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">golang</span>.<span style="color:#a6e22e">org</span><span style="color:#f92672">/</span><span style="color:#a6e22e">x</span><span style="color:#f92672">/</span><span style="color:#a6e22e">crypto</span> <span style="color:#a6e22e">v0</span><span style="color:#ae81ff">.0</span><span style="color:#ae81ff">.0</span><span style="color:#f92672">-</span><span style="color:#ae81ff">20190313024323</span><span style="color:#f92672">-</span><span style="color:#a6e22e">a1f597ede03a</span> <span style="color:#75715e">// indirect
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">golang</span>.<span style="color:#a6e22e">org</span><span style="color:#f92672">/</span><span style="color:#a6e22e">x</span><span style="color:#f92672">/</span><span style="color:#a6e22e">sys</span> <span style="color:#a6e22e">v0</span><span style="color:#ae81ff">.0</span><span style="color:#ae81ff">.0</span><span style="color:#f92672">-</span><span style="color:#ae81ff">20190312061237</span><span style="color:#f92672">-</span><span style="color:#a6e22e">fead79001313</span> <span style="color:#75715e">// indirect
+</span><span style="color:#75715e"></span>)
+</code></pre></div><p>And we are done! Now we can edit the <code>main.go</code> to this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
-<pre><code class="language-go">go get -u github.com/labstack/echo/v4
-</code></pre>
+<span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;net/http&#34;</span>
+<span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;github.com/labstack/echo/v4&#34;</span>
 
-<p>This will be tracked on the <code>go.mod</code> where it will state all the dependencies required for the project:</p>
-
-<pre><code class="language-go">my-demo &gt; cat go.mod
-module my-demo
-
-go 1.12
-
-require (
-	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/labstack/echo/v4 v4.0.0 // indirect
-	github.com/mattn/go-colorable v0.1.1 // indirect
-	github.com/mattn/go-isatty v0.0.7 // indirect
-	github.com/stretchr/objx v0.1.1 // indirect
-	github.com/valyala/fasttemplate v1.0.0 // indirect
-	golang.org/x/crypto v0.0.0-20190313024323-a1f597ede03a // indirect
-	golang.org/x/sys v0.0.0-20190312061237-fead79001313 // indirect
-)
-</code></pre>
-
-<p>And we are done! Now we can edit the <code>main.go</code> to this:</p>
-
-<pre><code class="language-go">package main
-
-import &quot;net/http&quot;
-import &quot;github.com/labstack/echo/v4&quot;
-
-func main() {
-	e := echo.New()
-	e.GET(&quot;/hello&quot;, func(c echo.Context) error {
-		return c.JSON(http.StatusOK, &quot;hey there&quot;)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#a6e22e">e</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">echo</span>.<span style="color:#a6e22e">New</span>()
+	<span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">GET</span>(<span style="color:#e6db74">&#34;/hello&#34;</span>, <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">c</span> <span style="color:#a6e22e">echo</span>.<span style="color:#a6e22e">Context</span>) <span style="color:#66d9ef">error</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">JSON</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">StatusOK</span>, <span style="color:#e6db74">&#34;hey there&#34;</span>)
 	})
 
-	_ = e.Start(&quot;:8080&quot;)
+	<span style="color:#a6e22e">_</span> = <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">Start</span>(<span style="color:#e6db74">&#34;:8080&#34;</span>)
 }
-</code></pre>
-
-<p>If now we look again at <code>go.mod</code> we should see that the module <code>github.com/labstack/echo/v4 v4.0.0</code> is no longer indirect, that means that it is being actively used on the code.</p>
-
+</code></pre></div><p>If now we look again at <code>go.mod</code> we should see that the module <code>github.com/labstack/echo/v4 v4.0.0</code> is no longer indirect, that means that it is being actively used on the code.</p>
 <p><strong>Things to remember</strong></p>
-
 <ul>
 <li>Both go.mod and <code>go.sum</code> have to be committed.</li>
 <li>When building a docker file, in order to take advantage of the layered cache steps, we should first copy <code>go.mod</code> and <code>go.sum</code> and then executing <code>RUN go mod download</code>; after that, we can safely copy our code.</li>
