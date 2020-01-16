@@ -162,7 +162,7 @@ containers:
     </figure>
 
 
-<p>And the demo app is now accessible from the following <a href="http://gwa-ingress.pmorelli92.c1.kubesail.io/health">link</a>.</p>
+<p>And the demo app is now accessible from the following <a href="http://gwa-ingress.pmorelli92.c1.kubesail.org/health">link</a>.</p>
 <h2 id="summary">Summary</h2>
 <p>In this tutorial we have seen how easy it is to set up a quick CI/CD pipeline that could be improved further according to the business / technical needs.
 If I were to give a verdict on Azure Pipelines:</p>
