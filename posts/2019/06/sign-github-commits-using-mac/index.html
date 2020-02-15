@@ -190,7 +190,7 @@ user.signingkey=YOUR_KEY_ID
 </code></pre><h2 id="back-up-your-private-key">Back up your private key</h2>
 <p>Keys are passwords, so you should save them somewhere safe and revoke + change periodically.
 It is trivial to revoke and to generate a new key for GitHub but it may be troublesome for some other systems that uses your public key.
-Now lets image that you change your computer, you wont be able to sign because you don't have your key; in this case a backup is recommended.</p>
+Now lets image that you change your computer, you wont be able to sign because you don&rsquo;t have your key; in this case a backup is recommended.</p>
 <pre><code>gpg --export-secret-keys YOUR_KEY_ID &gt; some_private_key_name
 </code></pre><p>Now you can save this file to some secure vault, and if you ever need to import it on a new machine, execute:</p>
 <pre><code>gpg --import some_private_key_name
@@ -208,7 +208,7 @@ Now lets image that you change your computer, you wont be able to sign because y
 In case the email does not match with the email linked in GitHub you can change it doing:</p>
 <pre><code>&gt; git config --local user.name &quot;GitHub name&quot;
 &gt; git config --local user.email &quot;my.github@email.com&quot;
-</code></pre><p>I hope you liked the post, if so, don't forget to share it so this can reach to more people :)</p>
+</code></pre><p>I hope you liked the post, if so, don&rsquo;t forget to share it so this can reach to more people :)</p>
 
             </div>
         </article>
@@ -266,12 +266,14 @@ In case the email does not match with the email linked in GitHub you can change 
         
 
         <section class="post-comments">
-    <h3>Comments</h3>
+  <h3>Comments</h3>
 
     
     
     
 
+    
+      
     
       
     
@@ -295,6 +297,7 @@ In case the email does not match with the email linked in GitHub you can change 
       <input type="submit" class="post-comment-field btn" value="Submit for Approval">
     </form>
   </section>
+
     </main>
 
             </div>

@@ -15,8 +15,8 @@
             <pubDate>Sat, 19 Oct 2019 22:22:29 +0200</pubDate>
             
             <guid>https://devandchill.com/posts/2019/10/azure-pipelines-build-a-dockerized-app-and-deploy-to-kubernetes/</guid>
-            <description>Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&#39;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files). Now I am currently working with Travis for CI and Flux for CD but I think it is always good to keep an eye on how the competitors are doing and what they have to offer.</description>
-            <content type="html"><![CDATA[<p>Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I've worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files). Now I am currently working with Travis for CI and Flux for CD but I think it is always good to keep an eye on how the competitors are doing and what they have to offer.</p>
+            <description>Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&amp;rsquo;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files). Now I am currently working with Travis for CI and Flux for CD but I think it is always good to keep an eye on how the competitors are doing and what they have to offer.</description>
+            <content type="html"><![CDATA[<p>Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&rsquo;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files). Now I am currently working with Travis for CI and Flux for CD but I think it is always good to keep an eye on how the competitors are doing and what they have to offer.</p>
 <p>For this tutorial, I only had to link my github account to Azure Devops in order to use its functionality. That being said, I did not have to put my credit card or billing information so it is safe to say that it is free, at least for hobby usages.</p>
 <p>The tutorial will cover:</p>
 <ul>
@@ -59,58 +59,58 @@ Scroll down to service connections and you should see something like this:</p>
 <p>The ✔️ indicates that the CI process ran successfully, when the build is ongoing a yellow circle will appear, and if the build fails ❌ will be shown.</p>
 <h2 id="configuring-cicd">Configuring CI/CD</h2>
 <p>Back to the azure-pipelines.yml:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">trigger:
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#66d9ef">trigger</span>:
 - master
 
-pool:
-  vmImage: <span style="color:#e6db74">&#39;ubuntu-latest&#39;</span>
+<span style="color:#66d9ef">pool</span>:
+  <span style="color:#66d9ef">vmImage</span>: <span style="color:#e6db74">&#39;ubuntu-latest&#39;</span>
 
-variables:
-  buildNumber: <span style="color:#ae81ff">0.0</span>.$(Build.BuildId)
+<span style="color:#66d9ef">variables</span>:
+  <span style="color:#66d9ef">buildNumber</span>: <span style="color:#ae81ff">0.0</span>.$(Build.BuildId)
 
-steps:
-- task: Docker@<span style="color:#ae81ff">2</span>
-  inputs:
-    containerRegistry: <span style="color:#e6db74">&#39;pmorelli92-docker-hub&#39;</span>
-    repository: <span style="color:#e6db74">&#39;pmorelli92/go-with-azure&#39;</span>
-    command: <span style="color:#e6db74">&#39;buildAndPush&#39;</span>
-    Dockerfile: <span style="color:#e6db74">&#39;**/Dockerfile&#39;</span>
-    tags: <span style="color:#e6db74">|
+<span style="color:#66d9ef">steps</span>:
+- <span style="color:#66d9ef">task</span>: Docker@<span style="color:#ae81ff">2</span>
+  <span style="color:#66d9ef">inputs</span>:
+    <span style="color:#66d9ef">containerRegistry</span>: <span style="color:#e6db74">&#39;pmorelli92-docker-hub&#39;</span>
+    <span style="color:#66d9ef">repository</span>: <span style="color:#e6db74">&#39;pmorelli92/go-with-azure&#39;</span>
+    <span style="color:#66d9ef">command</span>: <span style="color:#e6db74">&#39;buildAndPush&#39;</span>
+    <span style="color:#66d9ef">Dockerfile</span>: <span style="color:#e6db74">&#39;**/Dockerfile&#39;</span>
+    <span style="color:#66d9ef">tags</span>: <span style="color:#e6db74">|
 </span><span style="color:#e6db74">     </span><span style="color:#e6db74"> </span><span style="color:#e6db74">$(buildNumber)</span>
       latest
-- bash: sed -i <span style="color:#e6db74">&#34;s/latest/$(buildNumber)/g&#34;</span> kubernetes/k8s-deployment.yml
-- task: Kubernetes@<span style="color:#ae81ff">0</span>
-  inputs:
-    kubernetesServiceConnection: <span style="color:#e6db74">&#39;pmorelli92-kubesail&#39;</span>
-    namespace: pmorelli92
-    command: apply
-    arguments: <span style="color:#e6db74">&#39;-f kubernetes/k8s-deployment.yml&#39;</span>
-</code></pre></div><p>Let's split them:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">trigger:
+- <span style="color:#66d9ef">bash</span>: sed -i <span style="color:#e6db74">&#34;s/latest/$(buildNumber)/g&#34;</span> kubernetes/k8s-deployment.yml
+- <span style="color:#66d9ef">task</span>: Kubernetes@<span style="color:#ae81ff">0</span>
+  <span style="color:#66d9ef">inputs</span>:
+    <span style="color:#66d9ef">kubernetesServiceConnection</span>: <span style="color:#e6db74">&#39;pmorelli92-kubesail&#39;</span>
+    <span style="color:#66d9ef">namespace</span>: pmorelli92
+    <span style="color:#66d9ef">command</span>: apply
+    <span style="color:#66d9ef">arguments</span>: <span style="color:#e6db74">&#39;-f kubernetes/k8s-deployment.yml&#39;</span>
+</code></pre></div><p>Let&rsquo;s split them:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#66d9ef">trigger</span>:
 - master
 </code></pre></div><p>Associated on which branch the CI/CD will execute.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">pool:
-  vmImage: <span style="color:#e6db74">&#39;ubuntu-latest&#39;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#66d9ef">pool</span>:
+  <span style="color:#66d9ef">vmImage</span>: <span style="color:#e6db74">&#39;ubuntu-latest&#39;</span>
 </code></pre></div><p>Relates to the machine that will execute the commands.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">variables:
-  buildNumber: <span style="color:#ae81ff">0.0</span>.$(Build.BuildId)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#66d9ef">variables</span>:
+  <span style="color:#66d9ef">buildNumber</span>: <span style="color:#ae81ff">0.0</span>.$(Build.BuildId)
 </code></pre></div><p>Global variables that are going to be used on the pipeline.
 In this case, the example repository is using semver for building versions.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">steps:
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#66d9ef">steps</span>:
 </code></pre></div><p>Represents a chain of commands that will be executed in order. This is not the full power of pipelines, since it supports a higher order hierarchy where you can specify <code>stages -&gt; jobs -&gt; steps</code>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">- task: Docker@<span style="color:#ae81ff">2</span>
-  inputs:
-    containerRegistry: <span style="color:#e6db74">&#39;pmorelli92-docker-hub&#39;</span>
-    repository: <span style="color:#e6db74">&#39;pmorelli92/go-with-azure&#39;</span>
-    command: <span style="color:#e6db74">&#39;buildAndPush&#39;</span>
-    Dockerfile: <span style="color:#e6db74">&#39;**/Dockerfile&#39;</span>
-    tags: <span style="color:#e6db74">|
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">- <span style="color:#66d9ef">task</span>: Docker@<span style="color:#ae81ff">2</span>
+  <span style="color:#66d9ef">inputs</span>:
+    <span style="color:#66d9ef">containerRegistry</span>: <span style="color:#e6db74">&#39;pmorelli92-docker-hub&#39;</span>
+    <span style="color:#66d9ef">repository</span>: <span style="color:#e6db74">&#39;pmorelli92/go-with-azure&#39;</span>
+    <span style="color:#66d9ef">command</span>: <span style="color:#e6db74">&#39;buildAndPush&#39;</span>
+    <span style="color:#66d9ef">Dockerfile</span>: <span style="color:#e6db74">&#39;**/Dockerfile&#39;</span>
+    <span style="color:#66d9ef">tags</span>: <span style="color:#e6db74">|
 </span><span style="color:#e6db74">     </span><span style="color:#e6db74"> </span><span style="color:#e6db74">$(buildNumber)</span>
       latest
 </code></pre></div><p>This is a built-in command of pipelines, where we can (among other things) build and push docker images.</p>
 <p>The input named repository indicates the name of the repository on the container registry (which was set up on the project settings).</p>
 <p>If this command fails, the other ones will not be invoked.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">bash: sed -i <span style="color:#e6db74">&#34;s/latest/$(buildNumber)/g&#34;</span> kubernetes/k8s-deployment.yml
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#66d9ef">bash</span>: sed -i <span style="color:#e6db74">&#34;s/latest/$(buildNumber)/g&#34;</span> kubernetes/k8s-deployment.yml
 </code></pre></div><p>A discussion could be hold on whether if a service should self contain information of deployment or be agnostic of it. As a personal preference, I think having everything related to the application on the same repository enables easier discoverability.</p>
 <p>Of course, we are not having any secrets here, if that was the case, Azure Pipelines offers a way to store them safely inside the azure devops project.</p>
 <p>That being said, the repository contains a <a href="https://github.com/pmorelli92/go-with-azure/blob/master/kubernetes/k8s-deployment.yml">file</a> <code>kubernetes/k8s-deployment.yml</code> which describes:</p>
@@ -120,13 +120,13 @@ In this case, the example repository is using semver for building versions.</p>
 <li>Ingress (enables communication from the outside world to the service)</li>
 </ul>
 <p>The deployment needs to specify which version of the docker image is going to be run:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">spec:
-containers:
-- name: gwa
-  image: pmorelli92/go-with-azure:latest
-  ports:
-  - name: http
-    containerPort: <span style="color:#ae81ff">80</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#66d9ef">spec</span>:
+<span style="color:#66d9ef">containers</span>:
+- <span style="color:#66d9ef">name</span>: gwa
+  <span style="color:#66d9ef">image</span>: pmorelli92/go-with-azure:latest
+  <span style="color:#66d9ef">ports</span>:
+  - <span style="color:#66d9ef">name</span>: http
+    <span style="color:#66d9ef">containerPort</span>: <span style="color:#ae81ff">80</span>
 </code></pre></div><p>It is definitely not good to use <code>:latest</code> image on stage / production so the sed script will replace <code>:latest</code> with <code>0.0.X</code> (which will be the build number). This is also the same version that will be pushed to the selected docker registry: <a href="https://cloud.docker.com/u/pmorelli92/repository/docker/pmorelli92/go-with-azure">example</a>.</p>
 
     <figure class="center" >
@@ -136,12 +136,12 @@ containers:
     </figure>
 
 
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">- task: Kubernetes@<span style="color:#ae81ff">0</span>
-  inputs:
-    kubernetesServiceConnection: <span style="color:#e6db74">&#39;pmorelli92-kubesail&#39;</span>
-    namespace: pmorelli92
-    command: apply
-    arguments: <span style="color:#e6db74">&#39;-f kubernetes/k8s-deployment.yml&#39;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">- <span style="color:#66d9ef">task</span>: Kubernetes@<span style="color:#ae81ff">0</span>
+  <span style="color:#66d9ef">inputs</span>:
+    <span style="color:#66d9ef">kubernetesServiceConnection</span>: <span style="color:#e6db74">&#39;pmorelli92-kubesail&#39;</span>
+    <span style="color:#66d9ef">namespace</span>: pmorelli92
+    <span style="color:#66d9ef">command</span>: apply
+    <span style="color:#66d9ef">arguments</span>: <span style="color:#e6db74">&#39;-f kubernetes/k8s-deployment.yml&#39;</span>
 </code></pre></div><p>Finally, <code>kubernetesServiceConnection</code> is for indicating the connection created on the project settings; the namespace refers to a kubernetes namespace, and the command combined with arguments will be the equivalent of: <code>kubectl apply -f kubernetes/k8s-deployment.yml</code></p>
 <p>This will create / update the specifications that are living on the folder or file; in this case: the deployment, service and ingress.</p>
 <p>If everything goes green, we can check that the pod version matches the latest one added on the docker registry.</p>
@@ -189,7 +189,7 @@ If I were to give a verdict on Azure Pipelines:</p>
             <guid>https://devandchill.com/posts/2019/06/net-core-3.0-publish-single-file-binary-on-alpine-container/</guid>
             <description>The newly released dotnet 3 preview 6 has an interesting feature called publish single file where an application can be published as a self contained app that will extract and run on the platform it was compiled for.
 In order to add this feature in our .csproj, add the following lines:
-&amp;lt;PropertyGroup&amp;gt; &amp;lt;TargetFramework&amp;gt;netcoreapp3.0&amp;lt;/TargetFramework&amp;gt; &amp;lt;PublishTrimmed&amp;gt;true&amp;lt;/PublishTrimmed&amp;gt; &amp;lt;PublishReadyToRun&amp;gt;true&amp;lt;/PublishReadyToRun&amp;gt; &amp;lt;PublishSingleFile&amp;gt;true&amp;lt;/PublishSingleFile&amp;gt; &amp;lt;CrossGenDuringPublish&amp;gt;false&amp;lt;/CrossGenDuringPublish&amp;gt; &amp;lt;/PropertyGroup&amp;gt; There are some flags that may sound weird, let&#39;s go through them:</description>
+&amp;lt;PropertyGroup&amp;gt; &amp;lt;TargetFramework&amp;gt;netcoreapp3.0&amp;lt;/TargetFramework&amp;gt; &amp;lt;PublishTrimmed&amp;gt;true&amp;lt;/PublishTrimmed&amp;gt; &amp;lt;PublishReadyToRun&amp;gt;true&amp;lt;/PublishReadyToRun&amp;gt; &amp;lt;PublishSingleFile&amp;gt;true&amp;lt;/PublishSingleFile&amp;gt; &amp;lt;CrossGenDuringPublish&amp;gt;false&amp;lt;/CrossGenDuringPublish&amp;gt; &amp;lt;/PropertyGroup&amp;gt; There are some flags that may sound weird, let&amp;rsquo;s go through them:</description>
             <content type="html"><![CDATA[<p>The newly released <code>dotnet 3 preview 6</code> has an interesting feature called <code>publish single file</code> where an application can be published as a <code>self contained app</code> that will <strong>extract and run</strong> on the platform it was compiled for.</p>
 <p>In order to add this feature in our <code>.csproj</code>, add the following lines:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;PropertyGroup</span><span style="color:#f92672">&gt;</span>
@@ -199,7 +199,7 @@ In order to add this feature in our .csproj, add the following lines:
   <span style="color:#f92672">&lt;PublishSingleFile</span><span style="color:#f92672">&gt;</span>true<span style="color:#f92672">&lt;/PublishSingleFile&gt;</span>
   <span style="color:#f92672">&lt;CrossGenDuringPublish</span><span style="color:#f92672">&gt;</span>false<span style="color:#f92672">&lt;/CrossGenDuringPublish&gt;</span>
 <span style="color:#f92672">&lt;/PropertyGroup&gt;</span>
-</code></pre></div><p>There are some flags that may sound weird, let's go through them:</p>
+</code></pre></div><p>There are some flags that may sound weird, let&rsquo;s go through them:</p>
 <ul>
 <li><code>PublishTrimmed</code> indicates to remove all the dotnet dependencies that are not being used by our code. When doing this in a real world application, it is very important to test it afterwards in case some dependency that is referenced by code (for example using reflection) is being trimmed as well.</li>
 <li><code>PublishReadyToRun</code> it is supposed to make the start time of our application faster, but in the process it will make the binary heavier.</li>
@@ -208,8 +208,8 @@ In order to add this feature in our .csproj, add the following lines:
 <p>After these flags had been set, the application is runnable using:</p>
 <pre><code>dotnet publish -r osx-x64 -c Release -o ./deploy
 ./deploy/&lt;APP_NAME&gt; &lt;- Execute the application
-</code></pre><p>When publishing a single file, don't forget to add the <a href="https://docs.microsoft.com/en-us/dotnet/core/rid-catalog">runtime identifier catalog (RID)</a> corresponding to the platform where the application is going to be run. For example: <code>-r osx-x64</code></p>
-<p>With the basics of this feature already covered, let's move to the important bit.</p>
+</code></pre><p>When publishing a single file, don&rsquo;t forget to add the <a href="https://docs.microsoft.com/en-us/dotnet/core/rid-catalog">runtime identifier catalog (RID)</a> corresponding to the platform where the application is going to be run. For example: <code>-r osx-x64</code></p>
+<p>With the basics of this feature already covered, let&rsquo;s move to the important bit.</p>
 <h2 id="deploy-application-on-an-alpine-based-container">Deploy application on an Alpine based container</h2>
 <p>One important win using this approach is that the published binary does not need to be run in a container that has dotnet runtime installed. But one caveat for consideration is that those internal dependencies used under the hood by dotnet are still needed. There are two options:</p>
 <p>Use plain alpine and install dotnet internal dependencies:</p>
@@ -317,7 +317,7 @@ user.signingkey=YOUR_KEY_ID
 </code></pre><h2 id="back-up-your-private-key">Back up your private key</h2>
 <p>Keys are passwords, so you should save them somewhere safe and revoke + change periodically.
 It is trivial to revoke and to generate a new key for GitHub but it may be troublesome for some other systems that uses your public key.
-Now lets image that you change your computer, you wont be able to sign because you don't have your key; in this case a backup is recommended.</p>
+Now lets image that you change your computer, you wont be able to sign because you don&rsquo;t have your key; in this case a backup is recommended.</p>
 <pre><code>gpg --export-secret-keys YOUR_KEY_ID &gt; some_private_key_name
 </code></pre><p>Now you can save this file to some secure vault, and if you ever need to import it on a new machine, execute:</p>
 <pre><code>gpg --import some_private_key_name
@@ -335,7 +335,7 @@ Now lets image that you change your computer, you wont be able to sign because y
 In case the email does not match with the email linked in GitHub you can change it doing:</p>
 <pre><code>&gt; git config --local user.name &quot;GitHub name&quot;
 &gt; git config --local user.email &quot;my.github@email.com&quot;
-</code></pre><p>I hope you liked the post, if so, don't forget to share it so this can reach to more people :)</p>
+</code></pre><p>I hope you liked the post, if so, don&rsquo;t forget to share it so this can reach to more people :)</p>
 ]]></content>
         </item>
         
@@ -489,7 +489,7 @@ fatal error: concurrent map read and map write
 <p>The message to the <code>doneChannel</code> will only be submitted after all words goroutines are finished.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Wait</span>()
 <span style="color:#a6e22e">doneChan</span> <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">true</span>
-</code></pre></div><p>Now if we run this algorithm we will see that is not failing anymore. Let's then move to benchmarking.</p>
+</code></pre></div><p>Now if we run this algorithm we will see that is not failing anymore. Let&rsquo;s then move to benchmarking.</p>
 <h2 id="benchmark">Benchmark</h2>
 <p>We are going to do this in two different ways: using the command-line utility time and executing an idiomatic Go benchmark.</p>
 <pre><code>&gt; go test -run=XXX -bench=.
@@ -497,7 +497,7 @@ fatal error: concurrent map read and map write
 BenchmarkWordCounterConcurrent-8              30          46959704 ns/op
 </code></pre><p>This is telling us that the sync version executed <code>100 times</code> and each execution took approx <code>16685557 nanoseconds</code>, meanwhile in the same time the concurrent version only got executed <code>30 times</code> because each execution took approx <code>46959704 nanoseconds</code>.</p>
 <p>Wait, What?</p>
-<p>Let's do it with this:</p>
+<p>Let&rsquo;s do it with this:</p>
 <pre><code>&gt; go build
 &gt; time ./go-word-counter
 </code></pre><pre><code>(SYNC)
@@ -505,7 +505,7 @@ BenchmarkWordCounterConcurrent-8              30          46959704 ns/op
 (CONCURRENT)
 ./go-word-counter  0.31s user 0.04s system 362% cpu 0.096 total
 </code></pre><p>So the sync version takes approx <code>0.048</code> and <code>57% cpu</code> and the concurrent one <code>0.096</code> and <code>362% cpu</code>.</p>
-<p>We are sure that the function is running concurrently (hence the CPU usage), but shouldn't that mean it has to run faster? NO.</p>
+<p>We are sure that the function is running concurrently (hence the CPU usage), but shouldn&rsquo;t that mean it has to run faster? NO.</p>
 <p>If we look at the code we can see that the parts that get executed inside the word goroutines takes less to execute than all the orchestration needed for pulling a word from a channel.</p>
 <p>Things would be different if we add a sleep like this:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">w1</span> = <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">ToLower</span>(<span style="color:#a6e22e">w1</span>)

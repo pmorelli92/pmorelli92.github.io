@@ -270,7 +270,7 @@ fatal error: concurrent map read and map write
 <p>The message to the <code>doneChannel</code> will only be submitted after all words goroutines are finished.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Wait</span>()
 <span style="color:#a6e22e">doneChan</span> <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">true</span>
-</code></pre></div><p>Now if we run this algorithm we will see that is not failing anymore. Let's then move to benchmarking.</p>
+</code></pre></div><p>Now if we run this algorithm we will see that is not failing anymore. Let&rsquo;s then move to benchmarking.</p>
 <h2 id="benchmark">Benchmark</h2>
 <p>We are going to do this in two different ways: using the command-line utility time and executing an idiomatic Go benchmark.</p>
 <pre><code>&gt; go test -run=XXX -bench=.
@@ -278,7 +278,7 @@ fatal error: concurrent map read and map write
 BenchmarkWordCounterConcurrent-8              30          46959704 ns/op
 </code></pre><p>This is telling us that the sync version executed <code>100 times</code> and each execution took approx <code>16685557 nanoseconds</code>, meanwhile in the same time the concurrent version only got executed <code>30 times</code> because each execution took approx <code>46959704 nanoseconds</code>.</p>
 <p>Wait, What?</p>
-<p>Let's do it with this:</p>
+<p>Let&rsquo;s do it with this:</p>
 <pre><code>&gt; go build
 &gt; time ./go-word-counter
 </code></pre><pre><code>(SYNC)
@@ -286,7 +286,7 @@ BenchmarkWordCounterConcurrent-8              30          46959704 ns/op
 (CONCURRENT)
 ./go-word-counter  0.31s user 0.04s system 362% cpu 0.096 total
 </code></pre><p>So the sync version takes approx <code>0.048</code> and <code>57% cpu</code> and the concurrent one <code>0.096</code> and <code>362% cpu</code>.</p>
-<p>We are sure that the function is running concurrently (hence the CPU usage), but shouldn't that mean it has to run faster? NO.</p>
+<p>We are sure that the function is running concurrently (hence the CPU usage), but shouldn&rsquo;t that mean it has to run faster? NO.</p>
 <p>If we look at the code we can see that the parts that get executed inside the word goroutines takes less to execute than all the orchestration needed for pulling a word from a channel.</p>
 <p>Things would be different if we add a sleep like this:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">w1</span> = <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">ToLower</span>(<span style="color:#a6e22e">w1</span>)
@@ -356,12 +356,14 @@ BenchmarkWordCounterConcurrent-8              20          54229310 ns/op
         
 
         <section class="post-comments">
-    <h3>Comments</h3>
+  <h3>Comments</h3>
 
     
     
     
 
+    
+      
     
       
     
@@ -373,9 +375,9 @@ BenchmarkWordCounterConcurrent-8              20          54229310 ns/op
               <img class="post-comment-avatar" src="https://www.gravatar.com/avatar/3b100ba6433125885405e02b92a35481?s=100">
               <p class="post-comment-info"><strong>Kardå Chalak</strong><br>18/07/2019 11:8</p>
             </div>
-            Great blogpost!
+            <p>Great blogpost!</p>
+<p>Enjoyed it alot :)</p>
 
-Enjoyed it alot :)
           </div>
         
       
@@ -396,6 +398,7 @@ Enjoyed it alot :)
       <input type="submit" class="post-comment-field btn" value="Submit for Approval">
     </form>
   </section>
+
     </main>
 
             </div>
