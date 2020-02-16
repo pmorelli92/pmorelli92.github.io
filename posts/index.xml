@@ -6,8 +6,321 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
         <copyright>Pablo Morelli</copyright>
-        <lastBuildDate>Sat, 19 Oct 2019 22:22:29 +0200</lastBuildDate>
+        <lastBuildDate>Sun, 16 Feb 2020 09:22:29 +0100</lastBuildDate>
         <atom:link href="https://devandchill.com/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>Postgres: Building concurrently safe upsert queries (Part 1)</title>
+            <link>https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries-part-1/</link>
+            <pubDate>Sun, 16 Feb 2020 09:22:29 +0100</pubDate>
+            
+            <guid>https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries-part-1/</guid>
+            <description>Recently at the company I am working for, there was a need to communicate with an external service which required us to send some data along with an integer identifier. The problem is that IDs in our domain are not integers but uuid.
+The suggestion then was to have a service which creates an unique integer for a certain uuid. This way the int identifier won&amp;rsquo;t be leaked to any other part of the system.</description>
+            <content type="html"><![CDATA[<p>Recently at the company I am working for, there was a need to communicate with an external service which required us to send some data along with an integer identifier. The problem is that IDs in our domain are not integers but uuid.</p>
+<p>The suggestion then was to have a service which creates an unique integer for a certain uuid. This way the int identifier won&rsquo;t be leaked to any other part of the system.</p>
+
+    <figure class="center" >
+        <img src="/posts/images/intgen.png"   />
+
+        
+    </figure>
+
+
+<ol>
+<li>Internal system does a request to the integer generator.</li>
+<li>This service will generate the int representation for certain uuid.</li>
+<li>Internal system does a request to external service sending the int ID.</li>
+</ol>
+<p>That is fairly simple, but lets go through some more elaborated preconditions:</p>
+<ol>
+<li>For x uuid there will always be a unique y int.</li>
+<li>If the int representation is not created, create it.</li>
+<li>If the int representation is created, return it.</li>
+<li>The code should be concurrently safe.</li>
+</ol>
+<p>In this part of the series, different approaches are being listed. For obvious reasons these ones are not based on real business. Benchmarking is going to be displayed on the next part for the approaches 3, 4 and 5.</p>
+<h3 id="data-model">Data Model</h3>
+<p>Just to have more context on the snippets below, the database model will be the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> customers
+(
+  id SERIAL,
+  customer_id UUID <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span>
+);
+</code></pre></div><p>The approaches below are possible implementations for the <code>integer-generator</code>.</p>
+<h3 id="1-read--write">1. Read + write</h3>
+<ol>
+<li>Receive the <code>POST</code> request, parse the uuid.</li>
+<li>Execute query:</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> id
+<span style="color:#66d9ef">FROM</span> customers
+<span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1796b892-c988-4f96-8eb8-a7f6f965d266</span><span style="color:#e6db74">&#39;</span>
+</code></pre></div><ol start="3">
+<li>If the previous query returned a row, return the id.</li>
+<li>If not, insert the row and return the id:</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
+<span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1796b892-c988-4f96-8eb8-a7f6f965d266</span><span style="color:#e6db74">&#39;</span>)
+RETURNING id
+</code></pre></div><p>The problem with this approach is that if we get two consecutive calls hitting the <code>SELECT</code> at the same time while there is no row, both will try to add the row in the database. One will succeed and the other is going to fail.</p>
+<p>This can be fixed changing the insert to the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
+<span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1796b892-c988-4f96-8eb8-a7f6f965d266</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#66d9ef">ON</span> CONFLICT <span style="color:#66d9ef">DO</span> <span style="color:#66d9ef">NOTHING</span>
+RETURNING id
+</code></pre></div><p><code>ON CONFLICT DO NOTHING</code> will avoid the primary key exception! Yes, that is true, but when this clause does not update the row (<code>DO NOTHING</code>) the <code>RETURNING</code> row will be empty.</p>
+<p>This can be tested by executing several times the statement in point 4.</p>
+<pre><code>| id |
+| -- |
+| 1  |
+|    |
+|    |
+|    |
+</code></pre><hr>
+<h3 id="2-enter-transaction-read--write">2. Enter transaction: read + write</h3>
+<p>Same scenario than the one detailed above, but starting a transaction before executing the <code>SELECT</code>, and committing after the insert succeed.</p>
+<p>Unfortunately, transaction is not going to help in any way here. The <code>SELECT</code> will not lock any row because no row exists and this is not exactly the way Postgres handles locking. This means that two <code>SELECT</code> at the same time will not cause the latest to wait until the first transaction is committed.</p>
+<hr>
+<h3 id="3-transaction-advisory-lock--read--write">3. Transaction: advisory lock + read + write</h3>
+<ol>
+<li>Receive the <code>POST</code> request, parse the uuid.</li>
+<li>Begin the transaction:</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">BEGIN</span>
+</code></pre></div><ol start="3">
+<li>Get a lock using a numeric hash that represents x uuid in a deterministic way:</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> pg_advisory_xact_lock(<span style="color:#f92672">&lt;</span>bigint<span style="color:#f92672">&gt;</span>)
+</code></pre></div><ol start="4">
+<li>Execute query:</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> id
+<span style="color:#66d9ef">FROM</span> customers
+<span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1796b892-c988-4f96-8eb8-a7f6f965d266</span><span style="color:#e6db74">&#39;</span>
+</code></pre></div><ol start="5">
+<li>If the previous query returned a row, return the id.</li>
+<li>If not, insert the row and return the id:</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
+<span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1796b892-c988-4f96-8eb8-a7f6f965d266</span><span style="color:#e6db74">&#39;</span>)
+RETURNING id
+</code></pre></div><ol start="6">
+<li>Commit transaction:</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">COMMIT</span>
+</code></pre></div><p>Ok, now this works. But this is still far away from a good design. In the previous approach, the race condition existed because there was nothing to lock when there was no row to be found.</p>
+<p>In this approach, for certain uuid the same numeric hash will be generated. When starting a transaction, an exclusive transaction level advisory lock is obtained. If another transaction wants to execute the lock query using the same hash, it will have to wait until the first transaction ends with a commit or rollback.</p>
+<p>How to try this out?</p>
+<ul>
+<li>Open a database connection.</li>
+<li>Execute:</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">BEGIN</span>;
+<span style="color:#66d9ef">SELECT</span> pg_advisory_xact_lock(<span style="color:#ae81ff">12345</span>);
+</code></pre></div><ul>
+<li>Open another database connection.</li>
+<li>Execute:</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">BEGIN</span>;
+<span style="color:#66d9ef">SELECT</span> pg_advisory_xact_lock(<span style="color:#ae81ff">12345</span>);
+</code></pre></div><ul>
+<li>This last query will not respond until the first transaction finishes.</li>
+</ul>
+<p>What does this mean? It means that concurrency is being handled explicitly with locks in a way that won&rsquo;t scale when having multiple requests using the same uuid.</p>
+<p><em>Benchmark for this approach in part 2</em></p>
+<hr>
+<h3 id="4-on-conflict-update">4. On conflict, update</h3>
+<ol>
+<li>Receive the <code>POST</code> request, parse the uuid.</li>
+<li>Execute the query and return the result. This query will insert the row if it does not exist; and in case it does, it will just return the id. The update is required to return the desired id.</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
+<span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1796b892-c988-4f96-8eb8-a7f6f965d266</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#66d9ef">ON</span> CONFLICT (customer_id)
+<span style="color:#66d9ef">DO</span> <span style="color:#66d9ef">UPDATE</span> <span style="color:#66d9ef">SET</span> customer_id <span style="color:#f92672">=</span> excluded.customer_id
+RETURNING id
+</code></pre></div><p>The difference between the first example and this one, is that now the <code>DO NOTHING</code> is replaced by <code>DO UPDATE</code> and since an update is being executed; the returning row will never be empty. Moreover the concurrency problems are gone because they are handled by the database and not by code. This can be tested by executing several times the query.</p>
+<pre><code>| id |
+| -- |
+| 3  |
+| 3  |
+| 3  |
+| 3  |
+</code></pre><p>As simple as that. Looks great doesn&rsquo;t it? Well I thought so until a colleague proved me wrong when he linked this <a href="https://stackoverflow.com/a/42217872">awesome stack overflow answer</a>.</p>
+<blockquote>
+<p>[&hellip;] Do not update identical rows without need. Even if you see no difference on the surface, there are various side effects:</p>
+<ul>
+<li>It might fire triggers that should not be fired.</li>
+<li>It write-locks &ldquo;innocent&rdquo; rows, possibly incurring costs for concurrent transactions.</li>
+<li>It might make the row seem new, though it&rsquo;s old (transaction timestamp).</li>
+</ul>
+</blockquote>
+<p>How can one be sure that this is true?
+Executing the following query 5 times!</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
+<span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1796b892-c988-4f96-8eb8-a7f6f965d269</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#66d9ef">ON</span> CONFLICT (customer_id)
+<span style="color:#66d9ef">DO</span> <span style="color:#66d9ef">UPDATE</span> <span style="color:#66d9ef">SET</span> customer_id <span style="color:#f92672">=</span> excluded.customer_id
+RETURNING ctid, xmin, xmax, id
+</code></pre></div><p>Results:</p>
+<pre><code>| ctid  | xmin | xmax | id |
+| ----- | ---- | ---- | -- |
+| (0,1) | 5876 | 0    | 2  |
+| (0,2) | 5877 | 5877 | 2  |
+| (0,3) | 5878 | 5878 | 2  |
+| (0,4) | 5879 | 5879 | 2  |
+| (0,5) | 5880 | 5880 | 2  |
+</code></pre><p>What is the definition of <code>ctid</code>, <code>xmin</code> and <code>xmax</code>, and why do they keep increasing?
+<a href="https://www.postgresql.org/docs/8.2/ddl-system-columns.html">Documentation</a></p>
+<p><strong>ctid</strong></p>
+<blockquote>
+<p>The physical location of the row version within its table. Note that although the ctid can be used to locate the row version very quickly, a row&rsquo;s ctid will change if it is updated or moved by VACUUM FULL. Therefore ctid is useless as a long-term row identifier. A primary key should be used to identify logical rows.</p>
+</blockquote>
+<p><strong>xmin</strong></p>
+<blockquote>
+<p>The identity (transaction ID) of the inserting transaction for this row version. (A row version is an individual state of a row; each update of a row creates a new row version for the same logical row.)</p>
+</blockquote>
+<p><strong>xmax</strong></p>
+<blockquote>
+<p>The identity (transaction ID) of the deleting transaction, or zero for an undeleted row version. It is possible for this column to be nonzero in a visible row version. That usually indicates that the deleting transaction hasn&rsquo;t committed yet, or that an attempted deletion was rolled back.</p>
+</blockquote>
+<p>Summary:</p>
+<ul>
+<li><code>ctid</code> is the tuple id composed by <code>(page, item)</code>.</li>
+<li><code>xmin</code> is the creation transaction id of that row.</li>
+<li><code>xmax</code> is the destruction transaction id of that row.</li>
+</ul>
+<p>In order to elaborate it is important to take into consideration the MVCC (Multiversion Concurrency Control) nature of postgres. From the <a href="https://www.postgresql.org/docs/current/mvcc-intro.html">Documentation</a>:</p>
+<blockquote>
+<p>Each SQL statement sees a snapshot of data [&hellip;] regardless of the current state of the underlying data. This prevents statements from viewing inconsistent data produced by concurrent transactions performing updates on the same data rows. [&hellip;] MVCC, minimizes lock contention in order to allow for reasonable performance in multiuser environments.</p>
+</blockquote>
+<blockquote>
+<p>The main advantage of using the MVCC model of concurrency control rather than locking is [&hellip;] reading never blocks writing and writing never blocks reading.</p>
+</blockquote>
+<p>With that explained, lets introduce how an UPDATE works on postgres:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> EXTENSION pageinspect;
+
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
+<span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1796b892-c988-4f96-8eb8-a7f6f965d271</span><span style="color:#e6db74">&#39;</span>);
+
+<span style="color:#66d9ef">SELECT</span> t_ctid, t_xmin, t_xmax
+<span style="color:#66d9ef">FROM</span> heap_page_items(get_raw_page(<span style="color:#e6db74">&#39;</span><span style="color:#e6db74">customers</span><span style="color:#e6db74">&#39;</span>, <span style="color:#ae81ff">0</span>));
+
+
+<span style="color:#f92672">|</span> t_ctid  <span style="color:#f92672">|</span> t_xmin <span style="color:#f92672">|</span> t_xmax <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span> <span style="color:#75715e">------- | ------ | ------ |
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> (<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">1</span>)   <span style="color:#f92672">|</span> <span style="color:#ae81ff">5919</span>   <span style="color:#f92672">|</span> <span style="color:#ae81ff">0</span>      <span style="color:#f92672">|</span>
+</code></pre></div><ul>
+<li><code>t_ctid</code> indicates that the row is stored on page 0 and block 1.</li>
+<li>The transaction id used for the creation of the row (<code>t_xmin</code>) is 5919.</li>
+<li>The destruction transaction id (<code>t_xmax</code>) is 0 because no changes happened to the row.</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">UPDATE</span> customers
+<span style="color:#66d9ef">SET</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1796b892-c988-4f96-8eb8-a7f6f965d271</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1796b892-c988-4f96-8eb8-a7f6f965d271</span><span style="color:#e6db74">&#39;</span>
+
+<span style="color:#66d9ef">SELECT</span> t_ctid, t_xmin, t_xmax
+<span style="color:#66d9ef">FROM</span> heap_page_items(get_raw_page(<span style="color:#e6db74">&#39;</span><span style="color:#e6db74">customers</span><span style="color:#e6db74">&#39;</span>, <span style="color:#ae81ff">0</span>));
+
+<span style="color:#f92672">|</span> t_ctid  <span style="color:#f92672">|</span> t_xmin <span style="color:#f92672">|</span> t_xmax <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span> <span style="color:#75715e">------- | ------ | ------ |
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> (<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">2</span>)   <span style="color:#f92672">|</span> <span style="color:#ae81ff">5919</span>   <span style="color:#f92672">|</span> <span style="color:#ae81ff">5920</span>   <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span> (<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">2</span>)   <span style="color:#f92672">|</span> <span style="color:#ae81ff">5920</span>   <span style="color:#f92672">|</span> <span style="color:#ae81ff">0</span>      <span style="color:#f92672">|</span>
+</code></pre></div><p>Row #1</p>
+<ul>
+<li><code>t_ctid</code> indicates that the row is stored on page 0 and block 2.</li>
+<li>The transaction id used for the creation of the row (<code>t_xmin</code>) is 5919.</li>
+<li>The destruction transaction id (<code>t_xmax</code>) is 5920 because the row was <code>DELETED</code>.</li>
+</ul>
+<p>Row #2</p>
+<ul>
+<li><code>t_ctid</code> indicates that the row is stored on page 0 and block 2.</li>
+<li>The transaction id used for the creation of the row (<code>t_xmin</code>) is 5920.</li>
+<li>the destruction transaction id (<code>t_xmax</code>) is 0 because no changes happened to the row.</li>
+</ul>
+<p>As you can probably guess an <code>UPDATE</code> is a <code>DELETE + INSERT</code> under the hoods.</p>
+<p>With this explained, it is confirmed why doing <code>ON CONFLICT UPDATE</code> is not a good choice either.</p>
+<p><em>Benchmark for this approach in part 2</em></p>
+<hr>
+<h3 id="5-insert-first-read-later">5. Insert first, read later</h3>
+<p>On the first approach, the problem was that the <code>INSERT</code> query was not updating on conflict, thus the <code>RETURNING</code> row is empty when the row already exists. This can be solved by flipping the order of the statements.</p>
+<ol>
+<li>Receive the <code>POST</code> request, parse the uuid.</li>
+<li>Execute query:</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
+<span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1796b892-c988-4f96-8eb8-a7f6f965d266</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#66d9ef">ON</span> CONFLICT <span style="color:#66d9ef">DO</span> <span style="color:#66d9ef">NOTHING</span>;
+
+<span style="color:#66d9ef">SELECT</span> id
+<span style="color:#66d9ef">FROM</span> customers
+<span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1796b892-c988-4f96-8eb8-a7f6f965d266</span><span style="color:#e6db74">&#39;</span>
+</code></pre></div><p>It does not matter how many concurrent inserts are triggered at the same time, only the first one will get through and insert the row. Since the row is never updated (<code>ON CONFLICT DO NOTHING</code>) the <code>ctid</code>, <code>xmin</code>, and <code>xmax</code> will remain the same.</p>
+<p>After the <code>INSERT</code> is executed, the <code>SELECT</code> statement will return the id for the recently created / already existing row.</p>
+<p>But is this performant? For that lets <code>EXPLAIN ANALYZE</code> the queries:</p>
+<p>Insert (when there is no row):</p>
+<pre><code>Insert on customers
+  Conflict Resolution: NOTHING
+  Tuples Inserted: 1
+  Conflicting Tuples: 0
+Planning Time: 0.032 ms
+Execution Time: 0.190 ms
+</code></pre><p>Insert (when there is a conflict):</p>
+<pre><code>Insert on customers
+  Conflict Resolution: NOTHING
+  Tuples Inserted: 0
+  Conflicting Tuples: 1
+  -&gt;  Result
+Planning Time: 0.032 ms
+Execution Time: 0.244 ms
+</code></pre><p>Select query:</p>
+<pre><code>Index Scan using customers_pkey on customers
+  Index Cond: (customer_id = '...'::uuid)
+Planning Time: 0.069 ms
+Execution Time: 0.111 ms
+</code></pre><p>The summarization between the insert and the select is less than a millisecond for both cases. Don&rsquo;t worry, on the next part this is proven.</p>
+<p><em>Benchmark for this approach in part 2</em></p>
+<hr>
+<h3 id="bonus-for-non-postgres-users">Bonus for non Postgres users</h3>
+<p>In case your SQL engine does not support <code>ON CONFLICT DO NOTHING</code> this approach can still be used by changing the query to the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers (customer_id)
+<span style="color:#66d9ef">SELECT</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">8a57f8f4-aeed-412c-a6f6-5f9a03b17bc5</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#66d9ef">WHERE</span> (
+  <span style="color:#66d9ef">SELECT</span> <span style="color:#ae81ff">1</span>
+  <span style="color:#66d9ef">FROM</span> customers
+  <span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">8a57f8f4-aeed-412c-a6f6-5f9a03b17bc5</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#66d9ef">IS</span> <span style="color:#66d9ef">NULL</span>;
+
+<span style="color:#66d9ef">SELECT</span> id
+<span style="color:#66d9ef">FROM</span> customers
+<span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">8a57f8f4-aeed-412c-a6f6-5f9a03b17bc5</span><span style="color:#e6db74">&#39;</span>;
+</code></pre></div><p>The <code>ON CONFLICT DO NOTHING</code> is replaced by a <code>WHERE</code> clause. The execution plan for the last two approaches shows that the first is better, but the difference is almost inexistent.</p>
+<p>Insert query:</p>
+<pre><code>Insert on customers
+  InitPlan 1 (returns $0)
+    -&gt;  Index Only Scan using customers_pkey on customers customers_1
+          Index Cond: (customer_id = '...'::uuid)
+          Heap Fetches: 0
+  -&gt;  Result
+        One-Time Filter: ($0 IS NULL)
+Planning Time: 0.115 ms
+Execution Time: 0.263 ms
+</code></pre><p>Select query:</p>
+<pre><code>Index Scan using customers_pkey on customers
+  Index Cond: (customer_id = '...'::uuid)
+Planning Time: 0.069 ms
+Execution Time: 0.111 ms
+</code></pre><hr>
+<p>And that is all for part 1. On the next part, the benchmarks for the following approaches are going to be executed:</p>
+<ul>
+<li>Advisory lock</li>
+<li>On conflict update</li>
+<li>On conflict do nothing</li>
+</ul>
+<p>If you consider this is useful, do not hesitate on sharing on your favorite social media. See you next time!</p>
+]]></content>
+        </item>
         
         <item>
             <title>Azure Pipelines: Build a dockerized app and deploy to kubernetes</title>
@@ -340,67 +653,72 @@ In case the email does not match with the email linked in GitHub you can change 
         </item>
         
         <item>
-            <title>Word Counter: Sync or Concurrent?</title>
-            <link>https://devandchill.com/posts/2019/04/word-counter-sync-or-concurrent/</link>
+            <title>Word counter: Sync, concurrent or streams?</title>
+            <link>https://devandchill.com/posts/2019/04/word-counter-sync-concurrent-or-streams/</link>
             <pubDate>Wed, 10 Apr 2019 20:59:47 +0200</pubDate>
             
-            <guid>https://devandchill.com/posts/2019/04/word-counter-sync-or-concurrent/</guid>
+            <guid>https://devandchill.com/posts/2019/04/word-counter-sync-concurrent-or-streams/</guid>
             <description>One day I was given the task of doing a whiteboard word counter algorithm. The requirements were:
- Print on console all the words and the quantity of times they appear on a 40.000 lines input. Make it as fast as possible.  For a start we can do it as simple as possible instead, and then try to see whether we can make it faster:
-func main() { fmt.Println(wordCounter()) } func wordCounter() map[string]int { b, _ := ioutil.</description>
+ Print on console all the words and the quantity of times they appear on a 40.000 lines input. Make it as fast as possible.  For a start one can do it as simple as possible instead, and then try to see whether it can be made faster:
+func wordCounter() (words map[string]int) { b, err := ioutil.</description>
             <content type="html"><![CDATA[<p>One day I was given the task of doing a whiteboard <code>word counter</code> algorithm. The requirements were:</p>
 <ul>
 <li>Print on console all the words and the quantity of times they appear on a 40.000 lines input.</li>
 <li>Make it as fast as possible.</li>
 </ul>
-<p>For a start we can do it as simple as possible instead, and then try to see whether we can make it faster:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
-	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">wordCounter</span>())
-}
-
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">wordCounter</span>() <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span> {
-	<span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ioutil</span>.<span style="color:#a6e22e">ReadFile</span>(<span style="color:#e6db74">&#34;input.txt&#34;</span>)
-	<span style="color:#a6e22e">inputText</span> <span style="color:#f92672">:=</span> string(<span style="color:#a6e22e">b</span>)
-	<span style="color:#a6e22e">mostFrequent</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span>)
+<p>For a start one can do it as simple as possible instead, and then try to see whether it can be made faster:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">wordCounter</span>() (<span style="color:#a6e22e">words</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span>) {
+	<span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ioutil</span>.<span style="color:#a6e22e">ReadFile</span>(<span style="color:#e6db74">&#34;input.txt&#34;</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+	}
+	<span style="color:#a6e22e">removeLineBreaks</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">\r?\n</span><span style="color:#e6db74">`</span>)
+	<span style="color:#a6e22e">inputText</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">removeLineBreaks</span>.<span style="color:#a6e22e">ReplaceAllString</span>(string(<span style="color:#a6e22e">b</span>),<span style="color:#e6db74">&#34; &#34;</span>)
+	<span style="color:#a6e22e">words</span> = make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span>)
 	<span style="color:#a6e22e">removeSpecial</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">(?m)[^a-z]</span><span style="color:#e6db74">`</span>)
 
 	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">w</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Split</span>(<span style="color:#a6e22e">inputText</span>, <span style="color:#e6db74">&#34; &#34;</span>) {
 		<span style="color:#a6e22e">w</span> = <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">ToLower</span>(<span style="color:#a6e22e">w</span>)
 		<span style="color:#a6e22e">w</span> = <span style="color:#a6e22e">removeSpecial</span>.<span style="color:#a6e22e">ReplaceAllString</span>(<span style="color:#a6e22e">w</span>, <span style="color:#e6db74">&#34;&#34;</span>)
-		<span style="color:#a6e22e">mostFrequent</span>[<span style="color:#a6e22e">w</span>] = <span style="color:#a6e22e">mostFrequent</span>[<span style="color:#a6e22e">w</span>] <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">w</span> <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;&#34;</span> {
+			<span style="color:#a6e22e">words</span>[<span style="color:#a6e22e">w</span>]<span style="color:#f92672">++</span>
+		}
 	}
 
-	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">mostFrequent</span>
+	<span style="color:#66d9ef">return</span>
 }
-</code></pre></div><p>If I had to explain the code it will be like this:</p>
+</code></pre></div><p>What the code does is the following:</p>
 <ol>
-<li>Read the file and put it on a string variable.</li>
+<li>Read the file, remove the line breaks and put it on a string variable.</li>
 <li>Create the map structure that will hold a key (word) and a value (quantity)</li>
-<li>Create a regular expression for removing characters like <code>, ! ?</code></li>
+<li>Create a regular expression for removing punctuation characters like <code>, ! ?</code></li>
 <li>For each word in the text (splitting by spaces)</li>
-<li>Lowercase it + execute the regex + add 1 to the map quantity for that word</li>
+<li>Lowercase it + execute the regex + add 1 to the map quantity for that word.</li>
 <li>When we finish, we print to the console.</li>
 </ol>
-<p>This works fine, but we are using Go and every post you visit is probably talking about <code>goroutines</code> and how easy is to achieve concurrency. So what if I do the following?</p>
+<p>This works fine, but we are using Go and every post describing Go talks about <code>goroutines</code> and how easy is to achieve concurrency. So what the code is changed to the following?</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
 	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">wordCounterConcurrent</span>())
 }
 
 <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">wordCounterConcurrent</span>() <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span> {
-	<span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ioutil</span>.<span style="color:#a6e22e">ReadFile</span>(<span style="color:#e6db74">&#34;input.txt&#34;</span>)
-	<span style="color:#a6e22e">inputText</span> <span style="color:#f92672">:=</span> string(<span style="color:#a6e22e">b</span>)
-	<span style="color:#a6e22e">mostFrequent</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span>)
+	<span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ioutil</span>.<span style="color:#a6e22e">ReadFile</span>(<span style="color:#e6db74">&#34;input.txt&#34;</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+	}
+	<span style="color:#a6e22e">removeLineBreaks</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">\r?\n</span><span style="color:#e6db74">`</span>)
+	<span style="color:#a6e22e">inputText</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">removeLineBreaks</span>.<span style="color:#a6e22e">ReplaceAllString</span>(string(<span style="color:#a6e22e">b</span>),<span style="color:#e6db74">&#34; &#34;</span>)
+	<span style="color:#a6e22e">words</span> = make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span>)
 	<span style="color:#a6e22e">removeSpecial</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">(?m)[^a-z]</span><span style="color:#e6db74">`</span>)
 
 	<span style="color:#a6e22e">wg</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">WaitGroup</span>{}
-
 	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">w</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Split</span>(<span style="color:#a6e22e">inputText</span>, <span style="color:#e6db74">&#34; &#34;</span>) {
 		<span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#ae81ff">1</span>)
 		<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">w2</span> <span style="color:#66d9ef">string</span>) {
 			<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Done</span>()
 			<span style="color:#a6e22e">w2</span> = <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">ToLower</span>(<span style="color:#a6e22e">w2</span>)
 			<span style="color:#a6e22e">w2</span> = <span style="color:#a6e22e">removeSpecial</span>.<span style="color:#a6e22e">ReplaceAllString</span>(<span style="color:#a6e22e">w2</span>, <span style="color:#e6db74">&#34;&#34;</span>)
-			<span style="color:#a6e22e">mostFrequent</span>[<span style="color:#a6e22e">w2</span>] = <span style="color:#a6e22e">mostFrequent</span>[<span style="color:#a6e22e">w2</span>] <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+			<span style="color:#a6e22e">words</span>[<span style="color:#a6e22e">w2</span>]<span style="color:#f92672">++</span>
 		}(<span style="color:#a6e22e">w</span>)
 	}
 
@@ -422,18 +740,21 @@ func main() { fmt.Println(wordCounter()) } func wordCounter() map[string]int { b
 <pre><code>&gt; go run main.go --race
 fatal error: concurrent map read and map write
 </code></pre><p>Basically the race detector is telling us that some of the goroutines can execute this line at the same moment:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">mostFrequent</span>[<span style="color:#a6e22e">w2</span>] = <span style="color:#a6e22e">mostFrequent</span>[<span style="color:#a6e22e">w2</span>] <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">words</span>[<span style="color:#a6e22e">w2</span>]<span style="color:#f92672">++</span>
 </code></pre></div><p>If the map does not want to be written at the same time by two different goroutines we should use some sort of <code>queue</code> and then consume the values in a single threaded process. Fortunately, Go have us covered with <code>channels</code>.</p>
 <p>Doing the following modifications should work:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
 	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">wordCounterConcurrent</span>())
 }
 
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">wordCounterConcurrent</span>() <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span> {
-    <span style="color:#a6e22e">runtime</span>.<span style="color:#a6e22e">GOMAXPROCS</span>(<span style="color:#ae81ff">4</span>) <span style="color:#75715e">//Make sure we use all processors
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ioutil</span>.<span style="color:#a6e22e">ReadFile</span>(<span style="color:#e6db74">&#34;input.txt&#34;</span>)
-	<span style="color:#a6e22e">inputText</span> <span style="color:#f92672">:=</span> string(<span style="color:#a6e22e">b</span>)
-	<span style="color:#a6e22e">mostFrequent</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span>)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">wordCounterConcurrent</span>() (<span style="color:#a6e22e">words</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span>) {
+	<span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ioutil</span>.<span style="color:#a6e22e">ReadFile</span>(<span style="color:#e6db74">&#34;input.txt&#34;</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+	}
+	<span style="color:#a6e22e">removeLineBreaks</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">\r?\n</span><span style="color:#e6db74">`</span>)
+	<span style="color:#a6e22e">inputText</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">removeLineBreaks</span>.<span style="color:#a6e22e">ReplaceAllString</span>(string(<span style="color:#a6e22e">b</span>),<span style="color:#e6db74">&#34; &#34;</span>)
+	<span style="color:#a6e22e">words</span> = make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span>)
 	<span style="color:#a6e22e">removeSpecial</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">(?m)[^a-z]</span><span style="color:#e6db74">`</span>)
 
 	<span style="color:#a6e22e">doneChan</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">bool</span>)
@@ -443,7 +764,7 @@ fatal error: concurrent map read and map write
 		<span style="color:#66d9ef">for</span> {
 			<span style="color:#66d9ef">select</span> {
 			<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">w</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">wordsChan</span>:
-				<span style="color:#a6e22e">mostFrequent</span>[<span style="color:#a6e22e">w</span>] = <span style="color:#a6e22e">mostFrequent</span>[<span style="color:#a6e22e">w</span>] <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+				<span style="color:#a6e22e">words</span>[<span style="color:#a6e22e">w</span>]<span style="color:#f92672">++</span>
 			<span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">doneChan</span>:
 				<span style="color:#66d9ef">return</span>
 			}
@@ -458,66 +779,106 @@ fatal error: concurrent map read and map write
 			<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Done</span>()
 			<span style="color:#a6e22e">w1</span> = <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">ToLower</span>(<span style="color:#a6e22e">w1</span>)
 			<span style="color:#a6e22e">w1</span> = <span style="color:#a6e22e">removeSpecial</span>.<span style="color:#a6e22e">ReplaceAllString</span>(<span style="color:#a6e22e">w1</span>, <span style="color:#e6db74">&#34;&#34;</span>)
-			<span style="color:#a6e22e">wordsChan</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">w1</span>
+			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">w1</span> <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;&#34;</span> {
+				<span style="color:#a6e22e">wordsChan</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">w1</span>
+			}
 		}(<span style="color:#a6e22e">w</span>)
 	}
 
 	<span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Wait</span>()
 	<span style="color:#a6e22e">doneChan</span> <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">true</span>
-	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">mostFrequent</span>
+	<span style="color:#66d9ef">return</span>
 }
 </code></pre></div><p>But now the code growth a lot, lets look at it by parts:</p>
-<p>In order to declare channels we use the following syntax</p>
+<p>In order to declare channels the following syntax is required:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">doneChan</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">bool</span>)
 <span style="color:#a6e22e">wordsChan</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">string</span>)
-</code></pre></div><p>Now, if we go to the words goroutines we can see that instead of performing operations using the map we are just pushing a value into a channel.</p>
+</code></pre></div><p>Now, the words goroutines instead of performing operations using the map is just pushing a value into a channel.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">wordsChan</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">w1</span>
-</code></pre></div><p>The operations using the map, then will be performed when we read a value from the channel (blocking action since it is not a buffered channel)</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">w</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">wordsChan</span>:
-</code></pre></div><p>For that we have the following:</p>
+</code></pre></div><p>The operations using the map, then will be performed when a value is read from the channel (blocking action since it is not a buffered channel)</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
-    <span style="color:#66d9ef">for</span> {
-        <span style="color:#66d9ef">select</span> {
-        <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">w</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">wordsChan</span>:
-            <span style="color:#a6e22e">mostFrequent</span>[<span style="color:#a6e22e">w</span>] = <span style="color:#a6e22e">mostFrequent</span>[<span style="color:#a6e22e">w</span>] <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
-        <span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">doneChan</span>:
-            <span style="color:#66d9ef">return</span>
-        }
-    }
+	<span style="color:#66d9ef">for</span> {
+		<span style="color:#66d9ef">select</span> {
+		<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">w</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">wordsChan</span>:
+			<span style="color:#a6e22e">words</span>[<span style="color:#a6e22e">w</span>]<span style="color:#f92672">++</span>
+		<span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">doneChan</span>:
+			<span style="color:#66d9ef">return</span>
+		}
+	}
 }()
 </code></pre></div><p>This piece of code will read from the <code>wordsChannel</code> and perform the map operation; and also read from the <code>doneChannel</code> to stop the goroutine.</p>
 <p>The message to the <code>doneChannel</code> will only be submitted after all words goroutines are finished.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Wait</span>()
 <span style="color:#a6e22e">doneChan</span> <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">true</span>
-</code></pre></div><p>Now if we run this algorithm we will see that is not failing anymore. Let&rsquo;s then move to benchmarking.</p>
+</code></pre></div><p>Now if we run this algorithm we will see that is not failing anymore. Let’s then move to benchmarking.</p>
 <h2 id="benchmark">Benchmark</h2>
-<p>We are going to do this in two different ways: using the command-line utility time and executing an idiomatic Go benchmark.</p>
+<p>We are going to do this in two different ways: executing the idiomatic Go benchmark and using the command-line utility <code>time</code>.</p>
 <pre><code>&gt; go test -run=XXX -bench=.
-</code></pre><pre><code>BenchmarkWordCounter-8                       100          16685557 ns/op
-BenchmarkWordCounterConcurrent-8              30          46959704 ns/op
-</code></pre><p>This is telling us that the sync version executed <code>100 times</code> and each execution took approx <code>16685557 nanoseconds</code>, meanwhile in the same time the concurrent version only got executed <code>30 times</code> because each execution took approx <code>46959704 nanoseconds</code>.</p>
+</code></pre><pre><code>BenchmarkWordCounter-12               45   25.88 ms/op   4354027 B/op   124918 allocs/op
+BenchmarkWordCounterConcurrent-12     19   59.70 ms/op   5711640 B/op   138290 allocs/op
+</code></pre><p>This is telling us that the sync version executed <code>45 times</code> and each execution took approx <code>25.88 milliseconds</code>, meanwhile in the same time the concurrent version only got executed <code>19 times</code> because each execution took approx <code>59.70 milliseconds</code>.</p>
 <p>Wait, What?</p>
-<p>Let&rsquo;s do it with this:</p>
+<p>Let&rsquo;s try the following:</p>
 <pre><code>&gt; go build
 &gt; time ./go-word-counter
 </code></pre><pre><code>(SYNC)
-./go-word-counter  0.02s user 0.00s system 57% cpu 0.048 total
+./go-word-counter  0.04s user 0.00s system 89% cpu 0.050 total
 (CONCURRENT)
-./go-word-counter  0.31s user 0.04s system 362% cpu 0.096 total
-</code></pre><p>So the sync version takes approx <code>0.048</code> and <code>57% cpu</code> and the concurrent one <code>0.096</code> and <code>362% cpu</code>.</p>
-<p>We are sure that the function is running concurrently (hence the CPU usage), but shouldn&rsquo;t that mean it has to run faster? NO.</p>
-<p>If we look at the code we can see that the parts that get executed inside the word goroutines takes less to execute than all the orchestration needed for pulling a word from a channel.</p>
-<p>Things would be different if we add a sleep like this:</p>
+./go-word-counter  0.46s user 0.13s system 486% cpu 0.120 total
+</code></pre><p>So the sync version takes approx <code>0.050</code> and <code>89% cpu</code> and the concurrent one <code>0.120</code> and <code>486% cpu</code>.</p>
+<p>We are sure that the function is running concurrently (hence the CPU usage), but shouldn&rsquo;t that mean it has to run faster? Well, no.</p>
+<p>Looking at the code one can see that the parts that get executed inside the word goroutines takes less to execute than all the orchestration needed for pulling a word from a channel.</p>
+<p>Things would be different if an sleep was added:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">w1</span> = <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">ToLower</span>(<span style="color:#a6e22e">w1</span>)
 <span style="color:#a6e22e">w1</span> = <span style="color:#a6e22e">removeSpecial</span>.<span style="color:#a6e22e">ReplaceAllString</span>(<span style="color:#a6e22e">w1</span>, <span style="color:#e6db74">&#34;&#34;</span>)
 <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#ae81ff">200</span>)
 </code></pre></div><p>And then the benchmark:</p>
-<pre><code>BenchmarkWordCounter-8                        10         171650568 ns/op
-BenchmarkWordCounterConcurrent-8              20          54229310 ns/op
-</code></pre><p>In this scenario we can clearly see how the concurrent way outperforms the sync one.</p>
+<pre><code>BenchmarkWordCounter-12                3   425.23 ms/op   4436128 B/op   124934 allocs/op
+BenchmarkWordCounterConcurrent-12     19    64.75 ms/op   8812324 B/op   179560 allocs/op
+</code></pre><p>In this scenario is visible how the concurrent way outperforms the sync one.</p>
 <p>So we started with a single goroutine algorithm, we evolved it to run using more than one goroutine and having an orchestration for the algorithm to work. At the end we did a benchmark and compared the results.</p>
-<p>The value we can get out of this is to avoid <code>premature optimization</code>, how to <code>KISS (Keep it simple and stupid)</code>; and the most important one: We learned that concurrent flows are beneficial when the code inside the goroutine is CPU/time intensive.</p>
-<p>👉 <a href="https://github.com/pmorelli92/go-word-counter">Repository with source files used</a> 👈</p>
+<p>The value we can get out of this is to avoid <code>premature optimization</code>, how to <code>KISS</code> (keep it simple and stupid) and the most important one: We learned that concurrent flows are beneficial when the code inside the goroutine is CPU/time intensive.</p>
+<h2 id="2020-edit">2020 Edit</h2>
+<p>One alternative suggested by <a href="https://github.com/Xeoncross">David Pennington</a> was to use streams instead of loading the whole file to the disk. In this case the code will look like:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">wordCounterStream</span>() (<span style="color:#a6e22e">words</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span>) {
+	<span style="color:#a6e22e">file</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Open</span>(<span style="color:#e6db74">&#34;input.txt&#34;</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+	}
+	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">file</span>.<span style="color:#a6e22e">Close</span>()
+
+	<span style="color:#a6e22e">words</span> = make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span>)
+	<span style="color:#a6e22e">scanner</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">bufio</span>.<span style="color:#a6e22e">NewScanner</span>(<span style="color:#a6e22e">file</span>)
+
+	<span style="color:#75715e">// bufio.ScanWords includes punctuation that we want to remove
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// reimplemented that method checking with unicode.IsPunct
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">scanner</span>.<span style="color:#a6e22e">Split</span>(<span style="color:#a6e22e">ScanWords</span>)
+
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">scanner</span>.<span style="color:#a6e22e">Scan</span>() {
+		<span style="color:#a6e22e">w</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">scanner</span>.<span style="color:#a6e22e">Text</span>()
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">w</span> <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;&#34;</span> {
+			<span style="color:#a6e22e">words</span>[<span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">ToLower</span>(<span style="color:#a6e22e">w</span>)]<span style="color:#f92672">++</span>
+		}
+	}
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">scanner</span>.<span style="color:#a6e22e">Err</span>(); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+	}
+	<span style="color:#66d9ef">return</span>
+}
+</code></pre></div><ul>
+<li>Open the file which contains the words.</li>
+<li>Create a new scanner for the stream.</li>
+<li>Make the scanner split the stream on the criteria selected.</li>
+<li>Each split obtained represents a word.</li>
+</ul>
+<p>The <code>scanner.Split(...)</code> instead of using <code>bufio.ScanWords</code> is using an implementation that takes care of splitting the words when punctuation happens since the default implementation do not consider these cases. This can be found on my repository linked below.</p>
+<p>Now the benchmarks demonstrate what a better solution for this problem would be:</p>
+<pre><code>benchmark                           iter     time/iter    bytes alloc             allocs
+---------                           ----     ---------    -----------             ------
+BenchmarkWordCounter-12               45   25.88 ms/op   4354027 B/op   124918 allocs/op
+BenchmarkWordCounterConcurrent-12     19   59.70 ms/op   5711640 B/op   138290 allocs/op
+BenchmarkWordCounterStreams-12       198    5.93 ms/op    330114 B/op    44844 allocs/op
+</code></pre><p>👉 <a href="https://github.com/pmorelli92/go-word-counter">Repository with source files used</a> 👈</p>
 ]]></content>
         </item>
         

@@ -3,17 +3,22 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://devandchill.com/posts/2019/10/azure-pipelines-build-a-dockerized-app-and-deploy-to-kubernetes/</loc>
-    <lastmod>2019-10-19T22:22:29+02:00</lastmod>
+    <loc>https://devandchill.com/</loc>
+    <lastmod>2020-02-16T09:22:29+01:00</lastmod>
   </url>
   
   <url>
-    <loc>https://devandchill.com/</loc>
-    <lastmod>2019-10-19T22:22:29+02:00</lastmod>
+    <loc>https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries-part-1/</loc>
+    <lastmod>2020-02-16T09:22:29+01:00</lastmod>
   </url>
   
   <url>
     <loc>https://devandchill.com/posts/</loc>
+    <lastmod>2020-02-16T09:22:29+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/posts/2019/10/azure-pipelines-build-a-dockerized-app-and-deploy-to-kubernetes/</loc>
     <lastmod>2019-10-19T22:22:29+02:00</lastmod>
   </url>
   
@@ -28,7 +33,7 @@
   </url>
   
   <url>
-    <loc>https://devandchill.com/posts/2019/04/word-counter-sync-or-concurrent/</loc>
+    <loc>https://devandchill.com/posts/2019/04/word-counter-sync-concurrent-or-streams/</loc>
     <lastmod>2019-04-10T20:59:47+02:00</lastmod>
   </url>
   

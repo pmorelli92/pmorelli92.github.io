@@ -7,10 +7,20 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Pablo Morelli</copyright>
-    <lastBuildDate>Sat, 19 Oct 2019 22:22:29 +0200</lastBuildDate>
+    <lastBuildDate>Sun, 16 Feb 2020 09:22:29 +0100</lastBuildDate>
     
 	<atom:link href="https://devandchill.com/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Postgres: Building concurrently safe upsert queries (Part 1)</title>
+      <link>https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries-part-1/</link>
+      <pubDate>Sun, 16 Feb 2020 09:22:29 +0100</pubDate>
+      
+      <guid>https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries-part-1/</guid>
+      <description>Recently at the company I am working for, there was a need to communicate with an external service which required us to send some data along with an integer identifier. The problem is that IDs in our domain are not integers but uuid.
+The suggestion then was to have a service which creates an unique integer for a certain uuid. This way the int identifier won&amp;rsquo;t be leaked to any other part of the system.</description>
+    </item>
     
     <item>
       <title>Azure Pipelines: Build a dockerized app and deploy to kubernetes</title>
@@ -43,14 +53,14 @@ In order to add this feature in our .csproj, add the following lines:
     </item>
     
     <item>
-      <title>Word Counter: Sync or Concurrent?</title>
-      <link>https://devandchill.com/posts/2019/04/word-counter-sync-or-concurrent/</link>
+      <title>Word counter: Sync, concurrent or streams?</title>
+      <link>https://devandchill.com/posts/2019/04/word-counter-sync-concurrent-or-streams/</link>
       <pubDate>Wed, 10 Apr 2019 20:59:47 +0200</pubDate>
       
-      <guid>https://devandchill.com/posts/2019/04/word-counter-sync-or-concurrent/</guid>
+      <guid>https://devandchill.com/posts/2019/04/word-counter-sync-concurrent-or-streams/</guid>
       <description>One day I was given the task of doing a whiteboard word counter algorithm. The requirements were:
- Print on console all the words and the quantity of times they appear on a 40.000 lines input. Make it as fast as possible.  For a start we can do it as simple as possible instead, and then try to see whether we can make it faster:
-func main() { fmt.Println(wordCounter()) } func wordCounter() map[string]int { b, _ := ioutil.</description>
+ Print on console all the words and the quantity of times they appear on a 40.000 lines input. Make it as fast as possible.  For a start one can do it as simple as possible instead, and then try to see whether it can be made faster:
+func wordCounter() (words map[string]int) { b, err := ioutil.</description>
     </item>
     
     <item>
