@@ -3,11 +3,6 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://devandchill.com/</loc>
-    <lastmod>2020-02-16T09:22:29+01:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries-part-1/</loc>
     <lastmod>2020-02-16T09:22:29+01:00</lastmod>
   </url>
@@ -40,6 +35,11 @@
   <url>
     <loc>https://devandchill.com/posts/2019/03/go-modules-working-outside-gopath/</loc>
     <lastmod>2019-03-13T17:07:15+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/</loc>
+    <lastmod>2019-03-08T20:43:08+01:00</lastmod>
   </url>
   
   <url>

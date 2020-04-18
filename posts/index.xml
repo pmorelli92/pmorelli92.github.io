@@ -19,13 +19,9 @@
 The suggestion then was to have a service which creates an unique integer for a certain uuid. This way the int identifier won&amp;rsquo;t be leaked to any other part of the system.</description>
             <content type="html"><![CDATA[<p>Recently at the company I am working for, there was a need to communicate with an external service which required us to send some data along with an integer identifier. The problem is that IDs in our domain are not integers but uuid.</p>
 <p>The suggestion then was to have a service which creates an unique integer for a certain uuid. This way the int identifier won&rsquo;t be leaked to any other part of the system.</p>
-
-    <figure class="center" >
-        <img src="/posts/images/intgen.png"   />
-
-        
-    </figure>
-
+<figure>
+    <img src="/posts/images/intgen.png"/> 
+</figure>
 
 <ol>
 <li>Internal system does a request to the integer generator.</li>
@@ -55,18 +51,18 @@ The suggestion then was to have a service which creates an unique integer for a 
 </ol>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> id
 <span style="color:#66d9ef">FROM</span> customers
-<span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1796b892-c988-4f96-8eb8-a7f6f965d266</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>
 </code></pre></div><ol start="3">
 <li>If the previous query returned a row, return the id.</li>
 <li>If not, insert the row and return the id:</li>
 </ol>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
-<span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1796b892-c988-4f96-8eb8-a7f6f965d266</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>)
 RETURNING id
 </code></pre></div><p>The problem with this approach is that if we get two consecutive calls hitting the <code>SELECT</code> at the same time while there is no row, both will try to add the row in the database. One will succeed and the other is going to fail.</p>
 <p>This can be fixed changing the insert to the following:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
-<span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1796b892-c988-4f96-8eb8-a7f6f965d266</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>)
 <span style="color:#66d9ef">ON</span> CONFLICT <span style="color:#66d9ef">DO</span> <span style="color:#66d9ef">NOTHING</span>
 RETURNING id
 </code></pre></div><p><code>ON CONFLICT DO NOTHING</code> will avoid the primary key exception! Yes, that is true, but when this clause does not update the row (<code>DO NOTHING</code>) the <code>RETURNING</code> row will be empty.</p>
@@ -97,13 +93,13 @@ RETURNING id
 </ol>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> id
 <span style="color:#66d9ef">FROM</span> customers
-<span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1796b892-c988-4f96-8eb8-a7f6f965d266</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>
 </code></pre></div><ol start="5">
 <li>If the previous query returned a row, return the id.</li>
 <li>If not, insert the row and return the id:</li>
 </ol>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
-<span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1796b892-c988-4f96-8eb8-a7f6f965d266</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>)
 RETURNING id
 </code></pre></div><ol start="6">
 <li>Commit transaction:</li>
@@ -136,7 +132,7 @@ RETURNING id
 <li>Execute the query and return the result. This query will insert the row if it does not exist; and in case it does, it will just return the id. The update is required to return the desired id.</li>
 </ol>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
-<span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1796b892-c988-4f96-8eb8-a7f6f965d266</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>)
 <span style="color:#66d9ef">ON</span> CONFLICT (customer_id)
 <span style="color:#66d9ef">DO</span> <span style="color:#66d9ef">UPDATE</span> <span style="color:#66d9ef">SET</span> customer_id <span style="color:#f92672">=</span> excluded.customer_id
 RETURNING id
@@ -159,7 +155,7 @@ RETURNING id
 <p>How can one be sure that this is true?
 Executing the following query 5 times!</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
-<span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1796b892-c988-4f96-8eb8-a7f6f965d269</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d269&#39;</span>)
 <span style="color:#66d9ef">ON</span> CONFLICT (customer_id)
 <span style="color:#66d9ef">DO</span> <span style="color:#66d9ef">UPDATE</span> <span style="color:#66d9ef">SET</span> customer_id <span style="color:#f92672">=</span> excluded.customer_id
 RETURNING ctid, xmin, xmax, id
@@ -202,10 +198,10 @@ RETURNING ctid, xmin, xmax, id
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> EXTENSION pageinspect;
 
 <span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
-<span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1796b892-c988-4f96-8eb8-a7f6f965d271</span><span style="color:#e6db74">&#39;</span>);
+<span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d271&#39;</span>);
 
 <span style="color:#66d9ef">SELECT</span> t_ctid, t_xmin, t_xmax
-<span style="color:#66d9ef">FROM</span> heap_page_items(get_raw_page(<span style="color:#e6db74">&#39;</span><span style="color:#e6db74">customers</span><span style="color:#e6db74">&#39;</span>, <span style="color:#ae81ff">0</span>));
+<span style="color:#66d9ef">FROM</span> heap_page_items(get_raw_page(<span style="color:#e6db74">&#39;customers&#39;</span>, <span style="color:#ae81ff">0</span>));
 
 
 <span style="color:#f92672">|</span> t_ctid  <span style="color:#f92672">|</span> t_xmin <span style="color:#f92672">|</span> t_xmax <span style="color:#f92672">|</span>
@@ -217,11 +213,11 @@ RETURNING ctid, xmin, xmax, id
 <li>The destruction transaction id (<code>t_xmax</code>) is 0 because no changes happened to the row.</li>
 </ul>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">UPDATE</span> customers
-<span style="color:#66d9ef">SET</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1796b892-c988-4f96-8eb8-a7f6f965d271</span><span style="color:#e6db74">&#39;</span>
-<span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1796b892-c988-4f96-8eb8-a7f6f965d271</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#66d9ef">SET</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d271&#39;</span>
+<span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d271&#39;</span>
 
 <span style="color:#66d9ef">SELECT</span> t_ctid, t_xmin, t_xmax
-<span style="color:#66d9ef">FROM</span> heap_page_items(get_raw_page(<span style="color:#e6db74">&#39;</span><span style="color:#e6db74">customers</span><span style="color:#e6db74">&#39;</span>, <span style="color:#ae81ff">0</span>));
+<span style="color:#66d9ef">FROM</span> heap_page_items(get_raw_page(<span style="color:#e6db74">&#39;customers&#39;</span>, <span style="color:#ae81ff">0</span>));
 
 <span style="color:#f92672">|</span> t_ctid  <span style="color:#f92672">|</span> t_xmin <span style="color:#f92672">|</span> t_xmax <span style="color:#f92672">|</span>
 <span style="color:#f92672">|</span> <span style="color:#75715e">------- | ------ | ------ |
@@ -250,12 +246,12 @@ RETURNING ctid, xmin, xmax, id
 <li>Execute query:</li>
 </ol>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
-<span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1796b892-c988-4f96-8eb8-a7f6f965d266</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>)
 <span style="color:#66d9ef">ON</span> CONFLICT <span style="color:#66d9ef">DO</span> <span style="color:#66d9ef">NOTHING</span>;
 
 <span style="color:#66d9ef">SELECT</span> id
 <span style="color:#66d9ef">FROM</span> customers
-<span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1796b892-c988-4f96-8eb8-a7f6f965d266</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>
 </code></pre></div><p>It does not matter how many concurrent inserts are triggered at the same time, only the first one will get through and insert the row. Since the row is never updated (<code>ON CONFLICT DO NOTHING</code>) the <code>ctid</code>, <code>xmin</code>, and <code>xmax</code> will remain the same.</p>
 <p>After the <code>INSERT</code> is executed, the <code>SELECT</code> statement will return the id for the recently created / already existing row.</p>
 <p>But is this performant? For that lets <code>EXPLAIN ANALYZE</code> the queries:</p>
@@ -285,16 +281,16 @@ Execution Time: 0.111 ms
 <h3 id="bonus-for-non-postgres-users">Bonus for non Postgres users</h3>
 <p>In case your SQL engine does not support <code>ON CONFLICT DO NOTHING</code> this approach can still be used by changing the query to the following:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers (customer_id)
-<span style="color:#66d9ef">SELECT</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">8a57f8f4-aeed-412c-a6f6-5f9a03b17bc5</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#66d9ef">SELECT</span> <span style="color:#e6db74">&#39;8a57f8f4-aeed-412c-a6f6-5f9a03b17bc5&#39;</span>
 <span style="color:#66d9ef">WHERE</span> (
   <span style="color:#66d9ef">SELECT</span> <span style="color:#ae81ff">1</span>
   <span style="color:#66d9ef">FROM</span> customers
-  <span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">8a57f8f4-aeed-412c-a6f6-5f9a03b17bc5</span><span style="color:#e6db74">&#39;</span>)
+  <span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;8a57f8f4-aeed-412c-a6f6-5f9a03b17bc5&#39;</span>)
 <span style="color:#66d9ef">IS</span> <span style="color:#66d9ef">NULL</span>;
 
 <span style="color:#66d9ef">SELECT</span> id
 <span style="color:#66d9ef">FROM</span> customers
-<span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">8a57f8f4-aeed-412c-a6f6-5f9a03b17bc5</span><span style="color:#e6db74">&#39;</span>;
+<span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;8a57f8f4-aeed-412c-a6f6-5f9a03b17bc5&#39;</span>;
 </code></pre></div><p>The <code>ON CONFLICT DO NOTHING</code> is replaced by a <code>WHERE</code> clause. The execution plan for the last two approaches shows that the first is better, but the difference is almost inexistent.</p>
 <p>Insert query:</p>
 <pre><code>Insert on customers
@@ -347,13 +343,9 @@ The only functionality that exposes is a <code>GET /health</code> endpoint which
 <p>An account is needed in order to get access on Azure Pipelines. Linking the github account and giving access to the demo repository should be enough, after this step a project should be set up.</p>
 <p>Inside the project, the project settings button should be visible on the bottom left corner.
 Scroll down to service connections and you should see something like this:</p>
-
-    <figure class="center" >
-        <img src="/posts/images/project-settings.png"   />
-
-        
-    </figure>
-
+<figure>
+    <img src="/posts/images/project-settings.png"/> 
+</figure>
 
 <p>This is where the credentials for docker and kubernetes are stored.</p>
 <p>Select docker registry and complete the steps for docker.</p>
@@ -361,13 +353,9 @@ Scroll down to service connections and you should see something like this:</p>
 <h2 id="adding-build-pipeline">Adding build pipeline</h2>
 <p>Under the pipeline menu, pick <code>build</code> and <code>add a new pipeline</code>. Follow the steps and give access to the repository (it does not matter if it is public or private). Pick starter pipeline when prompted and proceed to click save and run.</p>
 <p>If everything went well a commit should be added to the repository and this will appear on the commit history of the repository:</p>
-
-    <figure class="center" >
-        <img src="/posts/images/built-commit.png"   />
-
-        
-    </figure>
-
+<figure>
+    <img src="/posts/images/built-commit.png"/> 
+</figure>
 
 <p>The ✔️ indicates that the CI process ran successfully, when the build is ongoing a yellow circle will appear, and if the build fails ❌ will be shown.</p>
 <h2 id="configuring-cicd">Configuring CI/CD</h2>
@@ -389,7 +377,7 @@ Scroll down to service connections and you should see something like this:</p>
     <span style="color:#66d9ef">command</span>: <span style="color:#e6db74">&#39;buildAndPush&#39;</span>
     <span style="color:#66d9ef">Dockerfile</span>: <span style="color:#e6db74">&#39;**/Dockerfile&#39;</span>
     <span style="color:#66d9ef">tags</span>: <span style="color:#e6db74">|
-</span><span style="color:#e6db74">     </span><span style="color:#e6db74"> </span><span style="color:#e6db74">$(buildNumber)</span>
+</span><span style="color:#e6db74">      $(buildNumber)</span>
       latest
 - <span style="color:#66d9ef">bash</span>: sed -i <span style="color:#e6db74">&#34;s/latest/$(buildNumber)/g&#34;</span> kubernetes/k8s-deployment.yml
 - <span style="color:#66d9ef">task</span>: Kubernetes@<span style="color:#ae81ff">0</span>
@@ -418,7 +406,7 @@ In this case, the example repository is using semver for building versions.</p>
     <span style="color:#66d9ef">command</span>: <span style="color:#e6db74">&#39;buildAndPush&#39;</span>
     <span style="color:#66d9ef">Dockerfile</span>: <span style="color:#e6db74">&#39;**/Dockerfile&#39;</span>
     <span style="color:#66d9ef">tags</span>: <span style="color:#e6db74">|
-</span><span style="color:#e6db74">     </span><span style="color:#e6db74"> </span><span style="color:#e6db74">$(buildNumber)</span>
+</span><span style="color:#e6db74">      $(buildNumber)</span>
       latest
 </code></pre></div><p>This is a built-in command of pipelines, where we can (among other things) build and push docker images.</p>
 <p>The input named repository indicates the name of the repository on the container registry (which was set up on the project settings).</p>
@@ -441,13 +429,9 @@ In this case, the example repository is using semver for building versions.</p>
   - <span style="color:#66d9ef">name</span>: http
     <span style="color:#66d9ef">containerPort</span>: <span style="color:#ae81ff">80</span>
 </code></pre></div><p>It is definitely not good to use <code>:latest</code> image on stage / production so the sed script will replace <code>:latest</code> with <code>0.0.X</code> (which will be the build number). This is also the same version that will be pushed to the selected docker registry: <a href="https://cloud.docker.com/u/pmorelli92/repository/docker/pmorelli92/go-with-azure">example</a>.</p>
-
-    <figure class="center" >
-        <img src="/posts/images/docker-tags.png"   />
-
-        
-    </figure>
-
+<figure>
+    <img src="/posts/images/docker-tags.png"/> 
+</figure>
 
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">- <span style="color:#66d9ef">task</span>: Kubernetes@<span style="color:#ae81ff">0</span>
   <span style="color:#66d9ef">inputs</span>:
@@ -458,22 +442,14 @@ In this case, the example repository is using semver for building versions.</p>
 </code></pre></div><p>Finally, <code>kubernetesServiceConnection</code> is for indicating the connection created on the project settings; the namespace refers to a kubernetes namespace, and the command combined with arguments will be the equivalent of: <code>kubectl apply -f kubernetes/k8s-deployment.yml</code></p>
 <p>This will create / update the specifications that are living on the folder or file; in this case: the deployment, service and ingress.</p>
 <p>If everything goes green, we can check that the pod version matches the latest one added on the docker registry.</p>
-
-    <figure class="center" >
-        <img src="/posts/images/pod-version.png"   />
-
-        
-    </figure>
-
+<figure>
+    <img src="/posts/images/pod-version.png"/> 
+</figure>
 
 <p>The logs should display something like this:</p>
-
-    <figure class="center" >
-        <img src="/posts/images/cicd-logs.png"   />
-
-        
-    </figure>
-
+<figure>
+    <img src="/posts/images/cicd-logs.png"/> 
+</figure>
 
 <p>And the demo app is now accessible from the following <a href="http://gwa-ingress.pmorelli92.c1.kubesail.org/health">link</a>.</p>
 <h2 id="summary">Summary</h2>
@@ -505,12 +481,12 @@ In order to add this feature in our .csproj, add the following lines:
 &amp;lt;PropertyGroup&amp;gt; &amp;lt;TargetFramework&amp;gt;netcoreapp3.0&amp;lt;/TargetFramework&amp;gt; &amp;lt;PublishTrimmed&amp;gt;true&amp;lt;/PublishTrimmed&amp;gt; &amp;lt;PublishReadyToRun&amp;gt;true&amp;lt;/PublishReadyToRun&amp;gt; &amp;lt;PublishSingleFile&amp;gt;true&amp;lt;/PublishSingleFile&amp;gt; &amp;lt;CrossGenDuringPublish&amp;gt;false&amp;lt;/CrossGenDuringPublish&amp;gt; &amp;lt;/PropertyGroup&amp;gt; There are some flags that may sound weird, let&amp;rsquo;s go through them:</description>
             <content type="html"><![CDATA[<p>The newly released <code>dotnet 3 preview 6</code> has an interesting feature called <code>publish single file</code> where an application can be published as a <code>self contained app</code> that will <strong>extract and run</strong> on the platform it was compiled for.</p>
 <p>In order to add this feature in our <code>.csproj</code>, add the following lines:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;PropertyGroup</span><span style="color:#f92672">&gt;</span>
-  <span style="color:#f92672">&lt;TargetFramework</span><span style="color:#f92672">&gt;</span>netcoreapp3.0<span style="color:#f92672">&lt;/TargetFramework&gt;</span>
-  <span style="color:#f92672">&lt;PublishTrimmed</span><span style="color:#f92672">&gt;</span>true<span style="color:#f92672">&lt;/PublishTrimmed&gt;</span>
-  <span style="color:#f92672">&lt;PublishReadyToRun</span><span style="color:#f92672">&gt;</span>true<span style="color:#f92672">&lt;/PublishReadyToRun&gt;</span>
-  <span style="color:#f92672">&lt;PublishSingleFile</span><span style="color:#f92672">&gt;</span>true<span style="color:#f92672">&lt;/PublishSingleFile&gt;</span>
-  <span style="color:#f92672">&lt;CrossGenDuringPublish</span><span style="color:#f92672">&gt;</span>false<span style="color:#f92672">&lt;/CrossGenDuringPublish&gt;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;PropertyGroup&gt;</span>
+  <span style="color:#f92672">&lt;TargetFramework&gt;</span>netcoreapp3.0<span style="color:#f92672">&lt;/TargetFramework&gt;</span>
+  <span style="color:#f92672">&lt;PublishTrimmed&gt;</span>true<span style="color:#f92672">&lt;/PublishTrimmed&gt;</span>
+  <span style="color:#f92672">&lt;PublishReadyToRun&gt;</span>true<span style="color:#f92672">&lt;/PublishReadyToRun&gt;</span>
+  <span style="color:#f92672">&lt;PublishSingleFile&gt;</span>true<span style="color:#f92672">&lt;/PublishSingleFile&gt;</span>
+  <span style="color:#f92672">&lt;CrossGenDuringPublish&gt;</span>false<span style="color:#f92672">&lt;/CrossGenDuringPublish&gt;</span>
 <span style="color:#f92672">&lt;/PropertyGroup&gt;</span>
 </code></pre></div><p>There are some flags that may sound weird, let&rsquo;s go through them:</p>
 <ul>
@@ -535,21 +511,21 @@ In order to add this feature in our .csproj, add the following lines:
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Dockerfile" data-lang="Dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> mcr.microsoft.com/dotnet/core/runtime-deps:3.0.0-preview6-alpine3.9</span><span style="color:#960050;background-color:#1e0010">
 </span></code></pre></div><p>With that being said, the next is straightforward:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Dockerfile" data-lang="Dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> mcr.microsoft.com/dotnet/core/sdk:3.0.100-preview6-alpine3.9 AS build</span><span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /app</span><span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> . .<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> dotnet publish -r linux-musl-x64 -c Release -o ./deploy<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> mcr.microsoft.com/dotnet/core/runtime-deps:3.0.0-preview6-alpine3.9</span><span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> --from<span style="color:#f92672">=</span>build /app/deploy ./app<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> ASPNETCORE_URLS http://*:5000<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">EXPOSE</span><span style="color:#e6db74"> 5000</span><span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENTRYPOINT</span> [<span style="color:#e6db74">&#34;./app/&lt;APP_NAME&gt;&#34;</span>]<span style="color:#960050;background-color:#1e0010">
 </span></code></pre></div><p>Basically the <code>Dockerfile</code> is publishing the application (as a binary) on an alpine container with dotnet sdk installed. This is important because the <code>builder</code> has to use the same architecture than the runner. It is not possible to build a <code>linux-musk-x64</code> binary on a windows container.</p>
 <p>Then the result files (the binary and a single DLL) are copied to an alpine container only having dotnet runtime dependencies.</p>
@@ -565,15 +541,11 @@ In order to add this feature in our .csproj, add the following lines:
             
             <guid>https://devandchill.com/posts/2019/06/sign-github-commits-using-mac/</guid>
             <description>Generally speaking, most organisations do not check if a commit is signed or not. Even worse, more companies do not care about this. It might subjective but I like to have the verified badge.
- If you commit from GitHub, for example: adding or editing a README, you will get the verified bagde. The same will happen with the client GitKraken, but if you commit using the git cli this will not happen unless you configure it.</description>
+  If you commit from GitHub, for example: adding or editing a README, you will get the verified bagde. The same will happen with the client GitKraken, but if you commit using the git cli this will not happen unless you configure it.</description>
             <content type="html"><![CDATA[<p>Generally speaking, most organisations do not check if a commit is signed or not. Even worse, more companies do not care about this. It might subjective but I like to have the <code>verified</code> badge.</p>
-
-    <figure class="center" >
-        <img src="/posts/images/verified-commit.png"   />
-
-        
-    </figure>
-
+<figure>
+    <img src="/posts/images/verified-commit.png"/> 
+</figure>
 
 <p>If you commit from GitHub, for example: adding or editing a README, you will get the verified bagde. The same will happen with the client <code>GitKraken</code>, but if you commit using the <code>git cli</code> this will not happen unless you configure it.</p>
 <p>Now, I will assume that you are using a mac but in case you do not, you can google yourself some of the installation steps.</p>
@@ -599,13 +571,9 @@ ssb   rsa2048 2019-06-07 [E]
 </code></pre><p>You will see the public key on the terminal, now you can copy it and go to GitHub.</p>
 <h2 id="adding-public-key-to-github-account">Adding public key to GitHub account</h2>
 <p>Go to <code>Settings -&gt; SSH and GPG Keys -&gt; New GPG Key</code> and paste the content of your key and after submiting you will see something like this.</p>
-
-    <figure class="center" >
-        <img src="/posts/images/gpg-github.png"   />
-
-        
-    </figure>
-
+<figure>
+    <img src="/posts/images/gpg-github.png"/> 
+</figure>
 
 <h2 id="doing-your-first-verified-commit">Doing your first verified commit</h2>
 <p>When you work with the <code>git cli</code> there is a huge probability that you work with different accounts (for example one for work and one personal) and/or that you have more than one GPG key on your system.
@@ -636,13 +604,9 @@ Now lets image that you change your computer, you wont be able to sign because y
 <pre><code>gpg --import some_private_key_name
 </code></pre><h2 id="bonus-track">Bonus track</h2>
 <p>As I mentioned before, some times when you work using the <code>git cli</code> you end up mixing accounts, and it could happen to commit like this:</p>
-
-    <figure class="center" >
-        <img src="/posts/images/incorrect-user.png"   />
-
-        
-    </figure>
-
+<figure>
+    <img src="/posts/images/incorrect-user.png"/> 
+</figure>
 
 <p>You can of course leave it like that or do a rebase of the commit; but you can also check first using <code>git config --local -l</code> which is the <code>user.name</code> and <code>user.email</code> for that working directory.
 In case the email does not match with the email linked in GitHub you can change it doing:</p>
@@ -672,10 +636,10 @@ func wordCounter() (words map[string]int) { b, err := ioutil.</description>
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
 		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
 	}
-	<span style="color:#a6e22e">removeLineBreaks</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">\r?\n</span><span style="color:#e6db74">`</span>)
+	<span style="color:#a6e22e">removeLineBreaks</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`\r?\n`</span>)
 	<span style="color:#a6e22e">inputText</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">removeLineBreaks</span>.<span style="color:#a6e22e">ReplaceAllString</span>(string(<span style="color:#a6e22e">b</span>),<span style="color:#e6db74">&#34; &#34;</span>)
 	<span style="color:#a6e22e">words</span> = make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span>)
-	<span style="color:#a6e22e">removeSpecial</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">(?m)[^a-z]</span><span style="color:#e6db74">`</span>)
+	<span style="color:#a6e22e">removeSpecial</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`(?m)[^a-z]`</span>)
 
 	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">w</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Split</span>(<span style="color:#a6e22e">inputText</span>, <span style="color:#e6db74">&#34; &#34;</span>) {
 		<span style="color:#a6e22e">w</span> = <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">ToLower</span>(<span style="color:#a6e22e">w</span>)
@@ -706,10 +670,10 @@ func wordCounter() (words map[string]int) { b, err := ioutil.</description>
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
 		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
 	}
-	<span style="color:#a6e22e">removeLineBreaks</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">\r?\n</span><span style="color:#e6db74">`</span>)
+	<span style="color:#a6e22e">removeLineBreaks</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`\r?\n`</span>)
 	<span style="color:#a6e22e">inputText</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">removeLineBreaks</span>.<span style="color:#a6e22e">ReplaceAllString</span>(string(<span style="color:#a6e22e">b</span>),<span style="color:#e6db74">&#34; &#34;</span>)
 	<span style="color:#a6e22e">words</span> = make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span>)
-	<span style="color:#a6e22e">removeSpecial</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">(?m)[^a-z]</span><span style="color:#e6db74">`</span>)
+	<span style="color:#a6e22e">removeSpecial</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`(?m)[^a-z]`</span>)
 
 	<span style="color:#a6e22e">wg</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">WaitGroup</span>{}
 	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">w</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Split</span>(<span style="color:#a6e22e">inputText</span>, <span style="color:#e6db74">&#34; &#34;</span>) {
@@ -752,10 +716,10 @@ fatal error: concurrent map read and map write
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
 		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
 	}
-	<span style="color:#a6e22e">removeLineBreaks</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">\r?\n</span><span style="color:#e6db74">`</span>)
+	<span style="color:#a6e22e">removeLineBreaks</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`\r?\n`</span>)
 	<span style="color:#a6e22e">inputText</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">removeLineBreaks</span>.<span style="color:#a6e22e">ReplaceAllString</span>(string(<span style="color:#a6e22e">b</span>),<span style="color:#e6db74">&#34; &#34;</span>)
 	<span style="color:#a6e22e">words</span> = make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span>)
-	<span style="color:#a6e22e">removeSpecial</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">(?m)[^a-z]</span><span style="color:#e6db74">`</span>)
+	<span style="color:#a6e22e">removeSpecial</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`(?m)[^a-z]`</span>)
 
 	<span style="color:#a6e22e">doneChan</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">bool</span>)
 	<span style="color:#a6e22e">wordsChan</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">string</span>)
@@ -902,39 +866,39 @@ My starting point was the following talk:</description>
 <p>Being that I did not know how to manage dependencies, I started investigating and saw that lots of people were using <code>dep</code>, and how bad could it be?</p>
 <p>I started building a sample app that that could be containerised (again, just to see how the Dockerfile would look like), and the following happened:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> golang:1.11 AS builder</span><span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> . /go/src/github.com/pmorelli92/go-ddd-cqrs/<span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /go/src/github.com/pmorelli92/go-ddd-cqrs/</span><span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> set -x <span style="color:#f92672">&amp;&amp;</span> go get github.com/golang/dep/cmd/dep <span style="color:#f92672">&amp;&amp;</span> dep ensure -v<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> CGO_ENABLED<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> GOOS<span style="color:#f92672">=</span>linux GOARCH<span style="color:#f92672">=</span>amd64 go build -a -o goapp ./cmd/server/main.go<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> scratch</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /root/</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> --from<span style="color:#f92672">=</span>builder /go/src/github.com/pmorelli92/go-ddd-cqrs/goapp .<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">EXPOSE</span><span style="color:#e6db74"> 8080</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENTRYPOINT</span> [<span style="color:#e6db74">&#34;./goapp&#34;</span>]<span style="color:#960050;background-color:#1e0010">
 </span></code></pre></div><p>That Dockerfile, as ugly as it looks, was the result of some iterations were I was getting path errors, dependency errors, and others. The constraint of only working on <code>GOPATH</code> gave me headaches and I had to use a really bad <code>WORKDIR</code> as you can see above.</p>
 <p>But then after some searching, I came across that <a href="https://github.com/golang/go/wiki/Modules">GO Modules</a> was supported from version 1.11, so I decided to give it a try.</p>
 <p>And this is how the Dockerfile looks like now:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> golang:1.12 AS builder</span><span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /app</span><span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> go.mod .<span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> go.sum .<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> go mod download<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> . .<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> CGO_ENABLED<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> GOOS<span style="color:#f92672">=</span>linux GOARCH<span style="color:#f92672">=</span>amd64 go build -a -o goapp ./cmd/main.go<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> scratch</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> --from<span style="color:#f92672">=</span>builder /app/goapp .<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">EXPOSE</span><span style="color:#e6db74"> 8080</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENTRYPOINT</span> [<span style="color:#e6db74">&#34;./goapp&#34;</span>]<span style="color:#960050;background-color:#1e0010">
 </span></code></pre></div><p>We can achieve the same using <code>golang:1.11</code> but we wil have to execute an additional step <code>ENV GO111MODULE=on</code> before <code>RUN go mod download</code>.</p>
@@ -952,14 +916,14 @@ My starting point was the following talk:</description>
 <span style="color:#66d9ef">go</span> <span style="color:#ae81ff">1.12</span>
 
 <span style="color:#a6e22e">require</span> (
-	<span style="color:#a6e22e">github</span>.<span style="color:#a6e22e">com</span><span style="color:#f92672">/</span><span style="color:#a6e22e">davecgh</span><span style="color:#f92672">/</span><span style="color:#66d9ef">go</span><span style="color:#f92672">-</span><span style="color:#a6e22e">spew</span> <span style="color:#a6e22e">v1</span><span style="color:#ae81ff">.1</span><span style="color:#ae81ff">.1</span> <span style="color:#75715e">// indirect
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">github</span>.<span style="color:#a6e22e">com</span><span style="color:#f92672">/</span><span style="color:#a6e22e">labstack</span><span style="color:#f92672">/</span><span style="color:#a6e22e">echo</span><span style="color:#f92672">/</span><span style="color:#a6e22e">v4</span> <span style="color:#a6e22e">v4</span><span style="color:#ae81ff">.0</span><span style="color:#ae81ff">.0</span> <span style="color:#75715e">// indirect
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">github</span>.<span style="color:#a6e22e">com</span><span style="color:#f92672">/</span><span style="color:#a6e22e">mattn</span><span style="color:#f92672">/</span><span style="color:#66d9ef">go</span><span style="color:#f92672">-</span><span style="color:#a6e22e">colorable</span> <span style="color:#a6e22e">v0</span><span style="color:#ae81ff">.1</span><span style="color:#ae81ff">.1</span> <span style="color:#75715e">// indirect
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">github</span>.<span style="color:#a6e22e">com</span><span style="color:#f92672">/</span><span style="color:#a6e22e">mattn</span><span style="color:#f92672">/</span><span style="color:#66d9ef">go</span><span style="color:#f92672">-</span><span style="color:#a6e22e">isatty</span> <span style="color:#a6e22e">v0</span><span style="color:#ae81ff">.0</span><span style="color:#ae81ff">.7</span> <span style="color:#75715e">// indirect
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">github</span>.<span style="color:#a6e22e">com</span><span style="color:#f92672">/</span><span style="color:#a6e22e">stretchr</span><span style="color:#f92672">/</span><span style="color:#a6e22e">objx</span> <span style="color:#a6e22e">v0</span><span style="color:#ae81ff">.1</span><span style="color:#ae81ff">.1</span> <span style="color:#75715e">// indirect
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">github</span>.<span style="color:#a6e22e">com</span><span style="color:#f92672">/</span><span style="color:#a6e22e">valyala</span><span style="color:#f92672">/</span><span style="color:#a6e22e">fasttemplate</span> <span style="color:#a6e22e">v1</span><span style="color:#ae81ff">.0</span><span style="color:#ae81ff">.0</span> <span style="color:#75715e">// indirect
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">golang</span>.<span style="color:#a6e22e">org</span><span style="color:#f92672">/</span><span style="color:#a6e22e">x</span><span style="color:#f92672">/</span><span style="color:#a6e22e">crypto</span> <span style="color:#a6e22e">v0</span><span style="color:#ae81ff">.0</span><span style="color:#ae81ff">.0</span><span style="color:#f92672">-</span><span style="color:#ae81ff">20190313024323</span><span style="color:#f92672">-</span><span style="color:#a6e22e">a1f597ede03a</span> <span style="color:#75715e">// indirect
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">golang</span>.<span style="color:#a6e22e">org</span><span style="color:#f92672">/</span><span style="color:#a6e22e">x</span><span style="color:#f92672">/</span><span style="color:#a6e22e">sys</span> <span style="color:#a6e22e">v0</span><span style="color:#ae81ff">.0</span><span style="color:#ae81ff">.0</span><span style="color:#f92672">-</span><span style="color:#ae81ff">20190312061237</span><span style="color:#f92672">-</span><span style="color:#a6e22e">fead79001313</span> <span style="color:#75715e">// indirect
+	<span style="color:#a6e22e">github</span>.<span style="color:#a6e22e">com</span><span style="color:#f92672">/</span><span style="color:#a6e22e">davecgh</span><span style="color:#f92672">/</span><span style="color:#66d9ef">go</span><span style="color:#f92672">-</span><span style="color:#a6e22e">spew</span> <span style="color:#a6e22e">v1</span><span style="color:#ae81ff">.1.1</span> <span style="color:#75715e">// indirect
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">github</span>.<span style="color:#a6e22e">com</span><span style="color:#f92672">/</span><span style="color:#a6e22e">labstack</span><span style="color:#f92672">/</span><span style="color:#a6e22e">echo</span><span style="color:#f92672">/</span><span style="color:#a6e22e">v4</span> <span style="color:#a6e22e">v4</span><span style="color:#ae81ff">.0.0</span> <span style="color:#75715e">// indirect
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">github</span>.<span style="color:#a6e22e">com</span><span style="color:#f92672">/</span><span style="color:#a6e22e">mattn</span><span style="color:#f92672">/</span><span style="color:#66d9ef">go</span><span style="color:#f92672">-</span><span style="color:#a6e22e">colorable</span> <span style="color:#a6e22e">v0</span><span style="color:#ae81ff">.1.1</span> <span style="color:#75715e">// indirect
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">github</span>.<span style="color:#a6e22e">com</span><span style="color:#f92672">/</span><span style="color:#a6e22e">mattn</span><span style="color:#f92672">/</span><span style="color:#66d9ef">go</span><span style="color:#f92672">-</span><span style="color:#a6e22e">isatty</span> <span style="color:#a6e22e">v0</span><span style="color:#ae81ff">.0.7</span> <span style="color:#75715e">// indirect
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">github</span>.<span style="color:#a6e22e">com</span><span style="color:#f92672">/</span><span style="color:#a6e22e">stretchr</span><span style="color:#f92672">/</span><span style="color:#a6e22e">objx</span> <span style="color:#a6e22e">v0</span><span style="color:#ae81ff">.1.1</span> <span style="color:#75715e">// indirect
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">github</span>.<span style="color:#a6e22e">com</span><span style="color:#f92672">/</span><span style="color:#a6e22e">valyala</span><span style="color:#f92672">/</span><span style="color:#a6e22e">fasttemplate</span> <span style="color:#a6e22e">v1</span><span style="color:#ae81ff">.0.0</span> <span style="color:#75715e">// indirect
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">golang</span>.<span style="color:#a6e22e">org</span><span style="color:#f92672">/</span><span style="color:#a6e22e">x</span><span style="color:#f92672">/</span><span style="color:#a6e22e">crypto</span> <span style="color:#a6e22e">v0</span><span style="color:#ae81ff">.0.0</span><span style="color:#f92672">-</span><span style="color:#ae81ff">20190313024323</span><span style="color:#f92672">-</span><span style="color:#a6e22e">a1f597ede03a</span> <span style="color:#75715e">// indirect
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">golang</span>.<span style="color:#a6e22e">org</span><span style="color:#f92672">/</span><span style="color:#a6e22e">x</span><span style="color:#f92672">/</span><span style="color:#a6e22e">sys</span> <span style="color:#a6e22e">v0</span><span style="color:#ae81ff">.0.0</span><span style="color:#f92672">-</span><span style="color:#ae81ff">20190312061237</span><span style="color:#f92672">-</span><span style="color:#a6e22e">fead79001313</span> <span style="color:#75715e">// indirect
 </span><span style="color:#75715e"></span>)
 </code></pre></div><p>And we are done! Now we can edit the <code>main.go</code> to this:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>

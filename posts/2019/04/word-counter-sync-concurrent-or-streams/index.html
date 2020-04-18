@@ -27,7 +27,9 @@ func wordCounter() (words map[string]int) { b, err := ioutil." />
 
 
 
-<link rel="stylesheet" href="/main.min.608d8fe647f3fb84414579f3df1b161dbfb868d2a97552ca983aa488ca430202.css">
+<link rel="stylesheet" href="/main.min.fa1091ca9d2bb5f5dc3f6c70f5dd373368a8a14b57b35f3b8feb5132d5cc5066.css">
+
+
 
 
 
@@ -43,22 +45,16 @@ func wordCounter() (words map[string]int) { b, err := ioutil.">
 
 
 
-<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary_large_image"/>
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://devandchill.com/og-image.png"/>
 
 <meta name="twitter:title" content="Word counter: Sync, concurrent or streams?"/>
 <meta name="twitter:description" content="One day I was given the task of doing a whiteboard word counter algorithm. The requirements were:
  Print on console all the words and the quantity of times they appear on a 40.000 lines input. Make it as fast as possible.  For a start one can do it as simple as possible instead, and then try to see whether it can be made faster:
 func wordCounter() (words map[string]int) { b, err := ioutil."/>
-<meta property="og:title" content="Word counter: Sync, concurrent or streams?" />
-<meta property="og:description" content="One day I was given the task of doing a whiteboard word counter algorithm. The requirements were:
- Print on console all the words and the quantity of times they appear on a 40.000 lines input. Make it as fast as possible.  For a start one can do it as simple as possible instead, and then try to see whether it can be made faster:
-func wordCounter() (words map[string]int) { b, err := ioutil." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://devandchill.com/posts/2019/04/word-counter-sync-concurrent-or-streams/" />
-<meta property="og:image" content="https://devandchill.com/og-image.png"/>
-<meta property="article:published_time" content="2019-04-10T20:59:47+02:00" />
-<meta property="article:modified_time" content="2019-04-10T20:59:47+02:00" /><meta property="og:site_name" content="Dev &amp; Chill" />
+
+
 
 
 
@@ -149,10 +145,10 @@ func wordCounter() (words map[string]int) { b, err := ioutil." />
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
 		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
 	}
-	<span style="color:#a6e22e">removeLineBreaks</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">\r?\n</span><span style="color:#e6db74">`</span>)
+	<span style="color:#a6e22e">removeLineBreaks</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`\r?\n`</span>)
 	<span style="color:#a6e22e">inputText</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">removeLineBreaks</span>.<span style="color:#a6e22e">ReplaceAllString</span>(string(<span style="color:#a6e22e">b</span>),<span style="color:#e6db74">&#34; &#34;</span>)
 	<span style="color:#a6e22e">words</span> = make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span>)
-	<span style="color:#a6e22e">removeSpecial</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">(?m)[^a-z]</span><span style="color:#e6db74">`</span>)
+	<span style="color:#a6e22e">removeSpecial</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`(?m)[^a-z]`</span>)
 
 	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">w</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Split</span>(<span style="color:#a6e22e">inputText</span>, <span style="color:#e6db74">&#34; &#34;</span>) {
 		<span style="color:#a6e22e">w</span> = <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">ToLower</span>(<span style="color:#a6e22e">w</span>)
@@ -183,10 +179,10 @@ func wordCounter() (words map[string]int) { b, err := ioutil." />
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
 		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
 	}
-	<span style="color:#a6e22e">removeLineBreaks</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">\r?\n</span><span style="color:#e6db74">`</span>)
+	<span style="color:#a6e22e">removeLineBreaks</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`\r?\n`</span>)
 	<span style="color:#a6e22e">inputText</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">removeLineBreaks</span>.<span style="color:#a6e22e">ReplaceAllString</span>(string(<span style="color:#a6e22e">b</span>),<span style="color:#e6db74">&#34; &#34;</span>)
 	<span style="color:#a6e22e">words</span> = make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span>)
-	<span style="color:#a6e22e">removeSpecial</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">(?m)[^a-z]</span><span style="color:#e6db74">`</span>)
+	<span style="color:#a6e22e">removeSpecial</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`(?m)[^a-z]`</span>)
 
 	<span style="color:#a6e22e">wg</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">WaitGroup</span>{}
 	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">w</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Split</span>(<span style="color:#a6e22e">inputText</span>, <span style="color:#e6db74">&#34; &#34;</span>) {
@@ -229,10 +225,10 @@ fatal error: concurrent map read and map write
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
 		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
 	}
-	<span style="color:#a6e22e">removeLineBreaks</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">\r?\n</span><span style="color:#e6db74">`</span>)
+	<span style="color:#a6e22e">removeLineBreaks</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`\r?\n`</span>)
 	<span style="color:#a6e22e">inputText</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">removeLineBreaks</span>.<span style="color:#a6e22e">ReplaceAllString</span>(string(<span style="color:#a6e22e">b</span>),<span style="color:#e6db74">&#34; &#34;</span>)
 	<span style="color:#a6e22e">words</span> = make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span>)
-	<span style="color:#a6e22e">removeSpecial</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">(?m)[^a-z]</span><span style="color:#e6db74">`</span>)
+	<span style="color:#a6e22e">removeSpecial</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`(?m)[^a-z]`</span>)
 
 	<span style="color:#a6e22e">doneChan</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">bool</span>)
 	<span style="color:#a6e22e">wordsChan</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">string</span>)
@@ -475,7 +471,7 @@ BenchmarkWordCounterStreams-12       198    5.93 ms/op    330114 B/op    44844 a
     <div class="footer__inner">
         <div class="footer__content">
             <span>Powered by <a href="http://gohugo.io">Hugo</a></span>
-            <span>Made with &#10084; by <a href="https://github.com/rhazdon">rhazdon</a></span>
+            <span>Made with &#10084; by <a href="https://github.com/rhazdon">Djordje Atlialp</a></span>
         </div>
     </div>
 </footer>
@@ -488,7 +484,7 @@ BenchmarkWordCounterStreams-12       198    5.93 ms/op    330114 B/op    44844 a
 
 
 
-<script type="text/javascript" src="/bundle.min.2d5469329143160ae2456a69c3c76dc2d0a3b212b46afe291a51bd68650ed6f8697e001dab54f1c272c77ce08092a8c55e5bb4314e0ee334aab4b927ec896638.js" integrity="sha512-LVRpMpFDFgriRWppw8dtwtCjshK0av4pGlG9aGUO1vhpfgAdq1TxwnLHfOCAkqjFXlu0MU4O4zSqtLkn7IlmOA=="></script>
+<script type="text/javascript" src="/bundle.min.4a69500057d68129e88f497d354afe68422eb56de6d15e45dbe2190858ea5a76bfcb096406f992984b241db45f47388ac57ab0376e3b32125bef7a8a6d0f06c4.js" integrity="sha512-SmlQAFfWgSnoj0l9NUr&#43;aEIutW3m0V5F2&#43;IZCFjqWna/ywlkBvmSmEskHbRfRziKxXqwN247MhJb73qKbQ8GxA=="></script>
 
 
 
