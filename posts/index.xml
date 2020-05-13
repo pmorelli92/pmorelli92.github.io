@@ -10,11 +10,11 @@
         <atom:link href="https://devandchill.com/posts/index.xml" rel="self" type="application/rss+xml" />
         
         <item>
-            <title>Postgres: Building concurrently safe upsert queries (Part 1)</title>
-            <link>https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries-part-1/</link>
+            <title>Postgres: Building concurrently safe upsert queries</title>
+            <link>https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries/</link>
             <pubDate>Sun, 16 Feb 2020 09:22:29 +0100</pubDate>
             
-            <guid>https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries-part-1/</guid>
+            <guid>https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries/</guid>
             <description>Recently at the company I am working for, there was a need to communicate with an external service which required us to send some data along with an integer identifier. The problem is that IDs in our domain are not integers but uuid.
 The suggestion then was to have a service which creates an unique integer for a certain uuid. This way the int identifier won&amp;rsquo;t be leaked to any other part of the system.</description>
             <content type="html"><![CDATA[<p>Recently at the company I am working for, there was a need to communicate with an external service which required us to send some data along with an integer identifier. The problem is that IDs in our domain are not integers but uuid.</p>
@@ -124,7 +124,7 @@ RETURNING id
 <li>This last query will not respond until the first transaction finishes.</li>
 </ul>
 <p>What does this mean? It means that concurrency is being handled explicitly with locks in a way that won&rsquo;t scale when having multiple requests using the same uuid.</p>
-<p><em>Benchmark for this approach in part 2</em></p>
+<p><a href="https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/"><em>Benchmark for this approach in part 2</em></a></p>
 <hr>
 <h3 id="4-on-conflict-update">4. On conflict, update</h3>
 <ol>
@@ -233,11 +233,11 @@ RETURNING ctid, xmin, xmax, id
 <ul>
 <li><code>t_ctid</code> indicates that the row is stored on page 0 and block 2.</li>
 <li>The transaction id used for the creation of the row (<code>t_xmin</code>) is 5920.</li>
-<li>the destruction transaction id (<code>t_xmax</code>) is 0 because no changes happened to the row.</li>
+<li>The destruction transaction id (<code>t_xmax</code>) is 0 because no changes happened to the row.</li>
 </ul>
 <p>As you can probably guess an <code>UPDATE</code> is a <code>DELETE + INSERT</code> under the hoods.</p>
 <p>With this explained, it is confirmed why doing <code>ON CONFLICT UPDATE</code> is not a good choice either.</p>
-<p><em>Benchmark for this approach in part 2</em></p>
+<p><a href="https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/"><em>Benchmark for this approach in part 2</em></a></p>
 <hr>
 <h3 id="5-insert-first-read-later">5. Insert first, read later</h3>
 <p>On the first approach, the problem was that the <code>INSERT</code> query was not updating on conflict, thus the <code>RETURNING</code> row is empty when the row already exists. This can be solved by flipping the order of the statements.</p>
@@ -254,7 +254,7 @@ RETURNING ctid, xmin, xmax, id
 <span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>
 </code></pre></div><p>It does not matter how many concurrent inserts are triggered at the same time, only the first one will get through and insert the row. Since the row is never updated (<code>ON CONFLICT DO NOTHING</code>) the <code>ctid</code>, <code>xmin</code>, and <code>xmax</code> will remain the same.</p>
 <p>After the <code>INSERT</code> is executed, the <code>SELECT</code> statement will return the id for the recently created / already existing row.</p>
-<p>But is this performant? For that lets <code>EXPLAIN ANALYZE</code> the queries:</p>
+<p>But is this performing? For that lets <code>EXPLAIN ANALYZE</code> the queries:</p>
 <p>Insert (when there is no row):</p>
 <pre><code>Insert on customers
   Conflict Resolution: NOTHING
@@ -276,45 +276,48 @@ Execution Time: 0.244 ms
 Planning Time: 0.069 ms
 Execution Time: 0.111 ms
 </code></pre><p>The summarization between the insert and the select is less than a millisecond for both cases. Don&rsquo;t worry, on the next part this is proven.</p>
-<p><em>Benchmark for this approach in part 2</em></p>
+<p><a href="https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/"><em>Benchmark for this approach in part 2</em></a></p>
 <hr>
-<h3 id="bonus-for-non-postgres-users">Bonus for non Postgres users</h3>
-<p>In case your SQL engine does not support <code>ON CONFLICT DO NOTHING</code> this approach can still be used by changing the query to the following:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers (customer_id)
-<span style="color:#66d9ef">SELECT</span> <span style="color:#e6db74">&#39;8a57f8f4-aeed-412c-a6f6-5f9a03b17bc5&#39;</span>
-<span style="color:#66d9ef">WHERE</span> (
-  <span style="color:#66d9ef">SELECT</span> <span style="color:#ae81ff">1</span>
-  <span style="color:#66d9ef">FROM</span> customers
-  <span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;8a57f8f4-aeed-412c-a6f6-5f9a03b17bc5&#39;</span>)
-<span style="color:#66d9ef">IS</span> <span style="color:#66d9ef">NULL</span>;
-
-<span style="color:#66d9ef">SELECT</span> id
-<span style="color:#66d9ef">FROM</span> customers
-<span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;8a57f8f4-aeed-412c-a6f6-5f9a03b17bc5&#39;</span>;
-</code></pre></div><p>The <code>ON CONFLICT DO NOTHING</code> is replaced by a <code>WHERE</code> clause. The execution plan for the last two approaches shows that the first is better, but the difference is almost inexistent.</p>
-<p>Insert query:</p>
-<pre><code>Insert on customers
-  InitPlan 1 (returns $0)
-    -&gt;  Index Only Scan using customers_pkey on customers customers_1
-          Index Cond: (customer_id = '...'::uuid)
-          Heap Fetches: 0
-  -&gt;  Result
-        One-Time Filter: ($0 IS NULL)
-Planning Time: 0.115 ms
-Execution Time: 0.263 ms
-</code></pre><p>Select query:</p>
-<pre><code>Index Scan using customers_pkey on customers
-  Index Cond: (customer_id = '...'::uuid)
-Planning Time: 0.069 ms
-Execution Time: 0.111 ms
-</code></pre><hr>
-<p>And that is all for part 1. On the next part, the benchmarks for the following approaches are going to be executed:</p>
+<h3 id="bonus-for-non-postgres-users-aka-cte-queries">Bonus for non Postgres users (a.k.a CTE queries)</h3>
+<p>CTE means Common Table Expression and documentation can be found <a href="https://www.postgresql.org/docs/current/queries-with.html">here</a></p>
+<p>These kind of expressions are also useful when the database engine  does not support <code>ON CONFLICT DO NOTHING</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">WITH</span>
+	<span style="color:#66d9ef">search</span> <span style="color:#66d9ef">AS</span> (<span style="color:#66d9ef">SELECT</span> ctid, xmax, id <span style="color:#66d9ef">FROM</span> customers <span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;8a57f8f4-aeed-412c-a6f6-5f9a03b17bc5&#39;</span> <span style="color:#66d9ef">LIMIT</span> <span style="color:#ae81ff">1</span>),
+	<span style="color:#66d9ef">add</span> <span style="color:#66d9ef">AS</span> (<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers (customer_id) <span style="color:#66d9ef">SELECT</span> <span style="color:#e6db74">&#39;8a57f8f4-aeed-412c-a6f6-5f9a03b17bc5&#39;</span> <span style="color:#66d9ef">WHERE</span> <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">EXISTS</span>(<span style="color:#66d9ef">SELECT</span> id <span style="color:#66d9ef">from</span> <span style="color:#66d9ef">search</span>) RETURNING ctid, xmax, id)
+<span style="color:#66d9ef">SELECT</span> ctid, xmax, id <span style="color:#66d9ef">from</span> <span style="color:#66d9ef">add</span>	<span style="color:#66d9ef">UNION</span> <span style="color:#66d9ef">ALL</span> <span style="color:#66d9ef">SELECT</span> ctid, xmax, id <span style="color:#66d9ef">from</span> <span style="color:#66d9ef">search</span>
+</code></pre></div><ul>
+<li>Prepare the <code>search</code> statement, it will be responsible of finding a customer given an id.</li>
+<li>Prepare the <code>add</code> statement, it will insert the customer if it is not found on the search expression.</li>
+<li>Execute both statements, only one will return a result.</li>
+</ul>
+<p>Running <code>EXPLAIN ANALYZE</code> on the query:</p>
+<pre><code>HashAggregate
+  Group Key: add.ctid, add.xmax, add.id
+  CTE search
+    -&gt;  Limit
+          -&gt;  Index Scan using customers_pkey on customers
+                Index Cond: (customer_id = '...'::uuid)
+  CTE add
+    -&gt;  Insert on customers customers_1
+          InitPlan 2 (returns $1)
+            -&gt;  CTE Scan on search search_1
+          -&gt;  Result
+                One-Time Filter: (NOT $1)
+  -&gt;  Append
+        -&gt;  CTE Scan on add
+        -&gt;  CTE Scan on search
+Planning Time: 0.256 ms
+Execution Time: 2.483 ms
+</code></pre><p><a href="https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/"><em>Benchmark for this approach in part 2</em></a></p>
+<hr>
+<p>And that is all for this post. On the next post, the benchmarks for the following approaches are going to be executed:</p>
 <ul>
 <li>Advisory lock</li>
 <li>On conflict update</li>
 <li>On conflict do nothing</li>
+<li>CTE queries</li>
 </ul>
-<p>If you consider this is useful, do not hesitate on sharing on your favorite social media. See you next time!</p>
+<p>If you consider this is useful, do not hesitate on sharing this on your favorite social media. See you next time!</p>
 ]]></content>
         </item>
         

@@ -307,9 +307,9 @@ If I were to give a verdict on Azure Pipelines:</p>
                 <div class="pagination__buttons">
                     
                         <span class="button previous">
-                            <a href="https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries-part-1/">
+                            <a href="https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries/">
                                 <span class="button__icon">←</span>
-                                <span class="button__text">Postgres: Building concurrently safe upsert queries (Part 1)</span>
+                                <span class="button__text">Postgres: Building concurrently safe upsert queries</span>
                             </a>
                         </span>
                     
@@ -339,65 +339,21 @@ If I were to give a verdict on Azure Pipelines:</p>
       
     
       
-        
-        
-          <div class="post-comment">
-            <div class="post-comment-header">
-              <img class="post-comment-avatar" src="https://www.gravatar.com/avatar/d9dd3bd62dd43dce631e6c59b29eee70?s=100">
-              <p class="post-comment-info"><strong>Pablo Morelli</strong><br>15/02/2020 20:59</p>
-            </div>
-            <p>Hi Kim, some things that may help you diagnose this:</p>
-<ul>
-<li>Check if nginx is activated on your AKS instance.</li>
-<li>Check your firewall, for example on GCP the external IP by default is non accessible unless you specify rules to bypass so.</li>
-</ul>
-<p>For sure you can post this lab as long as you link them here as well :)
-Let&rsquo;s keep in touch and tell me if anything :)</p>
-
-          </div>
-        
-          <div class="post-comment">
-            <div class="post-comment-header">
-              <img class="post-comment-avatar" src="https://www.gravatar.com/avatar/1b88bfdcac2e5fe560fab96d274e4edb?s=100">
-              <p class="post-comment-info"><strong>Youngdae Kim</strong><br>14/02/2020 02:23</p>
-            </div>
-            <p>Thanks for your posting.</p>
-<p>I followed this lab for my own environment. I changed ACR, AKS and docker image name, also I changed kubernetes service type to LoadBlancer. Everything is perfect but the result from the app returns 404.</p>
-<pre><code>NAME                                  READY   STATUS    RESTARTS   AGE
-pod/gwa-deployment-5bc8fd5589-62bkq   1/1     Running   0          12s
-</code></pre><pre><code>NAME                  TYPE           CLUSTER-IP     EXTERNAL-IP    PORT(S)        AGE
-service/gwa-service   LoadBalancer   10.0.166.218   52.141.25.18   80:32149/TCP   19m
-service/kubernetes    ClusterIP      10.0.0.1       &lt;none&gt;         443/TCP        58m
-</code></pre><pre><code>NAME                             READY   UP-TO-DATE   AVAILABLE   AGE
-deployment.apps/gwa-deployment   1/1     1            1           19m
-</code></pre><pre><code>NAME                                        DESIRED   CURRENT   READY   AGE
-replicaset.apps/gwa-deployment-5bc8fd5589   1         1         1       12s
-replicaset.apps/gwa-deployment-668db77764   0         0         0       4m   
-replicaset.apps/gwa-deployment-6947467bc9   0         0         0       19m
-</code></pre><p>I don&rsquo;t know about go. 
-What&rsquo;s the cause of this problem?</p>
-<p>I have one thing to ask you. 
-Can I post this lab with my own results in Korean?
-I hope you can understand what I mean.
-Please understand my poor english</p>
-<p>Have a nice day :)</p>
-
-          </div>
-        
-      
     
       
     
       
     
 
+    
+      <p>Nothing yet.</p>
     
 
     <h3>Say something</h3>
 
     <form class="post-new-comment" method="POST" action="https://dev.staticman.net/v3/entry/github/pmorelli92/devandchill/master/comments">
       <input type="hidden" name="options[redirect]" value="https://devandchill.com/posts/2019/10/azure-pipelines-build-a-dockerized-app-and-deploy-to-kubernetes/">
-      <input type="hidden" name="options[entryId]" value="2eff66a70fa8bdd0c9e42cd07f775e6d">
+      <input type="hidden" name="options[entryId]" value="a7189096b9e6e69171cb644f4759b915">
       <input name="fields[name]" type="text" class="post-comment-field" placeholder="Your name">
       <input name="fields[email]" type="email" class="post-comment-field" placeholder="Your email address for Gravatar (Optional)">
       <textarea name="fields[body]" class="post-comment-field" placeholder="Your message." rows="3"></textarea>
