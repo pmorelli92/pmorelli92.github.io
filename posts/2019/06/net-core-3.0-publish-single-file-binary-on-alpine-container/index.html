@@ -8,7 +8,7 @@
 <meta name="description" content="The newly released dotnet 3 preview 6 has an interesting feature called publish single file where an application can be published as a self contained app that will extract and run on the platform it was compiled for.
 In order to add this feature in our .csproj, add the following lines:
 &amp;lt;PropertyGroup&amp;gt; &amp;lt;TargetFramework&amp;gt;netcoreapp3.0&amp;lt;/TargetFramework&amp;gt; &amp;lt;PublishTrimmed&amp;gt;true&amp;lt;/PublishTrimmed&amp;gt; &amp;lt;PublishReadyToRun&amp;gt;true&amp;lt;/PublishReadyToRun&amp;gt; &amp;lt;PublishSingleFile&amp;gt;true&amp;lt;/PublishSingleFile&amp;gt; &amp;lt;CrossGenDuringPublish&amp;gt;false&amp;lt;/CrossGenDuringPublish&amp;gt; &amp;lt;/PropertyGroup&amp;gt; There are some flags that may sound weird, let&amp;rsquo;s go through them:" />
-<meta name="keywords" content="blog, development, programming, tech" />
+<meta name="keywords" content="blog, development, programming, tech, .net, .net core, binary, docker, alpine, container" />
 <meta name="robots" content="noodp" />
 <meta name="theme-color" content="" />
 <link rel="canonical" href="https://devandchill.com/posts/2019/06/net-core-3.0-publish-single-file-binary-on-alpine-container/" />
@@ -45,7 +45,7 @@ In order to add this feature in our .csproj, add the following lines:
 
 
 
-<meta itemprop="keywords" content="" />
+<meta itemprop="keywords" content=".net,.net core,binary,docker,alpine,container," />
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://devandchill.com/og-image.png"/>
 
@@ -193,6 +193,9 @@ In order to add this feature in our .csproj, add the following lines:
         <hr />
 
         <div class="post-info">
+                <p>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://devandchill.com/tags/.net">.net</a></span><span class="tag"><a href="https://devandchill.com/tags/.net-core">.net core</a></span><span class="tag"><a href="https://devandchill.com/tags/binary">binary</a></span><span class="tag"><a href="https://devandchill.com/tags/docker">docker</a></span><span class="tag"><a href="https://devandchill.com/tags/alpine">alpine</a></span><span class="tag"><a href="https://devandchill.com/tags/container">container</a></span>
+                </p>
 
             <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>482 Words</p>
 

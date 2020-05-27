@@ -3,6 +3,46 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://devandchill.com/tags/benchmark/</loc>
+    <lastmod>2020-05-13T16:40:29+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/concurrency/</loc>
+    <lastmod>2020-05-13T16:40:29+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/cte/</loc>
+    <lastmod>2020-05-13T16:40:29+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/database/</loc>
+    <lastmod>2020-05-13T16:40:29+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/</loc>
+    <lastmod>2020-05-13T16:40:29+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/go/</loc>
+    <lastmod>2020-05-13T16:40:29+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/golang/</loc>
+    <lastmod>2020-05-13T16:40:29+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/postgres/</loc>
+    <lastmod>2020-05-13T16:40:29+01:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/</loc>
     <lastmod>2020-05-13T16:40:29+01:00</lastmod>
   </url>
@@ -13,8 +53,38 @@
   </url>
   
   <url>
+    <loc>https://devandchill.com/tags/queries/</loc>
+    <lastmod>2020-05-13T16:40:29+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/sql/</loc>
+    <lastmod>2020-05-13T16:40:29+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/</loc>
+    <lastmod>2020-05-13T16:40:29+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/upsert/</loc>
+    <lastmod>2020-05-13T16:40:29+01:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries/</loc>
     <lastmod>2020-02-16T09:22:29+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/azure/</loc>
+    <lastmod>2019-10-19T22:22:29+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/azure-pipelines/</loc>
+    <lastmod>2019-10-19T22:22:29+02:00</lastmod>
   </url>
   
   <url>
@@ -23,8 +93,73 @@
   </url>
   
   <url>
+    <loc>https://devandchill.com/tags/cd/</loc>
+    <lastmod>2019-10-19T22:22:29+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/ci/</loc>
+    <lastmod>2019-10-19T22:22:29+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/docker/</loc>
+    <lastmod>2019-10-19T22:22:29+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/kubernetes/</loc>
+    <lastmod>2019-10-19T22:22:29+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/kubesail/</loc>
+    <lastmod>2019-10-19T22:22:29+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/.net/</loc>
+    <lastmod>2019-06-24T17:22:29+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/.net-core/</loc>
+    <lastmod>2019-06-24T17:22:29+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/alpine/</loc>
+    <lastmod>2019-06-24T17:22:29+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/binary/</loc>
+    <lastmod>2019-06-24T17:22:29+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/container/</loc>
+    <lastmod>2019-06-24T17:22:29+02:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://devandchill.com/posts/2019/06/net-core-3.0-publish-single-file-binary-on-alpine-container/</loc>
     <lastmod>2019-06-24T17:22:29+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/commits/</loc>
+    <lastmod>2019-06-09T20:22:29+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/github/</loc>
+    <lastmod>2019-06-09T20:22:29+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/gpg/</loc>
+    <lastmod>2019-06-09T20:22:29+02:00</lastmod>
   </url>
   
   <url>
@@ -33,8 +168,53 @@
   </url>
   
   <url>
+    <loc>https://devandchill.com/tags/ssh/</loc>
+    <lastmod>2019-06-09T20:22:29+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/verified/</loc>
+    <lastmod>2019-06-09T20:22:29+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/verify/</loc>
+    <lastmod>2019-06-09T20:22:29+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/channels/</loc>
+    <lastmod>2019-04-10T20:59:47+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/concurrent/</loc>
+    <lastmod>2019-04-10T20:59:47+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/streams/</loc>
+    <lastmod>2019-04-10T20:59:47+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/sync/</loc>
+    <lastmod>2019-04-10T20:59:47+02:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://devandchill.com/posts/2019/04/word-counter-sync-concurrent-or-streams/</loc>
     <lastmod>2019-04-10T20:59:47+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/dep/</loc>
+    <lastmod>2019-03-13T17:07:15+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/go-modules/</loc>
+    <lastmod>2019-03-13T17:07:15+01:00</lastmod>
   </url>
   
   <url>
@@ -43,8 +223,13 @@
   </url>
   
   <url>
-    <loc>https://devandchill.com/</loc>
-    <lastmod>2019-03-08T20:43:08+01:00</lastmod>
+    <loc>https://devandchill.com/tags/gopath/</loc>
+    <lastmod>2019-03-13T17:07:15+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/scratch/</loc>
+    <lastmod>2019-03-13T17:07:15+01:00</lastmod>
   </url>
   
   <url>
@@ -55,14 +240,6 @@
   <url>
     <loc>https://devandchill.com/about/</loc>
     <lastmod>2019-03-06T20:43:08+01:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://devandchill.com/categories/</loc>
-  </url>
-  
-  <url>
-    <loc>https://devandchill.com/tags/</loc>
   </url>
   
 </urlset>

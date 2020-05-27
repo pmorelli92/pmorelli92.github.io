@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>go on Dev &amp; Chill</title>
+    <link>https://devandchill.com/tags/go/</link>
+    <description>Recent content in go on Dev &amp; Chill</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Pablo Morelli</copyright>
+    <lastBuildDate>Wed, 13 May 2020 16:40:29 +0100</lastBuildDate>
+    
+	<atom:link href="https://devandchill.com/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Postgres: Benchmarking concurrently safe upsert queries</title>
+      <link>https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/</link>
+      <pubDate>Wed, 13 May 2020 16:40:29 +0100</pubDate>
+      
+      <guid>https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/</guid>
+      <description>In my previous post I covered how to build concurrently safe upsert queries.
+This post serves as a continuation where different approaches will be battle tested to expose the performance of each one:
+ Advisory lock On conflict update On conflict do nothing CTE queries  Without further ado, let&amp;rsquo;s start:
+The application In order to emulate the scenario described on the previous post, an HTTP API is required. This one will connect to a database to perform the calls.</description>
+    </item>
+    
+    <item>
+      <title>Azure Pipelines: Build a dockerized app and deploy to kubernetes</title>
+      <link>https://devandchill.com/posts/2019/10/azure-pipelines-build-a-dockerized-app-and-deploy-to-kubernetes/</link>
+      <pubDate>Sat, 19 Oct 2019 22:22:29 +0200</pubDate>
+      
+      <guid>https://devandchill.com/posts/2019/10/azure-pipelines-build-a-dockerized-app-and-deploy-to-kubernetes/</guid>
+      <description>Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&amp;rsquo;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files). Now I am currently working with Travis for CI and Flux for CD but I think it is always good to keep an eye on how the competitors are doing and what they have to offer.</description>
+    </item>
+    
+    <item>
+      <title>Word counter: Sync, concurrent or streams?</title>
+      <link>https://devandchill.com/posts/2019/04/word-counter-sync-concurrent-or-streams/</link>
+      <pubDate>Wed, 10 Apr 2019 20:59:47 +0200</pubDate>
+      
+      <guid>https://devandchill.com/posts/2019/04/word-counter-sync-concurrent-or-streams/</guid>
+      <description>One day I was given the task of doing a whiteboard word counter algorithm. The requirements were:
+ Print on console all the words and the quantity of times they appear on a 40.000 lines input. Make it as fast as possible.  For a start one can do it as simple as possible instead, and then try to see whether it can be made faster:
+func wordCounter() (words map[string]int) { b, err := ioutil.</description>
+    </item>
+    
+    <item>
+      <title>Go Modules: Working outside GOPATH</title>
+      <link>https://devandchill.com/posts/2019/03/go-modules-working-outside-gopath/</link>
+      <pubDate>Wed, 13 Mar 2019 17:07:15 +0100</pubDate>
+      
+      <guid>https://devandchill.com/posts/2019/03/go-modules-working-outside-gopath/</guid>
+      <description>When I started learning Golang (a couple of months ago) one of the things that I concerned most with was the project structure.
+It may sound irrelevant to bother with this when you are learning the language; but, every time I am browsing .net core applications or libraries on GitHub, I find it extremely unappealing when certain projects are not structured in a conventional way.
+My starting point was the following talk:</description>
+    </item>
+    
+  </channel>
+</rss>

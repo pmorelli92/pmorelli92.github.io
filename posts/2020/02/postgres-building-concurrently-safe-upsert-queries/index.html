@@ -7,7 +7,7 @@
 <meta name="author" content="">
 <meta name="description" content="Recently at the company I am working for, there was a need to communicate with an external service which required us to send some data along with an integer identifier. The problem is that IDs in our domain are not integers but uuid.
 The suggestion then was to have a service which creates an unique integer for a certain uuid. This way the int identifier won&amp;rsquo;t be leaked to any other part of the system." />
-<meta name="keywords" content="blog, development, programming, tech" />
+<meta name="keywords" content="blog, development, programming, tech, postgres, database, sql, benchmark, upsert, queries, cte, concurrency" />
 <meta name="robots" content="noodp" />
 <meta name="theme-color" content="" />
 <link rel="canonical" href="https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries/" />
@@ -43,7 +43,7 @@ The suggestion then was to have a service which creates an unique integer for a 
 
 
 
-<meta itemprop="keywords" content="" />
+<meta itemprop="keywords" content="postgres,database,sql,benchmark,upsert,queries,cte,concurrency," />
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://devandchill.com/og-image.png"/>
 
@@ -439,6 +439,9 @@ Execution Time: 2.483 ms
         <hr />
 
         <div class="post-info">
+                <p>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://devandchill.com/tags/postgres">postgres</a></span><span class="tag"><a href="https://devandchill.com/tags/database">database</a></span><span class="tag"><a href="https://devandchill.com/tags/sql">sql</a></span><span class="tag"><a href="https://devandchill.com/tags/benchmark">benchmark</a></span><span class="tag"><a href="https://devandchill.com/tags/upsert">upsert</a></span><span class="tag"><a href="https://devandchill.com/tags/queries">queries</a></span><span class="tag"><a href="https://devandchill.com/tags/cte">cte</a></span><span class="tag"><a href="https://devandchill.com/tags/concurrency">concurrency</a></span>
+                </p>
 
             <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>2078 Words</p>
 
