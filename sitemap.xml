@@ -3,8 +3,68 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://devandchill.com/tags/batch/</loc>
+    <lastmod>2020-05-27T15:40:29+01:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://devandchill.com/tags/benchmark/</loc>
-    <lastmod>2020-05-13T16:40:29+01:00</lastmod>
+    <lastmod>2020-05-27T15:40:29+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/cache/</loc>
+    <lastmod>2020-05-27T15:40:29+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/database/</loc>
+    <lastmod>2020-05-27T15:40:29+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/</loc>
+    <lastmod>2020-05-27T15:40:29+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/go/</loc>
+    <lastmod>2020-05-27T15:40:29+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/posts/2020/05/go-lib/pq-or-pgx-which-performs-better/</loc>
+    <lastmod>2020-05-27T15:40:29+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/golang/</loc>
+    <lastmod>2020-05-27T15:40:29+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/pgx/</loc>
+    <lastmod>2020-05-27T15:40:29+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/postgres/</loc>
+    <lastmod>2020-05-27T15:40:29+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/posts/</loc>
+    <lastmod>2020-05-27T15:40:29+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/sql/</loc>
+    <lastmod>2020-05-27T15:40:29+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/</loc>
+    <lastmod>2020-05-27T15:40:29+01:00</lastmod>
   </url>
   
   <url>
@@ -18,52 +78,12 @@
   </url>
   
   <url>
-    <loc>https://devandchill.com/tags/database/</loc>
-    <lastmod>2020-05-13T16:40:29+01:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://devandchill.com/</loc>
-    <lastmod>2020-05-13T16:40:29+01:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://devandchill.com/tags/go/</loc>
-    <lastmod>2020-05-13T16:40:29+01:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://devandchill.com/tags/golang/</loc>
-    <lastmod>2020-05-13T16:40:29+01:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://devandchill.com/tags/postgres/</loc>
-    <lastmod>2020-05-13T16:40:29+01:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/</loc>
     <lastmod>2020-05-13T16:40:29+01:00</lastmod>
   </url>
   
   <url>
-    <loc>https://devandchill.com/posts/</loc>
-    <lastmod>2020-05-13T16:40:29+01:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://devandchill.com/tags/queries/</loc>
-    <lastmod>2020-05-13T16:40:29+01:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://devandchill.com/tags/sql/</loc>
-    <lastmod>2020-05-13T16:40:29+01:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://devandchill.com/tags/</loc>
     <lastmod>2020-05-13T16:40:29+01:00</lastmod>
   </url>
   
@@ -240,6 +260,10 @@
   <url>
     <loc>https://devandchill.com/about/</loc>
     <lastmod>2019-03-06T20:43:08+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/lib/pq/</loc>
   </url>
   
 </urlset>

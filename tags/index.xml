@@ -7,17 +7,89 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Pablo Morelli</copyright>
-    <lastBuildDate>Wed, 13 May 2020 16:40:29 +0100</lastBuildDate>
+    <lastBuildDate>Wed, 27 May 2020 15:40:29 +0100</lastBuildDate>
     
 	<atom:link href="https://devandchill.com/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+      <title>batch</title>
+      <link>https://devandchill.com/tags/batch/</link>
+      <pubDate>Wed, 27 May 2020 15:40:29 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/batch/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>benchmark</title>
       <link>https://devandchill.com/tags/benchmark/</link>
-      <pubDate>Wed, 13 May 2020 16:40:29 +0100</pubDate>
+      <pubDate>Wed, 27 May 2020 15:40:29 +0100</pubDate>
       
       <guid>https://devandchill.com/tags/benchmark/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>cache</title>
+      <link>https://devandchill.com/tags/cache/</link>
+      <pubDate>Wed, 27 May 2020 15:40:29 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/cache/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>database</title>
+      <link>https://devandchill.com/tags/database/</link>
+      <pubDate>Wed, 27 May 2020 15:40:29 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/database/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>go</title>
+      <link>https://devandchill.com/tags/go/</link>
+      <pubDate>Wed, 27 May 2020 15:40:29 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/go/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>golang</title>
+      <link>https://devandchill.com/tags/golang/</link>
+      <pubDate>Wed, 27 May 2020 15:40:29 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/golang/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>pgx</title>
+      <link>https://devandchill.com/tags/pgx/</link>
+      <pubDate>Wed, 27 May 2020 15:40:29 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/pgx/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>postgres</title>
+      <link>https://devandchill.com/tags/postgres/</link>
+      <pubDate>Wed, 27 May 2020 15:40:29 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/postgres/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>sql</title>
+      <link>https://devandchill.com/tags/sql/</link>
+      <pubDate>Wed, 27 May 2020 15:40:29 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/sql/</guid>
       <description></description>
     </item>
     
@@ -40,56 +112,11 @@
     </item>
     
     <item>
-      <title>database</title>
-      <link>https://devandchill.com/tags/database/</link>
-      <pubDate>Wed, 13 May 2020 16:40:29 +0100</pubDate>
-      
-      <guid>https://devandchill.com/tags/database/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>go</title>
-      <link>https://devandchill.com/tags/go/</link>
-      <pubDate>Wed, 13 May 2020 16:40:29 +0100</pubDate>
-      
-      <guid>https://devandchill.com/tags/go/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>golang</title>
-      <link>https://devandchill.com/tags/golang/</link>
-      <pubDate>Wed, 13 May 2020 16:40:29 +0100</pubDate>
-      
-      <guid>https://devandchill.com/tags/golang/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>postgres</title>
-      <link>https://devandchill.com/tags/postgres/</link>
-      <pubDate>Wed, 13 May 2020 16:40:29 +0100</pubDate>
-      
-      <guid>https://devandchill.com/tags/postgres/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>queries</title>
       <link>https://devandchill.com/tags/queries/</link>
       <pubDate>Wed, 13 May 2020 16:40:29 +0100</pubDate>
       
       <guid>https://devandchill.com/tags/queries/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>sql</title>
-      <link>https://devandchill.com/tags/sql/</link>
-      <pubDate>Wed, 13 May 2020 16:40:29 +0100</pubDate>
-      
-      <guid>https://devandchill.com/tags/sql/</guid>
       <description></description>
     </item>
     
@@ -333,6 +360,15 @@
       <pubDate>Wed, 13 Mar 2019 17:07:15 +0100</pubDate>
       
       <guid>https://devandchill.com/tags/scratch/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>lib/pq</title>
+      <link>https://devandchill.com/tags/lib/pq/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://devandchill.com/tags/lib/pq/</guid>
       <description></description>
     </item>
     
