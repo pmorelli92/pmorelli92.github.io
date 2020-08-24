@@ -13,6 +13,15 @@
     
     
     <item>
+      <title>Resume</title>
+      <link>https://devandchill.com/resume/</link>
+      <pubDate>Mon, 24 Aug 2020 20:43:08 +0100</pubDate>
+      
+      <guid>https://devandchill.com/resume/</guid>
+      <description>WORKED WITH   .NET Core, Go. DDD, TDD, SOLID, CQRS, Clean Architecture, Event Sourcing (Akka.NET), Microservices, Scrum, Kanban. Docker, Kubernetes, CI/CD (Travis &amp;amp; Azure Pipelines), RabbitMQ (AMQP), Postgres (SQL), MongoDB (NoSQL), Terraform, GCP.   WORK EXPERIENCE  Backend Developer 💻 Lendo 🇸🇪  From 05.2019 - Present Developed fin-tech related microservices using Go (Golang) Worked on the migration from private cloud to GCP using Terraform as Infrastructure as Code to have our deployed infrastructure reflected on a git repository.</description>
+    </item>
+    
+    <item>
       <title>Go - lib/pq or pgx - which performs better?</title>
       <link>https://devandchill.com/posts/2020/05/go-lib/pq-or-pgx-which-performs-better/</link>
       <pubDate>Wed, 27 May 2020 15:40:29 +0100</pubDate>
@@ -95,15 +104,6 @@ func wordCounter() (words map[string]int) { b, err := ioutil.</description>
       <description>When I started learning Golang (a couple of months ago) one of the things that I concerned most with was the project structure.
 It may sound irrelevant to bother with this when you are learning the language; but, every time I am browsing .net core applications or libraries on GitHub, I find it extremely unappealing when certain projects are not structured in a conventional way.
 My starting point was the following talk:</description>
-    </item>
-    
-    <item>
-      <title>Resume</title>
-      <link>https://devandchill.com/resume/</link>
-      <pubDate>Fri, 08 Mar 2019 20:43:08 +0100</pubDate>
-      
-      <guid>https://devandchill.com/resume/</guid>
-      <description>WORKED WITH   DDD, TDD, SOLID, CQRS, .NET Core, Go, Clean Architecture, Event Sourcing, Akka.NET, Docker, Kubernetes, CI/CD, REST API, Microservices, Serverless, AMQP, SQL, NoSQL, Git, Azure, GCP, Kanban, Scrum.   WORK EXPERIENCE  Backend Developer 💻 Lendo 🇸🇪  From 05.2019 - Present Developed fin-tech related microservices using Go (Golang)  Backend Developer 💻 Record Union 🇸🇪  From 06.2018 - 04.2019 Developed a distributed application with actors, CQRS and Event Sourcing using .</description>
     </item>
     
     <item>
