@@ -3,6 +3,81 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://devandchill.com/</loc>
+    <lastmod>2020-08-31T20:00:00+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/env/</loc>
+    <lastmod>2020-08-31T20:00:00+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/environment/</loc>
+    <lastmod>2020-08-31T20:00:00+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/gcloud/</loc>
+    <lastmod>2020-08-31T20:00:00+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/gcp/</loc>
+    <lastmod>2020-08-31T20:00:00+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/gke/</loc>
+    <lastmod>2020-08-31T20:00:00+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/iam/</loc>
+    <lastmod>2020-08-31T20:00:00+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/kubernetes/</loc>
+    <lastmod>2020-08-31T20:00:00+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/manager/</loc>
+    <lastmod>2020-08-31T20:00:00+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/posts/</loc>
+    <lastmod>2020-08-31T20:00:00+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/secret-manager/</loc>
+    <lastmod>2020-08-31T20:00:00+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/secrets/</loc>
+    <lastmod>2020-08-31T20:00:00+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/posts/2020/08/stop-storing-secrets-on-environment-variables-enter-gcp-secret-manager/</loc>
+    <lastmod>2020-08-31T20:00:00+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/</loc>
+    <lastmod>2020-08-31T20:00:00+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://devandchill.com/tags/variable/</loc>
+    <lastmod>2020-08-31T20:00:00+01:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://devandchill.com/resume/</loc>
     <lastmod>2020-08-24T20:43:08+01:00</lastmod>
   </url>
@@ -24,11 +99,6 @@
   
   <url>
     <loc>https://devandchill.com/tags/database/</loc>
-    <lastmod>2020-05-27T15:40:29+01:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://devandchill.com/</loc>
     <lastmod>2020-05-27T15:40:29+01:00</lastmod>
   </url>
   
@@ -58,17 +128,7 @@
   </url>
   
   <url>
-    <loc>https://devandchill.com/posts/</loc>
-    <lastmod>2020-05-27T15:40:29+01:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://devandchill.com/tags/sql/</loc>
-    <lastmod>2020-05-27T15:40:29+01:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://devandchill.com/tags/</loc>
     <lastmod>2020-05-27T15:40:29+01:00</lastmod>
   </url>
   
@@ -129,11 +189,6 @@
   
   <url>
     <loc>https://devandchill.com/tags/docker/</loc>
-    <lastmod>2019-10-19T22:22:29+02:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://devandchill.com/tags/kubernetes/</loc>
     <lastmod>2019-10-19T22:22:29+02:00</lastmod>
   </url>
   

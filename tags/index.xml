@@ -7,10 +7,109 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Pablo Morelli</copyright>
-    <lastBuildDate>Wed, 27 May 2020 15:40:29 +0100</lastBuildDate>
+    <lastBuildDate>Mon, 31 Aug 2020 20:00:00 +0100</lastBuildDate>
     
 	<atom:link href="https://devandchill.com/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>env</title>
+      <link>https://devandchill.com/tags/env/</link>
+      <pubDate>Mon, 31 Aug 2020 20:00:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/env/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>environment</title>
+      <link>https://devandchill.com/tags/environment/</link>
+      <pubDate>Mon, 31 Aug 2020 20:00:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/environment/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>gcloud</title>
+      <link>https://devandchill.com/tags/gcloud/</link>
+      <pubDate>Mon, 31 Aug 2020 20:00:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/gcloud/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>gcp</title>
+      <link>https://devandchill.com/tags/gcp/</link>
+      <pubDate>Mon, 31 Aug 2020 20:00:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/gcp/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>gke</title>
+      <link>https://devandchill.com/tags/gke/</link>
+      <pubDate>Mon, 31 Aug 2020 20:00:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/gke/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>iam</title>
+      <link>https://devandchill.com/tags/iam/</link>
+      <pubDate>Mon, 31 Aug 2020 20:00:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/iam/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>kubernetes</title>
+      <link>https://devandchill.com/tags/kubernetes/</link>
+      <pubDate>Mon, 31 Aug 2020 20:00:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/kubernetes/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>manager</title>
+      <link>https://devandchill.com/tags/manager/</link>
+      <pubDate>Mon, 31 Aug 2020 20:00:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/manager/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>secret manager</title>
+      <link>https://devandchill.com/tags/secret-manager/</link>
+      <pubDate>Mon, 31 Aug 2020 20:00:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/secret-manager/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>secrets</title>
+      <link>https://devandchill.com/tags/secrets/</link>
+      <pubDate>Mon, 31 Aug 2020 20:00:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/secrets/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>variable</title>
+      <link>https://devandchill.com/tags/variable/</link>
+      <pubDate>Mon, 31 Aug 2020 20:00:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/variable/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>batch</title>
@@ -171,15 +270,6 @@
       <pubDate>Sat, 19 Oct 2019 22:22:29 +0200</pubDate>
       
       <guid>https://devandchill.com/tags/docker/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>kubernetes</title>
-      <link>https://devandchill.com/tags/kubernetes/</link>
-      <pubDate>Sat, 19 Oct 2019 22:22:29 +0200</pubDate>
-      
-      <guid>https://devandchill.com/tags/kubernetes/</guid>
       <description></description>
     </item>
     
