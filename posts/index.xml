@@ -6,8 +6,58 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
         <copyright>Pablo Morelli</copyright>
-        <lastBuildDate>Mon, 31 Aug 2020 20:00:00 +0100</lastBuildDate>
+        <lastBuildDate>Mon, 30 Nov 2020 19:39:00 +0100</lastBuildDate>
         <atom:link href="https://devandchill.com/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>The good, the bad and the ugly of microservices</title>
+            <link>https://devandchill.com/posts/2020/11/the-good-the-bad-and-the-ugly-of-microservices/</link>
+            <pubDate>Mon, 30 Nov 2020 19:39:00 +0100</pubDate>
+            
+            <guid>https://devandchill.com/posts/2020/11/the-good-the-bad-and-the-ugly-of-microservices/</guid>
+            <description>Without any doubts the year 2020 is one everyone is going to remember and it will appear in the history books (and wikipedia). Amidst so much chaos, the established way of working was forced to change, and companies that before rejected work from home had to adapt. In this way, teams that before shared a room and suffered unnecessary meetings, now started functioning as distributed teams (or distributed systems), that share a queue of messages using tools like email and slack (async communication) - and have meetings with lesser frequency (sync communication).</description>
+            <content type="html"><![CDATA[<p>Without any doubts the year 2020 is one everyone is going to remember and it will appear in the history books (and wikipedia). Amidst so much chaos, the established way of working was forced to change, and companies that before rejected work from home had to adapt. In this way, teams that before shared a room and suffered unnecessary meetings, now started functioning as distributed teams (or distributed systems), that share a queue of messages using tools like email and slack (async communication) - and have meetings with lesser frequency (sync communication).</p>
+<p>Great part of the IT industry agree with remote work, and beside topics like if the employer should pay for employees' monitors and internet there is not any major complain.</p>
+<p>If one make the assumption that a distribute team is better, can one also assume that a company using microservices is better? The answer is surely not black or white as there are certain topics to analyze.</p>
+<p>In the next paragraphs you will find &ldquo;the good, the bad and the ugly&rdquo; of the microservices. This is an extract of two podcast episodes of <a href="https://www.youtube.com/c/stream404">Stream 404</a>, a channel on which, me and my friends, stream monthly about different IT topics. The content of the episodes is on spanish, so the extract will be on english to cover a broader audience.</p>
+
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="https://www.youtube.com/embed/huv1c23YEG4" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+</div>
+
+
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="https://www.youtube.com/embed/vgx7EsJhKeE" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+</div>
+
+<h2 id="the-good-the-bad-and-the-ugly">The good, the bad and the ugly</h2>
+<p>Title of an old film and also of a <a href="https://www.funretrospectives.com/the-good-the-bad-and-the-ugly/">retrospective</a>, consists on naming good things (that the team should repeat), bad things (that should have never happened) and ugly things (which the team need to work with to make beautiful).</p>
+<p>Applying this to microservices one can name:</p>
+<ul>
+<li>The good things of using them.</li>
+<li>The bad things as problems to avoid.</li>
+<li>The ugly things as transitions and changes of paradigms that the team has to face.</li>
+</ul>
+<h2 id="the-good">The good</h2>
+<p>SOLID, a set of principles that apply to programming languages, establishes the &ldquo;Single Responsibility Principle&rdquo; (SRP): A class, file or package (depending on the language) must have an unique reason for changing. Microservices should take advantage of SRP to delimit the scope of a service and encapsulate that code within. In this way, the discoverability of certain functionality is way easier.</p>
+<p>The development lifecycle is shorter. When the scope of the microservice is well delimited, it should not take more than two weeks (from book to reality it may vary) which makes it easier to replace in case one needs another implementation.</p>
+<p>Following the same line of thinking, a service with a delimited scope is easier to test; a good base of unit tests which guarantee that the business rules are valid is fundamental for ensuring that the system works as expected.</p>
+<p>Lastly, in bigger companies where every team represents a function, is common to find no more than six people specifically working in one or two services and having total freedom to develop them - without breaking any contract constraint established with other services of other teams.</p>
+<h2 id="the-bad">The bad</h2>
+<p>Hashtags. It may sound ridiculous but to get people into start-ups there are teams that just try to do microservices, without considering the advantages / disadvantages, because they are trendy. The stigma of the monoliths is such that mentioning them cause pain. In a new company or in a new project, where the business is not super well defined and/or stable, the best alternative is to start with a monolith and then migrate to microservices.</p>
+<p>The tooling (libraries, infrastructure, others) can be a problem in a not so mature team. The autonomy means that a team can pick a programming language that was not used before in the company. One needs to be aware that a established language is likely to have a tooling made for it and changing it &ldquo;just-because&rdquo; is most of the times a not reasonable option.</p>
+<p>A company that handles a lot of languages also needs a lot of employees with different skill sets which can be a complication in case one employee leaves or wants to change team. Even when I do not agree that one only knows how to code on certain language and needs to start from &ldquo;trainee&rdquo; to learn a new one; there is still a learning curve in order to familiarize with syntax, frameworks and others.</p>
+<h2 id="the-ugly">The ugly</h2>
+<p>Microservices are not good for a new business in which there are no domain experts to brainstorm with. This, also mentioned in the bad, is something the team needs to work with. A monolith can be split gradually when the business scopes are stable and this can take from months to years.</p>
+<p>There is also a change of paradigm in terms on how to test the system. Many teams rely too much on automated E2E (end to end) that covers the entire system. Even when this seems like a good idea, one of the microservices' principles is that the deploy should be independent.
+If one has to deploy 10 services into production simultaneously and each time the E2E are executed takes 5 minutes; a total of 50 minutes is going to be spent rerunning the test one after another. This is not scalable on bigger systems and this is why the unit tests (for testing business logic) and integration tests (for testing database, amqp, other APIs) are favoured instead.</p>
+<p>Everything needs to be observable and measurable. In a monolith the failure points are easier to detect as everything is on the same application. In a distributed system every service need to have their metrics and alerts in place to know when there is a problem and be prepared to downgrade functionality when this happens. Networks fail, it is not about how to avoid something breaking but how to alert and proceed when it happens.</p>
+<p>From sync to async communication. A lot of the operations do not need to happen in batch. This is another change of paradigm. If a customer performs a buying operation it is probably not necessary for the sending of the receipt to happen in sync in the same transaction. For this, one can implement the pattern &ldquo;Tell don&rsquo;t ask&rdquo; where a service tells the other (via an event) that something has happened. This is an async operation that decouples the transaction and that can be retried the amount of times needed. So if the mail service for sending the receipt fails, the buying operation of the customer will not fail and he/she will get the receipt whenever the mail service is working properly again.</p>
+<h2 id="summary">Summary</h2>
+<p>The decision of using or not using microservices is going to vary for every company, team and business domain. Thinking cold and establishing what are the advantages and disadvantages that will bring is the best way to start.</p>
+<p>Trends are fleeting and whatever today is &ldquo;top notch&rdquo; tomorrow is going to suck. A well informed and <strong>documented</strong> decision is always going to have a good impact.</p>
+]]></content>
+        </item>
         
         <item>
             <title>Stop storing secrets on environment variables: Enter GCP Secret Manager</title>
@@ -1226,58 +1276,58 @@ Scroll down to service connections and you should see something like this:</p>
 <p>The ✔️ indicates that the CI process ran successfully, when the build is ongoing a yellow circle will appear, and if the build fails ❌ will be shown.</p>
 <h2 id="configuring-cicd">Configuring CI/CD</h2>
 <p>Back to the azure-pipelines.yml:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#66d9ef">trigger</span>:
-- master
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">trigger</span>:
+- <span style="color:#ae81ff">master</span>
 
-<span style="color:#66d9ef">pool</span>:
-  <span style="color:#66d9ef">vmImage</span>: <span style="color:#e6db74">&#39;ubuntu-latest&#39;</span>
+<span style="color:#f92672">pool</span>:
+  <span style="color:#f92672">vmImage</span>: <span style="color:#e6db74">&#39;ubuntu-latest&#39;</span>
 
-<span style="color:#66d9ef">variables</span>:
-  <span style="color:#66d9ef">buildNumber</span>: <span style="color:#ae81ff">0.0</span>.$(Build.BuildId)
+<span style="color:#f92672">variables</span>:
+  <span style="color:#f92672">buildNumber</span>: <span style="color:#ae81ff">0.0</span><span style="color:#ae81ff">.$(Build.BuildId)</span>
 
-<span style="color:#66d9ef">steps</span>:
-- <span style="color:#66d9ef">task</span>: Docker@<span style="color:#ae81ff">2</span>
-  <span style="color:#66d9ef">inputs</span>:
-    <span style="color:#66d9ef">containerRegistry</span>: <span style="color:#e6db74">&#39;pmorelli92-docker-hub&#39;</span>
-    <span style="color:#66d9ef">repository</span>: <span style="color:#e6db74">&#39;pmorelli92/go-with-azure&#39;</span>
-    <span style="color:#66d9ef">command</span>: <span style="color:#e6db74">&#39;buildAndPush&#39;</span>
-    <span style="color:#66d9ef">Dockerfile</span>: <span style="color:#e6db74">&#39;**/Dockerfile&#39;</span>
-    <span style="color:#66d9ef">tags</span>: <span style="color:#e6db74">|
-</span><span style="color:#e6db74">      $(buildNumber)</span>
-      latest
-- <span style="color:#66d9ef">bash</span>: sed -i <span style="color:#e6db74">&#34;s/latest/$(buildNumber)/g&#34;</span> kubernetes/k8s-deployment.yml
-- <span style="color:#66d9ef">task</span>: Kubernetes@<span style="color:#ae81ff">0</span>
-  <span style="color:#66d9ef">inputs</span>:
-    <span style="color:#66d9ef">kubernetesServiceConnection</span>: <span style="color:#e6db74">&#39;pmorelli92-kubesail&#39;</span>
-    <span style="color:#66d9ef">namespace</span>: pmorelli92
-    <span style="color:#66d9ef">command</span>: apply
-    <span style="color:#66d9ef">arguments</span>: <span style="color:#e6db74">&#39;-f kubernetes/k8s-deployment.yml&#39;</span>
+<span style="color:#f92672">steps</span>:
+- <span style="color:#f92672">task</span>: <span style="color:#ae81ff">Docker@2</span>
+  <span style="color:#f92672">inputs</span>:
+    <span style="color:#f92672">containerRegistry</span>: <span style="color:#e6db74">&#39;pmorelli92-docker-hub&#39;</span>
+    <span style="color:#f92672">repository</span>: <span style="color:#e6db74">&#39;pmorelli92/go-with-azure&#39;</span>
+    <span style="color:#f92672">command</span>: <span style="color:#e6db74">&#39;buildAndPush&#39;</span>
+    <span style="color:#f92672">Dockerfile</span>: <span style="color:#e6db74">&#39;**/Dockerfile&#39;</span>
+    <span style="color:#f92672">tags</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">      $(buildNumber)
+</span><span style="color:#e6db74">      latest</span>      
+- <span style="color:#f92672">bash</span>: <span style="color:#ae81ff">sed -i &#34;s/latest/$(buildNumber)/g&#34; kubernetes/k8s-deployment.yml</span>
+- <span style="color:#f92672">task</span>: <span style="color:#ae81ff">Kubernetes@0</span>
+  <span style="color:#f92672">inputs</span>:
+    <span style="color:#f92672">kubernetesServiceConnection</span>: <span style="color:#e6db74">&#39;pmorelli92-kubesail&#39;</span>
+    <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">pmorelli92</span>
+    <span style="color:#f92672">command</span>: <span style="color:#ae81ff">apply</span>
+    <span style="color:#f92672">arguments</span>: <span style="color:#e6db74">&#39;-f kubernetes/k8s-deployment.yml&#39;</span>
 </code></pre></div><p>Let&rsquo;s split them:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#66d9ef">trigger</span>:
-- master
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">trigger</span>:
+- <span style="color:#ae81ff">master</span>
 </code></pre></div><p>Associated on which branch the CI/CD will execute.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#66d9ef">pool</span>:
-  <span style="color:#66d9ef">vmImage</span>: <span style="color:#e6db74">&#39;ubuntu-latest&#39;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">pool</span>:
+  <span style="color:#f92672">vmImage</span>: <span style="color:#e6db74">&#39;ubuntu-latest&#39;</span>
 </code></pre></div><p>Relates to the machine that will execute the commands.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#66d9ef">variables</span>:
-  <span style="color:#66d9ef">buildNumber</span>: <span style="color:#ae81ff">0.0</span>.$(Build.BuildId)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">variables</span>:
+  <span style="color:#f92672">buildNumber</span>: <span style="color:#ae81ff">0.0</span><span style="color:#ae81ff">.$(Build.BuildId)</span>
 </code></pre></div><p>Global variables that are going to be used on the pipeline.
 In this case, the example repository is using semver for building versions.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#66d9ef">steps</span>:
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">steps</span>:
 </code></pre></div><p>Represents a chain of commands that will be executed in order. This is not the full power of pipelines, since it supports a higher order hierarchy where you can specify <code>stages -&gt; jobs -&gt; steps</code>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">- <span style="color:#66d9ef">task</span>: Docker@<span style="color:#ae81ff">2</span>
-  <span style="color:#66d9ef">inputs</span>:
-    <span style="color:#66d9ef">containerRegistry</span>: <span style="color:#e6db74">&#39;pmorelli92-docker-hub&#39;</span>
-    <span style="color:#66d9ef">repository</span>: <span style="color:#e6db74">&#39;pmorelli92/go-with-azure&#39;</span>
-    <span style="color:#66d9ef">command</span>: <span style="color:#e6db74">&#39;buildAndPush&#39;</span>
-    <span style="color:#66d9ef">Dockerfile</span>: <span style="color:#e6db74">&#39;**/Dockerfile&#39;</span>
-    <span style="color:#66d9ef">tags</span>: <span style="color:#e6db74">|
-</span><span style="color:#e6db74">      $(buildNumber)</span>
-      latest
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">- <span style="color:#f92672">task</span>: <span style="color:#ae81ff">Docker@2</span>
+  <span style="color:#f92672">inputs</span>:
+    <span style="color:#f92672">containerRegistry</span>: <span style="color:#e6db74">&#39;pmorelli92-docker-hub&#39;</span>
+    <span style="color:#f92672">repository</span>: <span style="color:#e6db74">&#39;pmorelli92/go-with-azure&#39;</span>
+    <span style="color:#f92672">command</span>: <span style="color:#e6db74">&#39;buildAndPush&#39;</span>
+    <span style="color:#f92672">Dockerfile</span>: <span style="color:#e6db74">&#39;**/Dockerfile&#39;</span>
+    <span style="color:#f92672">tags</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">      $(buildNumber)
+</span><span style="color:#e6db74">      latest</span>      
 </code></pre></div><p>This is a built-in command of pipelines, where we can (among other things) build and push docker images.</p>
 <p>The input named repository indicates the name of the repository on the container registry (which was set up on the project settings).</p>
 <p>If this command fails, the other ones will not be invoked.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#66d9ef">bash</span>: sed -i <span style="color:#e6db74">&#34;s/latest/$(buildNumber)/g&#34;</span> kubernetes/k8s-deployment.yml
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">bash</span>: <span style="color:#ae81ff">sed -i &#34;s/latest/$(buildNumber)/g&#34; kubernetes/k8s-deployment.yml</span>
 </code></pre></div><p>A discussion could be hold on whether if a service should self contain information of deployment or be agnostic of it. As a personal preference, I think having everything related to the application on the same repository enables easier discoverability.</p>
 <p>Of course, we are not having any secrets here, if that was the case, Azure Pipelines offers a way to store them safely inside the azure devops project.</p>
 <p>That being said, the repository contains a <a href="https://github.com/pmorelli92/go-with-azure/blob/master/kubernetes/k8s-deployment.yml">file</a> <code>kubernetes/k8s-deployment.yml</code> which describes:</p>
@@ -1287,24 +1337,24 @@ In this case, the example repository is using semver for building versions.</p>
 <li>Ingress (enables communication from the outside world to the service)</li>
 </ul>
 <p>The deployment needs to specify which version of the docker image is going to be run:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#66d9ef">spec</span>:
-<span style="color:#66d9ef">containers</span>:
-- <span style="color:#66d9ef">name</span>: gwa
-  <span style="color:#66d9ef">image</span>: pmorelli92/go-with-azure:latest
-  <span style="color:#66d9ef">ports</span>:
-  - <span style="color:#66d9ef">name</span>: http
-    <span style="color:#66d9ef">containerPort</span>: <span style="color:#ae81ff">80</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">spec</span>:
+<span style="color:#f92672">containers</span>:
+- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">gwa</span>
+  <span style="color:#f92672">image</span>: <span style="color:#ae81ff">pmorelli92/go-with-azure:latest</span>
+  <span style="color:#f92672">ports</span>:
+  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">http</span>
+    <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">80</span>
 </code></pre></div><p>It is definitely not good to use <code>:latest</code> image on stage / production so the sed script will replace <code>:latest</code> with <code>0.0.X</code> (which will be the build number). This is also the same version that will be pushed to the selected docker registry: <a href="https://cloud.docker.com/u/pmorelli92/repository/docker/pmorelli92/go-with-azure">example</a>.</p>
 <figure>
     <img src="/posts/images/docker-tags.png"/> 
 </figure>
 
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">- <span style="color:#66d9ef">task</span>: Kubernetes@<span style="color:#ae81ff">0</span>
-  <span style="color:#66d9ef">inputs</span>:
-    <span style="color:#66d9ef">kubernetesServiceConnection</span>: <span style="color:#e6db74">&#39;pmorelli92-kubesail&#39;</span>
-    <span style="color:#66d9ef">namespace</span>: pmorelli92
-    <span style="color:#66d9ef">command</span>: apply
-    <span style="color:#66d9ef">arguments</span>: <span style="color:#e6db74">&#39;-f kubernetes/k8s-deployment.yml&#39;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">- <span style="color:#f92672">task</span>: <span style="color:#ae81ff">Kubernetes@0</span>
+  <span style="color:#f92672">inputs</span>:
+    <span style="color:#f92672">kubernetesServiceConnection</span>: <span style="color:#e6db74">&#39;pmorelli92-kubesail&#39;</span>
+    <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">pmorelli92</span>
+    <span style="color:#f92672">command</span>: <span style="color:#ae81ff">apply</span>
+    <span style="color:#f92672">arguments</span>: <span style="color:#e6db74">&#39;-f kubernetes/k8s-deployment.yml&#39;</span>
 </code></pre></div><p>Finally, <code>kubernetesServiceConnection</code> is for indicating the connection created on the project settings; the namespace refers to a kubernetes namespace, and the command combined with arguments will be the equivalent of: <code>kubectl apply -f kubernetes/k8s-deployment.yml</code></p>
 <p>This will create / update the specifications that are living on the folder or file; in this case: the deployment, service and ingress.</p>
 <p>If everything goes green, we can check that the pod version matches the latest one added on the docker registry.</p>

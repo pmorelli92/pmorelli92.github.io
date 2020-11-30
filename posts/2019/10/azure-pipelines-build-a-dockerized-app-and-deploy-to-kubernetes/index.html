@@ -36,7 +36,7 @@
 <meta itemprop="description" content="Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&rsquo;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files). Now I am currently working with Travis for CI and Flux for CD but I think it is always good to keep an eye on how the competitors are doing and what they have to offer.">
 <meta itemprop="datePublished" content="2019-10-19T22:22:29+02:00" />
 <meta itemprop="dateModified" content="2019-10-19T22:22:29+02:00" />
-<meta itemprop="wordCount" content="1067">
+<meta itemprop="wordCount" content="1065">
 <meta itemprop="image" content="https://devandchill.com/og-image.png"/>
 
 
@@ -119,7 +119,7 @@
           <circle cx="12" cy="12" r="10"></circle>
           <polyline points="12 6 12 12 16 14"></polyline>
         </svg>
-        6 minutes
+        5 minutes
 
         
       </p>
@@ -168,58 +168,58 @@ Scroll down to service connections and you should see something like this:</p>
 <p>The ✔️ indicates that the CI process ran successfully, when the build is ongoing a yellow circle will appear, and if the build fails ❌ will be shown.</p>
 <h2 id="configuring-cicd">Configuring CI/CD</h2>
 <p>Back to the azure-pipelines.yml:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#66d9ef">trigger</span>:
-- master
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">trigger</span>:
+- <span style="color:#ae81ff">master</span>
 
-<span style="color:#66d9ef">pool</span>:
-  <span style="color:#66d9ef">vmImage</span>: <span style="color:#e6db74">&#39;ubuntu-latest&#39;</span>
+<span style="color:#f92672">pool</span>:
+  <span style="color:#f92672">vmImage</span>: <span style="color:#e6db74">&#39;ubuntu-latest&#39;</span>
 
-<span style="color:#66d9ef">variables</span>:
-  <span style="color:#66d9ef">buildNumber</span>: <span style="color:#ae81ff">0.0</span>.$(Build.BuildId)
+<span style="color:#f92672">variables</span>:
+  <span style="color:#f92672">buildNumber</span>: <span style="color:#ae81ff">0.0</span><span style="color:#ae81ff">.$(Build.BuildId)</span>
 
-<span style="color:#66d9ef">steps</span>:
-- <span style="color:#66d9ef">task</span>: Docker@<span style="color:#ae81ff">2</span>
-  <span style="color:#66d9ef">inputs</span>:
-    <span style="color:#66d9ef">containerRegistry</span>: <span style="color:#e6db74">&#39;pmorelli92-docker-hub&#39;</span>
-    <span style="color:#66d9ef">repository</span>: <span style="color:#e6db74">&#39;pmorelli92/go-with-azure&#39;</span>
-    <span style="color:#66d9ef">command</span>: <span style="color:#e6db74">&#39;buildAndPush&#39;</span>
-    <span style="color:#66d9ef">Dockerfile</span>: <span style="color:#e6db74">&#39;**/Dockerfile&#39;</span>
-    <span style="color:#66d9ef">tags</span>: <span style="color:#e6db74">|
-</span><span style="color:#e6db74">      $(buildNumber)</span>
-      latest
-- <span style="color:#66d9ef">bash</span>: sed -i <span style="color:#e6db74">&#34;s/latest/$(buildNumber)/g&#34;</span> kubernetes/k8s-deployment.yml
-- <span style="color:#66d9ef">task</span>: Kubernetes@<span style="color:#ae81ff">0</span>
-  <span style="color:#66d9ef">inputs</span>:
-    <span style="color:#66d9ef">kubernetesServiceConnection</span>: <span style="color:#e6db74">&#39;pmorelli92-kubesail&#39;</span>
-    <span style="color:#66d9ef">namespace</span>: pmorelli92
-    <span style="color:#66d9ef">command</span>: apply
-    <span style="color:#66d9ef">arguments</span>: <span style="color:#e6db74">&#39;-f kubernetes/k8s-deployment.yml&#39;</span>
+<span style="color:#f92672">steps</span>:
+- <span style="color:#f92672">task</span>: <span style="color:#ae81ff">Docker@2</span>
+  <span style="color:#f92672">inputs</span>:
+    <span style="color:#f92672">containerRegistry</span>: <span style="color:#e6db74">&#39;pmorelli92-docker-hub&#39;</span>
+    <span style="color:#f92672">repository</span>: <span style="color:#e6db74">&#39;pmorelli92/go-with-azure&#39;</span>
+    <span style="color:#f92672">command</span>: <span style="color:#e6db74">&#39;buildAndPush&#39;</span>
+    <span style="color:#f92672">Dockerfile</span>: <span style="color:#e6db74">&#39;**/Dockerfile&#39;</span>
+    <span style="color:#f92672">tags</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">      $(buildNumber)
+</span><span style="color:#e6db74">      latest</span>      
+- <span style="color:#f92672">bash</span>: <span style="color:#ae81ff">sed -i &#34;s/latest/$(buildNumber)/g&#34; kubernetes/k8s-deployment.yml</span>
+- <span style="color:#f92672">task</span>: <span style="color:#ae81ff">Kubernetes@0</span>
+  <span style="color:#f92672">inputs</span>:
+    <span style="color:#f92672">kubernetesServiceConnection</span>: <span style="color:#e6db74">&#39;pmorelli92-kubesail&#39;</span>
+    <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">pmorelli92</span>
+    <span style="color:#f92672">command</span>: <span style="color:#ae81ff">apply</span>
+    <span style="color:#f92672">arguments</span>: <span style="color:#e6db74">&#39;-f kubernetes/k8s-deployment.yml&#39;</span>
 </code></pre></div><p>Let&rsquo;s split them:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#66d9ef">trigger</span>:
-- master
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">trigger</span>:
+- <span style="color:#ae81ff">master</span>
 </code></pre></div><p>Associated on which branch the CI/CD will execute.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#66d9ef">pool</span>:
-  <span style="color:#66d9ef">vmImage</span>: <span style="color:#e6db74">&#39;ubuntu-latest&#39;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">pool</span>:
+  <span style="color:#f92672">vmImage</span>: <span style="color:#e6db74">&#39;ubuntu-latest&#39;</span>
 </code></pre></div><p>Relates to the machine that will execute the commands.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#66d9ef">variables</span>:
-  <span style="color:#66d9ef">buildNumber</span>: <span style="color:#ae81ff">0.0</span>.$(Build.BuildId)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">variables</span>:
+  <span style="color:#f92672">buildNumber</span>: <span style="color:#ae81ff">0.0</span><span style="color:#ae81ff">.$(Build.BuildId)</span>
 </code></pre></div><p>Global variables that are going to be used on the pipeline.
 In this case, the example repository is using semver for building versions.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#66d9ef">steps</span>:
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">steps</span>:
 </code></pre></div><p>Represents a chain of commands that will be executed in order. This is not the full power of pipelines, since it supports a higher order hierarchy where you can specify <code>stages -&gt; jobs -&gt; steps</code>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">- <span style="color:#66d9ef">task</span>: Docker@<span style="color:#ae81ff">2</span>
-  <span style="color:#66d9ef">inputs</span>:
-    <span style="color:#66d9ef">containerRegistry</span>: <span style="color:#e6db74">&#39;pmorelli92-docker-hub&#39;</span>
-    <span style="color:#66d9ef">repository</span>: <span style="color:#e6db74">&#39;pmorelli92/go-with-azure&#39;</span>
-    <span style="color:#66d9ef">command</span>: <span style="color:#e6db74">&#39;buildAndPush&#39;</span>
-    <span style="color:#66d9ef">Dockerfile</span>: <span style="color:#e6db74">&#39;**/Dockerfile&#39;</span>
-    <span style="color:#66d9ef">tags</span>: <span style="color:#e6db74">|
-</span><span style="color:#e6db74">      $(buildNumber)</span>
-      latest
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">- <span style="color:#f92672">task</span>: <span style="color:#ae81ff">Docker@2</span>
+  <span style="color:#f92672">inputs</span>:
+    <span style="color:#f92672">containerRegistry</span>: <span style="color:#e6db74">&#39;pmorelli92-docker-hub&#39;</span>
+    <span style="color:#f92672">repository</span>: <span style="color:#e6db74">&#39;pmorelli92/go-with-azure&#39;</span>
+    <span style="color:#f92672">command</span>: <span style="color:#e6db74">&#39;buildAndPush&#39;</span>
+    <span style="color:#f92672">Dockerfile</span>: <span style="color:#e6db74">&#39;**/Dockerfile&#39;</span>
+    <span style="color:#f92672">tags</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">      $(buildNumber)
+</span><span style="color:#e6db74">      latest</span>      
 </code></pre></div><p>This is a built-in command of pipelines, where we can (among other things) build and push docker images.</p>
 <p>The input named repository indicates the name of the repository on the container registry (which was set up on the project settings).</p>
 <p>If this command fails, the other ones will not be invoked.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#66d9ef">bash</span>: sed -i <span style="color:#e6db74">&#34;s/latest/$(buildNumber)/g&#34;</span> kubernetes/k8s-deployment.yml
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">bash</span>: <span style="color:#ae81ff">sed -i &#34;s/latest/$(buildNumber)/g&#34; kubernetes/k8s-deployment.yml</span>
 </code></pre></div><p>A discussion could be hold on whether if a service should self contain information of deployment or be agnostic of it. As a personal preference, I think having everything related to the application on the same repository enables easier discoverability.</p>
 <p>Of course, we are not having any secrets here, if that was the case, Azure Pipelines offers a way to store them safely inside the azure devops project.</p>
 <p>That being said, the repository contains a <a href="https://github.com/pmorelli92/go-with-azure/blob/master/kubernetes/k8s-deployment.yml">file</a> <code>kubernetes/k8s-deployment.yml</code> which describes:</p>
@@ -229,24 +229,24 @@ In this case, the example repository is using semver for building versions.</p>
 <li>Ingress (enables communication from the outside world to the service)</li>
 </ul>
 <p>The deployment needs to specify which version of the docker image is going to be run:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#66d9ef">spec</span>:
-<span style="color:#66d9ef">containers</span>:
-- <span style="color:#66d9ef">name</span>: gwa
-  <span style="color:#66d9ef">image</span>: pmorelli92/go-with-azure:latest
-  <span style="color:#66d9ef">ports</span>:
-  - <span style="color:#66d9ef">name</span>: http
-    <span style="color:#66d9ef">containerPort</span>: <span style="color:#ae81ff">80</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">spec</span>:
+<span style="color:#f92672">containers</span>:
+- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">gwa</span>
+  <span style="color:#f92672">image</span>: <span style="color:#ae81ff">pmorelli92/go-with-azure:latest</span>
+  <span style="color:#f92672">ports</span>:
+  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">http</span>
+    <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">80</span>
 </code></pre></div><p>It is definitely not good to use <code>:latest</code> image on stage / production so the sed script will replace <code>:latest</code> with <code>0.0.X</code> (which will be the build number). This is also the same version that will be pushed to the selected docker registry: <a href="https://cloud.docker.com/u/pmorelli92/repository/docker/pmorelli92/go-with-azure">example</a>.</p>
 <figure>
     <img src="/posts/images/docker-tags.png"/> 
 </figure>
 
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">- <span style="color:#66d9ef">task</span>: Kubernetes@<span style="color:#ae81ff">0</span>
-  <span style="color:#66d9ef">inputs</span>:
-    <span style="color:#66d9ef">kubernetesServiceConnection</span>: <span style="color:#e6db74">&#39;pmorelli92-kubesail&#39;</span>
-    <span style="color:#66d9ef">namespace</span>: pmorelli92
-    <span style="color:#66d9ef">command</span>: apply
-    <span style="color:#66d9ef">arguments</span>: <span style="color:#e6db74">&#39;-f kubernetes/k8s-deployment.yml&#39;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">- <span style="color:#f92672">task</span>: <span style="color:#ae81ff">Kubernetes@0</span>
+  <span style="color:#f92672">inputs</span>:
+    <span style="color:#f92672">kubernetesServiceConnection</span>: <span style="color:#e6db74">&#39;pmorelli92-kubesail&#39;</span>
+    <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">pmorelli92</span>
+    <span style="color:#f92672">command</span>: <span style="color:#ae81ff">apply</span>
+    <span style="color:#f92672">arguments</span>: <span style="color:#e6db74">&#39;-f kubernetes/k8s-deployment.yml&#39;</span>
 </code></pre></div><p>Finally, <code>kubernetesServiceConnection</code> is for indicating the connection created on the project settings; the namespace refers to a kubernetes namespace, and the command combined with arguments will be the equivalent of: <code>kubectl apply -f kubernetes/k8s-deployment.yml</code></p>
 <p>This will create / update the specifications that are living on the folder or file; in this case: the deployment, service and ingress.</p>
 <p>If everything goes green, we can check that the pod version matches the latest one added on the docker registry.</p>
@@ -297,7 +297,7 @@ If I were to give a verdict on Azure Pipelines:</p>
           <line x1="16" y1="17" x2="8" y2="17"></line>
           <polyline points="10 9 9 9 8 9"></polyline>
         </svg>
-        1067 Words
+        1065 Words
       </p>
 
       <p>

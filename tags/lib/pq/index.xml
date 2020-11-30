@@ -6,11 +6,7 @@
     <description>Recent content in lib/pq on Dev &amp; Chill</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <copyright>Pablo Morelli</copyright>
-    
-	<atom:link href="https://devandchill.com/tags/lib/pq/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <copyright>Pablo Morelli</copyright><atom:link href="https://devandchill.com/tags/lib/pq/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Go - lib/pq or pgx - which performs better?</title>
       <link>https://devandchill.com/posts/2020/05/go-lib/pq-or-pgx-which-performs-better/</link>

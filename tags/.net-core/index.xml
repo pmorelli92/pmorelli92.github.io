@@ -7,11 +7,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Pablo Morelli</copyright>
-    <lastBuildDate>Mon, 24 Jun 2019 17:22:29 +0200</lastBuildDate>
-    
-	<atom:link href="https://devandchill.com/tags/.net-core/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Mon, 24 Jun 2019 17:22:29 +0200</lastBuildDate><atom:link href="https://devandchill.com/tags/.net-core/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>NET Core 3.0 - Publish single file binary on alpine container</title>
       <link>https://devandchill.com/posts/2019/06/net-core-3.0-publish-single-file-binary-on-alpine-container/</link>

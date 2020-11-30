@@ -7,11 +7,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Pablo Morelli</copyright>
-    <lastBuildDate>Wed, 10 Apr 2019 20:59:47 +0200</lastBuildDate>
-    
-	<atom:link href="https://devandchill.com/tags/channels/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Wed, 10 Apr 2019 20:59:47 +0200</lastBuildDate><atom:link href="https://devandchill.com/tags/channels/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Word counter: Sync, concurrent or streams?</title>
       <link>https://devandchill.com/posts/2019/04/word-counter-sync-concurrent-or-streams/</link>
