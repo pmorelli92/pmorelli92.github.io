@@ -221,9 +221,9 @@ func wordCounter() (words map[string]int) { b, err := ioutil."/>
 <li>We put the functionality that is going to be executed for each word in an <code>anonymous function</code>. So now, we can use the word <code>go</code> to execute that function in a different goroutine.</li>
 </ol>
 <p>Does this work? Unfortunately no. If we execute the following:</p>
-<pre><code>&gt; go run main.go --race
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; go run main.go --race
 fatal error: concurrent map read and map write
-</code></pre><p>Basically the race detector is telling us that some of the goroutines can execute this line at the same moment:</p>
+</code></pre></div><p>Basically the race detector is telling us that some of the goroutines can execute this line at the same moment:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">words</span>[<span style="color:#a6e22e">w2</span>]<span style="color:#f92672">++</span>
 </code></pre></div><p>If the map does not want to be written at the same time by two different goroutines we should use some sort of <code>queue</code> and then consume the values in a single threaded process. Fortunately, Go have us covered with <code>channels</code>.</p>
 <p>Doing the following modifications should work:</p>
@@ -297,19 +297,19 @@ fatal error: concurrent map read and map write
 </code></pre></div><p>Now if we run this algorithm we will see that is not failing anymore. Let’s then move to benchmarking.</p>
 <h2 id="benchmark">Benchmark</h2>
 <p>We are going to do this in two different ways: executing the idiomatic Go benchmark and using the command-line utility <code>time</code>.</p>
-<pre><code>&gt; go test -run=XXX -bench=.
-</code></pre><pre><code>BenchmarkWordCounter-12               45   25.88 ms/op   4354027 B/op   124918 allocs/op
-BenchmarkWordCounterConcurrent-12     19   59.70 ms/op   5711640 B/op   138290 allocs/op
-</code></pre><p>This is telling us that the sync version executed <code>45 times</code> and each execution took approx <code>25.88 milliseconds</code>, meanwhile in the same time the concurrent version only got executed <code>19 times</code> because each execution took approx <code>59.70 milliseconds</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; go test -run<span style="color:#f92672">=</span>XXX -bench<span style="color:#f92672">=</span>.
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">BenchmarkWordCounter-12               <span style="color:#ae81ff">45</span>   25.88 ms/op   <span style="color:#ae81ff">4354027</span> B/op   <span style="color:#ae81ff">124918</span> allocs/op
+BenchmarkWordCounterConcurrent-12     <span style="color:#ae81ff">19</span>   59.70 ms/op   <span style="color:#ae81ff">5711640</span> B/op   <span style="color:#ae81ff">138290</span> allocs/op
+</code></pre></div><p>This is telling us that the sync version executed <code>45 times</code> and each execution took approx <code>25.88 milliseconds</code>, meanwhile in the same time the concurrent version only got executed <code>19 times</code> because each execution took approx <code>59.70 milliseconds</code>.</p>
 <p>Wait, What?</p>
 <p>Let&rsquo;s try the following:</p>
-<pre><code>&gt; go build
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; go build
 &gt; time ./go-word-counter
-</code></pre><pre><code>(SYNC)
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">(</span>SYNC<span style="color:#f92672">)</span>
 ./go-word-counter  0.04s user 0.00s system 89% cpu 0.050 total
-(CONCURRENT)
+<span style="color:#f92672">(</span>CONCURRENT<span style="color:#f92672">)</span>
 ./go-word-counter  0.46s user 0.13s system 486% cpu 0.120 total
-</code></pre><p>So the sync version takes approx <code>0.050</code> and <code>89% cpu</code> and the concurrent one <code>0.120</code> and <code>486% cpu</code>.</p>
+</code></pre></div><p>So the sync version takes approx <code>0.050</code> and <code>89% cpu</code> and the concurrent one <code>0.120</code> and <code>486% cpu</code>.</p>
 <p>We are sure that the function is running concurrently (hence the CPU usage), but shouldn&rsquo;t that mean it has to run faster? Well, no.</p>
 <p>Looking at the code one can see that the parts that get executed inside the word goroutines takes less to execute than all the orchestration needed for pulling a word from a channel.</p>
 <p>Things would be different if an sleep was added:</p>
@@ -317,9 +317,9 @@ BenchmarkWordCounterConcurrent-12     19   59.70 ms/op   5711640 B/op   138290 a
 <span style="color:#a6e22e">w1</span> = <span style="color:#a6e22e">removeSpecial</span>.<span style="color:#a6e22e">ReplaceAllString</span>(<span style="color:#a6e22e">w1</span>, <span style="color:#e6db74">&#34;&#34;</span>)
 <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#ae81ff">200</span>)
 </code></pre></div><p>And then the benchmark:</p>
-<pre><code>BenchmarkWordCounter-12                3   425.23 ms/op   4436128 B/op   124934 allocs/op
-BenchmarkWordCounterConcurrent-12     19    64.75 ms/op   8812324 B/op   179560 allocs/op
-</code></pre><p>In this scenario is visible how the concurrent way outperforms the sync one.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">BenchmarkWordCounter-12                <span style="color:#ae81ff">3</span>   425.23 ms/op   <span style="color:#ae81ff">4436128</span> B/op   <span style="color:#ae81ff">124934</span> allocs/op
+BenchmarkWordCounterConcurrent-12     <span style="color:#ae81ff">19</span>    64.75 ms/op   <span style="color:#ae81ff">8812324</span> B/op   <span style="color:#ae81ff">179560</span> allocs/op
+</code></pre></div><p>In this scenario is visible how the concurrent way outperforms the sync one.</p>
 <p>So we started with a single goroutine algorithm, we evolved it to run using more than one goroutine and having an orchestration for the algorithm to work. At the end we did a benchmark and compared the results.</p>
 <p>The value we can get out of this is to avoid <code>premature optimization</code>, how to <code>KISS</code> (keep it simple and stupid) and the most important one: We learned that concurrent flows are beneficial when the code inside the goroutine is CPU/time intensive.</p>
 <h2 id="2020-edit">2020 Edit</h2>
@@ -357,12 +357,12 @@ BenchmarkWordCounterConcurrent-12     19    64.75 ms/op   8812324 B/op   179560 
 </ul>
 <p>The <code>scanner.Split(...)</code> instead of using <code>bufio.ScanWords</code> is using an implementation that takes care of splitting the words when punctuation happens since the default implementation do not consider these cases. This can be found on my repository linked below.</p>
 <p>Now the benchmarks demonstrate what a better solution for this problem would be:</p>
-<pre><code>benchmark                           iter     time/iter    bytes alloc             allocs
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">benchmark                           iter     time/iter    bytes alloc             allocs
 ---------                           ----     ---------    -----------             ------
-BenchmarkWordCounter-12               45   25.88 ms/op   4354027 B/op   124918 allocs/op
-BenchmarkWordCounterConcurrent-12     19   59.70 ms/op   5711640 B/op   138290 allocs/op
-BenchmarkWordCounterStreams-12       198    5.93 ms/op    330114 B/op    44844 allocs/op
-</code></pre><p>👉 <a href="https://github.com/pmorelli92/go-word-counter">Repository with source files used</a> 👈</p>
+BenchmarkWordCounter-12               <span style="color:#ae81ff">45</span>   25.88 ms/op   <span style="color:#ae81ff">4354027</span> B/op   <span style="color:#ae81ff">124918</span> allocs/op
+BenchmarkWordCounterConcurrent-12     <span style="color:#ae81ff">19</span>   59.70 ms/op   <span style="color:#ae81ff">5711640</span> B/op   <span style="color:#ae81ff">138290</span> allocs/op
+BenchmarkWordCounterStreams-12       <span style="color:#ae81ff">198</span>    5.93 ms/op    <span style="color:#ae81ff">330114</span> B/op    <span style="color:#ae81ff">44844</span> allocs/op
+</code></pre></div><p>👉 <a href="https://github.com/pmorelli92/go-word-counter">Repository with source files used</a> 👈</p>
 
       </div>
     </article>
@@ -542,39 +542,41 @@ BenchmarkWordCounterStreams-12       198    5.93 ms/op    330114 B/op    44844 a
     <section class="post-comments">
   <h3>Comments</h3>
 
-    
-    
-    
+  
+  
+  
 
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 
-    
-      <p>Nothing yet.</p>
-    
+  
+  <p>Nothing yet.</p>
+  
 
-    <h3>Say something</h3>
+  <h3>Say something</h3>
 
-    <form class="post-new-comment" method="POST" action="https://dev.staticman.net/v3/entry/github/pmorelli92/devandchill/master/comments">
-      <input type="hidden" name="options[redirect]" value="https://devandchill.com/posts/2019/04/word-counter-sync-concurrent-or-streams/">
-      <input type="hidden" name="options[entryId]" value="6b0c42da816cae0ac995bffabd7123e6">
-      <input name="fields[name]" type="text" class="post-comment-field" placeholder="Your name">
-      <input name="fields[email]" type="email" class="post-comment-field" placeholder="Your email address for Gravatar (Optional)">
-      <textarea name="fields[body]" class="post-comment-field" placeholder="Your message." rows="3"></textarea>
-      <input type="submit" class="post-comment-field btn" value="Submit for Approval">
-    </form>
-  </section>
+  <form class="post-new-comment" method="POST"
+    action="https://api.staticman.net/v3/entry/github/pmorelli92/devandchill/master/comments">
+    <input type="hidden" name="options[redirect]" value="https://devandchill.com/posts/2019/04/word-counter-sync-concurrent-or-streams/">
+    <input type="hidden" name="options[entryId]" value="6b0c42da816cae0ac995bffabd7123e6">
+    <input name="fields[name]" type="text" class="post-comment-field" placeholder="Your name">
+    <input name="fields[email]" type="email" class="post-comment-field"
+      placeholder="Your email address for Gravatar (Optional)">
+    <textarea name="fields[body]" class="post-comment-field" placeholder="Your message." rows="3"></textarea>
+    <input type="submit" class="post-comment-field btn" value="Submit for Approval">
+  </form>
+</section>
 
 
   </main>

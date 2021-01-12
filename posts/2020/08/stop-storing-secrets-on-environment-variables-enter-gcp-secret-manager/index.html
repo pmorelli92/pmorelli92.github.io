@@ -164,11 +164,11 @@ To be absolutely, unequivocally clear, you should not store secret or sensitive 
 <blockquote>
 <p>From now on, replace pablo-test-project with your GCP project identifier when executing the commands.</p>
 </blockquote>
-<pre><code>gcloud config set project pablo-test-project
-</code></pre><p>For accessing Secret Manager API from our Google Kubernetes Engine there are three things that needs to be done.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud config set project pablo-test-project
+</code></pre></div><p>For accessing Secret Manager API from our Google Kubernetes Engine there are three things that needs to be done.</p>
 <h4 id="enable-secret-manager-api">Enable Secret Manager API</h4>
-<pre><code>gcloud services enable secretmanager.googleapis.com
-</code></pre><p><a href="https://console.cloud.google.com/apis/library/secretmanager.googleapis.com">Or from the Console UI.</a></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud services enable secretmanager.googleapis.com
+</code></pre></div><p><a href="https://console.cloud.google.com/apis/library/secretmanager.googleapis.com">Or from the Console UI.</a></p>
 <h4 id="set-corresponding-iam-role-on-the-service-account-running-the-instance">Set corresponding IAM role on the service account running the instance</h4>
 <p><a href="https://cloud.google.com/compute/docs/access/service-accounts#service_account_permissions">From service account documentation.</a></p>
 <blockquote>
@@ -176,81 +176,81 @@ To be absolutely, unequivocally clear, you should not store secret or sensitive 
 Furthermore, an instance&rsquo;s access scopes determine the default OAuth scopes for requests made through the gcloud tool and client libraries on the instance. As a result, access scopes potentially further limit access to API methods when authenticating through OAuth. [&hellip;]</p>
 </blockquote>
 <p>In order to assign the corresponding IAM roles to the service account, the account should be created first:</p>
-<pre><code>gcloud iam service-accounts create demo-service-account \
---description='Service account used for our demo cluster' \
---display-name=demo-service-account
-</code></pre><p>The role to be assigned to this service account is <a href="https://cloud.google.com/iam/docs/understanding-roles#secret-manager-roles">roles/secretmanager.secretAccessor</a> which allows accessing the payload of secrets:</p>
-<pre><code>gcloud projects add-iam-policy-binding pablo-test-project \
---member=serviceAccount:demo-service-account@pablo-test-project.iam.gserviceaccount.com \
---role=roles/secretmanager.secretAccessor
-</code></pre><h4 id="configure-oauth-scopes-on-the-instance-that-consumes-the-api">Configure OAuth scopes on the instance that consumes the API</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud iam service-accounts create demo-service-account <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--description<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;Service account used for our demo cluster&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--display-name<span style="color:#f92672">=</span>demo-service-account
+</code></pre></div><p>The role to be assigned to this service account is <a href="https://cloud.google.com/iam/docs/understanding-roles#secret-manager-roles">roles/secretmanager.secretAccessor</a> which allows accessing the payload of secrets:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud projects add-iam-policy-binding pablo-test-project <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--member<span style="color:#f92672">=</span>serviceAccount:demo-service-account@pablo-test-project.iam.gserviceaccount.com <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--role<span style="color:#f92672">=</span>roles/secretmanager.secretAccessor
+</code></pre></div><h4 id="configure-oauth-scopes-on-the-instance-that-consumes-the-api">Configure OAuth scopes on the instance that consumes the API</h4>
 <p><a href="https://cloud.google.com/secret-manager/docs/access-control">From access control documentation.</a></p>
 <blockquote>
 <p>To access the Secret Manager API from within a Compute Engine instance or a Google Kubernetes Engine node (which is also a Compute Engine instance), the instance must have the cloud-platform OAuth scope. For more information about access scopes in Compute Engine, see Service account permissions in the Compute Engine documentation.</p>
 </blockquote>
 <p>As mentioned before, an instance&rsquo;s access scopes determine the default OAuth2 scopes for requests made. So the Kubernetes instance that is going to be created needs the <code>cloud-platform</code> scope. And also don&rsquo;t forget to indicate the service account created before.</p>
-<pre><code>gcloud container clusters create demo-cluster \
---zone=europe-west3-a \
---num-nodes=1 \
---machine-type=n1-standard-1 \
---service-account=demo-service-account@pablo-test-project.iam.gserviceaccount.com \
---scopes=https://www.googleapis.com/auth/monitoring,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/cloud-platform
-</code></pre><p>After the cluster is deployed, get the credentials for <code>kubectl</code>.</p>
-<pre><code>gcloud container clusters get-credentials demo-cluster --zone europe-west3-a
-</code></pre><p>Before proceeding further with the cluster, create a secret and add a value on the Secret Manager:</p>
-<pre><code>gcloud secrets create MY_SECRET
-printf &quot;s3cr3t&quot; | gcloud secrets versions add MY_SECRET --data-file=-
-</code></pre><p>To test that the instance can access to Secret Manager API, a dummy pod will be deployed so that you can exec into it:</p>
-<pre><code>cat &lt;&lt;EOF | kubectl apply -f -
-apiVersion: v1
-kind: Pod
-metadata:
-  name: httpbin
-spec:
-  containers:
-  - image: docker.io/kennethreitz/httpbin
-    imagePullPolicy: IfNotPresent
-    name: httpbin
-    ports:
-    - containerPort: 80
-EOF
-</code></pre><p>Exec into the created container and install curl on it:</p>
-<pre><code>kubectl exec -it httpbin -- sh
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud container clusters create demo-cluster <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--zone<span style="color:#f92672">=</span>europe-west3-a <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--num-nodes<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--machine-type<span style="color:#f92672">=</span>n1-standard-1 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--service-account<span style="color:#f92672">=</span>demo-service-account@pablo-test-project.iam.gserviceaccount.com <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--scopes<span style="color:#f92672">=</span>https://www.googleapis.com/auth/monitoring,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/cloud-platform
+</code></pre></div><p>After the cluster is deployed, get the credentials for <code>kubectl</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud container clusters get-credentials demo-cluster --zone europe-west3-a
+</code></pre></div><p>Before proceeding further with the cluster, create a secret and add a value on the Secret Manager:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud secrets create MY_SECRET
+printf <span style="color:#e6db74">&#34;s3cr3t&#34;</span> | gcloud secrets versions add MY_SECRET --data-file<span style="color:#f92672">=</span>-
+</code></pre></div><p>To test that the instance can access to Secret Manager API, a dummy pod will be deployed so that you can exec into it:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#ae81ff">cat &lt;&lt;EOF | kubectl apply -f -</span>
+<span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Pod</span>
+<span style="color:#f92672">metadata</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">httpbin</span>
+<span style="color:#f92672">spec</span>:
+  <span style="color:#f92672">containers</span>:
+  - <span style="color:#f92672">image</span>: <span style="color:#ae81ff">docker.io/kennethreitz/httpbin</span>
+    <span style="color:#f92672">imagePullPolicy</span>: <span style="color:#ae81ff">IfNotPresent</span>
+    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">httpbin</span>
+    <span style="color:#f92672">ports</span>:
+    - <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">80</span>
+<span style="color:#ae81ff">EOF</span>
+</code></pre></div><p>Exec into the created container and install curl on it:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl exec -it httpbin -- sh
 $ apt update; apt install curl;
-</code></pre><h3 id="trying-it-out">Trying it out</h3>
+</code></pre></div><h3 id="trying-it-out">Trying it out</h3>
 <p>In order to try the Secret Manager API an OAuth2 token needs to be issued <a href="https://cloud.google.com/compute/docs/access/create-enable-service-accounts-for-instances#applications">as we can read on the documentation.</a></p>
 <blockquote>
 <p>For some applications, you might need to request an OAuth2 access token and use it directly without going through a client library or using the gcloud or gsutil tools. There are several options for obtaining and using these access tokens to authenticate your applications. [&hellip;]
 On the instance where your application runs, query the metadata server for an access token. [&hellip;]</p>
 </blockquote>
 <p>When inside the deployed container:</p>
-<pre><code>curl http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token -H &quot;Metadata-Flavor: Google&quot;
-</code></pre><p>Since the OAuth2 scopes defined for the instances contains the <code>cloud-platform</code> one, the service account will be able to send requests towards Secret Manager API.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token -H <span style="color:#e6db74">&#34;Metadata-Flavor: Google&#34;</span>
+</code></pre></div><p>Since the OAuth2 scopes defined for the instances contains the <code>cloud-platform</code> one, the service account will be able to send requests towards Secret Manager API.</p>
 <p>Copy the <code>access_token</code> from the response and execute the following call:</p>
 <p><em>Remember to replace pablo-test-project with your project name.</em></p>
-<pre><code>curl https://content-secretmanager.googleapis.com/v1beta1/projects/pablo-test-project/secrets/MY_SECRET/versions/latest:access -H &quot;Authorization&quot;:&quot;Bearer &lt;access_token&gt;&quot;
-</code></pre><p>The response should look like this:</p>
-<pre><code>{
-  &quot;name&quot;: &quot;projects/127553260172/secrets/MY_SECRET/versions/1&quot;,
-  &quot;payload&quot;: {
-    &quot;data&quot;: &quot;czNjcjN0&quot;
-  }
-}
-</code></pre><p>Decoding base64 <code>czNjcjN0</code> is <code>s3cr3t</code>.
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl https://content-secretmanager.googleapis.com/v1beta1/projects/pablo-test-project/secrets/MY_SECRET/versions/latest:access -H <span style="color:#e6db74">&#34;Authorization&#34;</span>:<span style="color:#e6db74">&#34;Bearer &lt;access_token&gt;&#34;</span>
+</code></pre></div><p>The response should look like this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">{</span>
+  <span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;projects/127553260172/secrets/MY_SECRET/versions/1&#34;</span>,
+  <span style="color:#e6db74">&#34;payload&#34;</span>: <span style="color:#f92672">{</span>
+    <span style="color:#e6db74">&#34;data&#34;</span>: <span style="color:#e6db74">&#34;czNjcjN0&#34;</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>Decoding base64 <code>czNjcjN0</code> is <code>s3cr3t</code>.
 This worked fine, but then do we need the IAM permission or is it just enough with the OAuth2 scope?</p>
 <p>Remove the IAM permission from the service account:</p>
-<pre><code>gcloud projects remove-iam-policy-binding pablo-test-project \
---member=serviceAccount:demo-service-account@pablo-test-project.iam.gserviceaccount.com \
---role=roles/secretmanager.secretAccessor
-</code></pre><p>Wait a minute until the change is propagated and issue the requests again. The response should look like this:</p>
-<pre><code>{
-  &quot;error&quot;: {
-    &quot;code&quot;: 403,
-    &quot;message&quot;: &quot;Permission 'secretmanager.versions.access' denied for resource 'projects/pablo-test-project/secrets/MY_SECRET/versions/latest' (or it may not exist).&quot;,
-    &quot;status&quot;: &quot;PERMISSION_DENIED&quot;
-  }
-}
-</code></pre><p>So effectively, the IAM role is required for this to work. Now, you can add the IAM role again for the next part.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud projects remove-iam-policy-binding pablo-test-project <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--member<span style="color:#f92672">=</span>serviceAccount:demo-service-account@pablo-test-project.iam.gserviceaccount.com <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--role<span style="color:#f92672">=</span>roles/secretmanager.secretAccessor
+</code></pre></div><p>Wait a minute until the change is propagated and issue the requests again. The response should look like this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">{</span>
+  <span style="color:#e6db74">&#34;error&#34;</span>: <span style="color:#f92672">{</span>
+    <span style="color:#e6db74">&#34;code&#34;</span>: 403,
+    <span style="color:#e6db74">&#34;message&#34;</span>: <span style="color:#e6db74">&#34;Permission &#39;secretmanager.versions.access&#39; denied for resource &#39;projects/pablo-test-project/secrets/MY_SECRET/versions/latest&#39; (or it may not exist).&#34;</span>,
+    <span style="color:#e6db74">&#34;status&#34;</span>: <span style="color:#e6db74">&#34;PERMISSION_DENIED&#34;</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>So effectively, the IAM role is required for this to work. Now, you can add the IAM role again for the next part.</p>
 <h3 id="moving-this-to-a-more-realistic-scenario">Moving this to a more realistic scenario</h3>
 <p>It is very important not to break the current workflow as this Secret Manager API is probably an overkill for local and dev environment. This is one of the selling points.</p>
 <p>For this, I created a <a href="https://github.com/pmorelli92/secret-manager-demo">demo application</a> which is doing the following:</p>
@@ -260,58 +260,58 @@ This worked fine, but then do we need the IAM permission or is it just enough wi
 <li>The application listens on the port <code>8080</code> and exposes the following route <code>GET /get-secret</code> expecting the header <code>secret: &lt;secret-name&gt;</code>.</li>
 </ul>
 <p>On the next section, this application is explained but for now we can just add it do the cluster:</p>
-<pre><code>cat &lt;&lt;EOF | kubectl apply -f -
-apiVersion: v1
-kind: Pod
-metadata:
-  name: secret-manager
-spec:
-  containers:
-  - image: docker.io/pmorelli92/secret-manager:latest
-    imagePullPolicy: Always
-    name: secret-manager
-    ports:
-    - containerPort: 8080
-    env:
-    - name: GCP_PROJECT
-      value: pablo-test-project
-EOF
-</code></pre><p>For simplicity, one can just port forward it:</p>
-<pre><code>kubectl port-forward secret-manager 8080:8080
-</code></pre><p>For existing secret:</p>
-<pre><code>curl localhost:8080/get-secret -H &quot;secret: MY_SECRET&quot;
-&gt; {&quot;name&quot;:&quot;MY_SECRET&quot;,&quot;value&quot;:&quot;s3cr3t&quot;}
-</code></pre><p>For non existing secret:</p>
-<pre><code>curl localhost:8080/get-secret -H &quot;secret: OTHER_SECRET&quot;
-&gt; {&quot;name&quot;:&quot;MY_SECRET&quot;,&quot;value&quot;:&quot;default-for-OTHER_SECRET&quot;}
-</code></pre><p>Now, let&rsquo;s do another test and deploy the pod without <code>GCP_PROJECT</code> environment variable but with the <code>MY_SECRET</code> one:</p>
-<pre><code>kubectl delete pod secret-manager;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#ae81ff">cat &lt;&lt;EOF | kubectl apply -f -</span>
+<span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Pod</span>
+<span style="color:#f92672">metadata</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">secret-manager</span>
+<span style="color:#f92672">spec</span>:
+  <span style="color:#f92672">containers</span>:
+  - <span style="color:#f92672">image</span>: <span style="color:#ae81ff">docker.io/pmorelli92/secret-manager:latest</span>
+    <span style="color:#f92672">imagePullPolicy</span>: <span style="color:#ae81ff">Always</span>
+    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">secret-manager</span>
+    <span style="color:#f92672">ports</span>:
+    - <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">8080</span>
+    <span style="color:#f92672">env</span>:
+    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">GCP_PROJECT</span>
+      <span style="color:#f92672">value</span>: <span style="color:#ae81ff">pablo-test-project</span>
+<span style="color:#ae81ff">EOF</span>
+</code></pre></div><p>For simplicity, one can just port forward it:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl port-forward secret-manager 8080:8080
+</code></pre></div><p>For existing secret:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl localhost:8080/get-secret -H <span style="color:#e6db74">&#34;secret: MY_SECRET&#34;</span>
+&gt; <span style="color:#f92672">{</span><span style="color:#e6db74">&#34;name&#34;</span>:<span style="color:#e6db74">&#34;MY_SECRET&#34;</span>,<span style="color:#e6db74">&#34;value&#34;</span>:<span style="color:#e6db74">&#34;s3cr3t&#34;</span><span style="color:#f92672">}</span>
+</code></pre></div><p>For non existing secret:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl localhost:8080/get-secret -H <span style="color:#e6db74">&#34;secret: OTHER_SECRET&#34;</span>
+&gt; <span style="color:#f92672">{</span><span style="color:#e6db74">&#34;name&#34;</span>:<span style="color:#e6db74">&#34;MY_SECRET&#34;</span>,<span style="color:#e6db74">&#34;value&#34;</span>:<span style="color:#e6db74">&#34;default-for-OTHER_SECRET&#34;</span><span style="color:#f92672">}</span>
+</code></pre></div><p>Now, let&rsquo;s do another test and deploy the pod without <code>GCP_PROJECT</code> environment variable but with the <code>MY_SECRET</code> one:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#ae81ff">kubectl delete pod secret-manager;</span>
 
-cat &lt;&lt;EOF | kubectl apply -f -
-apiVersion: v1
-kind: Pod
-metadata:
-  name: secret-manager
-spec:
-  containers:
-  - image: docker.io/pmorelli92/secret-manager:latest
-    imagePullPolicy: Always
-    name: secret-manager
-    ports:
-    - containerPort: 8080
-    env:
-    - name: MY_SECRET
-      value: hello-from-env
-EOF
-</code></pre><p>Stop the port-forwarding, and execute it again:</p>
-<pre><code>kubectl port-forward secret-manager 8080:8080
-</code></pre><p>For existing secret:</p>
-<pre><code>curl localhost:8080/get-secret -H &quot;secret: MY_SECRET&quot;
-&gt; {&quot;name&quot;:&quot;MY_SECRET&quot;,&quot;value&quot;:&quot;hello-from-env&quot;}
-</code></pre><p>For non existing secret:</p>
-<pre><code>curl localhost:8080/get-secret -H &quot;secret: OTHER_SECRET&quot;
-&gt; {&quot;name&quot;:&quot;MY_SECRET&quot;,&quot;value&quot;:&quot;default-for-OTHER_SECRET&quot;}
-</code></pre><p>Easy, right?</p>
+<span style="color:#ae81ff">cat &lt;&lt;EOF | kubectl apply -f -</span>
+<span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Pod</span>
+<span style="color:#f92672">metadata</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">secret-manager</span>
+<span style="color:#f92672">spec</span>:
+  <span style="color:#f92672">containers</span>:
+  - <span style="color:#f92672">image</span>: <span style="color:#ae81ff">docker.io/pmorelli92/secret-manager:latest</span>
+    <span style="color:#f92672">imagePullPolicy</span>: <span style="color:#ae81ff">Always</span>
+    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">secret-manager</span>
+    <span style="color:#f92672">ports</span>:
+    - <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">8080</span>
+    <span style="color:#f92672">env</span>:
+    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">MY_SECRET</span>
+      <span style="color:#f92672">value</span>: <span style="color:#ae81ff">hello-from-env</span>
+<span style="color:#ae81ff">EOF</span>
+</code></pre></div><p>Stop the port-forwarding, and execute it again:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl port-forward secret-manager 8080:8080
+</code></pre></div><p>For existing secret:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl localhost:8080/get-secret -H <span style="color:#e6db74">&#34;secret: MY_SECRET&#34;</span>
+&gt; <span style="color:#f92672">{</span><span style="color:#e6db74">&#34;name&#34;</span>:<span style="color:#e6db74">&#34;MY_SECRET&#34;</span>,<span style="color:#e6db74">&#34;value&#34;</span>:<span style="color:#e6db74">&#34;hello-from-env&#34;</span><span style="color:#f92672">}</span>
+</code></pre></div><p>For non existing secret:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl localhost:8080/get-secret -H <span style="color:#e6db74">&#34;secret: OTHER_SECRET&#34;</span>
+&gt; <span style="color:#f92672">{</span><span style="color:#e6db74">&#34;name&#34;</span>:<span style="color:#e6db74">&#34;MY_SECRET&#34;</span>,<span style="color:#e6db74">&#34;value&#34;</span>:<span style="color:#e6db74">&#34;default-for-OTHER_SECRET&#34;</span><span style="color:#f92672">}</span>
+</code></pre></div><p>Easy, right?</p>
 <h3 id="breakdown-the-demo-application">Breakdown the demo application</h3>
 <p>The application is fairly easy. On startup it looks for the value of the <code>GCP_PROJECT</code> environment variable. This value is supplied to the <code>SecretGetter</code> struct which defines the <code>GetSecret</code> function.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">SecretGetter</span> <span style="color:#66d9ef">struct</span> {
@@ -432,8 +432,8 @@ EOF
 	}
 }
 </code></pre></div><p>Of course there is a catch. When working on local environment if the value for <code>GCP_PROJECT</code> is set, then only the default value will be returned as the call to get the token of the instance running inside GCP will fail:</p>
-<pre><code>Get &quot;http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token&quot;: dial tcp: lookup metadata.google.internal: no such host
-</code></pre><h3 id="summary">Summary</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Get <span style="color:#e6db74">&#34;http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token&#34;</span>: dial tcp: lookup metadata.google.internal: no such host
+</code></pre></div><h3 id="summary">Summary</h3>
 <ul>
 <li>(+) Secret Manager has a very intuitive API which also has some nice dedicated UI for developers to access secrets (if they also have the required IAM), see key versions and configure policies for expiration.</li>
 <li>(+) Moving away from storing secrets on plain text on environment variables is also a correct step in order to secure our applications.</li>
@@ -626,39 +626,41 @@ EOF
     <section class="post-comments">
   <h3>Comments</h3>
 
-    
-    
-    
+  
+  
+  
 
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 
-    
-      <p>Nothing yet.</p>
-    
+  
+  <p>Nothing yet.</p>
+  
 
-    <h3>Say something</h3>
+  <h3>Say something</h3>
 
-    <form class="post-new-comment" method="POST" action="https://dev.staticman.net/v3/entry/github/pmorelli92/devandchill/master/comments">
-      <input type="hidden" name="options[redirect]" value="https://devandchill.com/posts/2020/08/stop-storing-secrets-on-environment-variables-enter-gcp-secret-manager/">
-      <input type="hidden" name="options[entryId]" value="f00345d3949577fc37907db3354a2d2c">
-      <input name="fields[name]" type="text" class="post-comment-field" placeholder="Your name">
-      <input name="fields[email]" type="email" class="post-comment-field" placeholder="Your email address for Gravatar (Optional)">
-      <textarea name="fields[body]" class="post-comment-field" placeholder="Your message." rows="3"></textarea>
-      <input type="submit" class="post-comment-field btn" value="Submit for Approval">
-    </form>
-  </section>
+  <form class="post-new-comment" method="POST"
+    action="https://api.staticman.net/v3/entry/github/pmorelli92/devandchill/master/comments">
+    <input type="hidden" name="options[redirect]" value="https://devandchill.com/posts/2020/08/stop-storing-secrets-on-environment-variables-enter-gcp-secret-manager/">
+    <input type="hidden" name="options[entryId]" value="f00345d3949577fc37907db3354a2d2c">
+    <input name="fields[name]" type="text" class="post-comment-field" placeholder="Your name">
+    <input name="fields[email]" type="email" class="post-comment-field"
+      placeholder="Your email address for Gravatar (Optional)">
+    <textarea name="fields[body]" class="post-comment-field" placeholder="Your message." rows="3"></textarea>
+    <input type="submit" class="post-comment-field btn" value="Submit for Approval">
+  </form>
+</section>
 
 
   </main>

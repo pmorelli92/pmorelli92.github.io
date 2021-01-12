@@ -151,24 +151,24 @@
 <p>Now, I will assume that you are using a mac but in case you do not, you can google yourself some of the installation steps.</p>
 <h2 id="installing-gpg">Installing GPG</h2>
 <p>In order to sign a commit you will need to generate a key, and for this you are going to use <a href="https://gnupg.org/">GPG</a>. But first, you need brew to be installed, if you do not have it yet, it is a must have package manager for mac that you can download <a href="https://brew.sh/">here</a>.</p>
-<pre><code>&gt; brew install gnupg
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; brew install gnupg
 &gt; brew install pinentry-mac
-&gt; echo &quot;pinentry-program /usr/local/bin/pinentry-mac&quot; &gt;&gt; ~/.gnupg/gpg-agent.conf
+&gt; echo <span style="color:#e6db74">&#34;pinentry-program /usr/local/bin/pinentry-mac&#34;</span> &gt;&gt; ~/.gnupg/gpg-agent.conf
 &gt; killall gpg-agent
-</code></pre><p><a href="https://www.gnupg.org/related_software/pinentry/index.en.html">Pinentry</a> as it is stated on the GPG site it is a collection of dialogs that allows you, for example, to input the passphrase of the private key. In order for this to work we need to indicate the path where it is installed into the GPG configuration and then kill the service (just in case) for it to take the changes.</p>
+</code></pre></div><p><a href="https://www.gnupg.org/related_software/pinentry/index.en.html">Pinentry</a> as it is stated on the GPG site it is a collection of dialogs that allows you, for example, to input the passphrase of the private key. In order for this to work we need to indicate the path where it is installed into the GPG configuration and then kill the service (just in case) for it to take the changes.</p>
 <h2 id="generating-a-set-of-keys">Generating a set of keys</h2>
-<pre><code>&gt; gpg --full-generate-key
-(you can customise the key creation or just press enter to use the defaults)
-</code></pre><p>Will generate a private key from which you are going to generate and export the public key. The id of the key will be shown when you generate the key or you can fetch it by running:</p>
-<pre><code>&gt; gpg --list-secret-keys
-</code></pre><p>And you will get something like this:</p>
-<pre><code>sec   rsa2048 2019-06-07 [SC]
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; gpg --full-generate-key
+<span style="color:#f92672">(</span>you can customise the key creation or just press enter to use the defaults<span style="color:#f92672">)</span>
+</code></pre></div><p>Will generate a private key from which you are going to generate and export the public key. The id of the key will be shown when you generate the key or you can fetch it by running:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; gpg --list-secret-keys
+</code></pre></div><p>And you will get something like this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sec   rsa2048 2019-06-07 <span style="color:#f92672">[</span>SC<span style="color:#f92672">]</span>
       KEY_ID_HERE
-uid   [  absolut ] Pablo Morelli &lt;devandchill@gmail.com&gt;
-ssb   rsa2048 2019-06-07 [E]
-</code></pre><p>After you have your ID, execute:</p>
-<pre><code>&gt; gpg --export --armor YOUR_KEY_ID 2&gt; cat
-</code></pre><p>You will see the public key on the terminal, now you can copy it and go to GitHub.</p>
+uid   <span style="color:#f92672">[</span>  absolut <span style="color:#f92672">]</span> Pablo Morelli &lt;devandchill@gmail.com&gt;
+ssb   rsa2048 2019-06-07 <span style="color:#f92672">[</span>E<span style="color:#f92672">]</span>
+</code></pre></div><p>After you have your ID, execute:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; gpg --export --armor YOUR_KEY_ID 2&gt; cat
+</code></pre></div><p>You will see the public key on the terminal, now you can copy it and go to GitHub.</p>
 <h2 id="adding-public-key-to-github-account">Adding public key to GitHub account</h2>
 <p>Go to <code>Settings -&gt; SSH and GPG Keys -&gt; New GPG Key</code> and paste the content of your key and after submiting you will see something like this.</p>
 <figure>
@@ -178,31 +178,31 @@ ssb   rsa2048 2019-06-07 [E]
 <h2 id="doing-your-first-verified-commit">Doing your first verified commit</h2>
 <p>When you work with the <code>git cli</code> there is a huge probability that you work with different accounts (for example one for work and one personal) and/or that you have more than one GPG key on your system.
 To avoid problems with git not knowing which configuration to pick you will indicate that for the repo where you are standing or for all the repos you will use the GPG key that contains a certain ID.</p>
-<pre><code>&gt; git config --local gpg.program &quot;gpg&quot;
-&gt; git config --local user.signingKey &quot;YOUR_KEY_ID_INSIDE_THE_QUOTES&quot; // will apply to the working directory
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; git config --local gpg.program <span style="color:#e6db74">&#34;gpg&#34;</span>
+&gt; git config --local user.signingKey <span style="color:#e6db74">&#34;YOUR_KEY_ID_INSIDE_THE_QUOTES&#34;</span> // will apply to the working directory
 
-&gt; git config --global gpg.program &quot;gpg&quot;
-&gt; git config --global user.signingKey &quot;YOUR_KEY_ID_INSIDE_THE_QUOTES&quot; // will apply to the all the repositories except when overriden
-</code></pre><p>You are almost ready to go, but you need to know that by default <code>git commit</code> does not sign the commits unless you specify the argument <code>-S</code>. So you have two options:</p>
-<pre><code>&gt; git commit -S -m &quot;My commit message&quot;
-</code></pre><p>Or you can setup automatic signing for the repository or all the repositories.</p>
-<pre><code>&gt; git config --local commit.gpgsign &quot;true&quot;
+&gt; git config --global gpg.program <span style="color:#e6db74">&#34;gpg&#34;</span>
+&gt; git config --global user.signingKey <span style="color:#e6db74">&#34;YOUR_KEY_ID_INSIDE_THE_QUOTES&#34;</span> // will apply to the all the repositories except when overriden
+</code></pre></div><p>You are almost ready to go, but you need to know that by default <code>git commit</code> does not sign the commits unless you specify the argument <code>-S</code>. So you have two options:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; git commit -S -m <span style="color:#e6db74">&#34;My commit message&#34;</span>
+</code></pre></div><p>Or you can setup automatic signing for the repository or all the repositories.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; git config --local commit.gpgsign <span style="color:#e6db74">&#34;true&#34;</span>
 
-&gt; git config --global commit.gpgsign &quot;true&quot; // if you want to set up for all the repositories
-</code></pre><p>If you did the step above, the argument <code>-S</code> is no longer needed.</p>
+&gt; git config --global commit.gpgsign <span style="color:#e6db74">&#34;true&#34;</span> // <span style="color:#66d9ef">if</span> you want to set up <span style="color:#66d9ef">for</span> all the repositories
+</code></pre></div><p>If you did the step above, the argument <code>-S</code> is no longer needed.</p>
 <h2 id="checking-git-configuration">Checking git configuration</h2>
 <p>When you are unsure about your configuration you can execute <code>git config --local -l</code> to list the configuration for the working directory and you should see something like this:</p>
-<pre><code>gpg.program=gpg
-commit.gpgsign=true
-user.signingkey=YOUR_KEY_ID
-</code></pre><h2 id="back-up-your-private-key">Back up your private key</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gpg.program<span style="color:#f92672">=</span>gpg
+commit.gpgsign<span style="color:#f92672">=</span>true
+user.signingkey<span style="color:#f92672">=</span>YOUR_KEY_ID
+</code></pre></div><h2 id="back-up-your-private-key">Back up your private key</h2>
 <p>Keys are passwords, so you should save them somewhere safe and revoke + change periodically.
 It is trivial to revoke and to generate a new key for GitHub but it may be troublesome for some other systems that uses your public key.
 Now lets image that you change your computer, you wont be able to sign because you don&rsquo;t have your key; in this case a backup is recommended.</p>
-<pre><code>gpg --export-secret-keys YOUR_KEY_ID &gt; some_private_key_name
-</code></pre><p>Now you can save this file to some secure vault, and if you ever need to import it on a new machine, execute:</p>
-<pre><code>gpg --import some_private_key_name
-</code></pre><h2 id="bonus-track">Bonus track</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gpg --export-secret-keys YOUR_KEY_ID &gt; some_private_key_name
+</code></pre></div><p>Now you can save this file to some secure vault, and if you ever need to import it on a new machine, execute:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gpg --import some_private_key_name
+</code></pre></div><h2 id="bonus-track">Bonus track</h2>
 <p>As I mentioned before, some times when you work using the <code>git cli</code> you end up mixing accounts, and it could happen to commit like this:</p>
 <figure>
     <img src="/posts/images/incorrect-user.png"/> 
@@ -210,9 +210,9 @@ Now lets image that you change your computer, you wont be able to sign because y
 
 <p>You can of course leave it like that or do a rebase of the commit; but you can also check first using <code>git config --local -l</code> which is the <code>user.name</code> and <code>user.email</code> for that working directory.
 In case the email does not match with the email linked in GitHub you can change it doing:</p>
-<pre><code>&gt; git config --local user.name &quot;GitHub name&quot;
-&gt; git config --local user.email &quot;my.github@email.com&quot;
-</code></pre><p>I hope you liked the post, if so, don&rsquo;t forget to share it so this can reach to more people :)</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; git config --local user.name <span style="color:#e6db74">&#34;GitHub name&#34;</span>
+&gt; git config --local user.email <span style="color:#e6db74">&#34;my.github@email.com&#34;</span>
+</code></pre></div><p>I hope you liked the post, if so, don&rsquo;t forget to share it so this can reach to more people :)</p>
 
       </div>
     </article>
@@ -392,39 +392,41 @@ In case the email does not match with the email linked in GitHub you can change 
     <section class="post-comments">
   <h3>Comments</h3>
 
-    
-    
-    
+  
+  
+  
 
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 
-    
-      <p>Nothing yet.</p>
-    
+  
+  <p>Nothing yet.</p>
+  
 
-    <h3>Say something</h3>
+  <h3>Say something</h3>
 
-    <form class="post-new-comment" method="POST" action="https://dev.staticman.net/v3/entry/github/pmorelli92/devandchill/master/comments">
-      <input type="hidden" name="options[redirect]" value="https://devandchill.com/posts/2019/06/sign-github-commits-using-mac/">
-      <input type="hidden" name="options[entryId]" value="c1c3bbdf2f253a76253b4eaa46669f70">
-      <input name="fields[name]" type="text" class="post-comment-field" placeholder="Your name">
-      <input name="fields[email]" type="email" class="post-comment-field" placeholder="Your email address for Gravatar (Optional)">
-      <textarea name="fields[body]" class="post-comment-field" placeholder="Your message." rows="3"></textarea>
-      <input type="submit" class="post-comment-field btn" value="Submit for Approval">
-    </form>
-  </section>
+  <form class="post-new-comment" method="POST"
+    action="https://api.staticman.net/v3/entry/github/pmorelli92/devandchill/master/comments">
+    <input type="hidden" name="options[redirect]" value="https://devandchill.com/posts/2019/06/sign-github-commits-using-mac/">
+    <input type="hidden" name="options[entryId]" value="c1c3bbdf2f253a76253b4eaa46669f70">
+    <input name="fields[name]" type="text" class="post-comment-field" placeholder="Your name">
+    <input name="fields[email]" type="email" class="post-comment-field"
+      placeholder="Your email address for Gravatar (Optional)">
+    <textarea name="fields[body]" class="post-comment-field" placeholder="Your message." rows="3"></textarea>
+    <input type="submit" class="post-comment-field btn" value="Submit for Approval">
+  </form>
+</section>
 
 
   </main>

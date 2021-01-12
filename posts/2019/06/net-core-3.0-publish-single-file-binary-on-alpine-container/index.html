@@ -161,22 +161,22 @@ In order to add this feature in our .csproj, add the following lines:
 <li><code>CrossGenDuringPublish</code> is a workaround that needs to be present for indicating the machine that is running the publish, that it should not bother with compilation for other RID (more about this below)</li>
 </ul>
 <p>After these flags had been set, the application is runnable using:</p>
-<pre><code>dotnet publish -r osx-x64 -c Release -o ./deploy
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">dotnet publish -r osx-x64 -c Release -o ./deploy
 ./deploy/&lt;APP_NAME&gt; &lt;- Execute the application
-</code></pre><p>When publishing a single file, don&rsquo;t forget to add the <a href="https://docs.microsoft.com/en-us/dotnet/core/rid-catalog">runtime identifier catalog (RID)</a> corresponding to the platform where the application is going to be run. For example: <code>-r osx-x64</code></p>
+</code></pre></div><p>When publishing a single file, don&rsquo;t forget to add the <a href="https://docs.microsoft.com/en-us/dotnet/core/rid-catalog">runtime identifier catalog (RID)</a> corresponding to the platform where the application is going to be run. For example: <code>-r osx-x64</code></p>
 <p>With the basics of this feature already covered, let&rsquo;s move to the important bit.</p>
 <h2 id="deploy-application-on-an-alpine-based-container">Deploy application on an Alpine based container</h2>
 <p>One important win using this approach is that the published binary does not need to be run in a container that has dotnet runtime installed. But one caveat for consideration is that those internal dependencies used under the hood by dotnet are still needed. There are two options:</p>
 <p>Use plain alpine and install dotnet internal dependencies:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Dockerfile" data-lang="Dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> alpine</span><span style="color:#960050;background-color:#1e0010">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Docker" data-lang="Docker"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> alpine</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> apk update <span style="color:#f92672">&amp;&amp;</span> apk add libstdc++ <span style="color:#f92672">&amp;&amp;</span> apk add libintl<span style="color:#960050;background-color:#1e0010">
 </span></code></pre></div><p>Use <code>runtime-deps</code> alpine image from <a href="https://hub.docker.com/_/microsoft-dotnet-core-runtime-deps/">Microsoft</a>:</p>
 <blockquote>
 <p>This image contains the native dependencies needed by .NET Core. It does not include .NET Core. It is for self-contained applications.</p>
 </blockquote>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Dockerfile" data-lang="Dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> mcr.microsoft.com/dotnet/core/runtime-deps:3.0.0-preview6-alpine3.9</span><span style="color:#960050;background-color:#1e0010">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Docker" data-lang="Docker"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> mcr.microsoft.com/dotnet/core/runtime-deps:3.0.0-preview6-alpine3.9</span><span style="color:#960050;background-color:#1e0010">
 </span></code></pre></div><p>With that being said, the next is straightforward:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Dockerfile" data-lang="Dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> mcr.microsoft.com/dotnet/core/sdk:3.0.100-preview6-alpine3.9 AS build</span><span style="color:#960050;background-color:#1e0010">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Docker" data-lang="Docker"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> mcr.microsoft.com/dotnet/core/sdk:3.0.100-preview6-alpine3.9 AS build</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /app</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010">
@@ -376,39 +376,41 @@ In order to add this feature in our .csproj, add the following lines:
     <section class="post-comments">
   <h3>Comments</h3>
 
-    
-    
-    
+  
+  
+  
 
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 
-    
-      <p>Nothing yet.</p>
-    
+  
+  <p>Nothing yet.</p>
+  
 
-    <h3>Say something</h3>
+  <h3>Say something</h3>
 
-    <form class="post-new-comment" method="POST" action="https://dev.staticman.net/v3/entry/github/pmorelli92/devandchill/master/comments">
-      <input type="hidden" name="options[redirect]" value="https://devandchill.com/posts/2019/06/net-core-3.0-publish-single-file-binary-on-alpine-container/">
-      <input type="hidden" name="options[entryId]" value="0664d63647f631601f6d3b9a379bae47">
-      <input name="fields[name]" type="text" class="post-comment-field" placeholder="Your name">
-      <input name="fields[email]" type="email" class="post-comment-field" placeholder="Your email address for Gravatar (Optional)">
-      <textarea name="fields[body]" class="post-comment-field" placeholder="Your message." rows="3"></textarea>
-      <input type="submit" class="post-comment-field btn" value="Submit for Approval">
-    </form>
-  </section>
+  <form class="post-new-comment" method="POST"
+    action="https://api.staticman.net/v3/entry/github/pmorelli92/devandchill/master/comments">
+    <input type="hidden" name="options[redirect]" value="https://devandchill.com/posts/2019/06/net-core-3.0-publish-single-file-binary-on-alpine-container/">
+    <input type="hidden" name="options[entryId]" value="0664d63647f631601f6d3b9a379bae47">
+    <input name="fields[name]" type="text" class="post-comment-field" placeholder="Your name">
+    <input name="fields[email]" type="email" class="post-comment-field"
+      placeholder="Your email address for Gravatar (Optional)">
+    <textarea name="fields[body]" class="post-comment-field" placeholder="Your message." rows="3"></textarea>
+    <input type="submit" class="post-comment-field btn" value="Submit for Approval">
+  </form>
+</section>
 
 
   </main>

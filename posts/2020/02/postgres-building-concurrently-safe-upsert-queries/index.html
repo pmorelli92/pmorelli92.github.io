@@ -192,13 +192,13 @@ RETURNING id
 RETURNING id
 </code></pre></div><p><code>ON CONFLICT DO NOTHING</code> will avoid the primary key exception! Yes, that is true, but when this clause does not update the row (<code>DO NOTHING</code>) the <code>RETURNING</code> row will be empty.</p>
 <p>This can be tested by executing several times the statement in point 4.</p>
-<pre><code>| id |
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">| id |
 | -- |
-| 1  |
+| <span style="color:#ae81ff">1</span>  |
 |    |
 |    |
 |    |
-</code></pre><hr>
+</code></pre></div><hr>
 <h3 id="2-enter-transaction-read--write">2. Enter transaction: read + write</h3>
 <p>Same scenario than the one detailed above, but starting a transaction before executing the <code>SELECT</code>, and committing after the insert succeed.</p>
 <p>Unfortunately, transaction is not going to help in any way here. The <code>SELECT</code> will not lock any row because no row exists and this is not exactly the way Postgres handles locking. This means that two <code>SELECT</code> at the same time will not cause the latest to wait until the first transaction is committed.</p>
@@ -262,13 +262,13 @@ RETURNING id
 <span style="color:#66d9ef">DO</span> <span style="color:#66d9ef">UPDATE</span> <span style="color:#66d9ef">SET</span> customer_id <span style="color:#f92672">=</span> excluded.customer_id
 RETURNING id
 </code></pre></div><p>The difference between the first example and this one, is that now the <code>DO NOTHING</code> is replaced by <code>DO UPDATE</code> and since an update is being executed; the returning row will never be empty. Moreover the concurrency problems are gone because they are handled by the database and not by code. This can be tested by executing several times the query.</p>
-<pre><code>| id |
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">| id |
 | -- |
-| 3  |
-| 3  |
-| 3  |
-| 3  |
-</code></pre><p>As simple as that. Looks great doesn&rsquo;t it? Well I thought so until a colleague proved me wrong when he linked this <a href="https://stackoverflow.com/a/42217872">awesome stack overflow answer</a>.</p>
+| <span style="color:#ae81ff">3</span>  |
+| <span style="color:#ae81ff">3</span>  |
+| <span style="color:#ae81ff">3</span>  |
+| <span style="color:#ae81ff">3</span>  |
+</code></pre></div><p>As simple as that. Looks great doesn&rsquo;t it? Well I thought so until a colleague proved me wrong when he linked this <a href="https://stackoverflow.com/a/42217872">awesome stack overflow answer</a>.</p>
 <blockquote>
 <p>[&hellip;] Do not update identical rows without need. Even if you see no difference on the surface, there are various side effects:</p>
 <ul>
@@ -285,14 +285,14 @@ Executing the following query 5 times!</p>
 <span style="color:#66d9ef">DO</span> <span style="color:#66d9ef">UPDATE</span> <span style="color:#66d9ef">SET</span> customer_id <span style="color:#f92672">=</span> excluded.customer_id
 RETURNING ctid, xmin, xmax, id
 </code></pre></div><p>Results:</p>
-<pre><code>| ctid  | xmin | xmax | id |
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">| ctid  | xmin | xmax | id |
 | ----- | ---- | ---- | -- |
-| (0,1) | 5876 | 0    | 2  |
-| (0,2) | 5877 | 5877 | 2  |
-| (0,3) | 5878 | 5878 | 2  |
-| (0,4) | 5879 | 5879 | 2  |
-| (0,5) | 5880 | 5880 | 2  |
-</code></pre><p>What is the definition of <code>ctid</code>, <code>xmin</code> and <code>xmax</code>, and why do they keep increasing?
+| <span style="color:#f92672">(</span>0,1<span style="color:#f92672">)</span> | <span style="color:#ae81ff">5876</span> | <span style="color:#ae81ff">0</span>    | <span style="color:#ae81ff">2</span>  |
+| <span style="color:#f92672">(</span>0,2<span style="color:#f92672">)</span> | <span style="color:#ae81ff">5877</span> | <span style="color:#ae81ff">5877</span> | <span style="color:#ae81ff">2</span>  |
+| <span style="color:#f92672">(</span>0,3<span style="color:#f92672">)</span> | <span style="color:#ae81ff">5878</span> | <span style="color:#ae81ff">5878</span> | <span style="color:#ae81ff">2</span>  |
+| <span style="color:#f92672">(</span>0,4<span style="color:#f92672">)</span> | <span style="color:#ae81ff">5879</span> | <span style="color:#ae81ff">5879</span> | <span style="color:#ae81ff">2</span>  |
+| <span style="color:#f92672">(</span>0,5<span style="color:#f92672">)</span> | <span style="color:#ae81ff">5880</span> | <span style="color:#ae81ff">5880</span> | <span style="color:#ae81ff">2</span>  |
+</code></pre></div><p>What is the definition of <code>ctid</code>, <code>xmin</code> and <code>xmax</code>, and why do they keep increasing?
 <a href="https://www.postgresql.org/docs/8.2/ddl-system-columns.html">Documentation</a></p>
 <p><strong>ctid</strong></p>
 <blockquote>
@@ -381,26 +381,26 @@ RETURNING ctid, xmin, xmax, id
 <p>After the <code>INSERT</code> is executed, the <code>SELECT</code> statement will return the id for the recently created / already existing row.</p>
 <p>But is this performing? For that lets <code>EXPLAIN ANALYZE</code> the queries:</p>
 <p>Insert (when there is no row):</p>
-<pre><code>Insert on customers
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Insert on customers
   Conflict Resolution: NOTHING
-  Tuples Inserted: 1
-  Conflicting Tuples: 0
+  Tuples Inserted: <span style="color:#ae81ff">1</span>
+  Conflicting Tuples: <span style="color:#ae81ff">0</span>
 Planning Time: 0.032 ms
 Execution Time: 0.190 ms
-</code></pre><p>Insert (when there is a conflict):</p>
-<pre><code>Insert on customers
+</code></pre></div><p>Insert (when there is a conflict):</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Insert on customers
   Conflict Resolution: NOTHING
-  Tuples Inserted: 0
-  Conflicting Tuples: 1
+  Tuples Inserted: <span style="color:#ae81ff">0</span>
+  Conflicting Tuples: <span style="color:#ae81ff">1</span>
   -&gt;  Result
 Planning Time: 0.032 ms
 Execution Time: 0.244 ms
-</code></pre><p>Select query:</p>
-<pre><code>Index Scan using customers_pkey on customers
-  Index Cond: (customer_id = '...'::uuid)
+</code></pre></div><p>Select query:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Index Scan using customers_pkey on customers
+  Index Cond: <span style="color:#f92672">(</span>customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;...&#39;</span>::uuid<span style="color:#f92672">)</span>
 Planning Time: 0.069 ms
 Execution Time: 0.111 ms
-</code></pre><p>The summarization between the insert and the select is less than a millisecond for both cases. Don&rsquo;t worry, on the next part this is proven.</p>
+</code></pre></div><p>The summarization between the insert and the select is less than a millisecond for both cases. Don&rsquo;t worry, on the next part this is proven.</p>
 <p><a href="https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/"><em>Benchmark for this approach in part 2</em></a></p>
 <hr>
 <h3 id="bonus-for-non-postgres-users-aka-cte-queries">Bonus for non Postgres users (a.k.a CTE queries)</h3>
@@ -416,24 +416,24 @@ Execution Time: 0.111 ms
 <li>Execute both statements, only one will return a result.</li>
 </ul>
 <p>Running <code>EXPLAIN ANALYZE</code> on the query:</p>
-<pre><code>HashAggregate
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">HashAggregate
   Group Key: add.ctid, add.xmax, add.id
   CTE search
     -&gt;  Limit
           -&gt;  Index Scan using customers_pkey on customers
-                Index Cond: (customer_id = '...'::uuid)
+                Index Cond: <span style="color:#f92672">(</span>customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;...&#39;</span>::uuid<span style="color:#f92672">)</span>
   CTE add
     -&gt;  Insert on customers customers_1
-          InitPlan 2 (returns $1)
+          InitPlan <span style="color:#ae81ff">2</span> <span style="color:#f92672">(</span>returns $1<span style="color:#f92672">)</span>
             -&gt;  CTE Scan on search search_1
           -&gt;  Result
-                One-Time Filter: (NOT $1)
+                One-Time Filter: <span style="color:#f92672">(</span>NOT $1<span style="color:#f92672">)</span>
   -&gt;  Append
         -&gt;  CTE Scan on add
         -&gt;  CTE Scan on search
 Planning Time: 0.256 ms
 Execution Time: 2.483 ms
-</code></pre><p><a href="https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/"><em>Benchmark for this approach in part 2</em></a></p>
+</code></pre></div><p><a href="https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/"><em>Benchmark for this approach in part 2</em></a></p>
 <hr>
 <p>And that is all for this post. On the next post, the benchmarks for the following approaches are going to be executed:</p>
 <ul>
@@ -624,39 +624,41 @@ Execution Time: 2.483 ms
     <section class="post-comments">
   <h3>Comments</h3>
 
-    
-    
-    
+  
+  
+  
 
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 
-    
-      <p>Nothing yet.</p>
-    
+  
+  <p>Nothing yet.</p>
+  
 
-    <h3>Say something</h3>
+  <h3>Say something</h3>
 
-    <form class="post-new-comment" method="POST" action="https://dev.staticman.net/v3/entry/github/pmorelli92/devandchill/master/comments">
-      <input type="hidden" name="options[redirect]" value="https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries/">
-      <input type="hidden" name="options[entryId]" value="d3f2b6d5d80006bedb60e1b6581ffab5">
-      <input name="fields[name]" type="text" class="post-comment-field" placeholder="Your name">
-      <input name="fields[email]" type="email" class="post-comment-field" placeholder="Your email address for Gravatar (Optional)">
-      <textarea name="fields[body]" class="post-comment-field" placeholder="Your message." rows="3"></textarea>
-      <input type="submit" class="post-comment-field btn" value="Submit for Approval">
-    </form>
-  </section>
+  <form class="post-new-comment" method="POST"
+    action="https://api.staticman.net/v3/entry/github/pmorelli92/devandchill/master/comments">
+    <input type="hidden" name="options[redirect]" value="https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries/">
+    <input type="hidden" name="options[entryId]" value="d3f2b6d5d80006bedb60e1b6581ffab5">
+    <input name="fields[name]" type="text" class="post-comment-field" placeholder="Your name">
+    <input name="fields[email]" type="email" class="post-comment-field"
+      placeholder="Your email address for Gravatar (Optional)">
+    <textarea name="fields[body]" class="post-comment-field" placeholder="Your message." rows="3"></textarea>
+    <input type="submit" class="post-comment-field btn" value="Submit for Approval">
+  </form>
+</section>
 
 
   </main>

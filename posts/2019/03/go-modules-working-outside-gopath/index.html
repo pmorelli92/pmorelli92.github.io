@@ -155,7 +155,7 @@ My starting point was the following talk:"/>
 
 <p>Being that I did not know how to manage dependencies, I started investigating and saw that lots of people were using <code>dep</code>, and how bad could it be?</p>
 <p>I started building a sample app that that could be containerised (again, just to see how the Dockerfile would look like), and the following happened:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> golang:1.12-alpine AS builder</span><span style="color:#960050;background-color:#1e0010">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-docker" data-lang="docker"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> golang:1.12-alpine AS builder</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> . /go/src/github.com/pmorelli92/go-ddd-cqrs/<span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /go/src/github.com/pmorelli92/go-ddd-cqrs/</span><span style="color:#960050;background-color:#1e0010">
@@ -173,7 +173,7 @@ My starting point was the following talk:"/>
 </span></code></pre></div><p>That Dockerfile, as ugly as it looks, was the result of some iterations were I was getting path errors, dependency errors, and others. The constraint of only working on <code>GOPATH</code> gave me headaches and I had to use a really bad <code>WORKDIR</code> as you can see above.</p>
 <p>But then after some searching, I came across that <a href="https://github.com/golang/go/wiki/Modules">GO Modules</a> was supported from version 1.11, so I decided to give it a try.</p>
 <p>And this is how the Dockerfile looks like now:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> golang:1.12-alpine AS builder</span><span style="color:#960050;background-color:#1e0010">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-docker" data-lang="docker"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> golang:1.12-alpine AS builder</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /app</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010">
@@ -191,12 +191,12 @@ My starting point was the following talk:"/>
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENTRYPOINT</span> [<span style="color:#e6db74">&#34;./goapp&#34;</span>]<span style="color:#960050;background-color:#1e0010">
 </span></code></pre></div><p>We can achieve the same using <code>golang:1.11</code> but we wil have to execute an additional step <code>ENV GO111MODULE=on</code> before <code>RUN go mod download</code>.</p>
 <p>So how do we do this? Easily!</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">mkdir</span> <span style="color:#a6e22e">my</span><span style="color:#f92672">-</span><span style="color:#a6e22e">demo</span> <span style="color:#75715e">// Create a project folder, or clone a github repository
-</span><span style="color:#75715e"></span><span style="color:#a6e22e">cd</span> <span style="color:#a6e22e">my</span><span style="color:#f92672">-</span><span style="color:#a6e22e">demo</span>
-<span style="color:#a6e22e">touch</span> <span style="color:#a6e22e">main</span>.<span style="color:#66d9ef">go</span> <span style="color:#75715e">// Create a file if we are starting the project
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">go</span> <span style="color:#a6e22e">mod</span> <span style="color:#a6e22e">init</span> <span style="color:#a6e22e">my</span><span style="color:#f92672">-</span><span style="color:#a6e22e">demo</span> <span style="color:#75715e">// This will initiate the module
-</span></code></pre></div><p>After doing this, we can proceed installing dependencies by doing <code>go get -u &lt;path&gt;</code></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">go</span> <span style="color:#a6e22e">get</span> <span style="color:#f92672">-</span><span style="color:#a6e22e">u</span> <span style="color:#a6e22e">github</span>.<span style="color:#a6e22e">com</span><span style="color:#f92672">/</span><span style="color:#a6e22e">labstack</span><span style="color:#f92672">/</span><span style="color:#a6e22e">echo</span><span style="color:#f92672">/</span><span style="color:#a6e22e">v4</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mkdir my-demo // Create a project folder, or clone a github repository
+cd my-demo
+touch main.go // Create a file <span style="color:#66d9ef">if</span> we are starting the project
+go mod init my-demo // This will initiate the module
+</code></pre></div><p>After doing this, we can proceed installing dependencies by doing <code>go get -u &lt;path&gt;</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get -u github.com/labstack/echo/v4
 </code></pre></div><p>This will be tracked on the <code>go.mod</code> where it will state all the dependencies required for the project:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">my</span><span style="color:#f92672">-</span><span style="color:#a6e22e">demo</span> &gt; <span style="color:#a6e22e">cat</span> <span style="color:#66d9ef">go</span>.<span style="color:#a6e22e">mod</span>
 <span style="color:#a6e22e">module</span> <span style="color:#a6e22e">my</span><span style="color:#f92672">-</span><span style="color:#a6e22e">demo</span>
@@ -407,39 +407,41 @@ My starting point was the following talk:"/>
     <section class="post-comments">
   <h3>Comments</h3>
 
-    
-    
-    
+  
+  
+  
 
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 
-    
-      <p>Nothing yet.</p>
-    
+  
+  <p>Nothing yet.</p>
+  
 
-    <h3>Say something</h3>
+  <h3>Say something</h3>
 
-    <form class="post-new-comment" method="POST" action="https://dev.staticman.net/v3/entry/github/pmorelli92/devandchill/master/comments">
-      <input type="hidden" name="options[redirect]" value="https://devandchill.com/posts/2019/03/go-modules-working-outside-gopath/">
-      <input type="hidden" name="options[entryId]" value="92fcc883ac28074bef7729eea851d9b1">
-      <input name="fields[name]" type="text" class="post-comment-field" placeholder="Your name">
-      <input name="fields[email]" type="email" class="post-comment-field" placeholder="Your email address for Gravatar (Optional)">
-      <textarea name="fields[body]" class="post-comment-field" placeholder="Your message." rows="3"></textarea>
-      <input type="submit" class="post-comment-field btn" value="Submit for Approval">
-    </form>
-  </section>
+  <form class="post-new-comment" method="POST"
+    action="https://api.staticman.net/v3/entry/github/pmorelli92/devandchill/master/comments">
+    <input type="hidden" name="options[redirect]" value="https://devandchill.com/posts/2019/03/go-modules-working-outside-gopath/">
+    <input type="hidden" name="options[entryId]" value="92fcc883ac28074bef7729eea851d9b1">
+    <input name="fields[name]" type="text" class="post-comment-field" placeholder="Your name">
+    <input name="fields[email]" type="email" class="post-comment-field"
+      placeholder="Your email address for Gravatar (Optional)">
+    <textarea name="fields[body]" class="post-comment-field" placeholder="Your message." rows="3"></textarea>
+    <input type="submit" class="post-comment-field btn" value="Submit for Approval">
+  </form>
+</section>
 
 
   </main>

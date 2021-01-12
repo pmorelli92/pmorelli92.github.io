@@ -264,26 +264,26 @@ import ( ... &#34;github.com/jackc/pgx/v4/pgxpool&#34; ) What is pgx, and why sh
 <span style="color:#f92672">--</span>&gt;
 <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">tx</span>.<span style="color:#a6e22e">Rollback</span>(<span style="color:#a6e22e">ctx</span>)
 </code></pre></div><p>As for the performance:</p>
-<pre><code>LIB/PQ: EXECUTING FOR LOCKS
-Bucket         #     %       Histogram
-[0s,    2ms]   974   24.35%  ##################
-[2ms,   4ms]   2771  69.27%  ###################################################
-[4ms,   6ms]   244   6.10%   ####
-[6ms,   8ms]   10    0.25%
-[8ms,   10ms]  0     0.00%
-[10ms,  15ms]  1     0.03%
-[15ms,  +Inf]  0     0.00%
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LIB/PQ: EXECUTING FOR LOCKS
+Bucket         <span style="color:#75715e">#     %       Histogram</span>
+<span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">974</span>   24.35%  <span style="color:#75715e">##################</span>
+<span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2771</span>  69.27%  <span style="color:#75715e">###################################################</span>
+<span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">244</span>   6.10%   <span style="color:#75715e">####</span>
+<span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">10</span>    0.25%
+<span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+<span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">1</span>     0.03%
+<span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
 
 PGX: EXECUTING FOR LOCKS
-Bucket         #     %       Histogram
-[0s,    2ms]   2442  61.05%  #############################################
-[2ms,   4ms]   1506  37.65%  ############################
-[4ms,   6ms]   38    0.95%
-[6ms,   8ms]   11    0.27%
-[8ms,   10ms]  2     0.05%
-[10ms,  15ms]  1     0.03%
-[15ms,  +Inf]  0     0.00%
-</code></pre><p>And this is awesome! Out of the box without changing too much the code, the result is already speaking for itself.</p>
+Bucket         <span style="color:#75715e">#     %       Histogram</span>
+<span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2442</span>  61.05%  <span style="color:#75715e">#############################################</span>
+<span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1506</span>  37.65%  <span style="color:#75715e">############################</span>
+<span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">38</span>    0.95%
+<span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">11</span>    0.27%
+<span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">2</span>     0.05%
+<span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">1</span>     0.03%
+<span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+</code></pre></div><p>And this is awesome! Out of the box without changing too much the code, the result is already speaking for itself.</p>
 <h2 id="upsert-on-conflict">Upsert on conflict</h2>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span>
 	<span style="color:#e6db74">&#34;INSERT INTO customers(customer_id) VALUES($1) &#34;</span> <span style="color:#f92672">+</span>
@@ -295,26 +295,26 @@ Bucket         #     %       Histogram
 <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">QueryRow</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">id</span>).<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
 </code></pre></div><p>Even simpler than the previous one, now there is a one liner.</p>
 <p>Benchmark:</p>
-<pre><code>LIB/PQ: EXECUTING FOR UPSERT CONFLICT
-Bucket         #     %       Histogram
-[0s,    2ms]   1777  44.42%  #################################
-[2ms,   4ms]   1938  48.45%  ####################################
-[4ms,   6ms]   158   3.95%   ##
-[6ms,   8ms]   72    1.80%   #
-[8ms,   10ms]  33    0.83%
-[10ms,  15ms]  18    0.45%
-[15ms,  +Inf]  4     0.10%
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LIB/PQ: EXECUTING FOR UPSERT CONFLICT
+Bucket         <span style="color:#75715e">#     %       Histogram</span>
+<span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1777</span>  44.42%  <span style="color:#75715e">#################################</span>
+<span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1938</span>  48.45%  <span style="color:#75715e">####################################</span>
+<span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">158</span>   3.95%   <span style="color:#75715e">##</span>
+<span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">72</span>    1.80%   <span style="color:#75715e">#</span>
+<span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">33</span>    0.83%
+<span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">18</span>    0.45%
+<span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">4</span>     0.10%
 
 PGX: EXECUTING FOR UPSERT CONFLICT
-Bucket         #     %       Histogram
-[0s,    2ms]   2676  66.90%  ##################################################
-[2ms,   4ms]   1295  32.38%  ########################
-[4ms,   6ms]   21    0.53%
-[6ms,   8ms]   6     0.15%
-[8ms,   10ms]  1     0.03%
-[10ms,  15ms]  1     0.03%
-[15ms,  +Inf]  0     0.00%
-</code></pre><p>Yes, I am running the benchmark on the same computer, doing a warm up phase in which the results are discarded to be fair with the old benchmarks as well.</p>
+Bucket         <span style="color:#75715e">#     %       Histogram</span>
+<span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2676</span>  66.90%  <span style="color:#75715e">##################################################</span>
+<span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1295</span>  32.38%  <span style="color:#75715e">########################</span>
+<span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">21</span>    0.53%
+<span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">6</span>     0.15%
+<span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">1</span>     0.03%
+<span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">1</span>     0.03%
+<span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+</code></pre></div><p>Yes, I am running the benchmark on the same computer, doing a warm up phase in which the results are discarded to be fair with the old benchmarks as well.</p>
 <h2 id="upsert-do-nothing">Upsert do nothing</h2>
 <p>As you can recall (if you read my previous post), there is a limitation when sending on the same <code>QueryContext</code> more than one parameterized query.</p>
 <p>On the previous post, this was bypassed by a non good practice that was not sending parameterized queries but injecting the string; which as I stated previously it is a bad practice that can led to security vulnerabilities.</p>
@@ -344,26 +344,26 @@ Bucket         #     %       Histogram
 
 <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">results</span>.<span style="color:#a6e22e">Close</span>()
 </code></pre></div><p>But does this truly work?</p>
-<pre><code>LIB/PQ: EXECUTING FOR UPSERT DO NOTHING
-Bucket         #     %       Histogram
-[0s,    2ms]   3426  85.65%  ################################################################
-[2ms,   4ms]   572   14.30%  ##########
-[4ms,   6ms]   1     0.03%
-[6ms,   8ms]   0     0.00%
-[8ms,   10ms]  1     0.03%
-[10ms,  15ms]  0     0.00%
-[15ms,  +Inf]  0     0.00%
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LIB/PQ: EXECUTING FOR UPSERT DO NOTHING
+Bucket         <span style="color:#75715e">#     %       Histogram</span>
+<span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">3426</span>  85.65%  <span style="color:#75715e">################################################################</span>
+<span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">572</span>   14.30%  <span style="color:#75715e">##########</span>
+<span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1</span>     0.03%
+<span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">0</span>     0.00%
+<span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">1</span>     0.03%
+<span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+<span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
 
 PGX: EXECUTING FOR UPSERT DO NOTHING
-Bucket         #     %       Histogram
-[0s,    2ms]   3878  96.95%  ########################################################################
-[2ms,   4ms]   118   2.95%   ##
-[4ms,   6ms]   4     0.10%
-[6ms,   8ms]   0     0.00%
-[8ms,   10ms]  0     0.00%
-[10ms,  15ms]  0     0.00%
-[15ms,  +Inf]  0     0.00%
-</code></pre><p>And the answer is yes, it does work. Not only it is faster, but it managed to get rid of the vulnerability issue and allows the code to send two parameterized queries in one round trip.</p>
+Bucket         <span style="color:#75715e">#     %       Histogram</span>
+<span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">3878</span>  96.95%  <span style="color:#75715e">########################################################################</span>
+<span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">118</span>   2.95%   <span style="color:#75715e">##</span>
+<span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">4</span>     0.10%
+<span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">0</span>     0.00%
+<span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+<span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+<span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+</code></pre></div><p>And the answer is yes, it does work. Not only it is faster, but it managed to get rid of the vulnerability issue and allows the code to send two parameterized queries in one round trip.</p>
 <p>Now if someone asks me if I choose doing this over CTE queries for this scenario, I will lean more on this approach since it is easier to comprehend.</p>
 <h2 id="cte-queries">CTE queries</h2>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span>
@@ -378,26 +378,26 @@ Bucket         #     %       Histogram
 <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">QueryRow</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">id</span>).<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
 </code></pre></div><p>As with the other approaches, not much to change here.</p>
 <p>Benchmark:</p>
-<pre><code>LIB/PQ: EXECUTING FOR UPSERT CTE
-Bucket         #     %       Histogram
-[0s,    2ms]   2950  73.75%  #######################################################
-[2ms,   4ms]   1034  25.85%  ###################
-[4ms,   6ms]   14    0.35%
-[6ms,   8ms]   2     0.05%
-[8ms,   10ms]  0     0.00%
-[10ms,  15ms]  0     0.00%
-[15ms,  +Inf]  0     0.00%
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LIB/PQ: EXECUTING FOR UPSERT CTE
+Bucket         <span style="color:#75715e">#     %       Histogram</span>
+<span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2950</span>  73.75%  <span style="color:#75715e">#######################################################</span>
+<span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1034</span>  25.85%  <span style="color:#75715e">###################</span>
+<span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">14</span>    0.35%
+<span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2</span>     0.05%
+<span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+<span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+<span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
 
 PGX: EXECUTING FOR UPSERT CTE
-Bucket         #     %       Histogram
-[0s,    2ms]   3893  97.32%  ########################################################################
-[2ms,   4ms]   106   2.65%   #
-[4ms,   6ms]   1     0.03%
-[6ms,   8ms]   0     0.00%
-[8ms,   10ms]  0     0.00%
-[10ms,  15ms]  0     0.00%
-[15ms,  +Inf]  0     0.00%
-</code></pre><p>And again, the results are impressive, but one can say now:</p>
+Bucket         <span style="color:#75715e">#     %       Histogram</span>
+<span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">3893</span>  97.32%  <span style="color:#75715e">########################################################################</span>
+<span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">106</span>   2.65%   <span style="color:#75715e">#</span>
+<span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1</span>     0.03%
+<span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">0</span>     0.00%
+<span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+<span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+<span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+</code></pre></div><p>And again, the results are impressive, but one can say now:</p>
 <blockquote>
 <p>In all of these approaches shown, the use case was to bombard the database in order to insert and fetch a customer with the same ID. Maybe the cache stops working when the parameter changes.</p>
 </blockquote>
@@ -420,26 +420,26 @@ Bucket         #     %       Histogram
 	}
 }
 </code></pre></div><p>Of course, in order to do a comparison, this new route was benchmarked using both <code>lib/pq</code> and <code>pgx</code>:</p>
-<pre><code>LIB/PQ: EXECUTING FOR UPSERT CTE RANDOM
-Bucket         #     %       Histogram
-[0s,    2ms]   1744  43.60%  ################################
-[2ms,   4ms]   2208  55.20%  #########################################
-[4ms,   6ms]   45    1.12%
-[6ms,   8ms]   2     0.05%
-[8ms,   10ms]  0     0.00%
-[10ms,  15ms]  0     0.00%
-[15ms,  +Inf]  1     0.03%
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LIB/PQ: EXECUTING FOR UPSERT CTE RANDOM
+Bucket         <span style="color:#75715e">#     %       Histogram</span>
+<span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1744</span>  43.60%  <span style="color:#75715e">################################</span>
+<span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2208</span>  55.20%  <span style="color:#75715e">#########################################</span>
+<span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">45</span>    1.12%
+<span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2</span>     0.05%
+<span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+<span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+<span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">1</span>     0.03%
 
 PGX: EXECUTING FOR UPSERT CTE RANDOM
-Bucket         #     %       Histogram
-[0s,    2ms]   2643  66.07%  #################################################
-[2ms,   4ms]   1356  33.90%  #########################
-[4ms,   6ms]   1     0.03%
-[6ms,   8ms]   0     0.00%
-[8ms,   10ms]  0     0.00%
-[10ms,  15ms]  0     0.00%
-[15ms,  +Inf]  0     0.00%
-</code></pre><p>And as we can see, the cache is still doing its job.</p>
+Bucket         <span style="color:#75715e">#     %       Histogram</span>
+<span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2643</span>  66.07%  <span style="color:#75715e">#################################################</span>
+<span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1356</span>  33.90%  <span style="color:#75715e">#########################</span>
+<span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1</span>     0.03%
+<span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">0</span>     0.00%
+<span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+<span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+<span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+</code></pre></div><p>And as we can see, the cache is still doing its job.</p>
 <h2 id="summary">Summary</h2>
 <p>I discovered this library due to some luck but so far I have not been disappointed. I am not seeing a reason on not picking this library as default for standard CRUD applications. Of course, there might be use cases where it is not possible and then <code>lib/pq</code> can still do the job.</p>
 <h2 id="some-additional-notes">Some additional notes</h2>
@@ -635,57 +635,59 @@ make run-bench
     <section class="post-comments">
   <h3>Comments</h3>
 
-    
-    
-    
+  
+  
+  
 
-    
-      
-    
-      
-        
-        
-          <div class="post-comment">
-            <div class="post-comment-header">
-              <img class="post-comment-avatar" src="https://www.gravatar.com/avatar/d9dd3bd62dd43dce631e6c59b29eee70?s=100">
-              <p class="post-comment-info"><strong>PabloMorelli</strong><br>24/08/2020 18:01</p>
-            </div>
-            Yes Gabriel! Right now pq is on maintenance, so they are not going to develop any feature but just solve bugs they have.
+  
+  
+  
+  
+  
+  
+  <div class="post-comment">
+    <div class="post-comment-header">
+      <img class="post-comment-avatar" src="https://www.gravatar.com/avatar/d9dd3bd62dd43dce631e6c59b29eee70?s=100">
+      <p class="post-comment-info"><strong>PabloMorelli</strong><br>24/08/2020 18:01</p>
+    </div>
+    Yes Gabriel! Right now pq is on maintenance, so they are not going to develop any feature but just solve bugs they have.
 I&rsquo;ve seen a lot of projects using pq, hopefully they will eventually migrate :)
-          </div>
-        
-          <div class="post-comment">
-            <div class="post-comment-header">
-              <img class="post-comment-avatar" src="https://www.gravatar.com/avatar/d7fd5d3b2926236f63384ba2ca7f1eb0?s=100">
-              <p class="post-comment-info"><strong>Gabriel</strong><br>15/07/2020 04:31</p>
-            </div>
-            Isn&rsquo;t pq unmaintained?
-          </div>
-        
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
+  </div>
+  
+  <div class="post-comment">
+    <div class="post-comment-header">
+      <img class="post-comment-avatar" src="https://www.gravatar.com/avatar/d7fd5d3b2926236f63384ba2ca7f1eb0?s=100">
+      <p class="post-comment-info"><strong>Gabriel</strong><br>15/07/2020 04:31</p>
+    </div>
+    Isn&rsquo;t pq unmaintained?
+  </div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 
-    
+  
 
-    <h3>Say something</h3>
+  <h3>Say something</h3>
 
-    <form class="post-new-comment" method="POST" action="https://dev.staticman.net/v3/entry/github/pmorelli92/devandchill/master/comments">
-      <input type="hidden" name="options[redirect]" value="https://devandchill.com/posts/2020/05/go-lib/pq-or-pgx-which-performs-better/">
-      <input type="hidden" name="options[entryId]" value="24eead97bcaa6fd0cb804a9fadee15ef">
-      <input name="fields[name]" type="text" class="post-comment-field" placeholder="Your name">
-      <input name="fields[email]" type="email" class="post-comment-field" placeholder="Your email address for Gravatar (Optional)">
-      <textarea name="fields[body]" class="post-comment-field" placeholder="Your message." rows="3"></textarea>
-      <input type="submit" class="post-comment-field btn" value="Submit for Approval">
-    </form>
-  </section>
+  <form class="post-new-comment" method="POST"
+    action="https://api.staticman.net/v3/entry/github/pmorelli92/devandchill/master/comments">
+    <input type="hidden" name="options[redirect]" value="https://devandchill.com/posts/2020/05/go-lib/pq-or-pgx-which-performs-better/">
+    <input type="hidden" name="options[entryId]" value="24eead97bcaa6fd0cb804a9fadee15ef">
+    <input name="fields[name]" type="text" class="post-comment-field" placeholder="Your name">
+    <input name="fields[email]" type="email" class="post-comment-field"
+      placeholder="Your email address for Gravatar (Optional)">
+    <textarea name="fields[body]" class="post-comment-field" placeholder="Your message." rows="3"></textarea>
+    <input type="submit" class="post-comment-field btn" value="Submit for Approval">
+  </form>
+</section>
 
 
   </main>
