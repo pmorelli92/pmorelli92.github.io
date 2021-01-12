@@ -1240,14 +1240,16 @@ Execution Time: 2.483 ms
             <pubDate>Sat, 19 Oct 2019 22:22:29 +0200</pubDate>
             
             <guid>https://devandchill.com/posts/2019/10/azure-pipelines-build-a-dockerized-app-and-deploy-to-kubernetes/</guid>
-            <description>Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&amp;rsquo;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files). Now I am currently working with Travis for CI and Flux for CD but I think it is always good to keep an eye on how the competitors are doing and what they have to offer.</description>
-            <content type="html"><![CDATA[<p>Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&rsquo;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files). Now I am currently working with Travis for CI and Flux for CD but I think it is always good to keep an eye on how the competitors are doing and what they have to offer.</p>
+            <description>2021 update: Since KubeSail was not working as expected, the solution is now hosted in Okteto which offers a free namespace for developers to try out a hosted Kubernetes service.
+Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&amp;rsquo;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files).</description>
+            <content type="html"><![CDATA[<p><em>2021 update: Since KubeSail was not working as expected, the solution is now hosted in Okteto which offers a free namespace for developers to try out a hosted Kubernetes service.</em></p>
+<p>Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&rsquo;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files). Now I am currently working with Travis for CI and Flux for CD but I think it is always good to keep an eye on how the competitors are doing and what they have to offer.</p>
 <p>For this tutorial, I only had to link my github account to Azure Devops in order to use its functionality. That being said, I did not have to put my credit card or billing information so it is safe to say that it is free, at least for hobby usages.</p>
 <p>The tutorial will cover:</p>
 <ul>
 <li>Go application with Dockerfile</li>
 <li>Build and push to Dockerhub (but it could be any other docker registry)</li>
-<li>Deploy to Kubeseal (which offers a free kubernetes cluster)</li>
+<li>Deploy to Okteto (which offers a free kubernetes cluster)</li>
 </ul>
 <h2 id="the-application">The application</h2>
 <p>You can find it on <a href="https://github.com/pmorelli92/go-with-azure">GitHub</a>. It is a rather simple rest application since the purpose here is not to dig into code but on the CI/CD.</p>
@@ -1298,7 +1300,7 @@ Scroll down to service connections and you should see something like this:</p>
 - <span style="color:#f92672">bash</span>: <span style="color:#ae81ff">sed -i &#34;s/latest/$(buildNumber)/g&#34; kubernetes/k8s-deployment.yml</span>
 - <span style="color:#f92672">task</span>: <span style="color:#ae81ff">Kubernetes@0</span>
   <span style="color:#f92672">inputs</span>:
-    <span style="color:#f92672">kubernetesServiceConnection</span>: <span style="color:#e6db74">&#39;pmorelli92-kubesail&#39;</span>
+    <span style="color:#f92672">kubernetesServiceConnection</span>: <span style="color:#e6db74">&#39;pmorelli92-okteto&#39;</span>
     <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">pmorelli92</span>
     <span style="color:#f92672">command</span>: <span style="color:#ae81ff">apply</span>
     <span style="color:#f92672">arguments</span>: <span style="color:#e6db74">&#39;-f kubernetes/k8s-deployment.yml&#39;</span>
@@ -1351,12 +1353,13 @@ In this case, the example repository is using semver for building versions.</p>
 
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">- <span style="color:#f92672">task</span>: <span style="color:#ae81ff">Kubernetes@0</span>
   <span style="color:#f92672">inputs</span>:
-    <span style="color:#f92672">kubernetesServiceConnection</span>: <span style="color:#e6db74">&#39;pmorelli92-kubesail&#39;</span>
+    <span style="color:#f92672">kubernetesServiceConnection</span>: <span style="color:#e6db74">&#39;pmorelli92-okteto&#39;</span>
     <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">pmorelli92</span>
     <span style="color:#f92672">command</span>: <span style="color:#ae81ff">apply</span>
     <span style="color:#f92672">arguments</span>: <span style="color:#e6db74">&#39;-f kubernetes/k8s-deployment.yml&#39;</span>
 </code></pre></div><p>Finally, <code>kubernetesServiceConnection</code> is for indicating the connection created on the project settings; the namespace refers to a kubernetes namespace, and the command combined with arguments will be the equivalent of: <code>kubectl apply -f kubernetes/k8s-deployment.yml</code></p>
 <p>This will create / update the specifications that are living on the folder or file; in this case: the deployment, service and ingress.</p>
+<p>An additional resource: a cronjob was added. This is because Okteto takes down applications without activity in 24 hours. With this cronjob every minute we are curling the app so it stays online.</p>
 <p>If everything goes green, we can check that the pod version matches the latest one added on the docker registry.</p>
 <figure>
     <img src="/posts/images/pod-version.png"/> 
@@ -1367,7 +1370,7 @@ In this case, the example repository is using semver for building versions.</p>
     <img src="/posts/images/cicd-logs.png"/> 
 </figure>
 
-<p>And the demo app is now accessible from the following <a href="http://gwa-ingress.pmorelli92.c1.kubesail.org/health">link</a>.</p>
+<p>And the demo app is now accessible from the following <a href="https://gwa-service-pmorelli92.cloud.okteto.net/health">link</a>.</p>
 <h2 id="summary">Summary</h2>
 <p>In this tutorial we have seen how easy it is to set up a quick CI/CD pipeline that could be improved further according to the business / technical needs.
 If I were to give a verdict on Azure Pipelines:</p>

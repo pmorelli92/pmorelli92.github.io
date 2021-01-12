@@ -24,7 +24,8 @@
       <pubDate>Sat, 19 Oct 2019 22:22:29 +0200</pubDate>
       
       <guid>https://devandchill.com/posts/2019/10/azure-pipelines-build-a-dockerized-app-and-deploy-to-kubernetes/</guid>
-      <description>Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&amp;rsquo;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files). Now I am currently working with Travis for CI and Flux for CD but I think it is always good to keep an eye on how the competitors are doing and what they have to offer.</description>
+      <description>2021 update: Since KubeSail was not working as expected, the solution is now hosted in Okteto which offers a free namespace for developers to try out a hosted Kubernetes service.
+Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&amp;rsquo;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files).</description>
     </item>
     
   </channel>
