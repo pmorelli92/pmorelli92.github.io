@@ -1281,6 +1281,13 @@ Scroll down to service connections and you should see something like this:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">trigger</span>:
 - <span style="color:#ae81ff">master</span>
 
+<span style="color:#f92672">schedules</span>:
+- <span style="color:#f92672">cron</span>: <span style="color:#e6db74">&#34;0 0 * * *&#34;</span>
+  <span style="color:#f92672">displayName</span>: <span style="color:#ae81ff">Daily midnight build</span>
+  <span style="color:#f92672">branches</span>:
+    <span style="color:#f92672">include</span>:
+    - <span style="color:#ae81ff">master</span>
+
 <span style="color:#f92672">pool</span>:
   <span style="color:#f92672">vmImage</span>: <span style="color:#e6db74">&#39;ubuntu-latest&#39;</span>
 
@@ -1308,6 +1315,13 @@ Scroll down to service connections and you should see something like this:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">trigger</span>:
 - <span style="color:#ae81ff">master</span>
 </code></pre></div><p>Associated on which branch the CI/CD will execute.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">schedules</span>:
+- <span style="color:#f92672">cron</span>: <span style="color:#e6db74">&#34;0 0 * * *&#34;</span>
+  <span style="color:#f92672">displayName</span>: <span style="color:#ae81ff">Daily midnight build</span>
+  <span style="color:#f92672">branches</span>:
+    <span style="color:#f92672">include</span>:
+    - <span style="color:#ae81ff">master</span>
+</code></pre></div><p>Some projects have another way of triggering builds, for example nightly builds. In this case, the pipeline is triggered all days at midnight and this is because otherwise Okteto takes down applications after 24 hours without use.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">pool</span>:
   <span style="color:#f92672">vmImage</span>: <span style="color:#e6db74">&#39;ubuntu-latest&#39;</span>
 </code></pre></div><p>Relates to the machine that will execute the commands.</p>
@@ -1359,7 +1373,6 @@ In this case, the example repository is using semver for building versions.</p>
     <span style="color:#f92672">arguments</span>: <span style="color:#e6db74">&#39;-f kubernetes/k8s-deployment.yml&#39;</span>
 </code></pre></div><p>Finally, <code>kubernetesServiceConnection</code> is for indicating the connection created on the project settings; the namespace refers to a kubernetes namespace, and the command combined with arguments will be the equivalent of: <code>kubectl apply -f kubernetes/k8s-deployment.yml</code></p>
 <p>This will create / update the specifications that are living on the folder or file; in this case: the deployment, service and ingress.</p>
-<p>An additional resource: a cronjob was added. This is because Okteto takes down applications without activity in 24 hours. With this cronjob every minute we are curling the app so it stays online.</p>
 <p>If everything goes green, we can check that the pod version matches the latest one added on the docker registry.</p>
 <figure>
     <img src="/posts/images/pod-version.png"/> 
