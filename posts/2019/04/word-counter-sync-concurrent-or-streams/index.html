@@ -27,7 +27,7 @@ func wordCounter() (words map[string]int) { b, err := ioutil." />
 
 
 
-<link rel="stylesheet" href="/main.0b9a675ab516660c913b81e0e048f08e2c655c91b21b16ee0da307e2f7fb0a3d.css">
+<link rel="stylesheet" href="/main.5a06e470202ff93efee3552529750aa4fb751bfcc384826ed98d16d7784e4fdb.css">
 
 
 
@@ -37,16 +37,10 @@ func wordCounter() (words map[string]int) { b, err := ioutil." />
 <meta itemprop="name" content="Word counter: Sync, concurrent or streams?">
 <meta itemprop="description" content="One day I was given the task of doing a whiteboard word counter algorithm. The requirements were:
  Print on console all the words and the quantity of times they appear on a 40.000 lines input. Make it as fast as possible.  For a start one can do it as simple as possible instead, and then try to see whether it can be made faster:
-func wordCounter() (words map[string]int) { b, err := ioutil.">
-<meta itemprop="datePublished" content="2019-04-10T20:59:47+02:00" />
-<meta itemprop="dateModified" content="2019-04-10T20:59:47+02:00" />
-<meta itemprop="wordCount" content="1275">
-<meta itemprop="image" content="https://devandchill.com/og-image.png"/>
-
-
-
+func wordCounter() (words map[string]int) { b, err := ioutil."><meta itemprop="datePublished" content="2019-04-10T20:59:47&#43;02:00" />
+<meta itemprop="dateModified" content="2019-04-10T20:59:47&#43;02:00" />
+<meta itemprop="wordCount" content="1275"><meta itemprop="image" content="https://devandchill.com/og-image.png"/>
 <meta itemprop="keywords" content="golang,go,sync,concurrent,streams,channels," />
-
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://devandchill.com/og-image.png"/>
 
@@ -82,7 +76,7 @@ func wordCounter() (words map[string]int) { b, err := ioutil."/>
     </head>
 
     
-        <body class="dark-theme">
+        <body>
     
     
         <div class="container">
@@ -99,21 +93,18 @@ func wordCounter() (words map[string]int) { b, err := ioutil."/>
 
         <span class="header__right">
             
-                <nav class="menu">
+            <nav class="menu">
     <ul class="menu__inner"><li><a href="/about">About</a></li><li><a href="/resume">Resume</a></li><li><a href="/posts">Posts</a></li>
     </ul>
 </nav>
 
-                <span class="menu-trigger">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path d="M0 0h24v24H0z" fill="none"/>
-                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
-                    </svg>
-                </span>
+            <span class="menu-trigger">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M0 0h24v24H0z" fill="none" />
+                    <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+                </svg>
+            </span>
             
-
-            
-            <span type=“hidden” class="theme-toggle unselectable"></span>
         </span>
     </span>
 </header>
@@ -121,31 +112,33 @@ func wordCounter() (words map[string]int) { b, err := ioutil."/>
 
             <div class="content">
                 
-  <main class="post">
+<main class="post">
 
-    <div class="post-info">
-      <p>
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock">
-          <circle cx="12" cy="12" r="10"></circle>
-          <polyline points="12 6 12 12 16 14"></polyline>
-        </svg>
-        6 minutes
-
-        
-      </p>
-    </div>
-
-    <article>
-      <h1 class="post-title">
-        <a href="https://devandchill.com/posts/2019/04/word-counter-sync-concurrent-or-streams/">Word counter: Sync, concurrent or streams?</a>
-      </h1>
+  <div class="post-info">
+    <p>
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="feather feather-clock">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 16 14"></polyline>
+      </svg>
+      6 minutes
 
       
+    </p>
+  </div>
 
-      
+  <article>
+    <h1 class="post-title">
+      <a href="https://devandchill.com/posts/2019/04/word-counter-sync-concurrent-or-streams/">Word counter: Sync, concurrent or streams?</a>
+    </h1>
 
-      <div class="post-content">
-        <p>One day I was given the task of doing a whiteboard <code>word counter</code> algorithm. The requirements were:</p>
+    
+
+    
+
+    <div class="post-content">
+      <p>One day I was given the task of doing a whiteboard <code>word counter</code> algorithm. The requirements were:</p>
 <ul>
 <li>Print on console all the words and the quantity of times they appear on a 40.000 lines input.</li>
 <li>Make it as fast as possible.</li>
@@ -364,13 +357,13 @@ BenchmarkWordCounterConcurrent-12     <span style="color:#ae81ff">19</span>   59
 BenchmarkWordCounterStreams-12       <span style="color:#ae81ff">198</span>    5.93 ms/op    <span style="color:#ae81ff">330114</span> B/op    <span style="color:#ae81ff">44844</span> allocs/op
 </code></pre></div><p>👉 <a href="https://github.com/pmorelli92/go-word-counter">Repository with source files used</a> 👈</p>
 
-      </div>
-    </article>
+    </div>
+  </article>
 
-    <hr />
+  <hr />
 
-    <div class="post-info">
-      
+  <div class="post-info">
+    
     <p>
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg>
 
@@ -383,38 +376,42 @@ BenchmarkWordCounterStreams-12       <span style="color:#ae81ff">198</span>    5
         
     </p>
 
+    
+
+    <p>
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="feather feather-file-text">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+        <line x1="16" y1="13" x2="8" y2="13"></line>
+        <line x1="16" y1="17" x2="8" y2="17"></line>
+        <polyline points="10 9 9 9 8 9"></polyline>
+      </svg>
+      1275 Words
+    </p>
+
+    <p>
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="feather feather-calendar">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
+      </svg>
+      
+      2019-04-10 20:59 &#43;0200
       
 
-      <p>
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-          <polyline points="14 2 14 8 20 8"></polyline>
-          <line x1="16" y1="13" x2="8" y2="13"></line>
-          <line x1="16" y1="17" x2="8" y2="17"></line>
-          <polyline points="10 9 9 9 8 9"></polyline>
-        </svg>
-        1275 Words
-      </p>
-
-      <p>
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar">
-          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-          <line x1="16" y1="2" x2="16" y2="6"></line>
-          <line x1="8" y1="2" x2="8" y2="6"></line>
-          <line x1="3" y1="10" x2="21" y2="10"></line>
-        </svg>
-        
-          2019-04-10 20:59 &#43;0200
-        
-
-         
-          
-        
-      </p>
-    </div>
-      <hr />
-      <div class="sharing-buttons">
-        
+      
+      
+      
+    </p>
+  </div>
+  <hr />
+  <div class="sharing-buttons">
+    
 <a class="resp-sharing-button__link" href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fdevandchill.com%2fposts%2f2019%2f04%2fword-counter-sync-concurrent-or-streams%2f" target="_blank" rel="noopener" aria-label="" title="Share on facebook">
   <div class="resp-sharing-button resp-sharing-button--facebook resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
@@ -504,82 +501,44 @@ BenchmarkWordCounterStreams-12       <span style="color:#ae81ff">198</span>    5
   </div>
 </a>
 
-      </div>
-
-    
-      <div class="pagination">
-        <div class="pagination__title">
-          <span class="pagination__title-h">Read other posts</span>
-          <hr />
-        </div>
-
-        <div class="pagination__buttons">
-          
-            <span class="button previous">
-              <a href="https://devandchill.com/posts/2019/06/sign-github-commits-using-mac/">
-                <span class="button__icon">←</span>
-                <span class="button__text">Sign GitHub commits (using Mac)</span>
-              </a>
-            </span>
-          
-
-          
-            <span class="button next">
-              <a href="https://devandchill.com/posts/2019/03/go-modules-working-outside-gopath/">
-                <span class="button__text">Go Modules: Working outside GOPATH</span>
-                <span class="button__icon">→</span>
-              </a>
-            </span>
-          
-        </div>
-      </div>
-    
-
-    
-    
-
-    
-    <section class="post-comments">
-  <h3>Comments</h3>
+  </div>
 
   
+  <div class="pagination">
+    <div class="pagination__title">
+      <span class="pagination__title-h">Read other posts</span>
+      <hr />
+    </div>
+
+    <div class="pagination__buttons">
+      
+      <span class="button previous">
+        <a href="https://devandchill.com/posts/2019/06/sign-github-commits-using-mac/">
+          <span class="button__icon">←</span>
+          <span class="button__text">Sign GitHub commits (using Mac)</span>
+        </a>
+      </span>
+      
+
+      
+      <span class="button next">
+        <a href="https://devandchill.com/posts/2019/03/go-modules-working-outside-gopath/">
+          <span class="button__text">Go Modules: Working outside GOPATH</span>
+          <span class="button__icon">→</span>
+        </a>
+      </span>
+      
+    </div>
+  </div>
+  
+
   
   
 
   
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
 
-  
-  <p>Nothing yet.</p>
-  
-
-  <h3>Say something</h3>
-
-  <form class="post-new-comment" method="POST"
-    action="https://api.staticman.net/v3/entry/github/pmorelli92/devandchill/master/comments">
-    <input type="hidden" name="options[redirect]" value="https://devandchill.com/posts/2019/04/word-counter-sync-concurrent-or-streams/">
-    <input type="hidden" name="options[entryId]" value="6b0c42da816cae0ac995bffabd7123e6">
-    <input name="fields[name]" type="text" class="post-comment-field" placeholder="Your name">
-    <input name="fields[email]" type="email" class="post-comment-field"
-      placeholder="Your email address for Gravatar (Optional)">
-    <textarea name="fields[body]" class="post-comment-field" placeholder="Your message." rows="3"></textarea>
-    <input type="submit" class="post-comment-field btn" value="Submit for Approval">
-  </form>
-</section>
-
-
-  </main>
+</main>
 
             </div>
 
@@ -607,8 +566,7 @@ BenchmarkWordCounterStreams-12       <span style="color:#ae81ff">198</span>    5
 
 
 
-
-<script type="text/javascript" src="/bundle.min.9dd6c4fd1eb55000d257db1269676cdb26bfcc9ab1b1dc8885a54f94b97fa86e6d72e435907d76f8662e0f65472e78ab8ad69c36624d8d4a96c04c42e029d957.js" integrity="sha512-ndbE/R61UADSV9sSaWds2ya/zJqxsdyIhaVPlLl/qG5tcuQ1kH12&#43;GYuD2VHLniritacNmJNjUqWwExC4CnZVw=="></script>
+<script type="text/javascript" src="/bundle.min.2ce64ea6ea44a72b13dd812fc2eb5cca3efe878cce258a47c137c17edf46e0602a05e422b618a5b80b5939c731b7a293351c2f2222a21f6ee27e54a8448dd20e.js" integrity="sha512-LOZOpupEpysT3YEvwutcyj7&#43;h4zOJYpHwTfBft9G4GAqBeQithiluAtZOccxt6KTNRwvIiKiH27iflSoRI3SDg=="></script>
 
 
 
