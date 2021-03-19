@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>libpq on Dev &amp; Chill</title>
+    <link>https://devandchill.com/tags/libpq/</link>
+    <description>Recent content in libpq on Dev &amp; Chill</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Pablo Morelli</copyright>
+    <lastBuildDate>Wed, 27 May 2020 15:40:29 +0100</lastBuildDate><atom:link href="https://devandchill.com/tags/libpq/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Go - lib/pq or pgx - which performs better?</title>
+      <link>https://devandchill.com/posts/2020/05/go-lib/pq-or-pgx-which-performs-better/</link>
+      <pubDate>Wed, 27 May 2020 15:40:29 +0100</pubDate>
+      
+      <guid>https://devandchill.com/posts/2020/05/go-lib/pq-or-pgx-which-performs-better/</guid>
+      <description>Some days ago a coworker of mine linked me to the source code of Google&amp;rsquo;s exposure notifications API and of course is a good chance to see how Google is doing Go related codebases.
+Continuing with the topic of Postgres and benchmarking, I decided to check out how Postgres configuration was done and this line got my attention:
+import ( ... &amp;#34;github.com/jackc/pgx/v4/pgxpool&amp;#34; ) What is pgx, and why should we care?</description>
+    </item>
+    
+  </channel>
+</rss>
