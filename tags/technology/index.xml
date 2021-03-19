@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>technology on Dev &amp; Chill</title>
+    <link>https://devandchill.com/tags/technology/</link>
+    <description>Recent content in technology on Dev &amp; Chill</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Pablo Morelli</copyright>
+    <lastBuildDate>Mon, 30 Nov 2020 19:39:00 +0100</lastBuildDate><atom:link href="https://devandchill.com/tags/technology/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The good, the bad and the ugly of microservices</title>
+      <link>https://devandchill.com/posts/2020/11/the-good-the-bad-and-the-ugly-of-microservices/</link>
+      <pubDate>Mon, 30 Nov 2020 19:39:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/posts/2020/11/the-good-the-bad-and-the-ugly-of-microservices/</guid>
+      <description>Without any doubts the year 2020 is one everyone is going to remember and it will appear in the history books (and wikipedia). Amidst so much chaos, the established way of working was forced to change, and companies that before rejected work from home had to adapt. In this way, teams that before shared a room and suffered unnecessary meetings, now started functioning as distributed teams (or distributed systems), that share a queue of messages using tools like email and slack (async communication) - and have meetings with lesser frequency (sync communication).</description>
+    </item>
+    
+  </channel>
+</rss>

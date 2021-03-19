@@ -1,0 +1,516 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on Dev &amp; Chill</title>
+    <link>https://devandchill.com/tags/</link>
+    <description>Recent content in Tags on Dev &amp; Chill</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Pablo Morelli</copyright>
+    <lastBuildDate>Mon, 30 Nov 2020 19:39:00 +0100</lastBuildDate><atom:link href="https://devandchill.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>2020</title>
+      <link>https://devandchill.com/tags/2020/</link>
+      <pubDate>Mon, 30 Nov 2020 19:39:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/2020/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>async</title>
+      <link>https://devandchill.com/tags/async/</link>
+      <pubDate>Mon, 30 Nov 2020 19:39:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/async/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>microservices</title>
+      <link>https://devandchill.com/tags/microservices/</link>
+      <pubDate>Mon, 30 Nov 2020 19:39:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/microservices/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>monolith</title>
+      <link>https://devandchill.com/tags/monolith/</link>
+      <pubDate>Mon, 30 Nov 2020 19:39:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/monolith/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>remote</title>
+      <link>https://devandchill.com/tags/remote/</link>
+      <pubDate>Mon, 30 Nov 2020 19:39:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/remote/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>sync</title>
+      <link>https://devandchill.com/tags/sync/</link>
+      <pubDate>Mon, 30 Nov 2020 19:39:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/sync/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>technology</title>
+      <link>https://devandchill.com/tags/technology/</link>
+      <pubDate>Mon, 30 Nov 2020 19:39:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/technology/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>env</title>
+      <link>https://devandchill.com/tags/env/</link>
+      <pubDate>Mon, 31 Aug 2020 20:00:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/env/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>environment</title>
+      <link>https://devandchill.com/tags/environment/</link>
+      <pubDate>Mon, 31 Aug 2020 20:00:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/environment/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>gcloud</title>
+      <link>https://devandchill.com/tags/gcloud/</link>
+      <pubDate>Mon, 31 Aug 2020 20:00:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/gcloud/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>gcp</title>
+      <link>https://devandchill.com/tags/gcp/</link>
+      <pubDate>Mon, 31 Aug 2020 20:00:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/gcp/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>gke</title>
+      <link>https://devandchill.com/tags/gke/</link>
+      <pubDate>Mon, 31 Aug 2020 20:00:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/gke/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>iam</title>
+      <link>https://devandchill.com/tags/iam/</link>
+      <pubDate>Mon, 31 Aug 2020 20:00:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/iam/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>kubernetes</title>
+      <link>https://devandchill.com/tags/kubernetes/</link>
+      <pubDate>Mon, 31 Aug 2020 20:00:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/kubernetes/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>manager</title>
+      <link>https://devandchill.com/tags/manager/</link>
+      <pubDate>Mon, 31 Aug 2020 20:00:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/manager/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>secret manager</title>
+      <link>https://devandchill.com/tags/secret-manager/</link>
+      <pubDate>Mon, 31 Aug 2020 20:00:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/secret-manager/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>secrets</title>
+      <link>https://devandchill.com/tags/secrets/</link>
+      <pubDate>Mon, 31 Aug 2020 20:00:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/secrets/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>variable</title>
+      <link>https://devandchill.com/tags/variable/</link>
+      <pubDate>Mon, 31 Aug 2020 20:00:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/variable/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>batch</title>
+      <link>https://devandchill.com/tags/batch/</link>
+      <pubDate>Wed, 27 May 2020 15:40:29 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/batch/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>benchmark</title>
+      <link>https://devandchill.com/tags/benchmark/</link>
+      <pubDate>Wed, 27 May 2020 15:40:29 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/benchmark/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>cache</title>
+      <link>https://devandchill.com/tags/cache/</link>
+      <pubDate>Wed, 27 May 2020 15:40:29 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/cache/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>database</title>
+      <link>https://devandchill.com/tags/database/</link>
+      <pubDate>Wed, 27 May 2020 15:40:29 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/database/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>go</title>
+      <link>https://devandchill.com/tags/go/</link>
+      <pubDate>Wed, 27 May 2020 15:40:29 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/go/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>golang</title>
+      <link>https://devandchill.com/tags/golang/</link>
+      <pubDate>Wed, 27 May 2020 15:40:29 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/golang/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>pgx</title>
+      <link>https://devandchill.com/tags/pgx/</link>
+      <pubDate>Wed, 27 May 2020 15:40:29 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/pgx/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>postgres</title>
+      <link>https://devandchill.com/tags/postgres/</link>
+      <pubDate>Wed, 27 May 2020 15:40:29 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/postgres/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>sql</title>
+      <link>https://devandchill.com/tags/sql/</link>
+      <pubDate>Wed, 27 May 2020 15:40:29 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/sql/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>concurrency</title>
+      <link>https://devandchill.com/tags/concurrency/</link>
+      <pubDate>Wed, 13 May 2020 16:40:29 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/concurrency/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>cte</title>
+      <link>https://devandchill.com/tags/cte/</link>
+      <pubDate>Wed, 13 May 2020 16:40:29 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/cte/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>queries</title>
+      <link>https://devandchill.com/tags/queries/</link>
+      <pubDate>Wed, 13 May 2020 16:40:29 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/queries/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>upsert</title>
+      <link>https://devandchill.com/tags/upsert/</link>
+      <pubDate>Wed, 13 May 2020 16:40:29 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/upsert/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>azure</title>
+      <link>https://devandchill.com/tags/azure/</link>
+      <pubDate>Sat, 19 Oct 2019 22:22:29 +0200</pubDate>
+      
+      <guid>https://devandchill.com/tags/azure/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>azure pipelines</title>
+      <link>https://devandchill.com/tags/azure-pipelines/</link>
+      <pubDate>Sat, 19 Oct 2019 22:22:29 +0200</pubDate>
+      
+      <guid>https://devandchill.com/tags/azure-pipelines/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>cd</title>
+      <link>https://devandchill.com/tags/cd/</link>
+      <pubDate>Sat, 19 Oct 2019 22:22:29 +0200</pubDate>
+      
+      <guid>https://devandchill.com/tags/cd/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ci</title>
+      <link>https://devandchill.com/tags/ci/</link>
+      <pubDate>Sat, 19 Oct 2019 22:22:29 +0200</pubDate>
+      
+      <guid>https://devandchill.com/tags/ci/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>docker</title>
+      <link>https://devandchill.com/tags/docker/</link>
+      <pubDate>Sat, 19 Oct 2019 22:22:29 +0200</pubDate>
+      
+      <guid>https://devandchill.com/tags/docker/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>okteto</title>
+      <link>https://devandchill.com/tags/okteto/</link>
+      <pubDate>Sat, 19 Oct 2019 22:22:29 +0200</pubDate>
+      
+      <guid>https://devandchill.com/tags/okteto/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>.net</title>
+      <link>https://devandchill.com/tags/.net/</link>
+      <pubDate>Mon, 24 Jun 2019 17:22:29 +0200</pubDate>
+      
+      <guid>https://devandchill.com/tags/.net/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>.net core</title>
+      <link>https://devandchill.com/tags/.net-core/</link>
+      <pubDate>Mon, 24 Jun 2019 17:22:29 +0200</pubDate>
+      
+      <guid>https://devandchill.com/tags/.net-core/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>alpine</title>
+      <link>https://devandchill.com/tags/alpine/</link>
+      <pubDate>Mon, 24 Jun 2019 17:22:29 +0200</pubDate>
+      
+      <guid>https://devandchill.com/tags/alpine/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>binary</title>
+      <link>https://devandchill.com/tags/binary/</link>
+      <pubDate>Mon, 24 Jun 2019 17:22:29 +0200</pubDate>
+      
+      <guid>https://devandchill.com/tags/binary/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>container</title>
+      <link>https://devandchill.com/tags/container/</link>
+      <pubDate>Mon, 24 Jun 2019 17:22:29 +0200</pubDate>
+      
+      <guid>https://devandchill.com/tags/container/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>commits</title>
+      <link>https://devandchill.com/tags/commits/</link>
+      <pubDate>Sun, 09 Jun 2019 20:22:29 +0200</pubDate>
+      
+      <guid>https://devandchill.com/tags/commits/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>github</title>
+      <link>https://devandchill.com/tags/github/</link>
+      <pubDate>Sun, 09 Jun 2019 20:22:29 +0200</pubDate>
+      
+      <guid>https://devandchill.com/tags/github/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>gpg</title>
+      <link>https://devandchill.com/tags/gpg/</link>
+      <pubDate>Sun, 09 Jun 2019 20:22:29 +0200</pubDate>
+      
+      <guid>https://devandchill.com/tags/gpg/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ssh</title>
+      <link>https://devandchill.com/tags/ssh/</link>
+      <pubDate>Sun, 09 Jun 2019 20:22:29 +0200</pubDate>
+      
+      <guid>https://devandchill.com/tags/ssh/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>verified</title>
+      <link>https://devandchill.com/tags/verified/</link>
+      <pubDate>Sun, 09 Jun 2019 20:22:29 +0200</pubDate>
+      
+      <guid>https://devandchill.com/tags/verified/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>verify</title>
+      <link>https://devandchill.com/tags/verify/</link>
+      <pubDate>Sun, 09 Jun 2019 20:22:29 +0200</pubDate>
+      
+      <guid>https://devandchill.com/tags/verify/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>channels</title>
+      <link>https://devandchill.com/tags/channels/</link>
+      <pubDate>Wed, 10 Apr 2019 20:59:47 +0200</pubDate>
+      
+      <guid>https://devandchill.com/tags/channels/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>concurrent</title>
+      <link>https://devandchill.com/tags/concurrent/</link>
+      <pubDate>Wed, 10 Apr 2019 20:59:47 +0200</pubDate>
+      
+      <guid>https://devandchill.com/tags/concurrent/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>streams</title>
+      <link>https://devandchill.com/tags/streams/</link>
+      <pubDate>Wed, 10 Apr 2019 20:59:47 +0200</pubDate>
+      
+      <guid>https://devandchill.com/tags/streams/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>dep</title>
+      <link>https://devandchill.com/tags/dep/</link>
+      <pubDate>Wed, 13 Mar 2019 17:07:15 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/dep/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>go modules</title>
+      <link>https://devandchill.com/tags/go-modules/</link>
+      <pubDate>Wed, 13 Mar 2019 17:07:15 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/go-modules/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>gopath</title>
+      <link>https://devandchill.com/tags/gopath/</link>
+      <pubDate>Wed, 13 Mar 2019 17:07:15 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/gopath/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>scratch</title>
+      <link>https://devandchill.com/tags/scratch/</link>
+      <pubDate>Wed, 13 Mar 2019 17:07:15 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/scratch/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>lib/pq</title>
+      <link>https://devandchill.com/tags/lib/pq/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://devandchill.com/tags/lib/pq/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
