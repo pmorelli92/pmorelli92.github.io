@@ -7,7 +7,70 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Pablo Morelli</copyright>
-    <lastBuildDate>Mon, 30 Nov 2020 19:39:00 +0100</lastBuildDate><atom:link href="https://devandchill.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 21 Mar 2021 12:31:00 +0100</lastBuildDate><atom:link href="https://devandchill.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>aggregations</title>
+      <link>https://devandchill.com/tags/aggregations/</link>
+      <pubDate>Sun, 21 Mar 2021 12:31:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/aggregations/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>array</title>
+      <link>https://devandchill.com/tags/array/</link>
+      <pubDate>Sun, 21 Mar 2021 12:31:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/array/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>json</title>
+      <link>https://devandchill.com/tags/json/</link>
+      <pubDate>Sun, 21 Mar 2021 12:31:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/json/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>optimization</title>
+      <link>https://devandchill.com/tags/optimization/</link>
+      <pubDate>Sun, 21 Mar 2021 12:31:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/optimization/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>performance</title>
+      <link>https://devandchill.com/tags/performance/</link>
+      <pubDate>Sun, 21 Mar 2021 12:31:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/performance/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>postgres</title>
+      <link>https://devandchill.com/tags/postgres/</link>
+      <pubDate>Sun, 21 Mar 2021 12:31:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/postgres/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>query</title>
+      <link>https://devandchill.com/tags/query/</link>
+      <pubDate>Sun, 21 Mar 2021 12:31:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/query/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>2020</title>
       <link>https://devandchill.com/tags/2020/</link>
@@ -239,15 +302,6 @@
       <pubDate>Wed, 27 May 2020 15:40:29 +0100</pubDate>
       
       <guid>https://devandchill.com/tags/pgx/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>postgres</title>
-      <link>https://devandchill.com/tags/postgres/</link>
-      <pubDate>Wed, 27 May 2020 15:40:29 +0100</pubDate>
-      
-      <guid>https://devandchill.com/tags/postgres/</guid>
       <description></description>
     </item>
     

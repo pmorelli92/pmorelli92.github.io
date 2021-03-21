@@ -6,8 +6,307 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
         <copyright>Pablo Morelli</copyright>
-        <lastBuildDate>Mon, 30 Nov 2020 19:39:00 +0100</lastBuildDate>
+        <lastBuildDate>Sun, 21 Mar 2021 12:31:00 +0100</lastBuildDate>
         <atom:link href="https://devandchill.com/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>Reducing loading times by a tenfold with Postgres aggregations</title>
+            <link>https://devandchill.com/posts/2021/03/reducing-loading-times-by-a-tenfold-with-postgres-aggregations/</link>
+            <pubDate>Sun, 21 Mar 2021 12:31:00 +0100</pubDate>
+            
+            <guid>https://devandchill.com/posts/2021/03/reducing-loading-times-by-a-tenfold-with-postgres-aggregations/</guid>
+            <description>Time to market is a very important part of the life of the developers. In the agile world, a team must make a balance between speed and code quality. This does not necessarily mean that the code will not be good nor tested, but sometimes it limits exploration. A limited exploration means that a developer will do things the way he/she is used to.
+At least from my experience, SQL is taught in university/courses in an outdated way, where a lot of new features are never explored and people are not aware of this.</description>
+            <content type="html"><![CDATA[<p>Time to market is a very important part of the life of the developers. In the agile world, a team must make a balance between speed and code quality. This does not necessarily mean that the code will not be good nor tested, but sometimes it limits exploration. A limited exploration means that a developer will do things the way he/she is used to.</p>
+<p>At least from my experience, SQL is taught in university/courses in an outdated way, where a lot of new features are never explored and people are not aware of this. In 2013, Postgres released version 9.3 which introduced json aggregations, however not a lot of people are aware of this functionality.</p>
+<p>In this post, you will see how this can be used to fetch data in 1..N relationships with a single trip to the database.</p>
+<h3 id="enter-the-model">Enter the model</h3>
+<p>Let&rsquo;s imagine the following model:</p>
+<figure>
+    <img src="/posts/images/agg_data_model.svg"
+         alt="table data model"/> 
+</figure>
+
+<p>Populated with the following data:</p>
+<p><strong>Table person</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">id</th>
+<th style="text-align:left">name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">fbab22a3-f7bc-422c-942f-d184ad189e29</td>
+<td style="text-align:left">Pablo</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table animal</strong></p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>owner_id</th>
+<th>type</th>
+<th>name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5f2461a9-6c62-453e-9182-38cd0fa76e01</td>
+<td>fbab22a3-f7bc-422c-942f-d184ad189e29</td>
+<td>cat</td>
+<td>Bills</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table vaccine</strong></p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0ee28253-5b94-4096-926c-d33ceb22d24d</td>
+<td>Feline herpesvirus</td>
+</tr>
+<tr>
+<td>6cf5487a-ba06-42e7-9e80-226590752a77</td>
+<td>Rabies</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table animal_vaccine</strong></p>
+<table>
+<thead>
+<tr>
+<th>vaccine_id</th>
+<th>animal_id</th>
+<th>applied_on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0ee28253-5b94-4096-926c-d33ceb22d24d</td>
+<td>5f2461a9-6c62-453e-9182-38cd0fa76e01</td>
+<td>2021-02-10</td>
+</tr>
+<tr>
+<td>6cf5487a-ba06-42e7-9e80-226590752a77</td>
+<td>5f2461a9-6c62-453e-9182-38cd0fa76e01</td>
+<td>2022-02-10</td>
+</tr>
+</tbody>
+</table>
+<p><a href="https://gist.github.com/pmorelli92/8d93820185bf9eb5142d43f604affd20"><strong>Here you can find the <code>sql</code> script for creating the database and tables with the data listed above.</strong></a></p>
+<p>Now, imagine that another service needs to obtain all the people named <code>Pablo</code> with all their pets and the vaccines applied to them. Below you can find different approaches to fetch the required data for creating the required response.</p>
+<h3 id="approach-1-many-database-trips">Approach 1: Many database trips</h3>
+<ul>
+<li>A query will be executed to fetch all the vaccines from such table.</li>
+<li>A query will be executed to fetch all the people named <code>Pablo</code>.</li>
+<li>For each person filtered, a query will be executed to fetch all the animals that the person owns.</li>
+<li>For each animal filtered, a query will be executed to fetch all the vaccines applied on it.</li>
+</ul>
+<p>This approach is pretty much the one you don&rsquo;t want to have. In code, it is simple to follow, and with some connection pooling you don&rsquo;t have the overhead of creating database connection for each query; however the database trip is still there, and network latency applies. This is also not scalable when you are fetching for example 15 people, as you can see below.</p>
+<p>A query to fetch vaccines:</p>
+<pre><code>SELECT id, name FROM vaccine
+</code></pre><p>A query to fetch people:</p>
+<pre><code>SELECT id, name FROM person WHERE name = 'Pablo'
+</code></pre><p>15 queries to fetch all the animals a person owns:</p>
+<pre><code>SELECT id, type, name FROM animal WHERE owner_id = $1
+</code></pre><p>30 trips to fetch vaccines considering that each person may have 2 animals:</p>
+<pre><code>SELECT vaccine_id, applied_on FROM animal_vaccine WHERE animal_id = $1
+</code></pre><p>A total of 47 trips to the database fetching this information. We can do better than this.</p>
+<h3 id="approach-15-less-database-trips">Approach 1.5: Less database trips</h3>
+<p>A query will be executed to fetch all the vaccines from such table:</p>
+<pre><code>SELECT id, name FROM vaccine
+</code></pre><p>A query will be executed to fetch all the people named <code>Pablo</code>:</p>
+<pre><code>SELECT id, name FROM person WHERE name = 'Pablo'
+</code></pre><p>A query will be executed to fetch all animals whose owner_id is contained on the previous returned list:</p>
+<pre><code>SELECT owner_id, id, type, name FROM animal WHERE owner_id IN ($1)
+</code></pre><p>A query will be executed to fetch all the vaccines for all the animals returned:</p>
+<pre><code>SELECT animal_id, vaccine_id, applied_on FROM animal_vaccine WHERE animal_id IN ($1)
+</code></pre><p>This approach is a middle ground, and the main benefit is that the quantity of queries are not related to the amount of data: returning 15 people, will still execute 4 queries.</p>
+<p>On the other hand, the code complexity increases as you need a more complex mapping. Note that on the last two queries the <code>owner_id</code> and <code>animal_id</code> need to be retrieved, as the list of animals will be iterated to add each animal to the corresponding owner; and the same happens with the vaccines.</p>
+<h3 id="approach-2-how-orm-does-it">Approach 2: How ORM does it</h3>
+<p>This is a single query approach, but with one particularity, repeatable data:</p>
+<pre><code>SELECT
+    p.id,
+    p.name,
+    a.id AS animal_id,
+    a.type,
+    a.name,
+    v.id AS vaccine_id,
+    v.name,
+    av.applied_on
+FROM person p
+LEFT JOIN animal a ON p.id = a.owner_id
+LEFT JOIN animal_vaccine av ON av.animal_id = a.id
+LEFT JOIN vaccine v ON av.vaccine_id = v.id
+WHERE p.name = 'Pablo'
+</code></pre><p>Executing the query above will print the following result:</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>name</th>
+<th>animal_id</th>
+<th>type</th>
+<th>name</th>
+<th>vaccine_id</th>
+<th>name</th>
+<th>applied_on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>fbab22a3-f7bc-422c-942f-d184ad189e29</td>
+<td>Pablo</td>
+<td>5f2461a9-6c62-453e-9182-38cd0fa76e01</td>
+<td>cat</td>
+<td>Bills</td>
+<td>0ee28253-5b94-4096-926c-d33ceb22d24d</td>
+<td>Feline herpesvirus</td>
+<td>2021-02-10</td>
+</tr>
+<tr>
+<td>fbab22a3-f7bc-422c-942f-d184ad189e29</td>
+<td>Pablo</td>
+<td>5f2461a9-6c62-453e-9182-38cd0fa76e01</td>
+<td>cat</td>
+<td>Bills</td>
+<td>6cf5487a-ba06-42e7-9e80-226590752a77</td>
+<td>Rabies</td>
+<td>2022-02-10</td>
+</tr>
+</tbody>
+</table>
+<p>While generally ORM does the magic mapping behind the scenes and the developer just gets the data aggregated correctly; if a developer wants to map this data manually he/she will need to consider:</p>
+<ul>
+<li>A person can appear more than once.</li>
+<li>An animal can appear more than once.</li>
+</ul>
+<p>Also, keep attention to the <code>LEFT JOIN</code> here. A person may not have an animal, or an animal may not have any vaccine; enforcing <code>INNER JOIN</code> will cause this data to be filtered out and not appear on the result set.</p>
+<p>This approach shows 10 times improvement in comparison to the approach #1, but keep in mind that when returning a lot of columns you will get a lot of repeated data which translates into more network traffic.</p>
+<h3 id="approach-3-json-aggregates">Approach 3: Json aggregates</h3>
+<p>This approach takes the previous one (keeping the joins) but using json arrays for each of the data points that have a relationship 1 to N with <code>person</code> in order to avoid repeatable rows.</p>
+<ul>
+<li>A json array for animals (can be more than one)</li>
+<li>A json array for animal vaccines (an animal can have one or more than one vaccine)</li>
+<li>A json array for vaccines (a person can have N animals and each animal can have N vaccines)</li>
+</ul>
+<pre><code>SELECT
+    p.id,
+    p.name,
+    json_agg(DISTINCT to_jsonb(a.*)) AS animals,
+    json_agg(DISTINCT to_jsonb(av.*)) AS animal_vaccine,
+    json_agg(DISTINCT to_jsonb(v.*)) AS vaccine
+FROM person p
+LEFT JOIN animal a ON p.id = a.owner_id
+LEFT JOIN animal_vaccine av ON av.animal_id = a.id
+LEFT JOIN vaccine v ON av.vaccine_id = v.id
+WHERE p.name = 'Pablo'
+GROUP BY p.id, p.name
+</code></pre><p>Breaking it:</p>
+<pre><code>json_agg(DISTINCT to_jsonb(a.*)) AS animals
+</code></pre><p>This will return a json array <code>[...]</code>, on which each row will be returned as a json object (using the column name as json properties) and applying it a <code>DISTINCT</code> to discard repeated results. As we saw on the approach #2, an animal will appear for each vaccine it has received. The distinct filters out that repeated data.</p>
+<p>Also the <code>GROUP BY p.id, p.name</code> is used to make sure the person is returned only once as well.</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>name</th>
+<th>animals</th>
+<th>animal_vaccine</th>
+<th>vaccine</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>fbab22a3-f7bc-422c-942f-d184ad189e29</td>
+<td>Pablo</td>
+<td>[{&ldquo;id&rdquo;: &ldquo;5f2461a9-6c62-453e-9182-38cd0fa76e01&rdquo;, &ldquo;name&rdquo;: &ldquo;Bills&rdquo;, &ldquo;type&rdquo;: &ldquo;cat&rdquo;, &ldquo;owner_id&rdquo;: &ldquo;fbab22a3-f7bc-422c-942f-d184ad189e29&rdquo;}]</td>
+<td>[{&ldquo;animal_id&rdquo;: &ldquo;5f2461a9-6c62-453e-9182-38cd0fa76e01&rdquo;, &ldquo;applied_on&rdquo;: &ldquo;2021-02-10T00:00:00&rdquo;, &ldquo;vaccine_id&rdquo;: &ldquo;0ee28253-5b94-4096-926c-d33ceb22d24d&rdquo;}, {&ldquo;animal_id&rdquo;: &ldquo;5f2461a9-6c62-453e-9182-38cd0fa76e01&rdquo;, &ldquo;applied_on&rdquo;: &ldquo;2022-02-10T00:00:00&rdquo;, &ldquo;vaccine_id&rdquo;: &ldquo;6cf5487a-ba06-42e7-9e80-226590752a77&rdquo;}]</td>
+<td>[{&ldquo;id&rdquo;: &ldquo;0ee28253-5b94-4096-926c-d33ceb22d24d&rdquo;, &ldquo;name&rdquo;: &ldquo;Feline herpesvirus&rdquo;}, {&ldquo;id&rdquo;: &ldquo;6cf5487a-ba06-42e7-9e80-226590752a77&rdquo;, &ldquo;name&rdquo;: &ldquo;Rabies&rdquo;}]</td>
+</tr>
+</tbody>
+</table>
+<p>This surely looks messy at first, but you can compare it with the approach #1.5. The mentioned one relied on receiving list of animals and vaccines, but it was a single list for all the people filtered out, in this case the list of animals and vaccines belong to the person on whose row is being iterated.</p>
+<p>For each person:</p>
+<ul>
+<li>Deserialize animals.</li>
+<li>Deserialize vaccines.</li>
+<li>Deserialize animal vaccines.</li>
+</ul>
+<p>In golang, these arrays can be represented as <code>[]byte</code> so each one could be used as input for deserializing into a structure with the corresponding fields.</p>
+<p>Migrating from approach #1 to approach #3 showed improvements between 10x and 15x.</p>
+<h3 id="bonus-approach-doing-the-mapping-on-postgres---but-are-you-sure-you-want-to-do-this">Bonus approach: Doing the mapping on Postgres - but are you sure you want to do this?</h3>
+<p>In the approaches above, different ways to fetch data were described, but the mapping ocurred somewhere in the code that executes these queries. Is it possible to do the required mapping using Postgres?</p>
+<pre><code>SELECT
+    jsonb_build_object(
+        'id', p.id,
+        'name', p.name,
+        'animals', (
+            SELECT json_agg(jsonb_build_object(
+                'id', a.id,
+                'type', a.type,
+                'name', a.name,
+                'vaccines', (
+                    SELECT json_agg(jsonb_build_object(
+                        'id', v.id,
+                        'name', v.name,
+                        'applied_on', av.applied_on
+                    ))
+                    FROM animal_vaccine av
+                    INNER JOIN vaccine v ON av.vaccine_id = v.id
+                    WHERE av.animal_id = a.id
+                )
+            ))
+            FROM animal a WHERE a.owner_id = p.id)
+    )
+FROM person p
+WHERE p.name = 'Pablo'
+</code></pre><p>And the answer is yes. The query above, uses the function <code>jsonb_build_object</code> for creating a json object with named properties (vs <code>row_to_jsonb</code> which just took the <code>*</code> operator); and the <code>json_agg</code> is used for the relationships that are 1 to N.</p>
+<p>For each nested object, a sub query is performed to fetch the relevant data, which gets rid of <code>LEFT JOIN</code> and also <code>GROUP BY</code> (that also gets rid of inherent sorting)</p>
+<p>This returns:</p>
+<pre><code>{
+    &quot;id&quot;: &quot;fbab22a3-f7bc-422c-942f-d184ad189e29&quot;,
+    &quot;name&quot;: &quot;Pablo&quot;,
+    &quot;animals&quot;: [
+        {
+            &quot;id&quot;: &quot;5f2461a9-6c62-453e-9182-38cd0fa76e01&quot;,
+            &quot;name&quot;: &quot;Bills&quot;,
+            &quot;type&quot;: &quot;cat&quot;,
+            &quot;vaccines&quot;: [
+                {
+                    &quot;id&quot;: &quot;0ee28253-5b94-4096-926c-d33ceb22d24d&quot;,
+                    &quot;name&quot;: &quot;Feline herpesvirus&quot;,
+                    &quot;applied_on&quot;: &quot;2021-02-10T00:00:00&quot;
+                },
+                {
+                    &quot;id&quot;: &quot;6cf5487a-ba06-42e7-9e80-226590752a77&quot;,
+                    &quot;name&quot;: &quot;Rabies&quot;,
+                    &quot;applied_on&quot;: &quot;2022-02-10T00:00:00&quot;
+                }
+            ]
+        }
+    ]
+}
+</code></pre><p>Postgres, and some other databases, evolved a lot throughout time and are very capable of dealing with json types already. Under certain circumstances a query like the one above can be very useful.</p>
+<p>However, keep in mind that doing this could cause the service to have a high coupling between the API model and the database queries; and a change of how you want the response to look like, may affect the way you execute a query.</p>
+<h3 id="bottom-line">Bottom line</h3>
+<ul>
+<li>Postgres is very powerful, it is always useful to keep yourself up to date at least knowing what features are available, even when you don&rsquo;t know the specifics.</li>
+<li>Keep in mind simplicity and try to improve as the system requires it.</li>
+<li>Do not favor premature optimization just for exploration reasons, but don&rsquo;t be afraid to explore and think out of the box when needed.</li>
+</ul>
+]]></content>
+        </item>
         
         <item>
             <title>The good, the bad and the ugly of microservices</title>

@@ -2,13 +2,43 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://devandchill.com/tags/aggregations/</loc>
+    <lastmod>2021-03-21T12:31:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/array/</loc>
+    <lastmod>2021-03-21T12:31:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/</loc>
+    <lastmod>2021-03-21T12:31:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/json/</loc>
+    <lastmod>2021-03-21T12:31:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/optimization/</loc>
+    <lastmod>2021-03-21T12:31:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/performance/</loc>
+    <lastmod>2021-03-21T12:31:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/postgres/</loc>
+    <lastmod>2021-03-21T12:31:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/posts/</loc>
+    <lastmod>2021-03-21T12:31:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/query/</loc>
+    <lastmod>2021-03-21T12:31:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/posts/2021/03/reducing-loading-times-by-a-tenfold-with-postgres-aggregations/</loc>
+    <lastmod>2021-03-21T12:31:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/</loc>
+    <lastmod>2021-03-21T12:31:00+01:00</lastmod>
+  </url><url>
     <loc>https://devandchill.com/tags/2020/</loc>
     <lastmod>2020-11-30T19:39:00+01:00</lastmod>
   </url><url>
     <loc>https://devandchill.com/tags/async/</loc>
-    <lastmod>2020-11-30T19:39:00+01:00</lastmod>
-  </url><url>
-    <loc>https://devandchill.com/</loc>
     <lastmod>2020-11-30T19:39:00+01:00</lastmod>
   </url><url>
     <loc>https://devandchill.com/tags/microservices/</loc>
@@ -17,16 +47,10 @@
     <loc>https://devandchill.com/tags/monolith/</loc>
     <lastmod>2020-11-30T19:39:00+01:00</lastmod>
   </url><url>
-    <loc>https://devandchill.com/posts/</loc>
-    <lastmod>2020-11-30T19:39:00+01:00</lastmod>
-  </url><url>
     <loc>https://devandchill.com/tags/remote/</loc>
     <lastmod>2020-11-30T19:39:00+01:00</lastmod>
   </url><url>
     <loc>https://devandchill.com/tags/sync/</loc>
-    <lastmod>2020-11-30T19:39:00+01:00</lastmod>
-  </url><url>
-    <loc>https://devandchill.com/tags/</loc>
     <lastmod>2020-11-30T19:39:00+01:00</lastmod>
   </url><url>
     <loc>https://devandchill.com/tags/technology/</loc>
@@ -99,9 +123,6 @@
     <lastmod>2020-05-27T15:40:29+01:00</lastmod>
   </url><url>
     <loc>https://devandchill.com/tags/pgx/</loc>
-    <lastmod>2020-05-27T15:40:29+01:00</lastmod>
-  </url><url>
-    <loc>https://devandchill.com/tags/postgres/</loc>
     <lastmod>2020-05-27T15:40:29+01:00</lastmod>
   </url><url>
     <loc>https://devandchill.com/tags/sql/</loc>
