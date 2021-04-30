@@ -2,16 +2,43 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://devandchill.com/</loc>
+    <lastmod>2021-04-30T12:40:00+02:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/functional/</loc>
+    <lastmod>2021-04-30T12:40:00+02:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/golang/</loc>
+    <lastmod>2021-04-30T12:40:00+02:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/posts/2021/04/introducing-maybe-package-bring-functional-to-go/</loc>
+    <lastmod>2021-04-30T12:40:00+02:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/json/</loc>
+    <lastmod>2021-04-30T12:40:00+02:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/maybe/</loc>
+    <lastmod>2021-04-30T12:40:00+02:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/nil/</loc>
+    <lastmod>2021-04-30T12:40:00+02:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/option/</loc>
+    <lastmod>2021-04-30T12:40:00+02:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/pointer/</loc>
+    <lastmod>2021-04-30T12:40:00+02:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/posts/</loc>
+    <lastmod>2021-04-30T12:40:00+02:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/</loc>
+    <lastmod>2021-04-30T12:40:00+02:00</lastmod>
+  </url><url>
     <loc>https://devandchill.com/tags/aggregations/</loc>
     <lastmod>2021-03-21T12:31:00+01:00</lastmod>
   </url><url>
     <loc>https://devandchill.com/tags/array/</loc>
-    <lastmod>2021-03-21T12:31:00+01:00</lastmod>
-  </url><url>
-    <loc>https://devandchill.com/</loc>
-    <lastmod>2021-03-21T12:31:00+01:00</lastmod>
-  </url><url>
-    <loc>https://devandchill.com/tags/json/</loc>
     <lastmod>2021-03-21T12:31:00+01:00</lastmod>
   </url><url>
     <loc>https://devandchill.com/tags/optimization/</loc>
@@ -23,16 +50,10 @@
     <loc>https://devandchill.com/tags/postgres/</loc>
     <lastmod>2021-03-21T12:31:00+01:00</lastmod>
   </url><url>
-    <loc>https://devandchill.com/posts/</loc>
-    <lastmod>2021-03-21T12:31:00+01:00</lastmod>
-  </url><url>
     <loc>https://devandchill.com/tags/query/</loc>
     <lastmod>2021-03-21T12:31:00+01:00</lastmod>
   </url><url>
     <loc>https://devandchill.com/posts/2021/03/reducing-loading-times-by-a-tenfold-with-postgres-aggregations/</loc>
-    <lastmod>2021-03-21T12:31:00+01:00</lastmod>
-  </url><url>
-    <loc>https://devandchill.com/tags/</loc>
     <lastmod>2021-03-21T12:31:00+01:00</lastmod>
   </url><url>
     <loc>https://devandchill.com/tags/2020/</loc>
@@ -114,9 +135,6 @@
     <lastmod>2020-05-27T15:40:29+01:00</lastmod>
   </url><url>
     <loc>https://devandchill.com/posts/2020/05/go-lib/pq-or-pgx-which-performs-better/</loc>
-    <lastmod>2020-05-27T15:40:29+01:00</lastmod>
-  </url><url>
-    <loc>https://devandchill.com/tags/golang/</loc>
     <lastmod>2020-05-27T15:40:29+01:00</lastmod>
   </url><url>
     <loc>https://devandchill.com/tags/libpq/</loc>
