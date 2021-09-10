@@ -26,7 +26,7 @@
 
 
 
-<link rel="stylesheet" type="text/css" href="/main.16e78d5a04d86fb681478e115aa347d6116551d27a06cef8a10e5069d021ff96.css">
+<link rel="stylesheet" type="text/css" href="/main.848cc1f077f1d11a08a84b16a24e54a4afb9da3c3e35cef2b42e764e2811a6fb.css">
 
 
 
@@ -35,8 +35,8 @@
 
 <meta itemprop="name" content="Postgres: Building concurrently safe upsert queries">
 <meta itemprop="description" content="Recently at the company I am working for, there was a need to communicate with an external service which required us to send some data along with an integer identifier. The problem is that IDs in our domain are not integers but uuid.
-The suggestion then was to have a service which creates an unique integer for a certain uuid. This way the int identifier won&rsquo;t be leaked to any other part of the system."><meta itemprop="datePublished" content="2020-02-16T09:22:29&#43;01:00" />
-<meta itemprop="dateModified" content="2020-02-16T09:22:29&#43;01:00" />
+The suggestion then was to have a service which creates an unique integer for a certain uuid. This way the int identifier won&rsquo;t be leaked to any other part of the system."><meta itemprop="datePublished" content="2020-02-16T09:22:29+01:00" />
+<meta itemprop="dateModified" content="2020-02-16T09:22:29+01:00" />
 <meta itemprop="wordCount" content="2078"><meta itemprop="image" content="https://devandchill.com/og-image.png"/>
 <meta itemprop="keywords" content="postgres,database,sql,benchmark,upsert,queries,cte,concurrency," />
 <meta name="twitter:card" content="summary_large_image"/>
@@ -69,6 +69,8 @@ The suggestion then was to have a service which creates an unique integer for a 
 
   gtag('config', 'UA-138171880-1');
 </script>
+
+
 
     </head>
 
@@ -134,11 +136,12 @@ The suggestion then was to have a service which creates an unique integer for a 
 
     
 
+    
+
     <div class="post-content">
       <p>Recently at the company I am working for, there was a need to communicate with an external service which required us to send some data along with an integer identifier. The problem is that IDs in our domain are not integers but uuid.</p>
 <p>The suggestion then was to have a service which creates an unique integer for a certain uuid. This way the int identifier won&rsquo;t be leaked to any other part of the system.</p>
-<figure>
-    <img src="/posts/images/intgen.png"/> 
+<figure><img src="/posts/images/intgen.png"/>
 </figure>
 
 <ol>
@@ -156,7 +159,7 @@ The suggestion then was to have a service which creates an unique integer for a 
 <p>In this part of the series, different approaches are being listed. For obvious reasons these ones are not based on real business. Benchmarking is going to be displayed on the next part for the approaches 3, 4 and 5.</p>
 <h3 id="data-model">Data Model</h3>
 <p>Just to have more context on the snippets below, the database model will be the following:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> customers
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> customers
 (
   id SERIAL,
   customer_id UUID <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span>
@@ -167,25 +170,25 @@ The suggestion then was to have a service which creates an unique integer for a 
 <li>Receive the <code>POST</code> request, parse the uuid.</li>
 <li>Execute query:</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> id
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> id
 <span style="color:#66d9ef">FROM</span> customers
 <span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>
 </code></pre></div><ol start="3">
 <li>If the previous query returned a row, return the id.</li>
 <li>If not, insert the row and return the id:</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
 <span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>)
 RETURNING id
 </code></pre></div><p>The problem with this approach is that if we get two consecutive calls hitting the <code>SELECT</code> at the same time while there is no row, both will try to add the row in the database. One will succeed and the other is going to fail.</p>
 <p>This can be fixed changing the insert to the following:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
 <span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>)
 <span style="color:#66d9ef">ON</span> CONFLICT <span style="color:#66d9ef">DO</span> <span style="color:#66d9ef">NOTHING</span>
 RETURNING id
 </code></pre></div><p><code>ON CONFLICT DO NOTHING</code> will avoid the primary key exception! Yes, that is true, but when this clause does not update the row (<code>DO NOTHING</code>) the <code>RETURNING</code> row will be empty.</p>
 <p>This can be tested by executing several times the statement in point 4.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">| id |
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">| id |
 | -- |
 | <span style="color:#ae81ff">1</span>  |
 |    |
@@ -201,28 +204,28 @@ RETURNING id
 <li>Receive the <code>POST</code> request, parse the uuid.</li>
 <li>Begin the transaction:</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">BEGIN</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">BEGIN</span>
 </code></pre></div><ol start="3">
 <li>Get a lock using a numeric hash that represents x uuid in a deterministic way:</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> pg_advisory_xact_lock(<span style="color:#f92672">&lt;</span>bigint<span style="color:#f92672">&gt;</span>)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> pg_advisory_xact_lock(<span style="color:#f92672">&lt;</span>bigint<span style="color:#f92672">&gt;</span>)
 </code></pre></div><ol start="4">
 <li>Execute query:</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> id
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> id
 <span style="color:#66d9ef">FROM</span> customers
 <span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>
 </code></pre></div><ol start="5">
 <li>If the previous query returned a row, return the id.</li>
 <li>If not, insert the row and return the id:</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
 <span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>)
 RETURNING id
 </code></pre></div><ol start="6">
 <li>Commit transaction:</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">COMMIT</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">COMMIT</span>
 </code></pre></div><p>Ok, now this works. But this is still far away from a good design. In the previous approach, the race condition existed because there was nothing to lock when there was no row to be found.</p>
 <p>In this approach, for certain uuid the same numeric hash will be generated. When starting a transaction, an exclusive transaction level advisory lock is obtained. If another transaction wants to execute the lock query using the same hash, it will have to wait until the first transaction ends with a commit or rollback.</p>
 <p>How to try this out?</p>
@@ -230,13 +233,13 @@ RETURNING id
 <li>Open a database connection.</li>
 <li>Execute:</li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">BEGIN</span>;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">BEGIN</span>;
 <span style="color:#66d9ef">SELECT</span> pg_advisory_xact_lock(<span style="color:#ae81ff">12345</span>);
 </code></pre></div><ul>
 <li>Open another database connection.</li>
 <li>Execute:</li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">BEGIN</span>;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">BEGIN</span>;
 <span style="color:#66d9ef">SELECT</span> pg_advisory_xact_lock(<span style="color:#ae81ff">12345</span>);
 </code></pre></div><ul>
 <li>This last query will not respond until the first transaction finishes.</li>
@@ -249,13 +252,13 @@ RETURNING id
 <li>Receive the <code>POST</code> request, parse the uuid.</li>
 <li>Execute the query and return the result. This query will insert the row if it does not exist; and in case it does, it will just return the id. The update is required to return the desired id.</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
 <span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>)
 <span style="color:#66d9ef">ON</span> CONFLICT (customer_id)
 <span style="color:#66d9ef">DO</span> <span style="color:#66d9ef">UPDATE</span> <span style="color:#66d9ef">SET</span> customer_id <span style="color:#f92672">=</span> excluded.customer_id
 RETURNING id
 </code></pre></div><p>The difference between the first example and this one, is that now the <code>DO NOTHING</code> is replaced by <code>DO UPDATE</code> and since an update is being executed; the returning row will never be empty. Moreover the concurrency problems are gone because they are handled by the database and not by code. This can be tested by executing several times the query.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">| id |
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">| id |
 | -- |
 | <span style="color:#ae81ff">3</span>  |
 | <span style="color:#ae81ff">3</span>  |
@@ -272,13 +275,13 @@ RETURNING id
 </blockquote>
 <p>How can one be sure that this is true?
 Executing the following query 5 times!</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
 <span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d269&#39;</span>)
 <span style="color:#66d9ef">ON</span> CONFLICT (customer_id)
 <span style="color:#66d9ef">DO</span> <span style="color:#66d9ef">UPDATE</span> <span style="color:#66d9ef">SET</span> customer_id <span style="color:#f92672">=</span> excluded.customer_id
 RETURNING ctid, xmin, xmax, id
 </code></pre></div><p>Results:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">| ctid  | xmin | xmax | id |
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">| ctid  | xmin | xmax | id |
 | ----- | ---- | ---- | -- |
 | <span style="color:#f92672">(</span>0,1<span style="color:#f92672">)</span> | <span style="color:#ae81ff">5876</span> | <span style="color:#ae81ff">0</span>    | <span style="color:#ae81ff">2</span>  |
 | <span style="color:#f92672">(</span>0,2<span style="color:#f92672">)</span> | <span style="color:#ae81ff">5877</span> | <span style="color:#ae81ff">5877</span> | <span style="color:#ae81ff">2</span>  |
@@ -313,7 +316,7 @@ RETURNING ctid, xmin, xmax, id
 <p>The main advantage of using the MVCC model of concurrency control rather than locking is [&hellip;] reading never blocks writing and writing never blocks reading.</p>
 </blockquote>
 <p>With that explained, lets introduce how an UPDATE works on postgres:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> EXTENSION pageinspect;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> EXTENSION pageinspect;
 
 <span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
 <span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d271&#39;</span>);
@@ -330,7 +333,7 @@ RETURNING ctid, xmin, xmax, id
 <li>The transaction id used for the creation of the row (<code>t_xmin</code>) is 5919.</li>
 <li>The destruction transaction id (<code>t_xmax</code>) is 0 because no changes happened to the row.</li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">UPDATE</span> customers
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">UPDATE</span> customers
 <span style="color:#66d9ef">SET</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d271&#39;</span>
 <span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d271&#39;</span>
 
@@ -363,7 +366,7 @@ RETURNING ctid, xmin, xmax, id
 <li>Receive the <code>POST</code> request, parse the uuid.</li>
 <li>Execute query:</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
 <span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>)
 <span style="color:#66d9ef">ON</span> CONFLICT <span style="color:#66d9ef">DO</span> <span style="color:#66d9ef">NOTHING</span>;
 
@@ -374,14 +377,14 @@ RETURNING ctid, xmin, xmax, id
 <p>After the <code>INSERT</code> is executed, the <code>SELECT</code> statement will return the id for the recently created / already existing row.</p>
 <p>But is this performing? For that lets <code>EXPLAIN ANALYZE</code> the queries:</p>
 <p>Insert (when there is no row):</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Insert on customers
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Insert on customers
   Conflict Resolution: NOTHING
   Tuples Inserted: <span style="color:#ae81ff">1</span>
   Conflicting Tuples: <span style="color:#ae81ff">0</span>
 Planning Time: 0.032 ms
 Execution Time: 0.190 ms
 </code></pre></div><p>Insert (when there is a conflict):</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Insert on customers
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Insert on customers
   Conflict Resolution: NOTHING
   Tuples Inserted: <span style="color:#ae81ff">0</span>
   Conflicting Tuples: <span style="color:#ae81ff">1</span>
@@ -389,7 +392,7 @@ Execution Time: 0.190 ms
 Planning Time: 0.032 ms
 Execution Time: 0.244 ms
 </code></pre></div><p>Select query:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Index Scan using customers_pkey on customers
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Index Scan using customers_pkey on customers
   Index Cond: <span style="color:#f92672">(</span>customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;...&#39;</span>::uuid<span style="color:#f92672">)</span>
 Planning Time: 0.069 ms
 Execution Time: 0.111 ms
@@ -399,7 +402,7 @@ Execution Time: 0.111 ms
 <h3 id="bonus-for-non-postgres-users-aka-cte-queries">Bonus for non Postgres users (a.k.a CTE queries)</h3>
 <p>CTE means Common Table Expression and documentation can be found <a href="https://www.postgresql.org/docs/current/queries-with.html">here</a></p>
 <p>These kind of expressions are also useful when the database engine  does not support <code>ON CONFLICT DO NOTHING</code>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">WITH</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">WITH</span>
 	<span style="color:#66d9ef">search</span> <span style="color:#66d9ef">AS</span> (<span style="color:#66d9ef">SELECT</span> ctid, xmax, id <span style="color:#66d9ef">FROM</span> customers <span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;8a57f8f4-aeed-412c-a6f6-5f9a03b17bc5&#39;</span> <span style="color:#66d9ef">LIMIT</span> <span style="color:#ae81ff">1</span>),
 	<span style="color:#66d9ef">add</span> <span style="color:#66d9ef">AS</span> (<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers (customer_id) <span style="color:#66d9ef">SELECT</span> <span style="color:#e6db74">&#39;8a57f8f4-aeed-412c-a6f6-5f9a03b17bc5&#39;</span> <span style="color:#66d9ef">WHERE</span> <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">EXISTS</span>(<span style="color:#66d9ef">SELECT</span> id <span style="color:#66d9ef">from</span> <span style="color:#66d9ef">search</span>) RETURNING ctid, xmax, id)
 <span style="color:#66d9ef">SELECT</span> ctid, xmax, id <span style="color:#66d9ef">from</span> <span style="color:#66d9ef">add</span>	<span style="color:#66d9ef">UNION</span> <span style="color:#66d9ef">ALL</span> <span style="color:#66d9ef">SELECT</span> ctid, xmax, id <span style="color:#66d9ef">from</span> <span style="color:#66d9ef">search</span>
@@ -409,7 +412,7 @@ Execution Time: 0.111 ms
 <li>Execute both statements, only one will return a result.</li>
 </ul>
 <p>Running <code>EXPLAIN ANALYZE</code> on the query:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">HashAggregate
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">HashAggregate
   Group Key: add.ctid, add.xmax, add.id
   CTE search
     -&gt;  Limit
@@ -626,19 +629,8 @@ Execution Time: 2.483 ms
 
             
                 <footer class="footer">
-    <div class="footer__inner">
-        <div class="footer__content">
-            <span>&copy; 2021</span>
-            
-            <span>Pablo Morelli</span><span><a href="https://devandchill.com/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a></span>
-        </div>
-    </div>
-    <div class="footer__inner">
-        <div class="footer__content">
-            <span>Powered by <a href="http://gohugo.io">Hugo</a></span>
-            <span>Made with &#10084; by <a href="https://github.com/rhazdon">Djordje Atlialp</a></span>
-          </div>
-    </div>
+    
+    
 </footer>
 
             
@@ -648,7 +640,7 @@ Execution Time: 2.483 ms
 
 
 
-<script type="text/javascript" src="/bundle.min.2ce64ea6ea44a72b13dd812fc2eb5cca3efe878cce258a47c137c17edf46e0602a05e422b618a5b80b5939c731b7a293351c2f2222a21f6ee27e54a8448dd20e.js" integrity="sha512-LOZOpupEpysT3YEvwutcyj7&#43;h4zOJYpHwTfBft9G4GAqBeQithiluAtZOccxt6KTNRwvIiKiH27iflSoRI3SDg=="></script>
+<script type="text/javascript" src="/bundle.min.f944224ac8e104e8f14a9d98224b628e383c8f2e63f95e54381ac414365bf32b8c5ae9a6c157271fe82938d66e1cf8399e34e6cb0ee7b711c58d167a4cfd6a6f.js" integrity="sha512-&#43;UQiSsjhBOjxSp2YIktijjg8jy5j&#43;V5UOBrEFDZb8yuMWummwVcnH&#43;gpONZuHPg5njTmyw7ntxHFjRZ6TP1qbw=="></script>
 
 
 

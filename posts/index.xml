@@ -19,32 +19,32 @@
 func getDay() string { return nil } In order to make that snippet work, a pointer is needed as null values are the zero value for pointers (the same applies for interfaces, channels and function types).
 func getDay() *string { return nil } Being that pointers can introduce null and hence panics, and knowing that null is considered to be &amp;ldquo;The billion dollar mistake&amp;rdquo;, why is still so common in Go to use pointers for everything?</description>
             <content type="html"><![CDATA[<p>One of the advantages of Go is that null (<code>nil</code>) values are rarer than in some other languages. <a href="https://play.golang.org/p/m_Q6CVtLFjK">The following snippet will fail:</a></p>
-<pre><code>func getDay() string {
-    return nil
-}
-</code></pre><p>In order to make that snippet work, a pointer is needed as null values are the zero value for pointers (the same applies for interfaces, channels and function types).</p>
-<pre><code>func getDay() *string {
-    return nil
-}
-</code></pre><p>Being that pointers can introduce null and hence panics, and knowing that null is considered to be <em>&ldquo;The billion dollar mistake&rdquo;</em>, why is still so common in Go to use pointers for everything? Below are some arguments that I faced:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">func getDay() string <span style="color:#960050;background-color:#1e0010">{</span>
+    <span style="color:#66d9ef">return</span> nil
+<span style="color:#960050;background-color:#1e0010">}</span>
+</code></pre></div><p>In order to make that snippet work, a pointer is needed as null values are the zero value for pointers (the same applies for interfaces, channels and function types).</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">func getDay() <span style="color:#f92672">*</span>string <span style="color:#960050;background-color:#1e0010">{</span>
+    <span style="color:#66d9ef">return</span> nil
+<span style="color:#960050;background-color:#1e0010">}</span>
+</code></pre></div><p>Being that pointers can introduce null and hence panics, and knowing that null is considered to be <em>&ldquo;The billion dollar mistake&rdquo;</em>, why is still so common in Go to use pointers for everything? Below are some arguments that I faced:</p>
 <h3 id="optimization">Optimization</h3>
 <p>The most common example here are slices. There is a general misconception on how much is a lot, in other words, how many items in a slice are too much to copy it by value. Of course, the answer is <em>it depends</em>. And this is true, a slice with 100 integers is probably less memory intensive that a slice with 50 complex structures with nested slices.</p>
 <p>That being said, there is a good saying: <em>avoid premature optimization</em>. Favor copying slices by value instead of using pointers unless you have a super specific case that proves the contrary.</p>
 <p><a href="https://medium.com/@philpearl/bad-go-slices-of-pointers-ed3c06b8bb41">You can find here a nice article doing benchmark on slices using pointers and values.</a></p>
 <h3 id="modifying-the-receiver">Modifying the receiver</h3>
 <p>Imagine the following func:</p>
-<pre><code>func (cart *Cart) AddItem (item item) {
-    cart.Items = append(cart.Items, item)
-}
-</code></pre><p>Do you like what you see? Maybe you won&rsquo;t after visiting these concepts:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">func (cart <span style="color:#f92672">*</span>Cart) AddItem (item item) <span style="color:#960050;background-color:#1e0010">{</span>
+    cart.Items <span style="color:#f92672">=</span> append(cart.Items, item)
+<span style="color:#960050;background-color:#1e0010">}</span>
+</code></pre></div><p>Do you like what you see? Maybe you won&rsquo;t after visiting these concepts:</p>
 <p><em>Pure functions:</em> A function whose return values are identical for identical arguments - also called deterministic. There is no usage of static variables, mutable references or streams. These functions have no side effects. These kind of functions are very easy to test.</p>
 <p><em>Immutability:</em> An immutable is one whose state cannot be changed after the creation. This means that the immutable is thread safe as you can pass it around contexts knowing they won&rsquo;t be modified.</p>
 <p>Knowing the benefits one can refactor this to eliminate the pointers in something like:</p>
-<pre><code>func (cart Cart) AddItem (item item) Cart {
-    items := append(cart.Items, item)
-    return newCart(items)
-}
-</code></pre><h3 id="json-property-representing-three-different-states">JSON property representing three different states</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">func (cart Cart) AddItem (item item) Cart <span style="color:#960050;background-color:#1e0010">{</span>
+    items :<span style="color:#f92672">=</span> append(cart.Items, item)
+    <span style="color:#66d9ef">return</span> newCart(items)
+<span style="color:#960050;background-color:#1e0010">}</span>
+</code></pre></div><h3 id="json-property-representing-three-different-states">JSON property representing three different states</h3>
 <p>Let&rsquo;s image that for some reason (which I cannot recommend) there is a <code>Person</code> structure that contains a <code>Salary</code> property. The system you are consuming will return the person with different salary depending the employment situation:</p>
 <ul>
 <li><code>{ &quot;name&quot;: &quot;Pablo&quot;, &quot;salary&quot;: 100 }</code> means paid job.</li>
@@ -52,95 +52,95 @@ func getDay() *string { return nil } Being that pointers can introduce null and 
 <li><code>{ &quot;name&quot;: &quot;Pablo&quot;, &quot;salary&quot;: null }</code> means unemployment.</li>
 </ul>
 <p>If this structure would be deserialized with the following struct, can you image what is going to happen?</p>
-<pre><code>type Person struct {
-    Name   string `json:&quot;name&quot;`
-    Salary int    `json:&quot;salary&quot;`
-}
-</code></pre><p>If you guessed that <code>Salary</code> will never be <code>nil</code> then you guessed correctly. As explained on the first snippet in this post, the zero value for int is <code>0</code>. Then as <code>0</code> was used for unpaid internship, one would never know the difference between this and being unemployed.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">type</span> Person struct <span style="color:#960050;background-color:#1e0010">{</span>
+    Name   string <span style="color:#f92672">`</span>json:<span style="color:#e6db74">&#34;name&#34;</span><span style="color:#f92672">`</span>
+    Salary int    <span style="color:#f92672">`</span>json:<span style="color:#e6db74">&#34;salary&#34;</span><span style="color:#f92672">`</span>
+<span style="color:#960050;background-color:#1e0010">}</span>
+</code></pre></div><p>If you guessed that <code>Salary</code> will never be <code>nil</code> then you guessed correctly. As explained on the first snippet in this post, the zero value for int is <code>0</code>. Then as <code>0</code> was used for unpaid internship, one would never know the difference between this and being unemployed.</p>
 <p>But if the <code>Salary</code> is changed from <code>int</code> to <code>*int</code>, will this work?</p>
-<pre><code>type Person struct {
-    Name   string `json:&quot;name&quot;`
-    Salary *int   `json:&quot;salary&quot;`
-}
-</code></pre><p>And the answer is yes, but at what cost? Do we want to introduce deliberately pointers in our system to solve this?</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">type</span> Person struct <span style="color:#960050;background-color:#1e0010">{</span>
+    Name   string <span style="color:#f92672">`</span>json:<span style="color:#e6db74">&#34;name&#34;</span><span style="color:#f92672">`</span>
+    Salary <span style="color:#f92672">*</span>int   <span style="color:#f92672">`</span>json:<span style="color:#e6db74">&#34;salary&#34;</span><span style="color:#f92672">`</span>
+<span style="color:#960050;background-color:#1e0010">}</span>
+</code></pre></div><p>And the answer is yes, but at what cost? Do we want to introduce deliberately pointers in our system to solve this?</p>
 <h3 id="introducing-maybe-libraryhttpsgithubcompmorelli92maybe"><a href="https://github.com/pmorelli92/maybe/">Introducing Maybe library</a></h3>
 <p>Functional languages have a lot of interesting features that are having more traction as time passes and end up being ported to other languages. One of my favorites is the <code>Option</code> data type. Think of it as Schrodinger&rsquo;s <del>cat</del> variable. It may have a value or it may not have a value; and the only way to know it is checking if effectively has one.</p>
 <p>Let&rsquo;s image the following struct:</p>
-<pre><code>package maybe
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">package maybe
 
-type Int struct {
+<span style="color:#66d9ef">type</span> Int struct <span style="color:#960050;background-color:#1e0010">{</span>
 	value    int
 	hasValue bool
-}
+<span style="color:#960050;background-color:#1e0010">}</span>
 
-func SetInt(value int) Int {
-	return Int{
+func SetInt(value int) Int <span style="color:#960050;background-color:#1e0010">{</span>
+	<span style="color:#66d9ef">return</span> Int<span style="color:#960050;background-color:#1e0010">{</span>
 		value:    value,
-		hasValue: true,
-	}
-}
+		hasValue: <span style="color:#66d9ef">true</span>,
+	<span style="color:#960050;background-color:#1e0010">}</span>
+<span style="color:#960050;background-color:#1e0010">}</span>
 
-func (mi Int) HasValue() bool {
-	return mi.hasValue
-}
+func (mi Int) HasValue() bool <span style="color:#960050;background-color:#1e0010">{</span>
+	<span style="color:#66d9ef">return</span> mi.hasValue
+<span style="color:#960050;background-color:#1e0010">}</span>
 
-func (mi Int) Value() int {
-	return mi.value
-}
-</code></pre><p>This is how an option implementation can look in Go 1.16 (which can be simplified when generics are out in 1.18). By doing so, <code>null</code> values are not possible. As stated before, while I cannot recommend designing a system where <code>null</code> and <code>0</code> represent different things, we can take another look at the previous example:</p>
+func (mi Int) Value() int <span style="color:#960050;background-color:#1e0010">{</span>
+	<span style="color:#66d9ef">return</span> mi.value
+<span style="color:#960050;background-color:#1e0010">}</span>
+</code></pre></div><p>This is how an option implementation can look in Go 1.16 (which can be simplified when generics are out in 1.18). By doing so, <code>null</code> values are not possible. As stated before, while I cannot recommend designing a system where <code>null</code> and <code>0</code> represent different things, we can take another look at the previous example:</p>
 <ul>
 <li>Salary 100 -&gt; <code>Int.HasValue()</code> will be <code>true</code> and <code>Int.Value()</code> will be <code>100</code>.</li>
 <li>Salary 0 -&gt; <code>Int.HasValue()</code> will be <code>true</code> and <code>Int.Value()</code> will be <code>0</code>.</li>
 <li>Salary null -&gt; <code>Int.HasValue()</code> will be <code>false</code> and <code>Int.Value()</code> will be <code>0</code>.</li>
 </ul>
 <p>This is how it looks like in our previous struct:</p>
-<pre><code>type Person struct {
-    Name   string    `json:&quot;name&quot;`
-    Salary maybe.Int `json:&quot;salary&quot;`
-}
-</code></pre><p>But Pablo, this is serialized in the following way, right?</p>
-<pre><code>{
-   &quot;name&quot;:&quot;Pablo&quot;,
-   &quot;salary&quot;:{
-      &quot;hasValue&quot;:true,
-      &quot;salary&quot;:100
-   }
-}
-</code></pre><p>Not really! Go allows customization of the <code>MarshalJSON()</code> and <code>UnmarshalJSON()</code> of a struct, so the serialization will look like:</p>
-<pre><code>package maybe
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">type</span> Person struct <span style="color:#960050;background-color:#1e0010">{</span>
+    Name   string    <span style="color:#f92672">`</span>json:<span style="color:#e6db74">&#34;name&#34;</span><span style="color:#f92672">`</span>
+    Salary maybe.Int <span style="color:#f92672">`</span>json:<span style="color:#e6db74">&#34;salary&#34;</span><span style="color:#f92672">`</span>
+<span style="color:#960050;background-color:#1e0010">}</span>
+</code></pre></div><p>But Pablo, this is serialized in the following way, right?</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#960050;background-color:#1e0010">{</span>
+   <span style="color:#e6db74">&#34;name&#34;</span>:<span style="color:#e6db74">&#34;Pablo&#34;</span>,
+   <span style="color:#e6db74">&#34;salary&#34;</span>:<span style="color:#960050;background-color:#1e0010">{</span>
+      <span style="color:#e6db74">&#34;hasValue&#34;</span>:<span style="color:#66d9ef">true</span>,
+      <span style="color:#e6db74">&#34;salary&#34;</span>:<span style="color:#ae81ff">100</span>
+   <span style="color:#960050;background-color:#1e0010">}</span>
+<span style="color:#960050;background-color:#1e0010">}</span>
+</code></pre></div><p>Not really! Go allows customization of the <code>MarshalJSON()</code> and <code>UnmarshalJSON()</code> of a struct, so the serialization will look like:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">package maybe
 
-func (mi Int) MarshalJSON() ([]byte, error) {
-	var i *int
+func (mi Int) MarshalJSON() ([]byte, error) <span style="color:#960050;background-color:#1e0010">{</span>
+	var i <span style="color:#f92672">*</span>int
 
-	if mi.hasValue {
-		i = &amp;mi.value
-	}
+	<span style="color:#66d9ef">if</span> mi.hasValue <span style="color:#960050;background-color:#1e0010">{</span>
+		i <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>mi.value
+	<span style="color:#960050;background-color:#1e0010">}</span>
 
-	return json.Marshal(i)
-}
-</code></pre><p>If the <code>maybe.Int</code> was not initialized, then the serialization in our example will look like <code>{ &quot;salary&quot;: null }</code>; however if <code>maybe.SetInt(100)</code> was called, then the <code>hasValue</code> will be true and the serialization will be <code>{ &quot;salary&quot;: 100 }</code>.</p>
+	<span style="color:#66d9ef">return</span> json.Marshal(i)
+<span style="color:#960050;background-color:#1e0010">}</span>
+</code></pre></div><p>If the <code>maybe.Int</code> was not initialized, then the serialization in our example will look like <code>{ &quot;salary&quot;: null }</code>; however if <code>maybe.SetInt(100)</code> was called, then the <code>hasValue</code> will be true and the serialization will be <code>{ &quot;salary&quot;: 100 }</code>.</p>
 <p>Now for the unmarshal, the usage of pointers and null are being handled by the library:</p>
-<pre><code>package maybe
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">package maybe
 
-func (mi *Int) UnmarshalJSON(data []byte) error {
-	var i *int
-	if err := json.Unmarshal(data, &amp;i); err != nil {
-		return err
-	}
+func (mi <span style="color:#f92672">*</span>Int) UnmarshalJSON(<span style="color:#66d9ef">data</span> []byte) error <span style="color:#960050;background-color:#1e0010">{</span>
+	var i <span style="color:#f92672">*</span>int
+	<span style="color:#66d9ef">if</span> err :<span style="color:#f92672">=</span> json.Unmarshal(<span style="color:#66d9ef">data</span>, <span style="color:#f92672">&amp;</span>i); err <span style="color:#f92672">!=</span> nil <span style="color:#960050;background-color:#1e0010">{</span>
+		<span style="color:#66d9ef">return</span> err
+	<span style="color:#960050;background-color:#1e0010">}</span>
 
-	if i != nil {
-		*mi = SetInt(*i)
-	}
+	<span style="color:#66d9ef">if</span> i <span style="color:#f92672">!=</span> nil <span style="color:#960050;background-color:#1e0010">{</span>
+		<span style="color:#f92672">*</span>mi <span style="color:#f92672">=</span> SetInt(<span style="color:#f92672">*</span>i)
+	<span style="color:#960050;background-color:#1e0010">}</span>
 
-	return nil
-}
-</code></pre><p>If the json is <code>{ &quot;salary&quot;: 100 }</code> then the pointer is not null and the <code>maybe.Int</code> will be set to <code>HasValue() = true</code> and <code>Value() = 100</code>. In the case of <code>{ &quot;salary&quot;: null }</code>, the pointer will be <code>nil</code> and therefore the <code>maybe.Int</code> will contain <code>HasValue() = false</code> and <code>Value() = 0</code>.</p>
+	<span style="color:#66d9ef">return</span> nil
+<span style="color:#960050;background-color:#1e0010">}</span>
+</code></pre></div><p>If the json is <code>{ &quot;salary&quot;: 100 }</code> then the pointer is not null and the <code>maybe.Int</code> will be set to <code>HasValue() = true</code> and <code>Value() = 100</code>. In the case of <code>{ &quot;salary&quot;: null }</code>, the pointer will be <code>nil</code> and therefore the <code>maybe.Int</code> will contain <code>HasValue() = false</code> and <code>Value() = 0</code>.</p>
 <p>With this implementation we can code the following assumption:</p>
-<pre><code>func (p Person) IsEmployed() bool {
-    // If salary has value, but it is 0 we assume unpaid internship
-    return p.Salary.HasValue()
-}
-</code></pre><h3 id="next-steps">Next steps</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">func (p Person) IsEmployed() bool <span style="color:#960050;background-color:#1e0010">{</span>
+    <span style="color:#f92672">//</span> <span style="color:#66d9ef">If</span> salary has value, but it <span style="color:#66d9ef">is</span> <span style="color:#ae81ff">0</span> we assume unpaid internship
+    <span style="color:#66d9ef">return</span> p.Salary.HasValue()
+<span style="color:#960050;background-color:#1e0010">}</span>
+</code></pre></div><h3 id="next-steps">Next steps</h3>
 <p>Currently the library supports few native types (string, int, float, time, bool); however it would be useful to have this functionality for custom types. In order to achieve this generics are required. In <a href="https://go2goplay.golang.org/p/YBqR5GX7N6m">go2playgrounds</a> you can access a snippet on how this library would look like with the current draft of generics.</p>
 <p>Other than that, the library is quite simple so there is no work planned ahead for it.</p>
 <h3 id="summary">Summary</h3>
@@ -166,9 +166,8 @@ At least from my experience, SQL is taught in university/courses in an outdated 
 <p>In this post, you will see how this can be used to fetch data in 1..N relationships with a single trip to the database.</p>
 <h3 id="enter-the-model">Enter the model</h3>
 <p>Let&rsquo;s imagine the following model:</p>
-<figure>
-    <img src="/posts/images/agg_data_model.svg"
-         alt="table data model"/> 
+<figure><img src="/posts/images/agg_data_model.svg"
+         alt="table data model"/>
 </figure>
 
 <p>Populated with the following data:</p>
@@ -258,42 +257,42 @@ At least from my experience, SQL is taught in university/courses in an outdated 
 </ul>
 <p>This approach is pretty much the one you don&rsquo;t want to have. In code, it is simple to follow, and with some connection pooling you don&rsquo;t have the overhead of creating database connection for each query; however the database trip is still there, and network latency applies. This is also not scalable when you are fetching for example 15 people, as you can see below.</p>
 <p>A query to fetch vaccines:</p>
-<pre><code>SELECT id, name FROM vaccine
-</code></pre><p>A query to fetch people:</p>
-<pre><code>SELECT id, name FROM person WHERE name = 'Pablo'
-</code></pre><p>15 queries to fetch all the animals a person owns:</p>
-<pre><code>SELECT id, type, name FROM animal WHERE owner_id = $1
-</code></pre><p>30 trips to fetch vaccines considering that each person may have 2 animals:</p>
-<pre><code>SELECT vaccine_id, applied_on FROM animal_vaccine WHERE animal_id = $1
-</code></pre><p>A total of 47 trips to the database fetching this information. We can do better than this.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> id, name <span style="color:#66d9ef">FROM</span> vaccine
+</code></pre></div><p>A query to fetch people:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> id, name <span style="color:#66d9ef">FROM</span> person <span style="color:#66d9ef">WHERE</span> name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;Pablo&#39;</span>
+</code></pre></div><p>15 queries to fetch all the animals a person owns:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> id, <span style="color:#66d9ef">type</span>, name <span style="color:#66d9ef">FROM</span> animal <span style="color:#66d9ef">WHERE</span> owner_id <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">1</span>
+</code></pre></div><p>30 trips to fetch vaccines considering that each person may have 2 animals:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> vaccine_id, applied_on <span style="color:#66d9ef">FROM</span> animal_vaccine <span style="color:#66d9ef">WHERE</span> animal_id <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">1</span>
+</code></pre></div><p>A total of 47 trips to the database fetching this information. We can do better than this.</p>
 <h3 id="approach-15-less-database-trips">Approach 1.5: Less database trips</h3>
 <p>A query will be executed to fetch all the vaccines from such table:</p>
-<pre><code>SELECT id, name FROM vaccine
-</code></pre><p>A query will be executed to fetch all the people named <code>Pablo</code>:</p>
-<pre><code>SELECT id, name FROM person WHERE name = 'Pablo'
-</code></pre><p>A query will be executed to fetch all animals whose owner_id is contained on the previous returned list:</p>
-<pre><code>SELECT owner_id, id, type, name FROM animal WHERE owner_id IN ($1)
-</code></pre><p>A query will be executed to fetch all the vaccines for all the animals returned:</p>
-<pre><code>SELECT animal_id, vaccine_id, applied_on FROM animal_vaccine WHERE animal_id IN ($1)
-</code></pre><p>This approach is a middle ground, and the main benefit is that the quantity of queries are not related to the amount of data: returning 15 people, will still execute 4 queries.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> id, name <span style="color:#66d9ef">FROM</span> vaccine
+</code></pre></div><p>A query will be executed to fetch all the people named <code>Pablo</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> id, name <span style="color:#66d9ef">FROM</span> person <span style="color:#66d9ef">WHERE</span> name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;Pablo&#39;</span>
+</code></pre></div><p>A query will be executed to fetch all animals whose owner_id is contained on the previous returned list:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> owner_id, id, <span style="color:#66d9ef">type</span>, name <span style="color:#66d9ef">FROM</span> animal <span style="color:#66d9ef">WHERE</span> owner_id <span style="color:#66d9ef">IN</span> (<span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">1</span>)
+</code></pre></div><p>A query will be executed to fetch all the vaccines for all the animals returned:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> animal_id, vaccine_id, applied_on <span style="color:#66d9ef">FROM</span> animal_vaccine <span style="color:#66d9ef">WHERE</span> animal_id <span style="color:#66d9ef">IN</span> (<span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">1</span>)
+</code></pre></div><p>This approach is a middle ground, and the main benefit is that the quantity of queries are not related to the amount of data: returning 15 people, will still execute 4 queries.</p>
 <p>On the other hand, the code complexity increases as you need a more complex mapping. Note that on the last two queries the <code>owner_id</code> and <code>animal_id</code> need to be retrieved, as the list of animals will be iterated to add each animal to the corresponding owner; and the same happens with the vaccines.</p>
 <h3 id="approach-2-how-orm-does-it">Approach 2: How ORM does it</h3>
 <p>This is a single query approach, but with one particularity, repeatable data:</p>
-<pre><code>SELECT
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span>
     p.id,
     p.name,
-    a.id AS animal_id,
-    a.type,
+    a.id <span style="color:#66d9ef">AS</span> animal_id,
+    a.<span style="color:#66d9ef">type</span>,
     a.name,
-    v.id AS vaccine_id,
+    v.id <span style="color:#66d9ef">AS</span> vaccine_id,
     v.name,
     av.applied_on
-FROM person p
-LEFT JOIN animal a ON p.id = a.owner_id
-LEFT JOIN animal_vaccine av ON av.animal_id = a.id
-LEFT JOIN vaccine v ON av.vaccine_id = v.id
-WHERE p.name = 'Pablo'
-</code></pre><p>Executing the query above will print the following result:</p>
+<span style="color:#66d9ef">FROM</span> person p
+<span style="color:#66d9ef">LEFT</span> <span style="color:#66d9ef">JOIN</span> animal a <span style="color:#66d9ef">ON</span> p.id <span style="color:#f92672">=</span> a.owner_id
+<span style="color:#66d9ef">LEFT</span> <span style="color:#66d9ef">JOIN</span> animal_vaccine av <span style="color:#66d9ef">ON</span> av.animal_id <span style="color:#f92672">=</span> a.id
+<span style="color:#66d9ef">LEFT</span> <span style="color:#66d9ef">JOIN</span> vaccine v <span style="color:#66d9ef">ON</span> av.vaccine_id <span style="color:#f92672">=</span> v.id
+<span style="color:#66d9ef">WHERE</span> p.name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;Pablo&#39;</span>
+</code></pre></div><p>Executing the query above will print the following result:</p>
 <table>
 <thead>
 <tr>
@@ -344,21 +343,21 @@ WHERE p.name = 'Pablo'
 <li>A json array for animal vaccines (an animal can have one or more than one vaccine)</li>
 <li>A json array for vaccines (a person can have N animals and each animal can have N vaccines)</li>
 </ul>
-<pre><code>SELECT
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span>
     p.id,
     p.name,
-    json_agg(DISTINCT to_jsonb(a.*)) AS animals,
-    json_agg(DISTINCT to_jsonb(av.*)) AS animal_vaccine,
-    json_agg(DISTINCT to_jsonb(v.*)) AS vaccine
-FROM person p
-LEFT JOIN animal a ON p.id = a.owner_id
-LEFT JOIN animal_vaccine av ON av.animal_id = a.id
-LEFT JOIN vaccine v ON av.vaccine_id = v.id
-WHERE p.name = 'Pablo'
-GROUP BY p.id, p.name
-</code></pre><p>Breaking it:</p>
-<pre><code>json_agg(DISTINCT to_jsonb(a.*)) AS animals
-</code></pre><p>This will return a json array <code>[...]</code>, on which each row will be returned as a json object (using the column name as json properties) and applying it a <code>DISTINCT</code> to discard repeated results. As we saw on the approach #2, an animal will appear for each vaccine it has received. The distinct filters out that repeated data.</p>
+    json_agg(<span style="color:#66d9ef">DISTINCT</span> to_jsonb(a.<span style="color:#f92672">*</span>)) <span style="color:#66d9ef">AS</span> animals,
+    json_agg(<span style="color:#66d9ef">DISTINCT</span> to_jsonb(av.<span style="color:#f92672">*</span>)) <span style="color:#66d9ef">AS</span> animal_vaccine,
+    json_agg(<span style="color:#66d9ef">DISTINCT</span> to_jsonb(v.<span style="color:#f92672">*</span>)) <span style="color:#66d9ef">AS</span> vaccine
+<span style="color:#66d9ef">FROM</span> person p
+<span style="color:#66d9ef">LEFT</span> <span style="color:#66d9ef">JOIN</span> animal a <span style="color:#66d9ef">ON</span> p.id <span style="color:#f92672">=</span> a.owner_id
+<span style="color:#66d9ef">LEFT</span> <span style="color:#66d9ef">JOIN</span> animal_vaccine av <span style="color:#66d9ef">ON</span> av.animal_id <span style="color:#f92672">=</span> a.id
+<span style="color:#66d9ef">LEFT</span> <span style="color:#66d9ef">JOIN</span> vaccine v <span style="color:#66d9ef">ON</span> av.vaccine_id <span style="color:#f92672">=</span> v.id
+<span style="color:#66d9ef">WHERE</span> p.name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;Pablo&#39;</span>
+<span style="color:#66d9ef">GROUP</span> <span style="color:#66d9ef">BY</span> p.id, p.name
+</code></pre></div><p>Breaking it:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">json_agg(<span style="color:#66d9ef">DISTINCT</span> to_jsonb(a.<span style="color:#f92672">*</span>)) <span style="color:#66d9ef">AS</span> animals
+</code></pre></div><p>This will return a json array <code>[...]</code>, on which each row will be returned as a json object (using the column name as json properties) and applying it a <code>DISTINCT</code> to discard repeated results. As we saw on the approach #2, an animal will appear for each vaccine it has received. The distinct filters out that repeated data.</p>
 <p>Also the <code>GROUP BY p.id, p.name</code> is used to make sure the person is returned only once as well.</p>
 <table>
 <thead>
@@ -391,57 +390,57 @@ GROUP BY p.id, p.name
 <p>Migrating from approach #1 to approach #3 showed improvements between 10x and 15x.</p>
 <h3 id="bonus-approach-doing-the-mapping-on-postgres---but-are-you-sure-you-want-to-do-this">Bonus approach: Doing the mapping on Postgres - but are you sure you want to do this?</h3>
 <p>In the approaches above, different ways to fetch data were described, but the mapping ocurred somewhere in the code that executes these queries. Is it possible to do the required mapping using Postgres?</p>
-<pre><code>SELECT
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span>
     jsonb_build_object(
-        'id', p.id,
-        'name', p.name,
-        'animals', (
-            SELECT json_agg(jsonb_build_object(
-                'id', a.id,
-                'type', a.type,
-                'name', a.name,
-                'vaccines', (
-                    SELECT json_agg(jsonb_build_object(
-                        'id', v.id,
-                        'name', v.name,
-                        'applied_on', av.applied_on
+        <span style="color:#e6db74">&#39;id&#39;</span>, p.id,
+        <span style="color:#e6db74">&#39;name&#39;</span>, p.name,
+        <span style="color:#e6db74">&#39;animals&#39;</span>, (
+            <span style="color:#66d9ef">SELECT</span> json_agg(jsonb_build_object(
+                <span style="color:#e6db74">&#39;id&#39;</span>, a.id,
+                <span style="color:#e6db74">&#39;type&#39;</span>, a.<span style="color:#66d9ef">type</span>,
+                <span style="color:#e6db74">&#39;name&#39;</span>, a.name,
+                <span style="color:#e6db74">&#39;vaccines&#39;</span>, (
+                    <span style="color:#66d9ef">SELECT</span> json_agg(jsonb_build_object(
+                        <span style="color:#e6db74">&#39;id&#39;</span>, v.id,
+                        <span style="color:#e6db74">&#39;name&#39;</span>, v.name,
+                        <span style="color:#e6db74">&#39;applied_on&#39;</span>, av.applied_on
                     ))
-                    FROM animal_vaccine av
-                    INNER JOIN vaccine v ON av.vaccine_id = v.id
-                    WHERE av.animal_id = a.id
+                    <span style="color:#66d9ef">FROM</span> animal_vaccine av
+                    <span style="color:#66d9ef">INNER</span> <span style="color:#66d9ef">JOIN</span> vaccine v <span style="color:#66d9ef">ON</span> av.vaccine_id <span style="color:#f92672">=</span> v.id
+                    <span style="color:#66d9ef">WHERE</span> av.animal_id <span style="color:#f92672">=</span> a.id
                 )
             ))
-            FROM animal a WHERE a.owner_id = p.id)
+            <span style="color:#66d9ef">FROM</span> animal a <span style="color:#66d9ef">WHERE</span> a.owner_id <span style="color:#f92672">=</span> p.id)
     )
-FROM person p
-WHERE p.name = 'Pablo'
-</code></pre><p>And the answer is yes. The query above, uses the function <code>jsonb_build_object</code> for creating a json object with named properties (vs <code>row_to_jsonb</code> which just took the <code>*</code> operator); and the <code>json_agg</code> is used for the relationships that are 1 to N.</p>
+<span style="color:#66d9ef">FROM</span> person p
+<span style="color:#66d9ef">WHERE</span> p.name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;Pablo&#39;</span>
+</code></pre></div><p>And the answer is yes. The query above, uses the function <code>jsonb_build_object</code> for creating a json object with named properties (vs <code>row_to_jsonb</code> which just took the <code>*</code> operator); and the <code>json_agg</code> is used for the relationships that are 1 to N.</p>
 <p>For each nested object, a sub query is performed to fetch the relevant data, which gets rid of <code>LEFT JOIN</code> and also <code>GROUP BY</code> (that also gets rid of inherent sorting)</p>
 <p>This returns:</p>
-<pre><code>{
-    &quot;id&quot;: &quot;fbab22a3-f7bc-422c-942f-d184ad189e29&quot;,
-    &quot;name&quot;: &quot;Pablo&quot;,
-    &quot;animals&quot;: [
-        {
-            &quot;id&quot;: &quot;5f2461a9-6c62-453e-9182-38cd0fa76e01&quot;,
-            &quot;name&quot;: &quot;Bills&quot;,
-            &quot;type&quot;: &quot;cat&quot;,
-            &quot;vaccines&quot;: [
-                {
-                    &quot;id&quot;: &quot;0ee28253-5b94-4096-926c-d33ceb22d24d&quot;,
-                    &quot;name&quot;: &quot;Feline herpesvirus&quot;,
-                    &quot;applied_on&quot;: &quot;2021-02-10T00:00:00&quot;
-                },
-                {
-                    &quot;id&quot;: &quot;6cf5487a-ba06-42e7-9e80-226590752a77&quot;,
-                    &quot;name&quot;: &quot;Rabies&quot;,
-                    &quot;applied_on&quot;: &quot;2022-02-10T00:00:00&quot;
-                }
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#960050;background-color:#1e0010">{</span>
+    <span style="color:#e6db74">&#34;id&#34;</span>: <span style="color:#e6db74">&#34;fbab22a3-f7bc-422c-942f-d184ad189e29&#34;</span>,
+    <span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;Pablo&#34;</span>,
+    <span style="color:#e6db74">&#34;animals&#34;</span>: [
+        <span style="color:#960050;background-color:#1e0010">{</span>
+            <span style="color:#e6db74">&#34;id&#34;</span>: <span style="color:#e6db74">&#34;5f2461a9-6c62-453e-9182-38cd0fa76e01&#34;</span>,
+            <span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;Bills&#34;</span>,
+            <span style="color:#e6db74">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;cat&#34;</span>,
+            <span style="color:#e6db74">&#34;vaccines&#34;</span>: [
+                <span style="color:#960050;background-color:#1e0010">{</span>
+                    <span style="color:#e6db74">&#34;id&#34;</span>: <span style="color:#e6db74">&#34;0ee28253-5b94-4096-926c-d33ceb22d24d&#34;</span>,
+                    <span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;Feline herpesvirus&#34;</span>,
+                    <span style="color:#e6db74">&#34;applied_on&#34;</span>: <span style="color:#e6db74">&#34;2021-02-10T00:00:00&#34;</span>
+                <span style="color:#960050;background-color:#1e0010">}</span>,
+                <span style="color:#960050;background-color:#1e0010">{</span>
+                    <span style="color:#e6db74">&#34;id&#34;</span>: <span style="color:#e6db74">&#34;6cf5487a-ba06-42e7-9e80-226590752a77&#34;</span>,
+                    <span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;Rabies&#34;</span>,
+                    <span style="color:#e6db74">&#34;applied_on&#34;</span>: <span style="color:#e6db74">&#34;2022-02-10T00:00:00&#34;</span>
+                <span style="color:#960050;background-color:#1e0010">}</span>
             ]
-        }
+        <span style="color:#960050;background-color:#1e0010">}</span>
     ]
-}
-</code></pre><p>Postgres, and some other databases, evolved a lot throughout time and are very capable of dealing with json types already. Under certain circumstances a query like the one above can be very useful.</p>
+<span style="color:#960050;background-color:#1e0010">}</span>
+</code></pre></div><p>Postgres, and some other databases, evolved a lot throughout time and are very capable of dealing with json types already. Under certain circumstances a query like the one above can be very useful.</p>
 <p>However, keep in mind that doing this could cause the service to have a high coupling between the API model and the database queries; and a change of how you want the response to look like, may affect the way you execute a query.</p>
 <h3 id="bottom-line">Bottom line</h3>
 <ul>
@@ -532,10 +531,10 @@ To be absolutely, unequivocally clear, you should not store secret or sensitive 
 <blockquote>
 <p>From now on, replace pablo-test-project with your GCP project identifier when executing the commands.</p>
 </blockquote>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud config set project pablo-test-project
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud config set project pablo-test-project
 </code></pre></div><p>For accessing Secret Manager API from our Google Kubernetes Engine there are three things that needs to be done.</p>
 <h4 id="enable-secret-manager-api">Enable Secret Manager API</h4>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud services enable secretmanager.googleapis.com
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud services enable secretmanager.googleapis.com
 </code></pre></div><p><a href="https://console.cloud.google.com/apis/library/secretmanager.googleapis.com">Or from the Console UI.</a></p>
 <h4 id="set-corresponding-iam-role-on-the-service-account-running-the-instance">Set corresponding IAM role on the service account running the instance</h4>
 <p><a href="https://cloud.google.com/compute/docs/access/service-accounts#service_account_permissions">From service account documentation.</a></p>
@@ -544,11 +543,11 @@ To be absolutely, unequivocally clear, you should not store secret or sensitive 
 Furthermore, an instance&rsquo;s access scopes determine the default OAuth scopes for requests made through the gcloud tool and client libraries on the instance. As a result, access scopes potentially further limit access to API methods when authenticating through OAuth. [&hellip;]</p>
 </blockquote>
 <p>In order to assign the corresponding IAM roles to the service account, the account should be created first:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud iam service-accounts create demo-service-account <span style="color:#ae81ff">\
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud iam service-accounts create demo-service-account <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--description<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;Service account used for our demo cluster&#39;</span> <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--display-name<span style="color:#f92672">=</span>demo-service-account
 </code></pre></div><p>The role to be assigned to this service account is <a href="https://cloud.google.com/iam/docs/understanding-roles#secret-manager-roles">roles/secretmanager.secretAccessor</a> which allows accessing the payload of secrets:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud projects add-iam-policy-binding pablo-test-project <span style="color:#ae81ff">\
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud projects add-iam-policy-binding pablo-test-project <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--member<span style="color:#f92672">=</span>serviceAccount:demo-service-account@pablo-test-project.iam.gserviceaccount.com <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--role<span style="color:#f92672">=</span>roles/secretmanager.secretAccessor
 </code></pre></div><h4 id="configure-oauth-scopes-on-the-instance-that-consumes-the-api">Configure OAuth scopes on the instance that consumes the API</h4>
@@ -557,19 +556,19 @@ Furthermore, an instance&rsquo;s access scopes determine the default OAuth scope
 <p>To access the Secret Manager API from within a Compute Engine instance or a Google Kubernetes Engine node (which is also a Compute Engine instance), the instance must have the cloud-platform OAuth scope. For more information about access scopes in Compute Engine, see Service account permissions in the Compute Engine documentation.</p>
 </blockquote>
 <p>As mentioned before, an instance&rsquo;s access scopes determine the default OAuth2 scopes for requests made. So the Kubernetes instance that is going to be created needs the <code>cloud-platform</code> scope. And also don&rsquo;t forget to indicate the service account created before.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud container clusters create demo-cluster <span style="color:#ae81ff">\
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud container clusters create demo-cluster <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--zone<span style="color:#f92672">=</span>europe-west3-a <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--num-nodes<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span> <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--machine-type<span style="color:#f92672">=</span>n1-standard-1 <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--service-account<span style="color:#f92672">=</span>demo-service-account@pablo-test-project.iam.gserviceaccount.com <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--scopes<span style="color:#f92672">=</span>https://www.googleapis.com/auth/monitoring,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/cloud-platform
 </code></pre></div><p>After the cluster is deployed, get the credentials for <code>kubectl</code>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud container clusters get-credentials demo-cluster --zone europe-west3-a
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud container clusters get-credentials demo-cluster --zone europe-west3-a
 </code></pre></div><p>Before proceeding further with the cluster, create a secret and add a value on the Secret Manager:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud secrets create MY_SECRET
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud secrets create MY_SECRET
 printf <span style="color:#e6db74">&#34;s3cr3t&#34;</span> | gcloud secrets versions add MY_SECRET --data-file<span style="color:#f92672">=</span>-
 </code></pre></div><p>To test that the instance can access to Secret Manager API, a dummy pod will be deployed so that you can exec into it:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#ae81ff">cat &lt;&lt;EOF | kubectl apply -f -</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#ae81ff">cat &lt;&lt;EOF | kubectl apply -f -</span>
 <span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
 <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Pod</span>
 <span style="color:#f92672">metadata</span>:
@@ -583,7 +582,7 @@ printf <span style="color:#e6db74">&#34;s3cr3t&#34;</span> | gcloud secrets vers
     - <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">80</span>
 <span style="color:#ae81ff">EOF</span>
 </code></pre></div><p>Exec into the created container and install curl on it:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl exec -it httpbin -- sh
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl exec -it httpbin -- sh
 $ apt update; apt install curl;
 </code></pre></div><h3 id="trying-it-out">Trying it out</h3>
 <p>In order to try the Secret Manager API an OAuth2 token needs to be issued <a href="https://cloud.google.com/compute/docs/access/create-enable-service-accounts-for-instances#applications">as we can read on the documentation.</a></p>
@@ -592,13 +591,13 @@ $ apt update; apt install curl;
 On the instance where your application runs, query the metadata server for an access token. [&hellip;]</p>
 </blockquote>
 <p>When inside the deployed container:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token -H <span style="color:#e6db74">&#34;Metadata-Flavor: Google&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token -H <span style="color:#e6db74">&#34;Metadata-Flavor: Google&#34;</span>
 </code></pre></div><p>Since the OAuth2 scopes defined for the instances contains the <code>cloud-platform</code> one, the service account will be able to send requests towards Secret Manager API.</p>
 <p>Copy the <code>access_token</code> from the response and execute the following call:</p>
 <p><em>Remember to replace pablo-test-project with your project name.</em></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl https://content-secretmanager.googleapis.com/v1beta1/projects/pablo-test-project/secrets/MY_SECRET/versions/latest:access -H <span style="color:#e6db74">&#34;Authorization&#34;</span>:<span style="color:#e6db74">&#34;Bearer &lt;access_token&gt;&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl https://content-secretmanager.googleapis.com/v1beta1/projects/pablo-test-project/secrets/MY_SECRET/versions/latest:access -H <span style="color:#e6db74">&#34;Authorization&#34;</span>:<span style="color:#e6db74">&#34;Bearer &lt;access_token&gt;&#34;</span>
 </code></pre></div><p>The response should look like this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">{</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">{</span>
   <span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;projects/127553260172/secrets/MY_SECRET/versions/1&#34;</span>,
   <span style="color:#e6db74">&#34;payload&#34;</span>: <span style="color:#f92672">{</span>
     <span style="color:#e6db74">&#34;data&#34;</span>: <span style="color:#e6db74">&#34;czNjcjN0&#34;</span>
@@ -607,11 +606,11 @@ On the instance where your application runs, query the metadata server for an ac
 </code></pre></div><p>Decoding base64 <code>czNjcjN0</code> is <code>s3cr3t</code>.
 This worked fine, but then do we need the IAM permission or is it just enough with the OAuth2 scope?</p>
 <p>Remove the IAM permission from the service account:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud projects remove-iam-policy-binding pablo-test-project <span style="color:#ae81ff">\
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud projects remove-iam-policy-binding pablo-test-project <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--member<span style="color:#f92672">=</span>serviceAccount:demo-service-account@pablo-test-project.iam.gserviceaccount.com <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--role<span style="color:#f92672">=</span>roles/secretmanager.secretAccessor
 </code></pre></div><p>Wait a minute until the change is propagated and issue the requests again. The response should look like this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">{</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">{</span>
   <span style="color:#e6db74">&#34;error&#34;</span>: <span style="color:#f92672">{</span>
     <span style="color:#e6db74">&#34;code&#34;</span>: 403,
     <span style="color:#e6db74">&#34;message&#34;</span>: <span style="color:#e6db74">&#34;Permission &#39;secretmanager.versions.access&#39; denied for resource &#39;projects/pablo-test-project/secrets/MY_SECRET/versions/latest&#39; (or it may not exist).&#34;</span>,
@@ -628,7 +627,7 @@ This worked fine, but then do we need the IAM permission or is it just enough wi
 <li>The application listens on the port <code>8080</code> and exposes the following route <code>GET /get-secret</code> expecting the header <code>secret: &lt;secret-name&gt;</code>.</li>
 </ul>
 <p>On the next section, this application is explained but for now we can just add it do the cluster:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#ae81ff">cat &lt;&lt;EOF | kubectl apply -f -</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#ae81ff">cat &lt;&lt;EOF | kubectl apply -f -</span>
 <span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
 <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Pod</span>
 <span style="color:#f92672">metadata</span>:
@@ -645,15 +644,15 @@ This worked fine, but then do we need the IAM permission or is it just enough wi
       <span style="color:#f92672">value</span>: <span style="color:#ae81ff">pablo-test-project</span>
 <span style="color:#ae81ff">EOF</span>
 </code></pre></div><p>For simplicity, one can just port forward it:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl port-forward secret-manager 8080:8080
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl port-forward secret-manager 8080:8080
 </code></pre></div><p>For existing secret:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl localhost:8080/get-secret -H <span style="color:#e6db74">&#34;secret: MY_SECRET&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl localhost:8080/get-secret -H <span style="color:#e6db74">&#34;secret: MY_SECRET&#34;</span>
 &gt; <span style="color:#f92672">{</span><span style="color:#e6db74">&#34;name&#34;</span>:<span style="color:#e6db74">&#34;MY_SECRET&#34;</span>,<span style="color:#e6db74">&#34;value&#34;</span>:<span style="color:#e6db74">&#34;s3cr3t&#34;</span><span style="color:#f92672">}</span>
 </code></pre></div><p>For non existing secret:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl localhost:8080/get-secret -H <span style="color:#e6db74">&#34;secret: OTHER_SECRET&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl localhost:8080/get-secret -H <span style="color:#e6db74">&#34;secret: OTHER_SECRET&#34;</span>
 &gt; <span style="color:#f92672">{</span><span style="color:#e6db74">&#34;name&#34;</span>:<span style="color:#e6db74">&#34;MY_SECRET&#34;</span>,<span style="color:#e6db74">&#34;value&#34;</span>:<span style="color:#e6db74">&#34;default-for-OTHER_SECRET&#34;</span><span style="color:#f92672">}</span>
 </code></pre></div><p>Now, let&rsquo;s do another test and deploy the pod without <code>GCP_PROJECT</code> environment variable but with the <code>MY_SECRET</code> one:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#ae81ff">kubectl delete pod secret-manager;</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#ae81ff">kubectl delete pod secret-manager;</span>
 
 <span style="color:#ae81ff">cat &lt;&lt;EOF | kubectl apply -f -</span>
 <span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
@@ -672,17 +671,17 @@ This worked fine, but then do we need the IAM permission or is it just enough wi
       <span style="color:#f92672">value</span>: <span style="color:#ae81ff">hello-from-env</span>
 <span style="color:#ae81ff">EOF</span>
 </code></pre></div><p>Stop the port-forwarding, and execute it again:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl port-forward secret-manager 8080:8080
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl port-forward secret-manager 8080:8080
 </code></pre></div><p>For existing secret:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl localhost:8080/get-secret -H <span style="color:#e6db74">&#34;secret: MY_SECRET&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl localhost:8080/get-secret -H <span style="color:#e6db74">&#34;secret: MY_SECRET&#34;</span>
 &gt; <span style="color:#f92672">{</span><span style="color:#e6db74">&#34;name&#34;</span>:<span style="color:#e6db74">&#34;MY_SECRET&#34;</span>,<span style="color:#e6db74">&#34;value&#34;</span>:<span style="color:#e6db74">&#34;hello-from-env&#34;</span><span style="color:#f92672">}</span>
 </code></pre></div><p>For non existing secret:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl localhost:8080/get-secret -H <span style="color:#e6db74">&#34;secret: OTHER_SECRET&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl localhost:8080/get-secret -H <span style="color:#e6db74">&#34;secret: OTHER_SECRET&#34;</span>
 &gt; <span style="color:#f92672">{</span><span style="color:#e6db74">&#34;name&#34;</span>:<span style="color:#e6db74">&#34;MY_SECRET&#34;</span>,<span style="color:#e6db74">&#34;value&#34;</span>:<span style="color:#e6db74">&#34;default-for-OTHER_SECRET&#34;</span><span style="color:#f92672">}</span>
 </code></pre></div><p>Easy, right?</p>
 <h3 id="breakdown-the-demo-application">Breakdown the demo application</h3>
 <p>The application is fairly easy. On startup it looks for the value of the <code>GCP_PROJECT</code> environment variable. This value is supplied to the <code>SecretGetter</code> struct which defines the <code>GetSecret</code> function.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">SecretGetter</span> <span style="color:#66d9ef">struct</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">SecretGetter</span> <span style="color:#66d9ef">struct</span> {
 	<span style="color:#a6e22e">GoogleCloudProject</span> <span style="color:#66d9ef">string</span>
 }
 
@@ -704,7 +703,7 @@ This worked fine, but then do we need the IAM permission or is it just enough wi
 	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">value</span>
 }
 </code></pre></div><p>If <code>GoogleCloudProject</code> is empty, then the value will be taken from environment variables. Otherwise it does the following, shorten for brevity:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">sg</span> <span style="color:#a6e22e">SecretGetter</span>) <span style="color:#a6e22e">GetSecret</span>(<span style="color:#a6e22e">name</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">fallback</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">string</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">sg</span> <span style="color:#a6e22e">SecretGetter</span>) <span style="color:#a6e22e">GetSecret</span>(<span style="color:#a6e22e">name</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">fallback</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">string</span> {
 	<span style="color:#75715e">// If GCP project is not present, get value from environment variables
 </span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">sg</span>.<span style="color:#a6e22e">GoogleCloudProject</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> {
 		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">getEnv</span>(<span style="color:#a6e22e">name</span>, <span style="color:#a6e22e">fallback</span>)
@@ -763,7 +762,7 @@ This worked fine, but then do we need the IAM permission or is it just enough wi
 	<span style="color:#66d9ef">return</span> string(<span style="color:#a6e22e">data</span>)
 }
 </code></pre></div><p>And then for the API handler:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// getSecretHandler gets the secret value according to the name sent on the header
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// getSecretHandler gets the secret value according to the name sent on the header
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">getSecretHandler</span>(<span style="color:#a6e22e">secretGetter</span> <span style="color:#a6e22e">SecretGetter</span>) <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span> {
 	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">rq</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) {
 		<span style="color:#75715e">// Only work with GET requests
@@ -800,7 +799,7 @@ This worked fine, but then do we need the IAM permission or is it just enough wi
 	}
 }
 </code></pre></div><p>Of course there is a catch. When working on local environment if the value for <code>GCP_PROJECT</code> is set, then only the default value will be returned as the call to get the token of the instance running inside GCP will fail:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Get <span style="color:#e6db74">&#34;http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token&#34;</span>: dial tcp: lookup metadata.google.internal: no such host
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Get <span style="color:#e6db74">&#34;http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token&#34;</span>: dial tcp: lookup metadata.google.internal: no such host
 </code></pre></div><h3 id="summary">Summary</h3>
 <ul>
 <li>(+) Secret Manager has a very intuitive API which also has some nice dedicated UI for developers to access secrets (if they also have the required IAM), see key versions and configure policies for expiration.</li>
@@ -824,7 +823,7 @@ Continuing with the topic of Postgres and benchmarking, I decided to check out h
 import ( ... &amp;#34;github.com/jackc/pgx/v4/pgxpool&amp;#34; ) What is pgx, and why should we care?</description>
             <content type="html"><![CDATA[<p>Some days ago a coworker of mine linked me to the source code of <a href="https://github.com/google/exposure-notifications-server">Google&rsquo;s exposure notifications API</a> and of course is a good chance to see how Google is doing Go related codebases.</p>
 <p>Continuing with the topic of Postgres and benchmarking, I decided to check out how Postgres configuration was done and this <a href="https://github.com/google/exposure-notifications-server/blob/master/internal/database/connection.go#L27">line</a> got my attention:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">import</span> (
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">import</span> (
 	<span style="color:#f92672">...</span>
 	<span style="color:#e6db74">&#34;github.com/jackc/pgx/v4/pgxpool&#34;</span>
 )
@@ -860,7 +859,7 @@ import ( ... &amp;#34;github.com/jackc/pgx/v4/pgxpool&amp;#34; ) What is pgx, an
 <p>Without further ado, let&rsquo;s begin.</p>
 <h2 id="connection-handling">Connection handling</h2>
 <p>On the <code>lib/pq</code> version, <code>database/sql</code> is being used to create a struct holding a <code>*sql.Db</code> variable which was being used for every call to the database.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">pgCustomerRepo</span> <span style="color:#66d9ef">struct</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">pgCustomerRepo</span> <span style="color:#66d9ef">struct</span> {
 	<span style="color:#a6e22e">dbHandler</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">sql</span>.<span style="color:#a6e22e">DB</span>
 }
 
@@ -874,7 +873,7 @@ import ( ... &amp;#34;github.com/jackc/pgx/v4/pgxpool&amp;#34; ) What is pgx, an
 	}, <span style="color:#66d9ef">nil</span>
 }
 </code></pre></div><p>Using <code>pgx</code> this is changed to:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">pgCustomerRepo</span> <span style="color:#66d9ef">struct</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">pgCustomerRepo</span> <span style="color:#66d9ef">struct</span> {
 	<span style="color:#a6e22e">dbHandler</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pgxpool</span>.<span style="color:#a6e22e">Pool</span>
 }
 
@@ -908,7 +907,7 @@ import ( ... &amp;#34;github.com/jackc/pgx/v4/pgxpool&amp;#34; ) What is pgx, an
 <p>With the connection covered, let&rsquo;s move to the queries:</p>
 <h3 id="advisory-lock">Advisory Lock</h3>
 <p>The changes to the code are barely there. All of the <code>pgx</code> functions that go against the database expect a <code>context</code> and there is none non-context alternative.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">tx</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">BeginTx</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#66d9ef">nil</span>)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">tx</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">BeginTx</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#66d9ef">nil</span>)
 <span style="color:#f92672">--</span>&gt;
 <span style="color:#a6e22e">tx</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">BeginTx</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">pgx</span>.<span style="color:#a6e22e">TxOptions</span>{})
 
@@ -941,7 +940,7 @@ import ( ... &amp;#34;github.com/jackc/pgx/v4/pgxpool&amp;#34; ) What is pgx, an
 <span style="color:#f92672">--</span>&gt;
 <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">tx</span>.<span style="color:#a6e22e">Rollback</span>(<span style="color:#a6e22e">ctx</span>)
 </code></pre></div><p>As for the performance:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LIB/PQ: EXECUTING FOR LOCKS
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LIB/PQ: EXECUTING FOR LOCKS
 Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">974</span>   24.35%  <span style="color:#75715e">##################</span>
 <span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2771</span>  69.27%  <span style="color:#75715e">###################################################</span>
@@ -962,7 +961,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
 </code></pre></div><p>And this is awesome! Out of the box without changing too much the code, the result is already speaking for itself.</p>
 <h2 id="upsert-on-conflict">Upsert on conflict</h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span>
 	<span style="color:#e6db74">&#34;INSERT INTO customers(customer_id) VALUES($1) &#34;</span> <span style="color:#f92672">+</span>
 	<span style="color:#e6db74">&#34;ON CONFLICT (customer_id) DO UPDATE SET customer_id = excluded.customer_id RETURNING ctid, xmax, id&#34;</span>
 
@@ -972,7 +971,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">QueryRow</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">id</span>).<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
 </code></pre></div><p>Even simpler than the previous one, now there is a one liner.</p>
 <p>Benchmark:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LIB/PQ: EXECUTING FOR UPSERT CONFLICT
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LIB/PQ: EXECUTING FOR UPSERT CONFLICT
 Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1777</span>  44.42%  <span style="color:#75715e">#################################</span>
 <span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1938</span>  48.45%  <span style="color:#75715e">####################################</span>
@@ -996,7 +995,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <p>As you can recall (if you read my previous post), there is a limitation when sending on the same <code>QueryContext</code> more than one parameterized query.</p>
 <p>On the previous post, this was bypassed by a non good practice that was not sending parameterized queries but injecting the string; which as I stated previously it is a bad practice that can led to security vulnerabilities.</p>
 <p>But on <code>pgx</code> there is a built-in support for sending a query batch in a single trip. And this definitely draw my attention since I find this approach the easiest to understand a.k.a <code>write first, read later</code>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span>
 	<span style="color:#e6db74">&#34;INSERT INTO customers(customer_id)	VALUES($1) ON CONFLICT DO NOTHING;&#34;</span> <span style="color:#f92672">+</span>
 	<span style="color:#e6db74">&#34;SELECT ctid, xmax, id FROM customers WHERE customer_id = $1&#34;</span>
 
@@ -1004,7 +1003,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#a6e22e">row</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">QueryRowContext</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">query</span>)
 <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">row</span>.<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
 </code></pre></div><p>This unsafe piece of code now can be converted to an elegant and performant way:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">batch</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">pgx</span>.<span style="color:#a6e22e">Batch</span>{}
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">batch</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">pgx</span>.<span style="color:#a6e22e">Batch</span>{}
 <span style="color:#a6e22e">batch</span>.<span style="color:#a6e22e">Queue</span>(<span style="color:#e6db74">&#34;INSERT INTO customers(customer_id) VALUES($1) ON CONFLICT DO NOTHING&#34;</span>, <span style="color:#a6e22e">id</span>)
 <span style="color:#a6e22e">batch</span>.<span style="color:#a6e22e">Queue</span>(<span style="color:#e6db74">&#34;SELECT ctid, xmax, id FROM customers WHERE customer_id = $1&#34;</span>, <span style="color:#a6e22e">id</span>)
 <span style="color:#a6e22e">results</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">SendBatch</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">batch</span>)
@@ -1021,7 +1020,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 
 <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">results</span>.<span style="color:#a6e22e">Close</span>()
 </code></pre></div><p>But does this truly work?</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LIB/PQ: EXECUTING FOR UPSERT DO NOTHING
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LIB/PQ: EXECUTING FOR UPSERT DO NOTHING
 Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">3426</span>  85.65%  <span style="color:#75715e">################################################################</span>
 <span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">572</span>   14.30%  <span style="color:#75715e">##########</span>
@@ -1043,7 +1042,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 </code></pre></div><p>And the answer is yes, it does work. Not only it is faster, but it managed to get rid of the vulnerability issue and allows the code to send two parameterized queries in one round trip.</p>
 <p>Now if someone asks me if I choose doing this over CTE queries for this scenario, I will lean more on this approach since it is easier to comprehend.</p>
 <h2 id="cte-queries">CTE queries</h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span>
 	<span style="color:#e6db74">&#34;WITH &#34;</span> <span style="color:#f92672">+</span>
 		<span style="color:#e6db74">&#34;search AS (SELECT ctid, xmax, id FROM customers WHERE customer_id = $1 LIMIT 1),&#34;</span> <span style="color:#f92672">+</span>
 		<span style="color:#e6db74">&#34;add AS (INSERT INTO customers (customer_id) SELECT $1 WHERE NOT EXISTS(SELECT id from search) RETURNING ctid, xmax, id)&#34;</span> <span style="color:#f92672">+</span>
@@ -1055,7 +1054,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">QueryRow</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">id</span>).<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
 </code></pre></div><p>As with the other approaches, not much to change here.</p>
 <p>Benchmark:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LIB/PQ: EXECUTING FOR UPSERT CTE
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LIB/PQ: EXECUTING FOR UPSERT CTE
 Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2950</span>  73.75%  <span style="color:#75715e">#######################################################</span>
 <span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1034</span>  25.85%  <span style="color:#75715e">###################</span>
@@ -1079,8 +1078,8 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <p>In all of these approaches shown, the use case was to bombard the database in order to insert and fetch a customer with the same ID. Maybe the cache stops working when the parameter changes.</p>
 </blockquote>
 <p>Let&rsquo;s try it out:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">routes</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/upsert-cte-random&#34;</span>, <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">UpsertCustomerRandom</span>(<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">CustomerRepo</span>.<span style="color:#a6e22e">UpsertCustomerCte</span>))
-</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Server</span>) <span style="color:#a6e22e">UpsertCustomerRandom</span>(<span style="color:#a6e22e">repoUpsert</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">id</span> <span style="color:#a6e22e">uuid</span>.<span style="color:#a6e22e">UUID</span>) (<span style="color:#a6e22e">res</span> <span style="color:#a6e22e">domain</span>.<span style="color:#a6e22e">UpsertedRow</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>)) <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">routes</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/upsert-cte-random&#34;</span>, <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">UpsertCustomerRandom</span>(<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">CustomerRepo</span>.<span style="color:#a6e22e">UpsertCustomerCte</span>))
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Server</span>) <span style="color:#a6e22e">UpsertCustomerRandom</span>(<span style="color:#a6e22e">repoUpsert</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">id</span> <span style="color:#a6e22e">uuid</span>.<span style="color:#a6e22e">UUID</span>) (<span style="color:#a6e22e">res</span> <span style="color:#a6e22e">domain</span>.<span style="color:#a6e22e">UpsertedRow</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>)) <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span> {
 	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) {
 		<span style="color:#f92672">...</span>
 
@@ -1097,7 +1096,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 	}
 }
 </code></pre></div><p>Of course, in order to do a comparison, this new route was benchmarked using both <code>lib/pq</code> and <code>pgx</code>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LIB/PQ: EXECUTING FOR UPSERT CTE RANDOM
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LIB/PQ: EXECUTING FOR UPSERT CTE RANDOM
 Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1744</span>  43.60%  <span style="color:#75715e">################################</span>
 <span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2208</span>  55.20%  <span style="color:#75715e">#########################################</span>
@@ -1125,7 +1124,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <li>The code used for benchmarking can be found <a href="https://github.com/pmorelli92/pg-upsert-returning">here</a>. The <code>master</code> branch contains the <code>lib/pq</code> code and the branch <code>refactor/pgx</code> contains the <code>pgx</code> code.</li>
 <li>All the benchmarks can be executed easily by:</li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">make run-db <span style="color:#f92672">(</span>create database and table after executing this<span style="color:#f92672">)</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">make run-db <span style="color:#f92672">(</span>create database and table after executing this<span style="color:#f92672">)</span>
 make run-app
 make run-bench
 </code></pre></div><p>Last, but not least, if you consider this is useful, do not hesitate on sharing it on your favorite social media; and if there is a particular topic you want me to cover, just put it on the comments below.</p>
@@ -1163,18 +1162,18 @@ The application is written in Go and can be found <a href="https://github.com/pm
 </ul>
 <h2 id="pre-requisites">Pre-requisites</h2>
 <p>Since we are going to use postgres, an instance needs to be set up, and for convenience this example uses docker:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker run --name db -p 5432:5432 -e POSTGRES_HOST_AUTH_METHOD<span style="color:#f92672">=</span>trust postgres:latest
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker run --name db -p 5432:5432 -e POSTGRES_HOST_AUTH_METHOD<span style="color:#f92672">=</span>trust postgres:latest
 </code></pre></div><p>A file named <code>seed.psql</code> is also present on the root of the repository:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">DATABASE</span> customer_svc;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">DATABASE</span> customer_svc;
 <span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> customers(id SERIAL, customer_id UUID <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span>);
 </code></pre></div><h2 id="running-the-application">Running the application</h2>
 <p>The application can be run in a container as well:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker build -t pg-upsert-app:local .
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker build -t pg-upsert-app:local .
 docker run -p 8080:8080 --link db --name app -i pg-upsert-app:local
 </code></pre></div><h2 id="benchmarking">Benchmarking</h2>
 <p>For the benchmark, the tool <a href="https://github.com/tsenart/vegeta">vegeta</a> is used. This tool allows doing HTTP load testing which will be used against the API.</p>
 <p>The test suite is just a bash script that will feature a similar logic for each approach to be tested; example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">UPSERT_LOCK<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>echo <span style="color:#e6db74">&#39;{
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">UPSERT_LOCK<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>echo <span style="color:#e6db74">&#39;{
 </span><span style="color:#e6db74">  method: &#34;POST&#34;,
 </span><span style="color:#e6db74">  url: &#34;http://app:8080/upsert-lock&#34;,
 </span><span style="color:#e6db74">  body:&#34;{\&#34;id\&#34;: \&#34;&lt;ruuid&gt;\&#34;}&#34; | @base64,
@@ -1192,12 +1191,12 @@ jq -ncM <span style="color:#e6db74">&#34;</span>$UPSERT_LOCK<span style="color:#
 <li>The results will be aggregated into different buckets determined by <code>hist[0,2ms,4ms,6ms,8ms,10ms,15ms]</code>.</li>
 </ul>
 <p>The execution of this test is also dockerized so there is no need to download additional tools:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker build -t benchmark:local -f benchmark/Dockerfile benchmark/.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker build -t benchmark:local -f benchmark/Dockerfile benchmark/.
 docker run --link app -t benchmark:local
 </code></pre></div><p>In order to avoid results influenced by the warm up phase of the app, the test suite was executed twice and only the results from the last execution are shown below.</p>
 <h2 id="advisory-lock">Advisory lock</h2>
 <p>As the previous post indicates this approach is the less scalable. The introduction of a custom application lock in the database is not a good design model and the results are showing that:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">EXECUTING FOR LOCKS
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">EXECUTING FOR LOCKS
 Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">974</span>   24.35%  <span style="color:#75715e">##################</span>
 <span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2771</span>  69.27%  <span style="color:#75715e">###################################################</span>
@@ -1207,7 +1206,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">1</span>     0.03%
 <span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
 </code></pre></div><p>Not only that but the code is also more complex than other solutions:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">repo</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pgCustomerRepo</span>) <span style="color:#a6e22e">UpsertCustomerLock</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">id</span> <span style="color:#a6e22e">uuid</span>.<span style="color:#a6e22e">UUID</span>) (<span style="color:#a6e22e">res</span> <span style="color:#a6e22e">domain</span>.<span style="color:#a6e22e">UpsertedRow</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">repo</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pgCustomerRepo</span>) <span style="color:#a6e22e">UpsertCustomerLock</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">id</span> <span style="color:#a6e22e">uuid</span>.<span style="color:#a6e22e">UUID</span>) (<span style="color:#a6e22e">res</span> <span style="color:#a6e22e">domain</span>.<span style="color:#a6e22e">UpsertedRow</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
 	<span style="color:#a6e22e">tx</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">BeginTx</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#66d9ef">nil</span>)
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
 		<span style="color:#66d9ef">return</span>
@@ -1257,7 +1256,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <li>Firing triggers affecting the table.</li>
 </ul>
 <p>For a better refresher, click <a href="https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries/#4-on-conflict-update">here</a></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">EXECUTING FOR UPSERT CONFLICT
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">EXECUTING FOR UPSERT CONFLICT
 Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1777</span>  44.42%  <span style="color:#75715e">#################################</span>
 <span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1938</span>  48.45%  <span style="color:#75715e">####################################</span>
@@ -1267,7 +1266,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">18</span>    0.45%
 <span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">4</span>     0.10%
 </code></pre></div><p>The code here is simpler, so this one feels easier:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">repo</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pgCustomerRepo</span>) <span style="color:#a6e22e">UpsertCustomerConflict</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">id</span> <span style="color:#a6e22e">uuid</span>.<span style="color:#a6e22e">UUID</span>) (<span style="color:#a6e22e">res</span> <span style="color:#a6e22e">domain</span>.<span style="color:#a6e22e">UpsertedRow</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">repo</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pgCustomerRepo</span>) <span style="color:#a6e22e">UpsertCustomerConflict</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">id</span> <span style="color:#a6e22e">uuid</span>.<span style="color:#a6e22e">UUID</span>) (<span style="color:#a6e22e">res</span> <span style="color:#a6e22e">domain</span>.<span style="color:#a6e22e">UpsertedRow</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
 	<span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span>
 		<span style="color:#e6db74">&#34;INSERT INTO customers(customer_id) VALUES($1) &#34;</span> <span style="color:#f92672">+</span>
 		<span style="color:#e6db74">&#34;ON CONFLICT (customer_id) DO UPDATE SET customer_id = excluded.customer_id &#34;</span> <span style="color:#f92672">+</span>
@@ -1292,7 +1291,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <p>If two batches are going to be used, the performance will end up being somewhat like the locking scenario, since there is a need of going several times to the database.</p>
 <p>The example displayed below shows how to achieve it in only one batch; but then again this is part of the cons. By nature Postgres does not allow sending two parameterized query statements on the same batch; so the parameters should be resolved before sending the query which can led to SQL injection.</p>
 <p>The example below shows how to bypass Postgres limit avoiding parameters; but this is not a good practice, as it can introduce security vulnerabilities in case we are dealing with parameters like strings.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">repo</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pgCustomerRepo</span>) <span style="color:#a6e22e">UpsertCustomerDoNothing</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">id</span> <span style="color:#a6e22e">uuid</span>.<span style="color:#a6e22e">UUID</span>) (<span style="color:#a6e22e">res</span> <span style="color:#a6e22e">domain</span>.<span style="color:#a6e22e">UpsertedRow</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">repo</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pgCustomerRepo</span>) <span style="color:#a6e22e">UpsertCustomerDoNothing</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">id</span> <span style="color:#a6e22e">uuid</span>.<span style="color:#a6e22e">UUID</span>) (<span style="color:#a6e22e">res</span> <span style="color:#a6e22e">domain</span>.<span style="color:#a6e22e">UpsertedRow</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
 	<span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span>
 		<span style="color:#e6db74">&#34;INSERT INTO customers(customer_id)	VALUES($1) ON CONFLICT DO NOTHING;&#34;</span> <span style="color:#f92672">+</span>
 		<span style="color:#e6db74">&#34;SELECT ctid, xmax, id FROM customers WHERE customer_id = $1&#34;</span>
@@ -1307,7 +1306,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <li>Fetch the customer.</li>
 </ol>
 <p>The performance if this is accomplished in one batch is good, but don&rsquo;t do it as security is more important than premature optimization:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">EXECUTING FOR UPSERT DO NOTHING
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">EXECUTING FOR UPSERT DO NOTHING
 Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">3426</span>  85.65%  <span style="color:#75715e">################################################################</span>
 <span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">572</span>   14.30%  <span style="color:#75715e">##########</span>
@@ -1324,7 +1323,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <li>Parameterized queries.</li>
 <li>Works with database engines that do not support <code>ON CONFLICT DO ...</code></li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">EXECUTING FOR UPSERT CTE
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">EXECUTING FOR UPSERT CTE
 Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2950</span>  73.75%  <span style="color:#75715e">#######################################################</span>
 <span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1034</span>  25.85%  <span style="color:#75715e">###################</span>
@@ -1334,7 +1333,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
 <span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
 </code></pre></div><p>The code is displayed below:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">repo</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pgCustomerRepo</span>) <span style="color:#a6e22e">UpsertCustomerCte</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">id</span> <span style="color:#a6e22e">uuid</span>.<span style="color:#a6e22e">UUID</span>) (<span style="color:#a6e22e">res</span> <span style="color:#a6e22e">domain</span>.<span style="color:#a6e22e">UpsertedRow</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">repo</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pgCustomerRepo</span>) <span style="color:#a6e22e">UpsertCustomerCte</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">id</span> <span style="color:#a6e22e">uuid</span>.<span style="color:#a6e22e">UUID</span>) (<span style="color:#a6e22e">res</span> <span style="color:#a6e22e">domain</span>.<span style="color:#a6e22e">UpsertedRow</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
 	<span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span>
 		<span style="color:#e6db74">&#34;WITH &#34;</span> <span style="color:#f92672">+</span>
 			<span style="color:#e6db74">&#34;search AS (SELECT ctid, xmax, id FROM customers WHERE customer_id = $1 LIMIT 1),&#34;</span> <span style="color:#f92672">+</span>
@@ -1375,8 +1374,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 The suggestion then was to have a service which creates an unique integer for a certain uuid. This way the int identifier won&amp;rsquo;t be leaked to any other part of the system.</description>
             <content type="html"><![CDATA[<p>Recently at the company I am working for, there was a need to communicate with an external service which required us to send some data along with an integer identifier. The problem is that IDs in our domain are not integers but uuid.</p>
 <p>The suggestion then was to have a service which creates an unique integer for a certain uuid. This way the int identifier won&rsquo;t be leaked to any other part of the system.</p>
-<figure>
-    <img src="/posts/images/intgen.png"/> 
+<figure><img src="/posts/images/intgen.png"/>
 </figure>
 
 <ol>
@@ -1394,7 +1392,7 @@ The suggestion then was to have a service which creates an unique integer for a 
 <p>In this part of the series, different approaches are being listed. For obvious reasons these ones are not based on real business. Benchmarking is going to be displayed on the next part for the approaches 3, 4 and 5.</p>
 <h3 id="data-model">Data Model</h3>
 <p>Just to have more context on the snippets below, the database model will be the following:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> customers
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> customers
 (
   id SERIAL,
   customer_id UUID <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span>
@@ -1405,25 +1403,25 @@ The suggestion then was to have a service which creates an unique integer for a 
 <li>Receive the <code>POST</code> request, parse the uuid.</li>
 <li>Execute query:</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> id
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> id
 <span style="color:#66d9ef">FROM</span> customers
 <span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>
 </code></pre></div><ol start="3">
 <li>If the previous query returned a row, return the id.</li>
 <li>If not, insert the row and return the id:</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
 <span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>)
 RETURNING id
 </code></pre></div><p>The problem with this approach is that if we get two consecutive calls hitting the <code>SELECT</code> at the same time while there is no row, both will try to add the row in the database. One will succeed and the other is going to fail.</p>
 <p>This can be fixed changing the insert to the following:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
 <span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>)
 <span style="color:#66d9ef">ON</span> CONFLICT <span style="color:#66d9ef">DO</span> <span style="color:#66d9ef">NOTHING</span>
 RETURNING id
 </code></pre></div><p><code>ON CONFLICT DO NOTHING</code> will avoid the primary key exception! Yes, that is true, but when this clause does not update the row (<code>DO NOTHING</code>) the <code>RETURNING</code> row will be empty.</p>
 <p>This can be tested by executing several times the statement in point 4.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">| id |
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">| id |
 | -- |
 | <span style="color:#ae81ff">1</span>  |
 |    |
@@ -1439,28 +1437,28 @@ RETURNING id
 <li>Receive the <code>POST</code> request, parse the uuid.</li>
 <li>Begin the transaction:</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">BEGIN</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">BEGIN</span>
 </code></pre></div><ol start="3">
 <li>Get a lock using a numeric hash that represents x uuid in a deterministic way:</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> pg_advisory_xact_lock(<span style="color:#f92672">&lt;</span>bigint<span style="color:#f92672">&gt;</span>)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> pg_advisory_xact_lock(<span style="color:#f92672">&lt;</span>bigint<span style="color:#f92672">&gt;</span>)
 </code></pre></div><ol start="4">
 <li>Execute query:</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> id
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> id
 <span style="color:#66d9ef">FROM</span> customers
 <span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>
 </code></pre></div><ol start="5">
 <li>If the previous query returned a row, return the id.</li>
 <li>If not, insert the row and return the id:</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
 <span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>)
 RETURNING id
 </code></pre></div><ol start="6">
 <li>Commit transaction:</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">COMMIT</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">COMMIT</span>
 </code></pre></div><p>Ok, now this works. But this is still far away from a good design. In the previous approach, the race condition existed because there was nothing to lock when there was no row to be found.</p>
 <p>In this approach, for certain uuid the same numeric hash will be generated. When starting a transaction, an exclusive transaction level advisory lock is obtained. If another transaction wants to execute the lock query using the same hash, it will have to wait until the first transaction ends with a commit or rollback.</p>
 <p>How to try this out?</p>
@@ -1468,13 +1466,13 @@ RETURNING id
 <li>Open a database connection.</li>
 <li>Execute:</li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">BEGIN</span>;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">BEGIN</span>;
 <span style="color:#66d9ef">SELECT</span> pg_advisory_xact_lock(<span style="color:#ae81ff">12345</span>);
 </code></pre></div><ul>
 <li>Open another database connection.</li>
 <li>Execute:</li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">BEGIN</span>;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">BEGIN</span>;
 <span style="color:#66d9ef">SELECT</span> pg_advisory_xact_lock(<span style="color:#ae81ff">12345</span>);
 </code></pre></div><ul>
 <li>This last query will not respond until the first transaction finishes.</li>
@@ -1487,13 +1485,13 @@ RETURNING id
 <li>Receive the <code>POST</code> request, parse the uuid.</li>
 <li>Execute the query and return the result. This query will insert the row if it does not exist; and in case it does, it will just return the id. The update is required to return the desired id.</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
 <span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>)
 <span style="color:#66d9ef">ON</span> CONFLICT (customer_id)
 <span style="color:#66d9ef">DO</span> <span style="color:#66d9ef">UPDATE</span> <span style="color:#66d9ef">SET</span> customer_id <span style="color:#f92672">=</span> excluded.customer_id
 RETURNING id
 </code></pre></div><p>The difference between the first example and this one, is that now the <code>DO NOTHING</code> is replaced by <code>DO UPDATE</code> and since an update is being executed; the returning row will never be empty. Moreover the concurrency problems are gone because they are handled by the database and not by code. This can be tested by executing several times the query.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">| id |
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">| id |
 | -- |
 | <span style="color:#ae81ff">3</span>  |
 | <span style="color:#ae81ff">3</span>  |
@@ -1510,13 +1508,13 @@ RETURNING id
 </blockquote>
 <p>How can one be sure that this is true?
 Executing the following query 5 times!</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
 <span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d269&#39;</span>)
 <span style="color:#66d9ef">ON</span> CONFLICT (customer_id)
 <span style="color:#66d9ef">DO</span> <span style="color:#66d9ef">UPDATE</span> <span style="color:#66d9ef">SET</span> customer_id <span style="color:#f92672">=</span> excluded.customer_id
 RETURNING ctid, xmin, xmax, id
 </code></pre></div><p>Results:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">| ctid  | xmin | xmax | id |
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">| ctid  | xmin | xmax | id |
 | ----- | ---- | ---- | -- |
 | <span style="color:#f92672">(</span>0,1<span style="color:#f92672">)</span> | <span style="color:#ae81ff">5876</span> | <span style="color:#ae81ff">0</span>    | <span style="color:#ae81ff">2</span>  |
 | <span style="color:#f92672">(</span>0,2<span style="color:#f92672">)</span> | <span style="color:#ae81ff">5877</span> | <span style="color:#ae81ff">5877</span> | <span style="color:#ae81ff">2</span>  |
@@ -1551,7 +1549,7 @@ RETURNING ctid, xmin, xmax, id
 <p>The main advantage of using the MVCC model of concurrency control rather than locking is [&hellip;] reading never blocks writing and writing never blocks reading.</p>
 </blockquote>
 <p>With that explained, lets introduce how an UPDATE works on postgres:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> EXTENSION pageinspect;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> EXTENSION pageinspect;
 
 <span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
 <span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d271&#39;</span>);
@@ -1568,7 +1566,7 @@ RETURNING ctid, xmin, xmax, id
 <li>The transaction id used for the creation of the row (<code>t_xmin</code>) is 5919.</li>
 <li>The destruction transaction id (<code>t_xmax</code>) is 0 because no changes happened to the row.</li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">UPDATE</span> customers
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">UPDATE</span> customers
 <span style="color:#66d9ef">SET</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d271&#39;</span>
 <span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d271&#39;</span>
 
@@ -1601,7 +1599,7 @@ RETURNING ctid, xmin, xmax, id
 <li>Receive the <code>POST</code> request, parse the uuid.</li>
 <li>Execute query:</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
 <span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>)
 <span style="color:#66d9ef">ON</span> CONFLICT <span style="color:#66d9ef">DO</span> <span style="color:#66d9ef">NOTHING</span>;
 
@@ -1612,14 +1610,14 @@ RETURNING ctid, xmin, xmax, id
 <p>After the <code>INSERT</code> is executed, the <code>SELECT</code> statement will return the id for the recently created / already existing row.</p>
 <p>But is this performing? For that lets <code>EXPLAIN ANALYZE</code> the queries:</p>
 <p>Insert (when there is no row):</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Insert on customers
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Insert on customers
   Conflict Resolution: NOTHING
   Tuples Inserted: <span style="color:#ae81ff">1</span>
   Conflicting Tuples: <span style="color:#ae81ff">0</span>
 Planning Time: 0.032 ms
 Execution Time: 0.190 ms
 </code></pre></div><p>Insert (when there is a conflict):</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Insert on customers
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Insert on customers
   Conflict Resolution: NOTHING
   Tuples Inserted: <span style="color:#ae81ff">0</span>
   Conflicting Tuples: <span style="color:#ae81ff">1</span>
@@ -1627,7 +1625,7 @@ Execution Time: 0.190 ms
 Planning Time: 0.032 ms
 Execution Time: 0.244 ms
 </code></pre></div><p>Select query:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Index Scan using customers_pkey on customers
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Index Scan using customers_pkey on customers
   Index Cond: <span style="color:#f92672">(</span>customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;...&#39;</span>::uuid<span style="color:#f92672">)</span>
 Planning Time: 0.069 ms
 Execution Time: 0.111 ms
@@ -1637,7 +1635,7 @@ Execution Time: 0.111 ms
 <h3 id="bonus-for-non-postgres-users-aka-cte-queries">Bonus for non Postgres users (a.k.a CTE queries)</h3>
 <p>CTE means Common Table Expression and documentation can be found <a href="https://www.postgresql.org/docs/current/queries-with.html">here</a></p>
 <p>These kind of expressions are also useful when the database engine  does not support <code>ON CONFLICT DO NOTHING</code>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">WITH</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">WITH</span>
 	<span style="color:#66d9ef">search</span> <span style="color:#66d9ef">AS</span> (<span style="color:#66d9ef">SELECT</span> ctid, xmax, id <span style="color:#66d9ef">FROM</span> customers <span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;8a57f8f4-aeed-412c-a6f6-5f9a03b17bc5&#39;</span> <span style="color:#66d9ef">LIMIT</span> <span style="color:#ae81ff">1</span>),
 	<span style="color:#66d9ef">add</span> <span style="color:#66d9ef">AS</span> (<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers (customer_id) <span style="color:#66d9ef">SELECT</span> <span style="color:#e6db74">&#39;8a57f8f4-aeed-412c-a6f6-5f9a03b17bc5&#39;</span> <span style="color:#66d9ef">WHERE</span> <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">EXISTS</span>(<span style="color:#66d9ef">SELECT</span> id <span style="color:#66d9ef">from</span> <span style="color:#66d9ef">search</span>) RETURNING ctid, xmax, id)
 <span style="color:#66d9ef">SELECT</span> ctid, xmax, id <span style="color:#66d9ef">from</span> <span style="color:#66d9ef">add</span>	<span style="color:#66d9ef">UNION</span> <span style="color:#66d9ef">ALL</span> <span style="color:#66d9ef">SELECT</span> ctid, xmax, id <span style="color:#66d9ef">from</span> <span style="color:#66d9ef">search</span>
@@ -1647,7 +1645,7 @@ Execution Time: 0.111 ms
 <li>Execute both statements, only one will return a result.</li>
 </ul>
 <p>Running <code>EXPLAIN ANALYZE</code> on the query:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">HashAggregate
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">HashAggregate
   Group Key: add.ctid, add.xmax, add.id
   CTE search
     -&gt;  Limit
@@ -1704,8 +1702,7 @@ The only functionality that exposes is a <code>GET /health</code> endpoint which
 <p>An account is needed in order to get access on Azure Pipelines. Linking the github account and giving access to the demo repository should be enough, after this step a project should be set up.</p>
 <p>Inside the project, the project settings button should be visible on the bottom left corner.
 Scroll down to service connections and you should see something like this:</p>
-<figure>
-    <img src="/posts/images/project-settings.png"/> 
+<figure><img src="/posts/images/project-settings.png"/>
 </figure>
 
 <p>This is where the credentials for docker and kubernetes are stored.</p>
@@ -1714,14 +1711,13 @@ Scroll down to service connections and you should see something like this:</p>
 <h2 id="adding-build-pipeline">Adding build pipeline</h2>
 <p>Under the pipeline menu, pick <code>build</code> and <code>add a new pipeline</code>. Follow the steps and give access to the repository (it does not matter if it is public or private). Pick starter pipeline when prompted and proceed to click save and run.</p>
 <p>If everything went well a commit should be added to the repository and this will appear on the commit history of the repository:</p>
-<figure>
-    <img src="/posts/images/built-commit.png"/> 
+<figure><img src="/posts/images/built-commit.png"/>
 </figure>
 
 <p>The ✔️ indicates that the CI process ran successfully, when the build is ongoing a yellow circle will appear, and if the build fails ❌ will be shown.</p>
 <h2 id="configuring-cicd">Configuring CI/CD</h2>
 <p>Back to the azure-pipelines.yml:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">trigger</span>:
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">trigger</span>:
 - <span style="color:#ae81ff">master</span>
 
 <span style="color:#f92672">schedules</span>:
@@ -1755,26 +1751,26 @@ Scroll down to service connections and you should see something like this:</p>
     <span style="color:#f92672">command</span>: <span style="color:#ae81ff">apply</span>
     <span style="color:#f92672">arguments</span>: <span style="color:#e6db74">&#39;-f kubernetes/k8s-deployment.yml&#39;</span>
 </code></pre></div><p>Let&rsquo;s split them:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">trigger</span>:
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">trigger</span>:
 - <span style="color:#ae81ff">master</span>
 </code></pre></div><p>Associated on which branch the CI/CD will execute.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">schedules</span>:
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">schedules</span>:
 - <span style="color:#f92672">cron</span>: <span style="color:#e6db74">&#34;0 0 * * *&#34;</span>
   <span style="color:#f92672">displayName</span>: <span style="color:#ae81ff">Daily midnight build</span>
   <span style="color:#f92672">branches</span>:
     <span style="color:#f92672">include</span>:
     - <span style="color:#ae81ff">master</span>
 </code></pre></div><p>Some projects have another way of triggering builds, for example nightly builds. In this case, the pipeline is triggered all days at midnight and this is because otherwise Okteto takes down applications after 24 hours without use.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">pool</span>:
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">pool</span>:
   <span style="color:#f92672">vmImage</span>: <span style="color:#e6db74">&#39;ubuntu-latest&#39;</span>
 </code></pre></div><p>Relates to the machine that will execute the commands.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">variables</span>:
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">variables</span>:
   <span style="color:#f92672">buildNumber</span>: <span style="color:#ae81ff">0.0</span><span style="color:#ae81ff">.$(Build.BuildId)</span>
 </code></pre></div><p>Global variables that are going to be used on the pipeline.
 In this case, the example repository is using semver for building versions.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">steps</span>:
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">steps</span>:
 </code></pre></div><p>Represents a chain of commands that will be executed in order. This is not the full power of pipelines, since it supports a higher order hierarchy where you can specify <code>stages -&gt; jobs -&gt; steps</code>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">- <span style="color:#f92672">task</span>: <span style="color:#ae81ff">Docker@2</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">- <span style="color:#f92672">task</span>: <span style="color:#ae81ff">Docker@2</span>
   <span style="color:#f92672">inputs</span>:
     <span style="color:#f92672">containerRegistry</span>: <span style="color:#e6db74">&#39;pmorelli92-docker-hub&#39;</span>
     <span style="color:#f92672">repository</span>: <span style="color:#e6db74">&#39;pmorelli92/go-with-azure&#39;</span>
@@ -1786,7 +1782,7 @@ In this case, the example repository is using semver for building versions.</p>
 </code></pre></div><p>This is a built-in command of pipelines, where we can (among other things) build and push docker images.</p>
 <p>The input named repository indicates the name of the repository on the container registry (which was set up on the project settings).</p>
 <p>If this command fails, the other ones will not be invoked.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">bash</span>: <span style="color:#ae81ff">sed -i &#34;s/latest/$(buildNumber)/g&#34; kubernetes/k8s-deployment.yml</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">bash</span>: <span style="color:#ae81ff">sed -i &#34;s/latest/$(buildNumber)/g&#34; kubernetes/k8s-deployment.yml</span>
 </code></pre></div><p>A discussion could be hold on whether if a service should self contain information of deployment or be agnostic of it. As a personal preference, I think having everything related to the application on the same repository enables easier discoverability.</p>
 <p>Of course, we are not having any secrets here, if that was the case, Azure Pipelines offers a way to store them safely inside the azure devops project.</p>
 <p>That being said, the repository contains a <a href="https://github.com/pmorelli92/go-with-azure/blob/master/kubernetes/k8s-deployment.yml">file</a> <code>kubernetes/k8s-deployment.yml</code> which describes:</p>
@@ -1796,7 +1792,7 @@ In this case, the example repository is using semver for building versions.</p>
 <li>Ingress (enables communication from the outside world to the service)</li>
 </ul>
 <p>The deployment needs to specify which version of the docker image is going to be run:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">spec</span>:
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">spec</span>:
 <span style="color:#f92672">containers</span>:
 - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">gwa</span>
   <span style="color:#f92672">image</span>: <span style="color:#ae81ff">pmorelli92/go-with-azure:latest</span>
@@ -1804,11 +1800,10 @@ In this case, the example repository is using semver for building versions.</p>
   - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">http</span>
     <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">80</span>
 </code></pre></div><p>It is definitely not good to use <code>:latest</code> image on stage / production so the sed script will replace <code>:latest</code> with <code>0.0.X</code> (which will be the build number). This is also the same version that will be pushed to the selected docker registry: <a href="https://cloud.docker.com/u/pmorelli92/repository/docker/pmorelli92/go-with-azure">example</a>.</p>
-<figure>
-    <img src="/posts/images/docker-tags.png"/> 
+<figure><img src="/posts/images/docker-tags.png"/>
 </figure>
 
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">- <span style="color:#f92672">task</span>: <span style="color:#ae81ff">Kubernetes@0</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">- <span style="color:#f92672">task</span>: <span style="color:#ae81ff">Kubernetes@0</span>
   <span style="color:#f92672">inputs</span>:
     <span style="color:#f92672">kubernetesServiceConnection</span>: <span style="color:#e6db74">&#39;pmorelli92-okteto&#39;</span>
     <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">pmorelli92</span>
@@ -1817,13 +1812,11 @@ In this case, the example repository is using semver for building versions.</p>
 </code></pre></div><p>Finally, <code>kubernetesServiceConnection</code> is for indicating the connection created on the project settings; the namespace refers to a kubernetes namespace, and the command combined with arguments will be the equivalent of: <code>kubectl apply -f kubernetes/k8s-deployment.yml</code></p>
 <p>This will create / update the specifications that are living on the folder or file; in this case: the deployment, service and ingress.</p>
 <p>If everything goes green, we can check that the pod version matches the latest one added on the docker registry.</p>
-<figure>
-    <img src="/posts/images/pod-version.png"/> 
+<figure><img src="/posts/images/pod-version.png"/>
 </figure>
 
 <p>The logs should display something like this:</p>
-<figure>
-    <img src="/posts/images/cicd-logs.png"/> 
+<figure><img src="/posts/images/cicd-logs.png"/>
 </figure>
 
 <p>And the demo app is now accessible from the following <a href="https://gwa-service-pmorelli92.cloud.okteto.net/health">link</a>.</p>
@@ -1856,7 +1849,7 @@ In order to add this feature in our .csproj, add the following lines:
 &amp;lt;PropertyGroup&amp;gt; &amp;lt;TargetFramework&amp;gt;netcoreapp3.0&amp;lt;/TargetFramework&amp;gt; &amp;lt;PublishTrimmed&amp;gt;true&amp;lt;/PublishTrimmed&amp;gt; &amp;lt;PublishReadyToRun&amp;gt;true&amp;lt;/PublishReadyToRun&amp;gt; &amp;lt;PublishSingleFile&amp;gt;true&amp;lt;/PublishSingleFile&amp;gt; &amp;lt;CrossGenDuringPublish&amp;gt;false&amp;lt;/CrossGenDuringPublish&amp;gt; &amp;lt;/PropertyGroup&amp;gt; There are some flags that may sound weird, let&amp;rsquo;s go through them:</description>
             <content type="html"><![CDATA[<p>The newly released <code>dotnet 3 preview 6</code> has an interesting feature called <code>publish single file</code> where an application can be published as a <code>self contained app</code> that will <strong>extract and run</strong> on the platform it was compiled for.</p>
 <p>In order to add this feature in our <code>.csproj</code>, add the following lines:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;PropertyGroup&gt;</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;PropertyGroup&gt;</span>
   <span style="color:#f92672">&lt;TargetFramework&gt;</span>netcoreapp3.0<span style="color:#f92672">&lt;/TargetFramework&gt;</span>
   <span style="color:#f92672">&lt;PublishTrimmed&gt;</span>true<span style="color:#f92672">&lt;/PublishTrimmed&gt;</span>
   <span style="color:#f92672">&lt;PublishReadyToRun&gt;</span>true<span style="color:#f92672">&lt;/PublishReadyToRun&gt;</span>
@@ -1870,22 +1863,22 @@ In order to add this feature in our .csproj, add the following lines:
 <li><code>CrossGenDuringPublish</code> is a workaround that needs to be present for indicating the machine that is running the publish, that it should not bother with compilation for other RID (more about this below)</li>
 </ul>
 <p>After these flags had been set, the application is runnable using:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">dotnet publish -r osx-x64 -c Release -o ./deploy
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">dotnet publish -r osx-x64 -c Release -o ./deploy
 ./deploy/&lt;APP_NAME&gt; &lt;- Execute the application
 </code></pre></div><p>When publishing a single file, don&rsquo;t forget to add the <a href="https://docs.microsoft.com/en-us/dotnet/core/rid-catalog">runtime identifier catalog (RID)</a> corresponding to the platform where the application is going to be run. For example: <code>-r osx-x64</code></p>
 <p>With the basics of this feature already covered, let&rsquo;s move to the important bit.</p>
 <h2 id="deploy-application-on-an-alpine-based-container">Deploy application on an Alpine based container</h2>
 <p>One important win using this approach is that the published binary does not need to be run in a container that has dotnet runtime installed. But one caveat for consideration is that those internal dependencies used under the hood by dotnet are still needed. There are two options:</p>
 <p>Use plain alpine and install dotnet internal dependencies:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Docker" data-lang="Docker"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> alpine</span><span style="color:#960050;background-color:#1e0010">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Docker" data-lang="Docker"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> alpine</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> apk update <span style="color:#f92672">&amp;&amp;</span> apk add libstdc++ <span style="color:#f92672">&amp;&amp;</span> apk add libintl<span style="color:#960050;background-color:#1e0010">
 </span></code></pre></div><p>Use <code>runtime-deps</code> alpine image from <a href="https://hub.docker.com/_/microsoft-dotnet-core-runtime-deps/">Microsoft</a>:</p>
 <blockquote>
 <p>This image contains the native dependencies needed by .NET Core. It does not include .NET Core. It is for self-contained applications.</p>
 </blockquote>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Docker" data-lang="Docker"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> mcr.microsoft.com/dotnet/core/runtime-deps:3.0.0-preview6-alpine3.9</span><span style="color:#960050;background-color:#1e0010">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Docker" data-lang="Docker"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> mcr.microsoft.com/dotnet/core/runtime-deps:3.0.0-preview6-alpine3.9</span><span style="color:#960050;background-color:#1e0010">
 </span></code></pre></div><p>With that being said, the next is straightforward:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Docker" data-lang="Docker"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> mcr.microsoft.com/dotnet/core/sdk:3.0.100-preview6-alpine3.9 AS build</span><span style="color:#960050;background-color:#1e0010">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Docker" data-lang="Docker"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> mcr.microsoft.com/dotnet/core/sdk:3.0.100-preview6-alpine3.9 AS build</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /app</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010">
@@ -1916,76 +1909,73 @@ In order to add this feature in our .csproj, add the following lines:
             
             <guid>https://devandchill.com/posts/2019/06/sign-github-commits-using-mac/</guid>
             <description>Generally speaking, most organisations do not check if a commit is signed or not. Even worse, more companies do not care about this. It might subjective but I like to have the verified badge.
-  If you commit from GitHub, for example: adding or editing a README, you will get the verified bagde. The same will happen with the client GitKraken, but if you commit using the git cli this will not happen unless you configure it.</description>
+ If you commit from GitHub, for example: adding or editing a README, you will get the verified bagde. The same will happen with the client GitKraken, but if you commit using the git cli this will not happen unless you configure it.</description>
             <content type="html"><![CDATA[<p>Generally speaking, most organisations do not check if a commit is signed or not. Even worse, more companies do not care about this. It might subjective but I like to have the <code>verified</code> badge.</p>
-<figure>
-    <img src="/posts/images/verified-commit.png"/> 
+<figure><img src="/posts/images/verified-commit.png"/>
 </figure>
 
 <p>If you commit from GitHub, for example: adding or editing a README, you will get the verified bagde. The same will happen with the client <code>GitKraken</code>, but if you commit using the <code>git cli</code> this will not happen unless you configure it.</p>
 <p>Now, I will assume that you are using a mac but in case you do not, you can google yourself some of the installation steps.</p>
 <h2 id="installing-gpg">Installing GPG</h2>
 <p>In order to sign a commit you will need to generate a key, and for this you are going to use <a href="https://gnupg.org/">GPG</a>. But first, you need brew to be installed, if you do not have it yet, it is a must have package manager for mac that you can download <a href="https://brew.sh/">here</a>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; brew install gnupg
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; brew install gnupg
 &gt; brew install pinentry-mac
 &gt; echo <span style="color:#e6db74">&#34;pinentry-program /usr/local/bin/pinentry-mac&#34;</span> &gt;&gt; ~/.gnupg/gpg-agent.conf
 &gt; killall gpg-agent
 </code></pre></div><p><a href="https://www.gnupg.org/related_software/pinentry/index.en.html">Pinentry</a> as it is stated on the GPG site it is a collection of dialogs that allows you, for example, to input the passphrase of the private key. In order for this to work we need to indicate the path where it is installed into the GPG configuration and then kill the service (just in case) for it to take the changes.</p>
 <h2 id="generating-a-set-of-keys">Generating a set of keys</h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; gpg --full-generate-key
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; gpg --full-generate-key
 <span style="color:#f92672">(</span>you can customise the key creation or just press enter to use the defaults<span style="color:#f92672">)</span>
 </code></pre></div><p>Will generate a private key from which you are going to generate and export the public key. The id of the key will be shown when you generate the key or you can fetch it by running:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; gpg --list-secret-keys
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; gpg --list-secret-keys
 </code></pre></div><p>And you will get something like this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sec   rsa2048 2019-06-07 <span style="color:#f92672">[</span>SC<span style="color:#f92672">]</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sec   rsa2048 2019-06-07 <span style="color:#f92672">[</span>SC<span style="color:#f92672">]</span>
       KEY_ID_HERE
 uid   <span style="color:#f92672">[</span>  absolut <span style="color:#f92672">]</span> Pablo Morelli &lt;devandchill@gmail.com&gt;
 ssb   rsa2048 2019-06-07 <span style="color:#f92672">[</span>E<span style="color:#f92672">]</span>
 </code></pre></div><p>After you have your ID, execute:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; gpg --export --armor YOUR_KEY_ID 2&gt; cat
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; gpg --export --armor YOUR_KEY_ID 2&gt; cat
 </code></pre></div><p>You will see the public key on the terminal, now you can copy it and go to GitHub.</p>
 <h2 id="adding-public-key-to-github-account">Adding public key to GitHub account</h2>
 <p>Go to <code>Settings -&gt; SSH and GPG Keys -&gt; New GPG Key</code> and paste the content of your key and after submiting you will see something like this.</p>
-<figure>
-    <img src="/posts/images/gpg-github.png"/> 
+<figure><img src="/posts/images/gpg-github.png"/>
 </figure>
 
 <h2 id="doing-your-first-verified-commit">Doing your first verified commit</h2>
 <p>When you work with the <code>git cli</code> there is a huge probability that you work with different accounts (for example one for work and one personal) and/or that you have more than one GPG key on your system.
 To avoid problems with git not knowing which configuration to pick you will indicate that for the repo where you are standing or for all the repos you will use the GPG key that contains a certain ID.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; git config --local gpg.program <span style="color:#e6db74">&#34;gpg&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; git config --local gpg.program <span style="color:#e6db74">&#34;gpg&#34;</span>
 &gt; git config --local user.signingKey <span style="color:#e6db74">&#34;YOUR_KEY_ID_INSIDE_THE_QUOTES&#34;</span> // will apply to the working directory
 
 &gt; git config --global gpg.program <span style="color:#e6db74">&#34;gpg&#34;</span>
 &gt; git config --global user.signingKey <span style="color:#e6db74">&#34;YOUR_KEY_ID_INSIDE_THE_QUOTES&#34;</span> // will apply to the all the repositories except when overriden
 </code></pre></div><p>You are almost ready to go, but you need to know that by default <code>git commit</code> does not sign the commits unless you specify the argument <code>-S</code>. So you have two options:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; git commit -S -m <span style="color:#e6db74">&#34;My commit message&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; git commit -S -m <span style="color:#e6db74">&#34;My commit message&#34;</span>
 </code></pre></div><p>Or you can setup automatic signing for the repository or all the repositories.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; git config --local commit.gpgsign <span style="color:#e6db74">&#34;true&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; git config --local commit.gpgsign <span style="color:#e6db74">&#34;true&#34;</span>
 
 &gt; git config --global commit.gpgsign <span style="color:#e6db74">&#34;true&#34;</span> // <span style="color:#66d9ef">if</span> you want to set up <span style="color:#66d9ef">for</span> all the repositories
 </code></pre></div><p>If you did the step above, the argument <code>-S</code> is no longer needed.</p>
 <h2 id="checking-git-configuration">Checking git configuration</h2>
 <p>When you are unsure about your configuration you can execute <code>git config --local -l</code> to list the configuration for the working directory and you should see something like this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gpg.program<span style="color:#f92672">=</span>gpg
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gpg.program<span style="color:#f92672">=</span>gpg
 commit.gpgsign<span style="color:#f92672">=</span>true
 user.signingkey<span style="color:#f92672">=</span>YOUR_KEY_ID
 </code></pre></div><h2 id="back-up-your-private-key">Back up your private key</h2>
 <p>Keys are passwords, so you should save them somewhere safe and revoke + change periodically.
 It is trivial to revoke and to generate a new key for GitHub but it may be troublesome for some other systems that uses your public key.
 Now lets image that you change your computer, you wont be able to sign because you don&rsquo;t have your key; in this case a backup is recommended.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gpg --export-secret-keys YOUR_KEY_ID &gt; some_private_key_name
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gpg --export-secret-keys YOUR_KEY_ID &gt; some_private_key_name
 </code></pre></div><p>Now you can save this file to some secure vault, and if you ever need to import it on a new machine, execute:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gpg --import some_private_key_name
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gpg --import some_private_key_name
 </code></pre></div><h2 id="bonus-track">Bonus track</h2>
 <p>As I mentioned before, some times when you work using the <code>git cli</code> you end up mixing accounts, and it could happen to commit like this:</p>
-<figure>
-    <img src="/posts/images/incorrect-user.png"/> 
+<figure><img src="/posts/images/incorrect-user.png"/>
 </figure>
 
 <p>You can of course leave it like that or do a rebase of the commit; but you can also check first using <code>git config --local -l</code> which is the <code>user.name</code> and <code>user.email</code> for that working directory.
 In case the email does not match with the email linked in GitHub you can change it doing:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; git config --local user.name <span style="color:#e6db74">&#34;GitHub name&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; git config --local user.name <span style="color:#e6db74">&#34;GitHub name&#34;</span>
 &gt; git config --local user.email <span style="color:#e6db74">&#34;my.github@email.com&#34;</span>
 </code></pre></div><p>I hope you liked the post, if so, don&rsquo;t forget to share it so this can reach to more people :)</p>
 ]]></content>
@@ -2006,7 +1996,7 @@ func wordCounter() (words map[string]int) { b, err := ioutil.</description>
 <li>Make it as fast as possible.</li>
 </ul>
 <p>For a start one can do it as simple as possible instead, and then try to see whether it can be made faster:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">wordCounter</span>() (<span style="color:#a6e22e">words</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span>) {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">wordCounter</span>() (<span style="color:#a6e22e">words</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span>) {
 	<span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ioutil</span>.<span style="color:#a6e22e">ReadFile</span>(<span style="color:#e6db74">&#34;input.txt&#34;</span>)
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
 		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
@@ -2036,7 +2026,7 @@ func wordCounter() (words map[string]int) { b, err := ioutil.</description>
 <li>When we finish, we print to the console.</li>
 </ol>
 <p>This works fine, but we are using Go and every post describing Go talks about <code>goroutines</code> and how easy is to achieve concurrency. So what the code is changed to the following?</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
 	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">wordCounterConcurrent</span>())
 }
 
@@ -2076,13 +2066,13 @@ func wordCounter() (words map[string]int) { b, err := ioutil.</description>
 <li>We put the functionality that is going to be executed for each word in an <code>anonymous function</code>. So now, we can use the word <code>go</code> to execute that function in a different goroutine.</li>
 </ol>
 <p>Does this work? Unfortunately no. If we execute the following:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; go run main.go --race
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; go run main.go --race
 fatal error: concurrent map read and map write
 </code></pre></div><p>Basically the race detector is telling us that some of the goroutines can execute this line at the same moment:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">words</span>[<span style="color:#a6e22e">w2</span>]<span style="color:#f92672">++</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">words</span>[<span style="color:#a6e22e">w2</span>]<span style="color:#f92672">++</span>
 </code></pre></div><p>If the map does not want to be written at the same time by two different goroutines we should use some sort of <code>queue</code> and then consume the values in a single threaded process. Fortunately, Go have us covered with <code>channels</code>.</p>
 <p>Doing the following modifications should work:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
 	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">wordCounterConcurrent</span>())
 }
 
@@ -2130,12 +2120,12 @@ fatal error: concurrent map read and map write
 }
 </code></pre></div><p>But now the code growth a lot, lets look at it by parts:</p>
 <p>In order to declare channels the following syntax is required:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">doneChan</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">bool</span>)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">doneChan</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">bool</span>)
 <span style="color:#a6e22e">wordsChan</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">string</span>)
 </code></pre></div><p>Now, the words goroutines instead of performing operations using the map is just pushing a value into a channel.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">wordsChan</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">w1</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">wordsChan</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">w1</span>
 </code></pre></div><p>The operations using the map, then will be performed when a value is read from the channel (blocking action since it is not a buffered channel)</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
 	<span style="color:#66d9ef">for</span> {
 		<span style="color:#66d9ef">select</span> {
 		<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">w</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">wordsChan</span>:
@@ -2147,20 +2137,20 @@ fatal error: concurrent map read and map write
 }()
 </code></pre></div><p>This piece of code will read from the <code>wordsChannel</code> and perform the map operation; and also read from the <code>doneChannel</code> to stop the goroutine.</p>
 <p>The message to the <code>doneChannel</code> will only be submitted after all words goroutines are finished.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Wait</span>()
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Wait</span>()
 <span style="color:#a6e22e">doneChan</span> <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">true</span>
 </code></pre></div><p>Now if we run this algorithm we will see that is not failing anymore. Let’s then move to benchmarking.</p>
 <h2 id="benchmark">Benchmark</h2>
 <p>We are going to do this in two different ways: executing the idiomatic Go benchmark and using the command-line utility <code>time</code>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; go test -run<span style="color:#f92672">=</span>XXX -bench<span style="color:#f92672">=</span>.
-</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">BenchmarkWordCounter-12               <span style="color:#ae81ff">45</span>   25.88 ms/op   <span style="color:#ae81ff">4354027</span> B/op   <span style="color:#ae81ff">124918</span> allocs/op
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; go test -run<span style="color:#f92672">=</span>XXX -bench<span style="color:#f92672">=</span>.
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">BenchmarkWordCounter-12               <span style="color:#ae81ff">45</span>   25.88 ms/op   <span style="color:#ae81ff">4354027</span> B/op   <span style="color:#ae81ff">124918</span> allocs/op
 BenchmarkWordCounterConcurrent-12     <span style="color:#ae81ff">19</span>   59.70 ms/op   <span style="color:#ae81ff">5711640</span> B/op   <span style="color:#ae81ff">138290</span> allocs/op
 </code></pre></div><p>This is telling us that the sync version executed <code>45 times</code> and each execution took approx <code>25.88 milliseconds</code>, meanwhile in the same time the concurrent version only got executed <code>19 times</code> because each execution took approx <code>59.70 milliseconds</code>.</p>
 <p>Wait, What?</p>
 <p>Let&rsquo;s try the following:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; go build
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; go build
 &gt; time ./go-word-counter
-</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">(</span>SYNC<span style="color:#f92672">)</span>
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">(</span>SYNC<span style="color:#f92672">)</span>
 ./go-word-counter  0.04s user 0.00s system 89% cpu 0.050 total
 <span style="color:#f92672">(</span>CONCURRENT<span style="color:#f92672">)</span>
 ./go-word-counter  0.46s user 0.13s system 486% cpu 0.120 total
@@ -2168,18 +2158,18 @@ BenchmarkWordCounterConcurrent-12     <span style="color:#ae81ff">19</span>   59
 <p>We are sure that the function is running concurrently (hence the CPU usage), but shouldn&rsquo;t that mean it has to run faster? Well, no.</p>
 <p>Looking at the code one can see that the parts that get executed inside the word goroutines takes less to execute than all the orchestration needed for pulling a word from a channel.</p>
 <p>Things would be different if an sleep was added:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">w1</span> = <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">ToLower</span>(<span style="color:#a6e22e">w1</span>)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">w1</span> = <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">ToLower</span>(<span style="color:#a6e22e">w1</span>)
 <span style="color:#a6e22e">w1</span> = <span style="color:#a6e22e">removeSpecial</span>.<span style="color:#a6e22e">ReplaceAllString</span>(<span style="color:#a6e22e">w1</span>, <span style="color:#e6db74">&#34;&#34;</span>)
 <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#ae81ff">200</span>)
 </code></pre></div><p>And then the benchmark:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">BenchmarkWordCounter-12                <span style="color:#ae81ff">3</span>   425.23 ms/op   <span style="color:#ae81ff">4436128</span> B/op   <span style="color:#ae81ff">124934</span> allocs/op
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">BenchmarkWordCounter-12                <span style="color:#ae81ff">3</span>   425.23 ms/op   <span style="color:#ae81ff">4436128</span> B/op   <span style="color:#ae81ff">124934</span> allocs/op
 BenchmarkWordCounterConcurrent-12     <span style="color:#ae81ff">19</span>    64.75 ms/op   <span style="color:#ae81ff">8812324</span> B/op   <span style="color:#ae81ff">179560</span> allocs/op
 </code></pre></div><p>In this scenario is visible how the concurrent way outperforms the sync one.</p>
 <p>So we started with a single goroutine algorithm, we evolved it to run using more than one goroutine and having an orchestration for the algorithm to work. At the end we did a benchmark and compared the results.</p>
 <p>The value we can get out of this is to avoid <code>premature optimization</code>, how to <code>KISS</code> (keep it simple and stupid) and the most important one: We learned that concurrent flows are beneficial when the code inside the goroutine is CPU/time intensive.</p>
 <h2 id="2020-edit">2020 Edit</h2>
 <p>One alternative suggested by <a href="https://github.com/Xeoncross">David Pennington</a> was to use streams instead of loading the whole file to the disk. In this case the code will look like:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">wordCounterStream</span>() (<span style="color:#a6e22e">words</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span>) {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">wordCounterStream</span>() (<span style="color:#a6e22e">words</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span>) {
 	<span style="color:#a6e22e">file</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Open</span>(<span style="color:#e6db74">&#34;input.txt&#34;</span>)
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
 		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
@@ -2212,7 +2202,7 @@ BenchmarkWordCounterConcurrent-12     <span style="color:#ae81ff">19</span>    6
 </ul>
 <p>The <code>scanner.Split(...)</code> instead of using <code>bufio.ScanWords</code> is using an implementation that takes care of splitting the words when punctuation happens since the default implementation do not consider these cases. This can be found on my repository linked below.</p>
 <p>Now the benchmarks demonstrate what a better solution for this problem would be:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">benchmark                           iter     time/iter    bytes alloc             allocs
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">benchmark                           iter     time/iter    bytes alloc             allocs
 ---------                           ----     ---------    -----------             ------
 BenchmarkWordCounter-12               <span style="color:#ae81ff">45</span>   25.88 ms/op   <span style="color:#ae81ff">4354027</span> B/op   <span style="color:#ae81ff">124918</span> allocs/op
 BenchmarkWordCounterConcurrent-12     <span style="color:#ae81ff">19</span>   59.70 ms/op   <span style="color:#ae81ff">5711640</span> B/op   <span style="color:#ae81ff">138290</span> allocs/op
@@ -2240,7 +2230,7 @@ My starting point was the following talk:</description>
 
 <p>Being that I did not know how to manage dependencies, I started investigating and saw that lots of people were using <code>dep</code>, and how bad could it be?</p>
 <p>I started building a sample app that that could be containerised (again, just to see how the Dockerfile would look like), and the following happened:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-docker" data-lang="docker"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> golang:1.12-alpine AS builder</span><span style="color:#960050;background-color:#1e0010">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-docker" data-lang="docker"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> golang:1.12-alpine AS builder</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> . /go/src/github.com/pmorelli92/go-ddd-cqrs/<span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /go/src/github.com/pmorelli92/go-ddd-cqrs/</span><span style="color:#960050;background-color:#1e0010">
@@ -2258,7 +2248,7 @@ My starting point was the following talk:</description>
 </span></code></pre></div><p>That Dockerfile, as ugly as it looks, was the result of some iterations were I was getting path errors, dependency errors, and others. The constraint of only working on <code>GOPATH</code> gave me headaches and I had to use a really bad <code>WORKDIR</code> as you can see above.</p>
 <p>But then after some searching, I came across that <a href="https://github.com/golang/go/wiki/Modules">GO Modules</a> was supported from version 1.11, so I decided to give it a try.</p>
 <p>And this is how the Dockerfile looks like now:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-docker" data-lang="docker"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> golang:1.12-alpine AS builder</span><span style="color:#960050;background-color:#1e0010">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-docker" data-lang="docker"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> golang:1.12-alpine AS builder</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /app</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010">
@@ -2276,14 +2266,14 @@ My starting point was the following talk:</description>
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENTRYPOINT</span> [<span style="color:#e6db74">&#34;./goapp&#34;</span>]<span style="color:#960050;background-color:#1e0010">
 </span></code></pre></div><p>We can achieve the same using <code>golang:1.11</code> but we wil have to execute an additional step <code>ENV GO111MODULE=on</code> before <code>RUN go mod download</code>.</p>
 <p>So how do we do this? Easily!</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mkdir my-demo // Create a project folder, or clone a github repository
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mkdir my-demo // Create a project folder, or clone a github repository
 cd my-demo
 touch main.go // Create a file <span style="color:#66d9ef">if</span> we are starting the project
 go mod init my-demo // This will initiate the module
 </code></pre></div><p>After doing this, we can proceed installing dependencies by doing <code>go get -u &lt;path&gt;</code></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get -u github.com/labstack/echo/v4
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get -u github.com/labstack/echo/v4
 </code></pre></div><p>This will be tracked on the <code>go.mod</code> where it will state all the dependencies required for the project:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">my</span><span style="color:#f92672">-</span><span style="color:#a6e22e">demo</span> &gt; <span style="color:#a6e22e">cat</span> <span style="color:#66d9ef">go</span>.<span style="color:#a6e22e">mod</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">my</span><span style="color:#f92672">-</span><span style="color:#a6e22e">demo</span> &gt; <span style="color:#a6e22e">cat</span> <span style="color:#66d9ef">go</span>.<span style="color:#a6e22e">mod</span>
 <span style="color:#a6e22e">module</span> <span style="color:#a6e22e">my</span><span style="color:#f92672">-</span><span style="color:#a6e22e">demo</span>
 
 <span style="color:#66d9ef">go</span> <span style="color:#ae81ff">1.12</span>
@@ -2299,7 +2289,7 @@ go mod init my-demo // This will initiate the module
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">golang</span>.<span style="color:#a6e22e">org</span><span style="color:#f92672">/</span><span style="color:#a6e22e">x</span><span style="color:#f92672">/</span><span style="color:#a6e22e">sys</span> <span style="color:#a6e22e">v0</span><span style="color:#ae81ff">.0.0</span><span style="color:#f92672">-</span><span style="color:#ae81ff">20190312061237</span><span style="color:#f92672">-</span><span style="color:#a6e22e">fead79001313</span> <span style="color:#75715e">// indirect
 </span><span style="color:#75715e"></span>)
 </code></pre></div><p>And we are done! Now we can edit the <code>main.go</code> to this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
 <span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;net/http&#34;</span>
 <span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;github.com/labstack/echo/v4&#34;</span>

@@ -118,7 +118,7 @@ In order to add this feature in our .csproj, add the following lines:
       
       <guid>https://devandchill.com/posts/2019/06/sign-github-commits-using-mac/</guid>
       <description>Generally speaking, most organisations do not check if a commit is signed or not. Even worse, more companies do not care about this. It might subjective but I like to have the verified badge.
-  If you commit from GitHub, for example: adding or editing a README, you will get the verified bagde. The same will happen with the client GitKraken, but if you commit using the git cli this will not happen unless you configure it.</description>
+ If you commit from GitHub, for example: adding or editing a README, you will get the verified bagde. The same will happen with the client GitKraken, but if you commit using the git cli this will not happen unless you configure it.</description>
     </item>
     
     <item>

@@ -26,7 +26,7 @@
 
 
 
-<link rel="stylesheet" type="text/css" href="/main.16e78d5a04d86fb681478e115aa347d6116551d27a06cef8a10e5069d021ff96.css">
+<link rel="stylesheet" type="text/css" href="/main.848cc1f077f1d11a08a84b16a24e54a4afb9da3c3e35cef2b42e764e2811a6fb.css">
 
 
 
@@ -37,8 +37,8 @@
 <meta itemprop="description" content="In my previous post I covered how to build concurrently safe upsert queries.
 This post serves as a continuation where different approaches will be battle tested to expose the performance of each one:
  Advisory lock On conflict update On conflict do nothing CTE queries  Without further ado, let&rsquo;s start:
-The application In order to emulate the scenario described on the previous post, an HTTP API is required. This one will connect to a database to perform the calls."><meta itemprop="datePublished" content="2020-05-13T16:40:29&#43;01:00" />
-<meta itemprop="dateModified" content="2020-05-13T16:40:29&#43;01:00" />
+The application In order to emulate the scenario described on the previous post, an HTTP API is required. This one will connect to a database to perform the calls."><meta itemprop="datePublished" content="2020-05-13T16:40:29+01:00" />
+<meta itemprop="dateModified" content="2020-05-13T16:40:29+01:00" />
 <meta itemprop="wordCount" content="1572"><meta itemprop="image" content="https://devandchill.com/og-image.png"/>
 <meta itemprop="keywords" content="go,golang,postgres,database,sql,benchmark,upsert,queries,cte,concurrency," />
 <meta name="twitter:card" content="summary_large_image"/>
@@ -73,6 +73,8 @@ The application In order to emulate the scenario described on the previous post,
 
   gtag('config', 'UA-138171880-1');
 </script>
+
+
 
     </head>
 
@@ -138,6 +140,8 @@ The application In order to emulate the scenario described on the previous post,
 
     
 
+    
+
     <div class="post-content">
       <p>In my previous post I covered how to <a href="https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries">build concurrently safe upsert queries</a>.</p>
 <p>This post serves as a continuation where different approaches will be battle tested to expose the performance of each one:</p>
@@ -160,18 +164,18 @@ The application is written in Go and can be found <a href="https://github.com/pm
 </ul>
 <h2 id="pre-requisites">Pre-requisites</h2>
 <p>Since we are going to use postgres, an instance needs to be set up, and for convenience this example uses docker:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker run --name db -p 5432:5432 -e POSTGRES_HOST_AUTH_METHOD<span style="color:#f92672">=</span>trust postgres:latest
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker run --name db -p 5432:5432 -e POSTGRES_HOST_AUTH_METHOD<span style="color:#f92672">=</span>trust postgres:latest
 </code></pre></div><p>A file named <code>seed.psql</code> is also present on the root of the repository:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">DATABASE</span> customer_svc;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">DATABASE</span> customer_svc;
 <span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> customers(id SERIAL, customer_id UUID <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span>);
 </code></pre></div><h2 id="running-the-application">Running the application</h2>
 <p>The application can be run in a container as well:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker build -t pg-upsert-app:local .
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker build -t pg-upsert-app:local .
 docker run -p 8080:8080 --link db --name app -i pg-upsert-app:local
 </code></pre></div><h2 id="benchmarking">Benchmarking</h2>
 <p>For the benchmark, the tool <a href="https://github.com/tsenart/vegeta">vegeta</a> is used. This tool allows doing HTTP load testing which will be used against the API.</p>
 <p>The test suite is just a bash script that will feature a similar logic for each approach to be tested; example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">UPSERT_LOCK<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>echo <span style="color:#e6db74">&#39;{
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">UPSERT_LOCK<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>echo <span style="color:#e6db74">&#39;{
 </span><span style="color:#e6db74">  method: &#34;POST&#34;,
 </span><span style="color:#e6db74">  url: &#34;http://app:8080/upsert-lock&#34;,
 </span><span style="color:#e6db74">  body:&#34;{\&#34;id\&#34;: \&#34;&lt;ruuid&gt;\&#34;}&#34; | @base64,
@@ -189,12 +193,12 @@ jq -ncM <span style="color:#e6db74">&#34;</span>$UPSERT_LOCK<span style="color:#
 <li>The results will be aggregated into different buckets determined by <code>hist[0,2ms,4ms,6ms,8ms,10ms,15ms]</code>.</li>
 </ul>
 <p>The execution of this test is also dockerized so there is no need to download additional tools:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker build -t benchmark:local -f benchmark/Dockerfile benchmark/.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker build -t benchmark:local -f benchmark/Dockerfile benchmark/.
 docker run --link app -t benchmark:local
 </code></pre></div><p>In order to avoid results influenced by the warm up phase of the app, the test suite was executed twice and only the results from the last execution are shown below.</p>
 <h2 id="advisory-lock">Advisory lock</h2>
 <p>As the previous post indicates this approach is the less scalable. The introduction of a custom application lock in the database is not a good design model and the results are showing that:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">EXECUTING FOR LOCKS
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">EXECUTING FOR LOCKS
 Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">974</span>   24.35%  <span style="color:#75715e">##################</span>
 <span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2771</span>  69.27%  <span style="color:#75715e">###################################################</span>
@@ -204,7 +208,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">1</span>     0.03%
 <span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
 </code></pre></div><p>Not only that but the code is also more complex than other solutions:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">repo</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pgCustomerRepo</span>) <span style="color:#a6e22e">UpsertCustomerLock</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">id</span> <span style="color:#a6e22e">uuid</span>.<span style="color:#a6e22e">UUID</span>) (<span style="color:#a6e22e">res</span> <span style="color:#a6e22e">domain</span>.<span style="color:#a6e22e">UpsertedRow</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">repo</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pgCustomerRepo</span>) <span style="color:#a6e22e">UpsertCustomerLock</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">id</span> <span style="color:#a6e22e">uuid</span>.<span style="color:#a6e22e">UUID</span>) (<span style="color:#a6e22e">res</span> <span style="color:#a6e22e">domain</span>.<span style="color:#a6e22e">UpsertedRow</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
 	<span style="color:#a6e22e">tx</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">BeginTx</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#66d9ef">nil</span>)
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
 		<span style="color:#66d9ef">return</span>
@@ -254,7 +258,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <li>Firing triggers affecting the table.</li>
 </ul>
 <p>For a better refresher, click <a href="https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries/#4-on-conflict-update">here</a></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">EXECUTING FOR UPSERT CONFLICT
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">EXECUTING FOR UPSERT CONFLICT
 Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1777</span>  44.42%  <span style="color:#75715e">#################################</span>
 <span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1938</span>  48.45%  <span style="color:#75715e">####################################</span>
@@ -264,7 +268,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">18</span>    0.45%
 <span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">4</span>     0.10%
 </code></pre></div><p>The code here is simpler, so this one feels easier:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">repo</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pgCustomerRepo</span>) <span style="color:#a6e22e">UpsertCustomerConflict</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">id</span> <span style="color:#a6e22e">uuid</span>.<span style="color:#a6e22e">UUID</span>) (<span style="color:#a6e22e">res</span> <span style="color:#a6e22e">domain</span>.<span style="color:#a6e22e">UpsertedRow</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">repo</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pgCustomerRepo</span>) <span style="color:#a6e22e">UpsertCustomerConflict</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">id</span> <span style="color:#a6e22e">uuid</span>.<span style="color:#a6e22e">UUID</span>) (<span style="color:#a6e22e">res</span> <span style="color:#a6e22e">domain</span>.<span style="color:#a6e22e">UpsertedRow</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
 	<span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span>
 		<span style="color:#e6db74">&#34;INSERT INTO customers(customer_id) VALUES($1) &#34;</span> <span style="color:#f92672">+</span>
 		<span style="color:#e6db74">&#34;ON CONFLICT (customer_id) DO UPDATE SET customer_id = excluded.customer_id &#34;</span> <span style="color:#f92672">+</span>
@@ -289,7 +293,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <p>If two batches are going to be used, the performance will end up being somewhat like the locking scenario, since there is a need of going several times to the database.</p>
 <p>The example displayed below shows how to achieve it in only one batch; but then again this is part of the cons. By nature Postgres does not allow sending two parameterized query statements on the same batch; so the parameters should be resolved before sending the query which can led to SQL injection.</p>
 <p>The example below shows how to bypass Postgres limit avoiding parameters; but this is not a good practice, as it can introduce security vulnerabilities in case we are dealing with parameters like strings.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">repo</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pgCustomerRepo</span>) <span style="color:#a6e22e">UpsertCustomerDoNothing</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">id</span> <span style="color:#a6e22e">uuid</span>.<span style="color:#a6e22e">UUID</span>) (<span style="color:#a6e22e">res</span> <span style="color:#a6e22e">domain</span>.<span style="color:#a6e22e">UpsertedRow</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">repo</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pgCustomerRepo</span>) <span style="color:#a6e22e">UpsertCustomerDoNothing</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">id</span> <span style="color:#a6e22e">uuid</span>.<span style="color:#a6e22e">UUID</span>) (<span style="color:#a6e22e">res</span> <span style="color:#a6e22e">domain</span>.<span style="color:#a6e22e">UpsertedRow</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
 	<span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span>
 		<span style="color:#e6db74">&#34;INSERT INTO customers(customer_id)	VALUES($1) ON CONFLICT DO NOTHING;&#34;</span> <span style="color:#f92672">+</span>
 		<span style="color:#e6db74">&#34;SELECT ctid, xmax, id FROM customers WHERE customer_id = $1&#34;</span>
@@ -304,7 +308,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <li>Fetch the customer.</li>
 </ol>
 <p>The performance if this is accomplished in one batch is good, but don&rsquo;t do it as security is more important than premature optimization:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">EXECUTING FOR UPSERT DO NOTHING
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">EXECUTING FOR UPSERT DO NOTHING
 Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">3426</span>  85.65%  <span style="color:#75715e">################################################################</span>
 <span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">572</span>   14.30%  <span style="color:#75715e">##########</span>
@@ -321,7 +325,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <li>Parameterized queries.</li>
 <li>Works with database engines that do not support <code>ON CONFLICT DO ...</code></li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">EXECUTING FOR UPSERT CTE
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">EXECUTING FOR UPSERT CTE
 Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2950</span>  73.75%  <span style="color:#75715e">#######################################################</span>
 <span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1034</span>  25.85%  <span style="color:#75715e">###################</span>
@@ -331,7 +335,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
 <span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
 </code></pre></div><p>The code is displayed below:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">repo</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pgCustomerRepo</span>) <span style="color:#a6e22e">UpsertCustomerCte</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">id</span> <span style="color:#a6e22e">uuid</span>.<span style="color:#a6e22e">UUID</span>) (<span style="color:#a6e22e">res</span> <span style="color:#a6e22e">domain</span>.<span style="color:#a6e22e">UpsertedRow</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">repo</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pgCustomerRepo</span>) <span style="color:#a6e22e">UpsertCustomerCte</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">id</span> <span style="color:#a6e22e">uuid</span>.<span style="color:#a6e22e">UUID</span>) (<span style="color:#a6e22e">res</span> <span style="color:#a6e22e">domain</span>.<span style="color:#a6e22e">UpsertedRow</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
 	<span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span>
 		<span style="color:#e6db74">&#34;WITH &#34;</span> <span style="color:#f92672">+</span>
 			<span style="color:#e6db74">&#34;search AS (SELECT ctid, xmax, id FROM customers WHERE customer_id = $1 LIMIT 1),&#34;</span> <span style="color:#f92672">+</span>
@@ -551,19 +555,8 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 
             
                 <footer class="footer">
-    <div class="footer__inner">
-        <div class="footer__content">
-            <span>&copy; 2021</span>
-            
-            <span>Pablo Morelli</span><span><a href="https://devandchill.com/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a></span>
-        </div>
-    </div>
-    <div class="footer__inner">
-        <div class="footer__content">
-            <span>Powered by <a href="http://gohugo.io">Hugo</a></span>
-            <span>Made with &#10084; by <a href="https://github.com/rhazdon">Djordje Atlialp</a></span>
-          </div>
-    </div>
+    
+    
 </footer>
 
             
@@ -573,7 +566,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 
 
 
-<script type="text/javascript" src="/bundle.min.2ce64ea6ea44a72b13dd812fc2eb5cca3efe878cce258a47c137c17edf46e0602a05e422b618a5b80b5939c731b7a293351c2f2222a21f6ee27e54a8448dd20e.js" integrity="sha512-LOZOpupEpysT3YEvwutcyj7&#43;h4zOJYpHwTfBft9G4GAqBeQithiluAtZOccxt6KTNRwvIiKiH27iflSoRI3SDg=="></script>
+<script type="text/javascript" src="/bundle.min.f944224ac8e104e8f14a9d98224b628e383c8f2e63f95e54381ac414365bf32b8c5ae9a6c157271fe82938d66e1cf8399e34e6cb0ee7b711c58d167a4cfd6a6f.js" integrity="sha512-&#43;UQiSsjhBOjxSp2YIktijjg8jy5j&#43;V5UOBrEFDZb8yuMWummwVcnH&#43;gpONZuHPg5njTmyw7ntxHFjRZ6TP1qbw=="></script>
 
 
 

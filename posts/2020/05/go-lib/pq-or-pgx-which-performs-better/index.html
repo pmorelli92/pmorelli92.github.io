@@ -26,7 +26,7 @@
 
 
 
-<link rel="stylesheet" type="text/css" href="/main.16e78d5a04d86fb681478e115aa347d6116551d27a06cef8a10e5069d021ff96.css">
+<link rel="stylesheet" type="text/css" href="/main.848cc1f077f1d11a08a84b16a24e54a4afb9da3c3e35cef2b42e764e2811a6fb.css">
 
 
 
@@ -36,8 +36,8 @@
 <meta itemprop="name" content="Go - lib/pq or pgx - which performs better?">
 <meta itemprop="description" content="Some days ago a coworker of mine linked me to the source code of Google&rsquo;s exposure notifications API and of course is a good chance to see how Google is doing Go related codebases.
 Continuing with the topic of Postgres and benchmarking, I decided to check out how Postgres configuration was done and this line got my attention:
-import ( ... &#34;github.com/jackc/pgx/v4/pgxpool&#34; ) What is pgx, and why should we care?"><meta itemprop="datePublished" content="2020-05-27T15:40:29&#43;01:00" />
-<meta itemprop="dateModified" content="2020-05-27T15:40:29&#43;01:00" />
+import ( ... &#34;github.com/jackc/pgx/v4/pgxpool&#34; ) What is pgx, and why should we care?"><meta itemprop="datePublished" content="2020-05-27T15:40:29+01:00" />
+<meta itemprop="dateModified" content="2020-05-27T15:40:29+01:00" />
 <meta itemprop="wordCount" content="1915"><meta itemprop="image" content="https://devandchill.com/og-image.png"/>
 <meta itemprop="keywords" content="golang,go,postgres,database,sql,benchmark,libpq,pgx,batch,cache," />
 <meta name="twitter:card" content="summary_large_image"/>
@@ -71,6 +71,8 @@ import ( ... &#34;github.com/jackc/pgx/v4/pgxpool&#34; ) What is pgx, and why sh
 
   gtag('config', 'UA-138171880-1');
 </script>
+
+
 
     </head>
 
@@ -136,10 +138,12 @@ import ( ... &#34;github.com/jackc/pgx/v4/pgxpool&#34; ) What is pgx, and why sh
 
     
 
+    
+
     <div class="post-content">
       <p>Some days ago a coworker of mine linked me to the source code of <a href="https://github.com/google/exposure-notifications-server">Google&rsquo;s exposure notifications API</a> and of course is a good chance to see how Google is doing Go related codebases.</p>
 <p>Continuing with the topic of Postgres and benchmarking, I decided to check out how Postgres configuration was done and this <a href="https://github.com/google/exposure-notifications-server/blob/master/internal/database/connection.go#L27">line</a> got my attention:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">import</span> (
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">import</span> (
 	<span style="color:#f92672">...</span>
 	<span style="color:#e6db74">&#34;github.com/jackc/pgx/v4/pgxpool&#34;</span>
 )
@@ -175,7 +179,7 @@ import ( ... &#34;github.com/jackc/pgx/v4/pgxpool&#34; ) What is pgx, and why sh
 <p>Without further ado, let&rsquo;s begin.</p>
 <h2 id="connection-handling">Connection handling</h2>
 <p>On the <code>lib/pq</code> version, <code>database/sql</code> is being used to create a struct holding a <code>*sql.Db</code> variable which was being used for every call to the database.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">pgCustomerRepo</span> <span style="color:#66d9ef">struct</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">pgCustomerRepo</span> <span style="color:#66d9ef">struct</span> {
 	<span style="color:#a6e22e">dbHandler</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">sql</span>.<span style="color:#a6e22e">DB</span>
 }
 
@@ -189,7 +193,7 @@ import ( ... &#34;github.com/jackc/pgx/v4/pgxpool&#34; ) What is pgx, and why sh
 	}, <span style="color:#66d9ef">nil</span>
 }
 </code></pre></div><p>Using <code>pgx</code> this is changed to:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">pgCustomerRepo</span> <span style="color:#66d9ef">struct</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">pgCustomerRepo</span> <span style="color:#66d9ef">struct</span> {
 	<span style="color:#a6e22e">dbHandler</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pgxpool</span>.<span style="color:#a6e22e">Pool</span>
 }
 
@@ -223,7 +227,7 @@ import ( ... &#34;github.com/jackc/pgx/v4/pgxpool&#34; ) What is pgx, and why sh
 <p>With the connection covered, let&rsquo;s move to the queries:</p>
 <h3 id="advisory-lock">Advisory Lock</h3>
 <p>The changes to the code are barely there. All of the <code>pgx</code> functions that go against the database expect a <code>context</code> and there is none non-context alternative.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">tx</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">BeginTx</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#66d9ef">nil</span>)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">tx</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">BeginTx</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#66d9ef">nil</span>)
 <span style="color:#f92672">--</span>&gt;
 <span style="color:#a6e22e">tx</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">BeginTx</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">pgx</span>.<span style="color:#a6e22e">TxOptions</span>{})
 
@@ -256,7 +260,7 @@ import ( ... &#34;github.com/jackc/pgx/v4/pgxpool&#34; ) What is pgx, and why sh
 <span style="color:#f92672">--</span>&gt;
 <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">tx</span>.<span style="color:#a6e22e">Rollback</span>(<span style="color:#a6e22e">ctx</span>)
 </code></pre></div><p>As for the performance:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LIB/PQ: EXECUTING FOR LOCKS
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LIB/PQ: EXECUTING FOR LOCKS
 Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">974</span>   24.35%  <span style="color:#75715e">##################</span>
 <span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2771</span>  69.27%  <span style="color:#75715e">###################################################</span>
@@ -277,7 +281,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
 </code></pre></div><p>And this is awesome! Out of the box without changing too much the code, the result is already speaking for itself.</p>
 <h2 id="upsert-on-conflict">Upsert on conflict</h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span>
 	<span style="color:#e6db74">&#34;INSERT INTO customers(customer_id) VALUES($1) &#34;</span> <span style="color:#f92672">+</span>
 	<span style="color:#e6db74">&#34;ON CONFLICT (customer_id) DO UPDATE SET customer_id = excluded.customer_id RETURNING ctid, xmax, id&#34;</span>
 
@@ -287,7 +291,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">QueryRow</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">id</span>).<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
 </code></pre></div><p>Even simpler than the previous one, now there is a one liner.</p>
 <p>Benchmark:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LIB/PQ: EXECUTING FOR UPSERT CONFLICT
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LIB/PQ: EXECUTING FOR UPSERT CONFLICT
 Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1777</span>  44.42%  <span style="color:#75715e">#################################</span>
 <span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1938</span>  48.45%  <span style="color:#75715e">####################################</span>
@@ -311,7 +315,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <p>As you can recall (if you read my previous post), there is a limitation when sending on the same <code>QueryContext</code> more than one parameterized query.</p>
 <p>On the previous post, this was bypassed by a non good practice that was not sending parameterized queries but injecting the string; which as I stated previously it is a bad practice that can led to security vulnerabilities.</p>
 <p>But on <code>pgx</code> there is a built-in support for sending a query batch in a single trip. And this definitely draw my attention since I find this approach the easiest to understand a.k.a <code>write first, read later</code>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span>
 	<span style="color:#e6db74">&#34;INSERT INTO customers(customer_id)	VALUES($1) ON CONFLICT DO NOTHING;&#34;</span> <span style="color:#f92672">+</span>
 	<span style="color:#e6db74">&#34;SELECT ctid, xmax, id FROM customers WHERE customer_id = $1&#34;</span>
 
@@ -319,7 +323,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#a6e22e">row</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">QueryRowContext</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">query</span>)
 <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">row</span>.<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
 </code></pre></div><p>This unsafe piece of code now can be converted to an elegant and performant way:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">batch</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">pgx</span>.<span style="color:#a6e22e">Batch</span>{}
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">batch</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">pgx</span>.<span style="color:#a6e22e">Batch</span>{}
 <span style="color:#a6e22e">batch</span>.<span style="color:#a6e22e">Queue</span>(<span style="color:#e6db74">&#34;INSERT INTO customers(customer_id) VALUES($1) ON CONFLICT DO NOTHING&#34;</span>, <span style="color:#a6e22e">id</span>)
 <span style="color:#a6e22e">batch</span>.<span style="color:#a6e22e">Queue</span>(<span style="color:#e6db74">&#34;SELECT ctid, xmax, id FROM customers WHERE customer_id = $1&#34;</span>, <span style="color:#a6e22e">id</span>)
 <span style="color:#a6e22e">results</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">SendBatch</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">batch</span>)
@@ -336,7 +340,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 
 <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">results</span>.<span style="color:#a6e22e">Close</span>()
 </code></pre></div><p>But does this truly work?</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LIB/PQ: EXECUTING FOR UPSERT DO NOTHING
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LIB/PQ: EXECUTING FOR UPSERT DO NOTHING
 Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">3426</span>  85.65%  <span style="color:#75715e">################################################################</span>
 <span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">572</span>   14.30%  <span style="color:#75715e">##########</span>
@@ -358,7 +362,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 </code></pre></div><p>And the answer is yes, it does work. Not only it is faster, but it managed to get rid of the vulnerability issue and allows the code to send two parameterized queries in one round trip.</p>
 <p>Now if someone asks me if I choose doing this over CTE queries for this scenario, I will lean more on this approach since it is easier to comprehend.</p>
 <h2 id="cte-queries">CTE queries</h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span>
 	<span style="color:#e6db74">&#34;WITH &#34;</span> <span style="color:#f92672">+</span>
 		<span style="color:#e6db74">&#34;search AS (SELECT ctid, xmax, id FROM customers WHERE customer_id = $1 LIMIT 1),&#34;</span> <span style="color:#f92672">+</span>
 		<span style="color:#e6db74">&#34;add AS (INSERT INTO customers (customer_id) SELECT $1 WHERE NOT EXISTS(SELECT id from search) RETURNING ctid, xmax, id)&#34;</span> <span style="color:#f92672">+</span>
@@ -370,7 +374,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">QueryRow</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">id</span>).<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
 </code></pre></div><p>As with the other approaches, not much to change here.</p>
 <p>Benchmark:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LIB/PQ: EXECUTING FOR UPSERT CTE
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LIB/PQ: EXECUTING FOR UPSERT CTE
 Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2950</span>  73.75%  <span style="color:#75715e">#######################################################</span>
 <span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1034</span>  25.85%  <span style="color:#75715e">###################</span>
@@ -394,8 +398,8 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <p>In all of these approaches shown, the use case was to bombard the database in order to insert and fetch a customer with the same ID. Maybe the cache stops working when the parameter changes.</p>
 </blockquote>
 <p>Let&rsquo;s try it out:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">routes</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/upsert-cte-random&#34;</span>, <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">UpsertCustomerRandom</span>(<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">CustomerRepo</span>.<span style="color:#a6e22e">UpsertCustomerCte</span>))
-</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Server</span>) <span style="color:#a6e22e">UpsertCustomerRandom</span>(<span style="color:#a6e22e">repoUpsert</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">id</span> <span style="color:#a6e22e">uuid</span>.<span style="color:#a6e22e">UUID</span>) (<span style="color:#a6e22e">res</span> <span style="color:#a6e22e">domain</span>.<span style="color:#a6e22e">UpsertedRow</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>)) <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">routes</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/upsert-cte-random&#34;</span>, <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">UpsertCustomerRandom</span>(<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">CustomerRepo</span>.<span style="color:#a6e22e">UpsertCustomerCte</span>))
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Server</span>) <span style="color:#a6e22e">UpsertCustomerRandom</span>(<span style="color:#a6e22e">repoUpsert</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">id</span> <span style="color:#a6e22e">uuid</span>.<span style="color:#a6e22e">UUID</span>) (<span style="color:#a6e22e">res</span> <span style="color:#a6e22e">domain</span>.<span style="color:#a6e22e">UpsertedRow</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>)) <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span> {
 	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) {
 		<span style="color:#f92672">...</span>
 
@@ -412,7 +416,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 	}
 }
 </code></pre></div><p>Of course, in order to do a comparison, this new route was benchmarked using both <code>lib/pq</code> and <code>pgx</code>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LIB/PQ: EXECUTING FOR UPSERT CTE RANDOM
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LIB/PQ: EXECUTING FOR UPSERT CTE RANDOM
 Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1744</span>  43.60%  <span style="color:#75715e">################################</span>
 <span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2208</span>  55.20%  <span style="color:#75715e">#########################################</span>
@@ -440,7 +444,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <li>The code used for benchmarking can be found <a href="https://github.com/pmorelli92/pg-upsert-returning">here</a>. The <code>master</code> branch contains the <code>lib/pq</code> code and the branch <code>refactor/pgx</code> contains the <code>pgx</code> code.</li>
 <li>All the benchmarks can be executed easily by:</li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">make run-db <span style="color:#f92672">(</span>create database and table after executing this<span style="color:#f92672">)</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">make run-db <span style="color:#f92672">(</span>create database and table after executing this<span style="color:#f92672">)</span>
 make run-app
 make run-bench
 </code></pre></div><p>Last, but not least, if you consider this is useful, do not hesitate on sharing it on your favorite social media; and if there is a particular topic you want me to cover, just put it on the comments below.</p>
@@ -636,19 +640,8 @@ make run-bench
 
             
                 <footer class="footer">
-    <div class="footer__inner">
-        <div class="footer__content">
-            <span>&copy; 2021</span>
-            
-            <span>Pablo Morelli</span><span><a href="https://devandchill.com/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a></span>
-        </div>
-    </div>
-    <div class="footer__inner">
-        <div class="footer__content">
-            <span>Powered by <a href="http://gohugo.io">Hugo</a></span>
-            <span>Made with &#10084; by <a href="https://github.com/rhazdon">Djordje Atlialp</a></span>
-          </div>
-    </div>
+    
+    
 </footer>
 
             
@@ -658,7 +651,7 @@ make run-bench
 
 
 
-<script type="text/javascript" src="/bundle.min.2ce64ea6ea44a72b13dd812fc2eb5cca3efe878cce258a47c137c17edf46e0602a05e422b618a5b80b5939c731b7a293351c2f2222a21f6ee27e54a8448dd20e.js" integrity="sha512-LOZOpupEpysT3YEvwutcyj7&#43;h4zOJYpHwTfBft9G4GAqBeQithiluAtZOccxt6KTNRwvIiKiH27iflSoRI3SDg=="></script>
+<script type="text/javascript" src="/bundle.min.f944224ac8e104e8f14a9d98224b628e383c8f2e63f95e54381ac414365bf32b8c5ae9a6c157271fe82938d66e1cf8399e34e6cb0ee7b711c58d167a4cfd6a6f.js" integrity="sha512-&#43;UQiSsjhBOjxSp2YIktijjg8jy5j&#43;V5UOBrEFDZb8yuMWummwVcnH&#43;gpONZuHPg5njTmyw7ntxHFjRZ6TP1qbw=="></script>
 
 
 
