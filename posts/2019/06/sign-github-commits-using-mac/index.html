@@ -37,7 +37,7 @@
 <meta itemprop="description" content="Generally speaking, most organisations do not check if a commit is signed or not. Even worse, more companies do not care about this. It might subjective but I like to have the verified badge.
  If you commit from GitHub, for example: adding or editing a README, you will get the verified bagde. The same will happen with the client GitKraken, but if you commit using the git cli this will not happen unless you configure it."><meta itemprop="datePublished" content="2019-06-09T20:22:29+02:00" />
 <meta itemprop="dateModified" content="2019-06-09T20:22:29+02:00" />
-<meta itemprop="wordCount" content="851"><meta itemprop="image" content="https://devandchill.com/og-image.png"/>
+<meta itemprop="wordCount" content="853"><meta itemprop="image" content="https://devandchill.com/og-image.png"/>
 <meta itemprop="keywords" content="github,commits,ssh,gpg,verify,verified," />
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://devandchill.com/og-image.png"/>
@@ -121,7 +121,7 @@
         <circle cx="12" cy="12" r="10"></circle>
         <polyline points="12 6 12 12 16 14"></polyline>
       </svg>
-      4 minutes
+      5 minutes
 
       
     </p>
@@ -146,12 +146,15 @@
 <p>If you commit from GitHub, for example: adding or editing a README, you will get the verified bagde. The same will happen with the client <code>GitKraken</code>, but if you commit using the <code>git cli</code> this will not happen unless you configure it.</p>
 <p>Now, I will assume that you are using a mac but in case you do not, you can google yourself some of the installation steps.</p>
 <h2 id="installing-gpg">Installing GPG</h2>
-<p>In order to sign a commit you will need to generate a key, and for this you are going to use <a href="https://gnupg.org/">GPG</a>. But first, you need brew to be installed, if you do not have it yet, it is a must have package manager for mac that you can download <a href="https://brew.sh/">here</a>.</p>
+<p>In order to sign a commit you will need to generate a key, and for this you are going to use <a href="https://gnupg.org/"  target="_blank" rel="noreferrer noopener" >GPG</a>
+. But first, you need brew to be installed, if you do not have it yet, it is a must have package manager for mac that you can download <a href="https://brew.sh/"  target="_blank" rel="noreferrer noopener" >here</a>
+.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; brew install gnupg
 &gt; brew install pinentry-mac
 &gt; echo <span style="color:#e6db74">&#34;pinentry-program /usr/local/bin/pinentry-mac&#34;</span> &gt;&gt; ~/.gnupg/gpg-agent.conf
 &gt; killall gpg-agent
-</code></pre></div><p><a href="https://www.gnupg.org/related_software/pinentry/index.en.html">Pinentry</a> as it is stated on the GPG site it is a collection of dialogs that allows you, for example, to input the passphrase of the private key. In order for this to work we need to indicate the path where it is installed into the GPG configuration and then kill the service (just in case) for it to take the changes.</p>
+</code></pre></div><p><a href="https://www.gnupg.org/related_software/pinentry/index.en.html"  target="_blank" rel="noreferrer noopener" >Pinentry</a>
+ as it is stated on the GPG site it is a collection of dialogs that allows you, for example, to input the passphrase of the private key. In order for this to work we need to indicate the path where it is installed into the GPG configuration and then kill the service (just in case) for it to take the changes.</p>
 <h2 id="generating-a-set-of-keys">Generating a set of keys</h2>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; gpg --full-generate-key
 <span style="color:#f92672">(</span>you can customise the key creation or just press enter to use the defaults<span style="color:#f92672">)</span>
@@ -239,7 +242,7 @@ In case the email does not match with the email linked in GitHub you can change 
         <line x1="16" y1="17" x2="8" y2="17"></line>
         <polyline points="10 9 9 9 8 9"></polyline>
       </svg>
-      851 Words
+      853 Words
     </p>
 
     <p>

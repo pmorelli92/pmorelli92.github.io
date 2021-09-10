@@ -38,7 +38,7 @@
 In order to add this feature in our .csproj, add the following lines:
 &lt;PropertyGroup&gt; &lt;TargetFramework&gt;netcoreapp3.0&lt;/TargetFramework&gt; &lt;PublishTrimmed&gt;true&lt;/PublishTrimmed&gt; &lt;PublishReadyToRun&gt;true&lt;/PublishReadyToRun&gt; &lt;PublishSingleFile&gt;true&lt;/PublishSingleFile&gt; &lt;CrossGenDuringPublish&gt;false&lt;/CrossGenDuringPublish&gt; &lt;/PropertyGroup&gt; There are some flags that may sound weird, let&rsquo;s go through them:"><meta itemprop="datePublished" content="2019-06-24T17:22:29+02:00" />
 <meta itemprop="dateModified" content="2019-06-24T17:22:29+02:00" />
-<meta itemprop="wordCount" content="482"><meta itemprop="image" content="https://devandchill.com/og-image.png"/>
+<meta itemprop="wordCount" content="484"><meta itemprop="image" content="https://devandchill.com/og-image.png"/>
 <meta itemprop="keywords" content="net,netcore,binary,docker,alpine,container," />
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://devandchill.com/og-image.png"/>
@@ -159,14 +159,16 @@ In order to add this feature in our .csproj, add the following lines:
 <p>After these flags had been set, the application is runnable using:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">dotnet publish -r osx-x64 -c Release -o ./deploy
 ./deploy/&lt;APP_NAME&gt; &lt;- Execute the application
-</code></pre></div><p>When publishing a single file, don&rsquo;t forget to add the <a href="https://docs.microsoft.com/en-us/dotnet/core/rid-catalog">runtime identifier catalog (RID)</a> corresponding to the platform where the application is going to be run. For example: <code>-r osx-x64</code></p>
+</code></pre></div><p>When publishing a single file, don&rsquo;t forget to add the <a href="https://docs.microsoft.com/en-us/dotnet/core/rid-catalog"  target="_blank" rel="noreferrer noopener" >runtime identifier catalog (RID)</a>
+ corresponding to the platform where the application is going to be run. For example: <code>-r osx-x64</code></p>
 <p>With the basics of this feature already covered, let&rsquo;s move to the important bit.</p>
 <h2 id="deploy-application-on-an-alpine-based-container">Deploy application on an Alpine based container</h2>
 <p>One important win using this approach is that the published binary does not need to be run in a container that has dotnet runtime installed. But one caveat for consideration is that those internal dependencies used under the hood by dotnet are still needed. There are two options:</p>
 <p>Use plain alpine and install dotnet internal dependencies:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Docker" data-lang="Docker"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> alpine</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> apk update <span style="color:#f92672">&amp;&amp;</span> apk add libstdc++ <span style="color:#f92672">&amp;&amp;</span> apk add libintl<span style="color:#960050;background-color:#1e0010">
-</span></code></pre></div><p>Use <code>runtime-deps</code> alpine image from <a href="https://hub.docker.com/_/microsoft-dotnet-core-runtime-deps/">Microsoft</a>:</p>
+</span></code></pre></div><p>Use <code>runtime-deps</code> alpine image from <a href="https://hub.docker.com/_/microsoft-dotnet-core-runtime-deps/"  target="_blank" rel="noreferrer noopener" >Microsoft</a>
+:</p>
 <blockquote>
 <p>This image contains the native dependencies needed by .NET Core. It does not include .NET Core. It is for self-contained applications.</p>
 </blockquote>
@@ -192,7 +194,8 @@ In order to add this feature in our .csproj, add the following lines:
 </span></code></pre></div><p>Basically the <code>Dockerfile</code> is publishing the application (as a binary) on an alpine container with dotnet sdk installed. This is important because the <code>builder</code> has to use the same architecture than the runner. It is not possible to build a <code>linux-musk-x64</code> binary on a windows container.</p>
 <p>Then the result files (the binary and a single DLL) are copied to an alpine container only having dotnet runtime dependencies.</p>
 <p>At the end the <code>ENTRYPOINT</code> line is executed. Check that this one is not doing <code>dotnet app/&lt;APP_NAME&gt;</code> but just <code>./app/&lt;APP_NAME&gt;</code></p>
-<p>I did a sample API with this approach, <a href="https://github.com/pmorelli92/dotnet3.executable.api">which can be found my github</a>. The container weighted <code>91MB</code>, used <code>30MB RAM</code> and <code>0.08% CPU</code>. Awesome, right?</p>
+<p>I did a sample API with this approach, <a href="https://github.com/pmorelli92/dotnet3.executable.api"  target="_blank" rel="noreferrer noopener" >which can be found my github</a>
+. The container weighted <code>91MB</code>, used <code>30MB RAM</code> and <code>0.08% CPU</code>. Awesome, right?</p>
 
     </div>
   </article>
@@ -225,7 +228,7 @@ In order to add this feature in our .csproj, add the following lines:
         <line x1="16" y1="17" x2="8" y2="17"></line>
         <polyline points="10 9 9 9 8 9"></polyline>
       </svg>
-      482 Words
+      484 Words
     </p>
 
     <p>

@@ -7,15 +7,42 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Pablo Morelli</copyright>
-    <lastBuildDate>Fri, 30 Apr 2021 12:40:00 +0200</lastBuildDate><atom:link href="https://devandchill.com/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 10 Sep 2021 13:00:00 +0200</lastBuildDate><atom:link href="https://devandchill.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>About</title>
+      <link>https://devandchill.com/about/</link>
+      <pubDate>Fri, 10 Sep 2021 13:00:00 +0200</pubDate>
+      
+      <guid>https://devandchill.com/about/</guid>
+      <description>Hey! Nice to see you around here. I am Pablo Morelli 🧔🏻 and I am working as a backend developer at Lendo. Currently living in Stockholm 🇸🇪 but was born and lived most of my life in Buenos Aires 🇦🇷. Coding since 2010, I started with .NET (and .NET Core) but currently coding in Go. I&amp;#39;ve been working with DevOps concepts in the recent years and I have experience on GitOps and Infrastructure as Code.</description>
+    </item>
+    
+    <item>
+      <title>Go - Generate and serve swagger without code dependencies</title>
+      <link>https://devandchill.com/posts/2021/09/go-generate-and-serve-swagger-without-code-dependencies/</link>
+      <pubDate>Fri, 10 Sep 2021 13:00:00 +0200</pubDate>
+      
+      <guid>https://devandchill.com/posts/2021/09/go-generate-and-serve-swagger-without-code-dependencies/</guid>
+      <description>One of the things that shocked me the most when I changed from C# to Golang is that developers are reluctant of adding libraries to solve problems unless it is strictly needed. This sentiment, at first annoying, turned out to be one of the things I liked the most about Go. The standard library alone is very powerful and you can achieve most of the stuff just with it.
+However, there was a little something that my mind keep thinking: it would be super good to have swagger docs out of the box like in C#.</description>
+    </item>
+    
+    <item>
+      <title>Resume</title>
+      <link>https://devandchill.com/resume/</link>
+      <pubDate>Fri, 10 Sep 2021 13:00:00 +0200</pubDate>
+      
+      <guid>https://devandchill.com/resume/</guid>
+      <description>WORKED WITH   .NET Core, Go. DDD, TDD, SOLID, CQRS, Clean Architecture, Event Sourcing (Akka.NET), Microservices, Scrum, Kanban. Docker, Kubernetes, CI/CD (Travis &amp;amp; Azure Pipelines), RabbitMQ (AMQP), Postgres (SQL), MongoDB (NoSQL), Terraform, GCP.   WORK EXPERIENCE  Backend Developer 💻 Lendo 🇸🇪  From 05.2019 - Present Developed fin-tech related microservices using Go (Golang) Worked on the migration from private cloud to GCP using Terraform as Infrastructure as Code to have our deployed infrastructure reflected on a git repository.</description>
+    </item>
+    
     <item>
       <title>Introducing Maybe package, bring functional to Go</title>
       <link>https://devandchill.com/posts/2021/04/introducing-maybe-package-bring-functional-to-go/</link>
       <pubDate>Fri, 30 Apr 2021 12:40:00 +0200</pubDate>
       
       <guid>https://devandchill.com/posts/2021/04/introducing-maybe-package-bring-functional-to-go/</guid>
-      <description>One of the advantages of Go is that null (nil) values are rarer than in some other languages. The following snippet will fail:
-func getDay() string { return nil } In order to make that snippet work, a pointer is needed as null values are the zero value for pointers (the same applies for interfaces, channels and function types).
+      <description>One of the advantages of Go is that null (nil) values are rarer than in some other languages. The following snippet will fail: func getDay() string { return nil } In order to make that snippet work, a pointer is needed as null values are the zero value for pointers (the same applies for interfaces, channels and function types).
 func getDay() *string { return nil } Being that pointers can introduce null and hence panics, and knowing that null is considered to be &amp;ldquo;The billion dollar mistake&amp;rdquo;, why is still so common in Go to use pointers for everything?</description>
     </item>
     
@@ -49,15 +76,6 @@ At least from my experience, SQL is taught in university/courses in an outdated 
     </item>
     
     <item>
-      <title>Resume</title>
-      <link>https://devandchill.com/resume/</link>
-      <pubDate>Mon, 24 Aug 2020 20:43:08 +0100</pubDate>
-      
-      <guid>https://devandchill.com/resume/</guid>
-      <description>WORKED WITH   .NET Core, Go. DDD, TDD, SOLID, CQRS, Clean Architecture, Event Sourcing (Akka.NET), Microservices, Scrum, Kanban. Docker, Kubernetes, CI/CD (Travis &amp;amp; Azure Pipelines), RabbitMQ (AMQP), Postgres (SQL), MongoDB (NoSQL), Terraform, GCP.   WORK EXPERIENCE  Backend Developer 💻 Lendo 🇸🇪  From 05.2019 - Present Developed fin-tech related microservices using Go (Golang) Worked on the migration from private cloud to GCP using Terraform as Infrastructure as Code to have our deployed infrastructure reflected on a git repository.</description>
-    </item>
-    
-    <item>
       <title>Go - lib/pq or pgx - which performs better?</title>
       <link>https://devandchill.com/posts/2020/05/go-lib/pq-or-pgx-which-performs-better/</link>
       <pubDate>Wed, 27 May 2020 15:40:29 +0100</pubDate>
@@ -74,7 +92,7 @@ import ( ... &amp;#34;github.com/jackc/pgx/v4/pgxpool&amp;#34; ) What is pgx, an
       <pubDate>Wed, 13 May 2020 16:40:29 +0100</pubDate>
       
       <guid>https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/</guid>
-      <description>In my previous post I covered how to build concurrently safe upsert queries.
+      <description>In my previous post I covered how to build concurrently safe upsert queries .
 This post serves as a continuation where different approaches will be battle tested to expose the performance of each one:
  Advisory lock On conflict update On conflict do nothing CTE queries  Without further ado, let&amp;rsquo;s start:
 The application In order to emulate the scenario described on the previous post, an HTTP API is required. This one will connect to a database to perform the calls.</description>
@@ -141,15 +159,6 @@ func wordCounter() (words map[string]int) { b, err := ioutil.</description>
       <description>When I started learning Golang (a couple of months ago) one of the things that I concerned most with was the project structure.
 It may sound irrelevant to bother with this when you are learning the language; but, every time I am browsing .net core applications or libraries on GitHub, I find it extremely unappealing when certain projects are not structured in a conventional way.
 My starting point was the following talk:</description>
-    </item>
-    
-    <item>
-      <title>About</title>
-      <link>https://devandchill.com/about/</link>
-      <pubDate>Wed, 06 Mar 2019 20:43:08 +0100</pubDate>
-      
-      <guid>https://devandchill.com/about/</guid>
-      <description>Hey! Nice to see you around here. I am Pablo Morelli 🧔🏻 and I am working as a backend developer at Lendo. Currently living in Stockholm 🇸🇪 but was born and lived most of my life in Buenos Aires 🇦🇷. Coding since 2010, and with most of my experience on .NET (and .NET Core) but actively coding on Go. My aim here is to write (mostly) about tech, from possible problems to new technologies.</description>
     </item>
     
   </channel>

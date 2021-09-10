@@ -7,7 +7,17 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Pablo Morelli</copyright>
-    <lastBuildDate>Wed, 27 May 2020 15:40:29 +0100</lastBuildDate><atom:link href="https://devandchill.com/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 10 Sep 2021 13:00:00 +0200</lastBuildDate><atom:link href="https://devandchill.com/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Go - Generate and serve swagger without code dependencies</title>
+      <link>https://devandchill.com/posts/2021/09/go-generate-and-serve-swagger-without-code-dependencies/</link>
+      <pubDate>Fri, 10 Sep 2021 13:00:00 +0200</pubDate>
+      
+      <guid>https://devandchill.com/posts/2021/09/go-generate-and-serve-swagger-without-code-dependencies/</guid>
+      <description>One of the things that shocked me the most when I changed from C# to Golang is that developers are reluctant of adding libraries to solve problems unless it is strictly needed. This sentiment, at first annoying, turned out to be one of the things I liked the most about Go. The standard library alone is very powerful and you can achieve most of the stuff just with it.
+However, there was a little something that my mind keep thinking: it would be super good to have swagger docs out of the box like in C#.</description>
+    </item>
+    
     <item>
       <title>Go - lib/pq or pgx - which performs better?</title>
       <link>https://devandchill.com/posts/2020/05/go-lib/pq-or-pgx-which-performs-better/</link>
@@ -25,7 +35,7 @@ import ( ... &amp;#34;github.com/jackc/pgx/v4/pgxpool&amp;#34; ) What is pgx, an
       <pubDate>Wed, 13 May 2020 16:40:29 +0100</pubDate>
       
       <guid>https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/</guid>
-      <description>In my previous post I covered how to build concurrently safe upsert queries.
+      <description>In my previous post I covered how to build concurrently safe upsert queries .
 This post serves as a continuation where different approaches will be battle tested to expose the performance of each one:
  Advisory lock On conflict update On conflict do nothing CTE queries  Without further ado, let&amp;rsquo;s start:
 The application In order to emulate the scenario described on the previous post, an HTTP API is required. This one will connect to a database to perform the calls.</description>

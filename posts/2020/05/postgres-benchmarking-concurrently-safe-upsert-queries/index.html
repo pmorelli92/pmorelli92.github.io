@@ -34,18 +34,18 @@
 
 
 <meta itemprop="name" content="Postgres: Benchmarking concurrently safe upsert queries">
-<meta itemprop="description" content="In my previous post I covered how to build concurrently safe upsert queries.
+<meta itemprop="description" content="In my previous post I covered how to build concurrently safe upsert queries .
 This post serves as a continuation where different approaches will be battle tested to expose the performance of each one:
  Advisory lock On conflict update On conflict do nothing CTE queries  Without further ado, let&rsquo;s start:
 The application In order to emulate the scenario described on the previous post, an HTTP API is required. This one will connect to a database to perform the calls."><meta itemprop="datePublished" content="2020-05-13T16:40:29+01:00" />
 <meta itemprop="dateModified" content="2020-05-13T16:40:29+01:00" />
-<meta itemprop="wordCount" content="1572"><meta itemprop="image" content="https://devandchill.com/og-image.png"/>
+<meta itemprop="wordCount" content="1574"><meta itemprop="image" content="https://devandchill.com/og-image.png"/>
 <meta itemprop="keywords" content="go,golang,postgres,database,sql,benchmark,upsert,queries,cte,concurrency," />
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://devandchill.com/og-image.png"/>
 
 <meta name="twitter:title" content="Postgres: Benchmarking concurrently safe upsert queries"/>
-<meta name="twitter:description" content="In my previous post I covered how to build concurrently safe upsert queries.
+<meta name="twitter:description" content="In my previous post I covered how to build concurrently safe upsert queries .
 This post serves as a continuation where different approaches will be battle tested to expose the performance of each one:
  Advisory lock On conflict update On conflict do nothing CTE queries  Without further ado, let&rsquo;s start:
 The application In order to emulate the scenario described on the previous post, an HTTP API is required. This one will connect to a database to perform the calls."/>
@@ -143,7 +143,8 @@ The application In order to emulate the scenario described on the previous post,
     
 
     <div class="post-content">
-      <p>In my previous post I covered how to <a href="https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries">build concurrently safe upsert queries</a>.</p>
+      <p>In my previous post I covered how to <a href="https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries"  target="_blank" rel="noreferrer noopener" >build concurrently safe upsert queries</a>
+.</p>
 <p>This post serves as a continuation where different approaches will be battle tested to expose the performance of each one:</p>
 <ul>
 <li>Advisory lock</li>
@@ -154,7 +155,8 @@ The application In order to emulate the scenario described on the previous post,
 <p>Without further ado, let&rsquo;s start:</p>
 <h2 id="the-application">The application</h2>
 <p>In order to emulate the scenario described on the previous post, an HTTP API is required. This one will connect to a database to perform the calls.
-The application is written in Go and can be found <a href="https://github.com/pmorelli92/pg-upsert-returning">here</a>.</p>
+The application is written in Go and can be found <a href="https://github.com/pmorelli92/pg-upsert-returning"  target="_blank" rel="noreferrer noopener" >here</a>
+.</p>
 <p>The application is plain simple, as it contains few files:</p>
 <ul>
 <li><em>cmd/main.go</em>: Responsible for bootstrapping the postgres connection and http server.</li>
@@ -173,7 +175,8 @@ The application is written in Go and can be found <a href="https://github.com/pm
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker build -t pg-upsert-app:local .
 docker run -p 8080:8080 --link db --name app -i pg-upsert-app:local
 </code></pre></div><h2 id="benchmarking">Benchmarking</h2>
-<p>For the benchmark, the tool <a href="https://github.com/tsenart/vegeta">vegeta</a> is used. This tool allows doing HTTP load testing which will be used against the API.</p>
+<p>For the benchmark, the tool <a href="https://github.com/tsenart/vegeta"  target="_blank" rel="noreferrer noopener" >vegeta</a>
+ is used. This tool allows doing HTTP load testing which will be used against the API.</p>
 <p>The test suite is just a bash script that will feature a similar logic for each approach to be tested; example:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">UPSERT_LOCK<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>echo <span style="color:#e6db74">&#39;{
 </span><span style="color:#e6db74">  method: &#34;POST&#34;,
@@ -257,7 +260,8 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <li>It modifies the row transaction id, an &ldquo;old&rdquo; that got updated row will have a new transaction timestamp.</li>
 <li>Firing triggers affecting the table.</li>
 </ul>
-<p>For a better refresher, click <a href="https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries/#4-on-conflict-update">here</a></p>
+<p>For a better refresher, click <a href="https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries/#4-on-conflict-update"  target="_blank" rel="noreferrer noopener" >here</a>
+</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">EXECUTING FOR UPSERT CONFLICT
 Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1777</span>  44.42%  <span style="color:#75715e">#################################</span>
@@ -399,7 +403,7 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
         <line x1="16" y1="17" x2="8" y2="17"></line>
         <polyline points="10 9 9 9 8 9"></polyline>
       </svg>
-      1572 Words
+      1574 Words
     </p>
 
     <p>

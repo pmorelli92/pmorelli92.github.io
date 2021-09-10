@@ -37,7 +37,7 @@
 <meta itemprop="description" content="2021 update: Since KubeSail was not working as expected, the solution is now hosted in Okteto which offers a free namespace for developers to try out a hosted Kubernetes service.
 Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&rsquo;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files)."><meta itemprop="datePublished" content="2019-10-19T22:22:29+02:00" />
 <meta itemprop="dateModified" content="2019-10-19T22:22:29+02:00" />
-<meta itemprop="wordCount" content="1164"><meta itemprop="image" content="https://devandchill.com/og-image.png"/>
+<meta itemprop="wordCount" content="1167"><meta itemprop="image" content="https://devandchill.com/og-image.png"/>
 <meta itemprop="keywords" content="go,golang,azure,ci,cd,kubernetes,docker,azure pipelines,okteto," />
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://devandchill.com/og-image.png"/>
@@ -149,7 +149,8 @@ Every company has a different way to work and configure CI/CD, and all of them h
 <li>Deploy to Okteto (which offers a free kubernetes cluster)</li>
 </ul>
 <h2 id="the-application">The application</h2>
-<p>You can find it on <a href="https://github.com/pmorelli92/go-with-azure">GitHub</a>. It is a rather simple rest application since the purpose here is not to dig into code but on the CI/CD.</p>
+<p>You can find it on <a href="https://github.com/pmorelli92/go-with-azure"  target="_blank" rel="noreferrer noopener" >GitHub</a>
+. It is a rather simple rest application since the purpose here is not to dig into code but on the CI/CD.</p>
 <p>It is runnable (downloading modules first with <code>go mod download</code>) executing <code>go run cmd/main.go</code>.
 The only functionality that exposes is a <code>GET /health</code> endpoint which will return a json informing that health is ok.</p>
 <p>The application can be dockerized executing <code>docker build -t gwa:local .</code> and then runnable using <code>docker run -p 80:8080 -it gwa:local</code>.</p>
@@ -241,7 +242,8 @@ In this case, the example repository is using semver for building versions.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">bash</span>: <span style="color:#ae81ff">sed -i &#34;s/latest/$(buildNumber)/g&#34; kubernetes/k8s-deployment.yml</span>
 </code></pre></div><p>A discussion could be hold on whether if a service should self contain information of deployment or be agnostic of it. As a personal preference, I think having everything related to the application on the same repository enables easier discoverability.</p>
 <p>Of course, we are not having any secrets here, if that was the case, Azure Pipelines offers a way to store them safely inside the azure devops project.</p>
-<p>That being said, the repository contains a <a href="https://github.com/pmorelli92/go-with-azure/blob/master/kubernetes/k8s-deployment.yml">file</a> <code>kubernetes/k8s-deployment.yml</code> which describes:</p>
+<p>That being said, the repository contains a <a href="https://github.com/pmorelli92/go-with-azure/blob/master/kubernetes/k8s-deployment.yml"  target="_blank" rel="noreferrer noopener" >file</a>
+ <code>kubernetes/k8s-deployment.yml</code> which describes:</p>
 <ul>
 <li>Deployment (information of the containers to be run)</li>
 <li>Service (enables communication from pods)</li>
@@ -255,7 +257,8 @@ In this case, the example repository is using semver for building versions.</p>
   <span style="color:#f92672">ports</span>:
   - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">http</span>
     <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">80</span>
-</code></pre></div><p>It is definitely not good to use <code>:latest</code> image on stage / production so the sed script will replace <code>:latest</code> with <code>0.0.X</code> (which will be the build number). This is also the same version that will be pushed to the selected docker registry: <a href="https://cloud.docker.com/u/pmorelli92/repository/docker/pmorelli92/go-with-azure">example</a>.</p>
+</code></pre></div><p>It is definitely not good to use <code>:latest</code> image on stage / production so the sed script will replace <code>:latest</code> with <code>0.0.X</code> (which will be the build number). This is also the same version that will be pushed to the selected docker registry: <a href="https://cloud.docker.com/u/pmorelli92/repository/docker/pmorelli92/go-with-azure"  target="_blank" rel="noreferrer noopener" >example</a>
+.</p>
 <figure><img src="/posts/images/docker-tags.png"/>
 </figure>
 
@@ -275,7 +278,8 @@ In this case, the example repository is using semver for building versions.</p>
 <figure><img src="/posts/images/cicd-logs.png"/>
 </figure>
 
-<p>And the demo app is now accessible from the following <a href="https://gwa-service-pmorelli92.cloud.okteto.net/health">link</a>.</p>
+<p>And the demo app is now accessible from the following <a href="https://gwa-service-pmorelli92.cloud.okteto.net/health"  target="_blank" rel="noreferrer noopener" >link</a>
+.</p>
 <h2 id="summary">Summary</h2>
 <p>In this tutorial we have seen how easy it is to set up a quick CI/CD pipeline that could be improved further according to the business / technical needs.
 If I were to give a verdict on Azure Pipelines:</p>
@@ -326,7 +330,7 @@ If I were to give a verdict on Azure Pipelines:</p>
         <line x1="16" y1="17" x2="8" y2="17"></line>
         <polyline points="10 9 9 9 8 9"></polyline>
       </svg>
-      1164 Words
+      1167 Words
     </p>
 
     <p>

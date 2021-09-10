@@ -167,7 +167,8 @@ My starting point was the following talk:"/>
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">EXPOSE</span><span style="color:#e6db74"> 8080</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENTRYPOINT</span> [<span style="color:#e6db74">&#34;./goapp&#34;</span>]<span style="color:#960050;background-color:#1e0010">
 </span></code></pre></div><p>That Dockerfile, as ugly as it looks, was the result of some iterations were I was getting path errors, dependency errors, and others. The constraint of only working on <code>GOPATH</code> gave me headaches and I had to use a really bad <code>WORKDIR</code> as you can see above.</p>
-<p>But then after some searching, I came across that <a href="https://github.com/golang/go/wiki/Modules">GO Modules</a> was supported from version 1.11, so I decided to give it a try.</p>
+<p>But then after some searching, I came across that <a href="https://github.com/golang/go/wiki/Modules"  target="_blank" rel="noreferrer noopener" >GO Modules</a>
+ was supported from version 1.11, so I decided to give it a try.</p>
 <p>And this is how the Dockerfile looks like now:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-docker" data-lang="docker"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> golang:1.12-alpine AS builder</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010">

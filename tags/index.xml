@@ -7,7 +7,43 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Pablo Morelli</copyright>
-    <lastBuildDate>Fri, 30 Apr 2021 12:40:00 +0200</lastBuildDate><atom:link href="https://devandchill.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 10 Sep 2021 13:00:00 +0200</lastBuildDate><atom:link href="https://devandchill.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>go</title>
+      <link>https://devandchill.com/tags/go/</link>
+      <pubDate>Fri, 10 Sep 2021 13:00:00 +0200</pubDate>
+      
+      <guid>https://devandchill.com/tags/go/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>openAPI</title>
+      <link>https://devandchill.com/tags/openapi/</link>
+      <pubDate>Fri, 10 Sep 2021 13:00:00 +0200</pubDate>
+      
+      <guid>https://devandchill.com/tags/openapi/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>redoc</title>
+      <link>https://devandchill.com/tags/redoc/</link>
+      <pubDate>Fri, 10 Sep 2021 13:00:00 +0200</pubDate>
+      
+      <guid>https://devandchill.com/tags/redoc/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>swagger</title>
+      <link>https://devandchill.com/tags/swagger/</link>
+      <pubDate>Fri, 10 Sep 2021 13:00:00 +0200</pubDate>
+      
+      <guid>https://devandchill.com/tags/swagger/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>functional</title>
       <link>https://devandchill.com/tags/functional/</link>
@@ -320,15 +356,6 @@
       <pubDate>Wed, 27 May 2020 15:40:29 +0100</pubDate>
       
       <guid>https://devandchill.com/tags/database/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>go</title>
-      <link>https://devandchill.com/tags/go/</link>
-      <pubDate>Wed, 27 May 2020 15:40:29 +0100</pubDate>
-      
-      <guid>https://devandchill.com/tags/go/</guid>
       <description></description>
     </item>
     

@@ -37,7 +37,7 @@
 <meta itemprop="description" content="The other day I encountered the following post where Seth Vargo was doing some statements regarding the usage of environment variables:
  [&hellip;] While this approach is simple and straightforward, it comes with considerable security drawbacks - the secrets exist in plaintext in the environment. Any other process, library, or dependency running inside the process has access to the environment which has already been exploited multiple times. Unfortunately, it is trivial for a malicious library author to inject this type of vulnerability into an otherwise helpful utility package."><meta itemprop="datePublished" content="2020-08-31T20:00:00+01:00" />
 <meta itemprop="dateModified" content="2020-08-31T20:00:00+01:00" />
-<meta itemprop="wordCount" content="2007"><meta itemprop="image" content="https://devandchill.com/og-image.png"/>
+<meta itemprop="wordCount" content="2008"><meta itemprop="image" content="https://devandchill.com/og-image.png"/>
 <meta itemprop="keywords" content="secrets,environment,env,variable,gcp,manager,secret manager,kubernetes,gcloud,iam,gke," />
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://devandchill.com/og-image.png"/>
@@ -139,14 +139,17 @@
     
 
     <div class="post-content">
-      <p>The other day I encountered the <a href="https://www.sethvargo.com/secrets-in-serverless/">following post</a> where Seth Vargo was doing some statements regarding the usage of environment variables:</p>
+      <p>The other day I encountered the <a href="https://www.sethvargo.com/secrets-in-serverless/"  target="_blank" rel="noreferrer noopener" >following post</a>
+ where Seth Vargo was doing some statements regarding the usage of environment variables:</p>
 <blockquote>
 <p>[&hellip;] While this approach is simple and straightforward, it comes with considerable security drawbacks - the secrets exist in plaintext in the environment. Any other process, library, or dependency running inside the process has access to the environment which has already been exploited multiple times.
 Unfortunately, it is trivial for a malicious library author to inject this type of vulnerability into an otherwise helpful utility package.
 To be absolutely, unequivocally clear, you should not store secret or sensitive information in environment variables in plaintext.</p>
 </blockquote>
-<p>Then, the author, states some alternatives like using KMS to cypher values for the environment variables; using <a href="https://github.com/GoogleCloudPlatform/berglas">Berglas library</a> and also suggesting Hashicorp Vault.</p>
-<p>At the time of that post, GCP was not offering a direct rival to Hashicorp Vault but a few months ago <a href="https://cloud.google.com/blog/products/identity-security/improving-your-security-posture-with-centralized-secrets-management">Google announced Secret Manager being GA</a>.</p>
+<p>Then, the author, states some alternatives like using KMS to cypher values for the environment variables; using <a href="https://github.com/GoogleCloudPlatform/berglas"  target="_blank" rel="noreferrer noopener" >Berglas library</a>
+ and also suggesting Hashicorp Vault.</p>
+<p>At the time of that post, GCP was not offering a direct rival to Hashicorp Vault but a few months ago <a href="https://cloud.google.com/blog/products/identity-security/improving-your-security-posture-with-centralized-secrets-management"  target="_blank" rel="noreferrer noopener" >Google announced Secret Manager being GA</a>
+.</p>
 <p>As of now, at my current workplace we are migrating from a private cloud to GCP and I think there is not a better moment for me to analyze what are the benefits of using Secret Manager and how easy or hard is to make it work.</p>
 <h3 id="deploying-resources">Deploying resources</h3>
 <p>As some other companies, our workloads are deployed in a Kubernetes cluster (GKE on Google Cloud) while always trying to follow the Principle of Least Access in order to guarantee that a workload can only access to the resources it needs and cannot elevate privileges or modify some other resources.</p>
@@ -165,9 +168,11 @@ To be absolutely, unequivocally clear, you should not store secret or sensitive 
 </code></pre></div><p>For accessing Secret Manager API from our Google Kubernetes Engine there are three things that needs to be done.</p>
 <h4 id="enable-secret-manager-api">Enable Secret Manager API</h4>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud services enable secretmanager.googleapis.com
-</code></pre></div><p><a href="https://console.cloud.google.com/apis/library/secretmanager.googleapis.com">Or from the Console UI.</a></p>
+</code></pre></div><p><a href="https://console.cloud.google.com/apis/library/secretmanager.googleapis.com"  target="_blank" rel="noreferrer noopener" >Or from the Console UI.</a>
+</p>
 <h4 id="set-corresponding-iam-role-on-the-service-account-running-the-instance">Set corresponding IAM role on the service account running the instance</h4>
-<p><a href="https://cloud.google.com/compute/docs/access/service-accounts#service_account_permissions">From service account documentation.</a></p>
+<p><a href="https://cloud.google.com/compute/docs/access/service-accounts#service_account_permissions"  target="_blank" rel="noreferrer noopener" >From service account documentation.</a>
+</p>
 <blockquote>
 <p>When you set up an instance to run as a service account, you determine the level of access the service account has by the IAM roles that you grant to the service account. If the service account has no IAM roles, then no API methods can be run by the service account on that instance.
 Furthermore, an instance&rsquo;s access scopes determine the default OAuth scopes for requests made through the gcloud tool and client libraries on the instance. As a result, access scopes potentially further limit access to API methods when authenticating through OAuth. [&hellip;]</p>
@@ -176,12 +181,14 @@ Furthermore, an instance&rsquo;s access scopes determine the default OAuth scope
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud iam service-accounts create demo-service-account <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--description<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;Service account used for our demo cluster&#39;</span> <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--display-name<span style="color:#f92672">=</span>demo-service-account
-</code></pre></div><p>The role to be assigned to this service account is <a href="https://cloud.google.com/iam/docs/understanding-roles#secret-manager-roles">roles/secretmanager.secretAccessor</a> which allows accessing the payload of secrets:</p>
+</code></pre></div><p>The role to be assigned to this service account is <a href="https://cloud.google.com/iam/docs/understanding-roles#secret-manager-roles"  target="_blank" rel="noreferrer noopener" >roles/secretmanager.secretAccessor</a>
+ which allows accessing the payload of secrets:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud projects add-iam-policy-binding pablo-test-project <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--member<span style="color:#f92672">=</span>serviceAccount:demo-service-account@pablo-test-project.iam.gserviceaccount.com <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--role<span style="color:#f92672">=</span>roles/secretmanager.secretAccessor
 </code></pre></div><h4 id="configure-oauth-scopes-on-the-instance-that-consumes-the-api">Configure OAuth scopes on the instance that consumes the API</h4>
-<p><a href="https://cloud.google.com/secret-manager/docs/access-control">From access control documentation.</a></p>
+<p><a href="https://cloud.google.com/secret-manager/docs/access-control"  target="_blank" rel="noreferrer noopener" >From access control documentation.</a>
+</p>
 <blockquote>
 <p>To access the Secret Manager API from within a Compute Engine instance or a Google Kubernetes Engine node (which is also a Compute Engine instance), the instance must have the cloud-platform OAuth scope. For more information about access scopes in Compute Engine, see Service account permissions in the Compute Engine documentation.</p>
 </blockquote>
@@ -215,7 +222,8 @@ printf <span style="color:#e6db74">&#34;s3cr3t&#34;</span> | gcloud secrets vers
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl exec -it httpbin -- sh
 $ apt update; apt install curl;
 </code></pre></div><h3 id="trying-it-out">Trying it out</h3>
-<p>In order to try the Secret Manager API an OAuth2 token needs to be issued <a href="https://cloud.google.com/compute/docs/access/create-enable-service-accounts-for-instances#applications">as we can read on the documentation.</a></p>
+<p>In order to try the Secret Manager API an OAuth2 token needs to be issued <a href="https://cloud.google.com/compute/docs/access/create-enable-service-accounts-for-instances#applications"  target="_blank" rel="noreferrer noopener" >as we can read on the documentation.</a>
+</p>
 <blockquote>
 <p>For some applications, you might need to request an OAuth2 access token and use it directly without going through a client library or using the gcloud or gsutil tools. There are several options for obtaining and using these access tokens to authenticate your applications. [&hellip;]
 On the instance where your application runs, query the metadata server for an access token. [&hellip;]</p>
@@ -250,7 +258,8 @@ This worked fine, but then do we need the IAM permission or is it just enough wi
 </code></pre></div><p>So effectively, the IAM role is required for this to work. Now, you can add the IAM role again for the next part.</p>
 <h3 id="moving-this-to-a-more-realistic-scenario">Moving this to a more realistic scenario</h3>
 <p>It is very important not to break the current workflow as this Secret Manager API is probably an overkill for local and dev environment. This is one of the selling points.</p>
-<p>For this, I created a <a href="https://github.com/pmorelli92/secret-manager-demo">demo application</a> which is doing the following:</p>
+<p>For this, I created a <a href="https://github.com/pmorelli92/secret-manager-demo"  target="_blank" rel="noreferrer noopener" >demo application</a>
+ which is doing the following:</p>
 <ul>
 <li>Expects an environment variable named <code>GCP_PROJECT</code>, if the value is not present then it will try to read the keys from environment and use a default value when an environment variable is not found with the expected name.</li>
 <li>If <code>GCP_PROJECT</code> is defined, it will try to search the secret on Secret Manager. If the value is not found there it will use a default value as well.</li>
@@ -438,7 +447,8 @@ This worked fine, but then do we need the IAM permission or is it just enough wi
 <li>(-) Vendor lockdown. It is understandable that this product is not directly interchangeable. That being said there are alternatives like Hashicorp Vault that also offers the same (and maybe more) functionality. However, it is clear that if you are on GCP you have already invested time on using cloud specific built-in solutions like CloudSQL and Cloud Storage which are not directly interchangeable either.</li>
 </ul>
 <h3 id="demo-application-repository">Demo application repository</h3>
-<p><a href="https://github.com/pmorelli92/secret-manager-demo">👉 Repository 👈</a></p>
+<p><a href="https://github.com/pmorelli92/secret-manager-demo"  target="_blank" rel="noreferrer noopener" >👉 Repository 👈</a>
+</p>
 
     </div>
   </article>
@@ -476,7 +486,7 @@ This worked fine, but then do we need the IAM permission or is it just enough wi
         <line x1="16" y1="17" x2="8" y2="17"></line>
         <polyline points="10 9 9 9 8 9"></polyline>
       </svg>
-      2007 Words
+      2008 Words
     </p>
 
     <p>

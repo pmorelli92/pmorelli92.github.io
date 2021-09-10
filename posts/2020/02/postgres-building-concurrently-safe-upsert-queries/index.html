@@ -37,7 +37,7 @@
 <meta itemprop="description" content="Recently at the company I am working for, there was a need to communicate with an external service which required us to send some data along with an integer identifier. The problem is that IDs in our domain are not integers but uuid.
 The suggestion then was to have a service which creates an unique integer for a certain uuid. This way the int identifier won&rsquo;t be leaked to any other part of the system."><meta itemprop="datePublished" content="2020-02-16T09:22:29+01:00" />
 <meta itemprop="dateModified" content="2020-02-16T09:22:29+01:00" />
-<meta itemprop="wordCount" content="2078"><meta itemprop="image" content="https://devandchill.com/og-image.png"/>
+<meta itemprop="wordCount" content="2080"><meta itemprop="image" content="https://devandchill.com/og-image.png"/>
 <meta itemprop="keywords" content="postgres,database,sql,benchmark,upsert,queries,cte,concurrency," />
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://devandchill.com/og-image.png"/>
@@ -245,7 +245,8 @@ RETURNING id
 <li>This last query will not respond until the first transaction finishes.</li>
 </ul>
 <p>What does this mean? It means that concurrency is being handled explicitly with locks in a way that won&rsquo;t scale when having multiple requests using the same uuid.</p>
-<p><a href="https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/"><em>Benchmark for this approach in part 2</em></a></p>
+<p><a href="https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/"  target="_blank" rel="noreferrer noopener" ><em>Benchmark for this approach in part 2</em></a>
+</p>
 <hr>
 <h3 id="4-on-conflict-update">4. On conflict, update</h3>
 <ol>
@@ -264,7 +265,8 @@ RETURNING id
 | <span style="color:#ae81ff">3</span>  |
 | <span style="color:#ae81ff">3</span>  |
 | <span style="color:#ae81ff">3</span>  |
-</code></pre></div><p>As simple as that. Looks great doesn&rsquo;t it? Well I thought so until a colleague proved me wrong when he linked this <a href="https://stackoverflow.com/a/42217872">awesome stack overflow answer</a>.</p>
+</code></pre></div><p>As simple as that. Looks great doesn&rsquo;t it? Well I thought so until a colleague proved me wrong when he linked this <a href="https://stackoverflow.com/a/42217872"  target="_blank" rel="noreferrer noopener" >awesome stack overflow answer</a>
+.</p>
 <blockquote>
 <p>[&hellip;] Do not update identical rows without need. Even if you see no difference on the surface, there are various side effects:</p>
 <ul>
@@ -289,7 +291,8 @@ RETURNING ctid, xmin, xmax, id
 | <span style="color:#f92672">(</span>0,4<span style="color:#f92672">)</span> | <span style="color:#ae81ff">5879</span> | <span style="color:#ae81ff">5879</span> | <span style="color:#ae81ff">2</span>  |
 | <span style="color:#f92672">(</span>0,5<span style="color:#f92672">)</span> | <span style="color:#ae81ff">5880</span> | <span style="color:#ae81ff">5880</span> | <span style="color:#ae81ff">2</span>  |
 </code></pre></div><p>What is the definition of <code>ctid</code>, <code>xmin</code> and <code>xmax</code>, and why do they keep increasing?
-<a href="https://www.postgresql.org/docs/8.2/ddl-system-columns.html">Documentation</a></p>
+<a href="https://www.postgresql.org/docs/8.2/ddl-system-columns.html"  target="_blank" rel="noreferrer noopener" >Documentation</a>
+</p>
 <p><strong>ctid</strong></p>
 <blockquote>
 <p>The physical location of the row version within its table. Note that although the ctid can be used to locate the row version very quickly, a row&rsquo;s ctid will change if it is updated or moved by VACUUM FULL. Therefore ctid is useless as a long-term row identifier. A primary key should be used to identify logical rows.</p>
@@ -308,7 +311,8 @@ RETURNING ctid, xmin, xmax, id
 <li><code>xmin</code> is the creation transaction id of that row.</li>
 <li><code>xmax</code> is the destruction transaction id of that row.</li>
 </ul>
-<p>In order to elaborate it is important to take into consideration the MVCC (Multiversion Concurrency Control) nature of postgres. From the <a href="https://www.postgresql.org/docs/current/mvcc-intro.html">Documentation</a>:</p>
+<p>In order to elaborate it is important to take into consideration the MVCC (Multiversion Concurrency Control) nature of postgres. From the <a href="https://www.postgresql.org/docs/current/mvcc-intro.html"  target="_blank" rel="noreferrer noopener" >Documentation</a>
+:</p>
 <blockquote>
 <p>Each SQL statement sees a snapshot of data [&hellip;] regardless of the current state of the underlying data. This prevents statements from viewing inconsistent data produced by concurrent transactions performing updates on the same data rows. [&hellip;] MVCC, minimizes lock contention in order to allow for reasonable performance in multiuser environments.</p>
 </blockquote>
@@ -358,7 +362,8 @@ RETURNING ctid, xmin, xmax, id
 </ul>
 <p>As you can probably guess an <code>UPDATE</code> is a <code>DELETE + INSERT</code> under the hoods.</p>
 <p>With this explained, it is confirmed why doing <code>ON CONFLICT UPDATE</code> is not a good choice either.</p>
-<p><a href="https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/"><em>Benchmark for this approach in part 2</em></a></p>
+<p><a href="https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/"  target="_blank" rel="noreferrer noopener" ><em>Benchmark for this approach in part 2</em></a>
+</p>
 <hr>
 <h3 id="5-insert-first-read-later">5. Insert first, read later</h3>
 <p>On the first approach, the problem was that the <code>INSERT</code> query was not updating on conflict, thus the <code>RETURNING</code> row is empty when the row already exists. This can be solved by flipping the order of the statements.</p>
@@ -397,10 +402,12 @@ Execution Time: 0.244 ms
 Planning Time: 0.069 ms
 Execution Time: 0.111 ms
 </code></pre></div><p>The summarization between the insert and the select is less than a millisecond for both cases. Don&rsquo;t worry, on the next part this is proven.</p>
-<p><a href="https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/"><em>Benchmark for this approach in part 2</em></a></p>
+<p><a href="https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/"  target="_blank" rel="noreferrer noopener" ><em>Benchmark for this approach in part 2</em></a>
+</p>
 <hr>
 <h3 id="bonus-for-non-postgres-users-aka-cte-queries">Bonus for non Postgres users (a.k.a CTE queries)</h3>
-<p>CTE means Common Table Expression and documentation can be found <a href="https://www.postgresql.org/docs/current/queries-with.html">here</a></p>
+<p>CTE means Common Table Expression and documentation can be found <a href="https://www.postgresql.org/docs/current/queries-with.html"  target="_blank" rel="noreferrer noopener" >here</a>
+</p>
 <p>These kind of expressions are also useful when the database engine  does not support <code>ON CONFLICT DO NOTHING</code>.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">WITH</span>
 	<span style="color:#66d9ef">search</span> <span style="color:#66d9ef">AS</span> (<span style="color:#66d9ef">SELECT</span> ctid, xmax, id <span style="color:#66d9ef">FROM</span> customers <span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;8a57f8f4-aeed-412c-a6f6-5f9a03b17bc5&#39;</span> <span style="color:#66d9ef">LIMIT</span> <span style="color:#ae81ff">1</span>),
@@ -429,7 +436,8 @@ Execution Time: 0.111 ms
         -&gt;  CTE Scan on search
 Planning Time: 0.256 ms
 Execution Time: 2.483 ms
-</code></pre></div><p><a href="https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/"><em>Benchmark for this approach in part 2</em></a></p>
+</code></pre></div><p><a href="https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/"  target="_blank" rel="noreferrer noopener" ><em>Benchmark for this approach in part 2</em></a>
+</p>
 <hr>
 <p>And that is all for this post. On the next post, the benchmarks for the following approaches are going to be executed:</p>
 <ul>
@@ -473,7 +481,7 @@ Execution Time: 2.483 ms
         <line x1="16" y1="17" x2="8" y2="17"></line>
         <polyline points="10 9 9 9 8 9"></polyline>
       </svg>
-      2078 Words
+      2080 Words
     </p>
 
     <p>

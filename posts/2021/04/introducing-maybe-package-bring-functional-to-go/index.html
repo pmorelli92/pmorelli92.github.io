@@ -34,8 +34,7 @@
 
 
 <meta itemprop="name" content="Introducing Maybe package, bring functional to Go">
-<meta itemprop="description" content="One of the advantages of Go is that null (nil) values are rarer than in some other languages. The following snippet will fail:
-func getDay() string { return nil } In order to make that snippet work, a pointer is needed as null values are the zero value for pointers (the same applies for interfaces, channels and function types).
+<meta itemprop="description" content="One of the advantages of Go is that null (nil) values are rarer than in some other languages. The following snippet will fail: func getDay() string { return nil } In order to make that snippet work, a pointer is needed as null values are the zero value for pointers (the same applies for interfaces, channels and function types).
 func getDay() *string { return nil } Being that pointers can introduce null and hence panics, and knowing that null is considered to be &ldquo;The billion dollar mistake&rdquo;, why is still so common in Go to use pointers for everything?"><meta itemprop="datePublished" content="2021-04-30T12:40:00+02:00" />
 <meta itemprop="dateModified" content="2021-04-30T12:40:00+02:00" />
 <meta itemprop="wordCount" content="1116"><meta itemprop="image" content="https://devandchill.com/og-image.png"/>
@@ -44,8 +43,7 @@ func getDay() *string { return nil } Being that pointers can introduce null and 
 <meta name="twitter:image" content="https://devandchill.com/og-image.png"/>
 
 <meta name="twitter:title" content="Introducing Maybe package, bring functional to Go"/>
-<meta name="twitter:description" content="One of the advantages of Go is that null (nil) values are rarer than in some other languages. The following snippet will fail:
-func getDay() string { return nil } In order to make that snippet work, a pointer is needed as null values are the zero value for pointers (the same applies for interfaces, channels and function types).
+<meta name="twitter:description" content="One of the advantages of Go is that null (nil) values are rarer than in some other languages. The following snippet will fail: func getDay() string { return nil } In order to make that snippet work, a pointer is needed as null values are the zero value for pointers (the same applies for interfaces, channels and function types).
 func getDay() *string { return nil } Being that pointers can introduce null and hence panics, and knowing that null is considered to be &ldquo;The billion dollar mistake&rdquo;, why is still so common in Go to use pointers for everything?"/>
 
 
@@ -141,7 +139,8 @@ func getDay() *string { return nil } Being that pointers can introduce null and 
     
 
     <div class="post-content">
-      <p>One of the advantages of Go is that null (<code>nil</code>) values are rarer than in some other languages. <a href="https://play.golang.org/p/m_Q6CVtLFjK">The following snippet will fail:</a></p>
+      <p>One of the advantages of Go is that null (<code>nil</code>) values are rarer than in some other languages. <a href="https://play.golang.org/p/m_Q6CVtLFjK"  target="_blank" rel="noreferrer noopener" >The following snippet will fail:</a>
+</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">func getDay() string <span style="color:#960050;background-color:#1e0010">{</span>
     <span style="color:#66d9ef">return</span> nil
 <span style="color:#960050;background-color:#1e0010">}</span>
@@ -153,7 +152,8 @@ func getDay() *string { return nil } Being that pointers can introduce null and 
 <h3 id="optimization">Optimization</h3>
 <p>The most common example here are slices. There is a general misconception on how much is a lot, in other words, how many items in a slice are too much to copy it by value. Of course, the answer is <em>it depends</em>. And this is true, a slice with 100 integers is probably less memory intensive that a slice with 50 complex structures with nested slices.</p>
 <p>That being said, there is a good saying: <em>avoid premature optimization</em>. Favor copying slices by value instead of using pointers unless you have a super specific case that proves the contrary.</p>
-<p><a href="https://medium.com/@philpearl/bad-go-slices-of-pointers-ed3c06b8bb41">You can find here a nice article doing benchmark on slices using pointers and values.</a></p>
+<p><a href="https://medium.com/@philpearl/bad-go-slices-of-pointers-ed3c06b8bb41"  target="_blank" rel="noreferrer noopener" >You can find here a nice article doing benchmark on slices using pointers and values.</a>
+</p>
 <h3 id="modifying-the-receiver">Modifying the receiver</h3>
 <p>Imagine the following func:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">func (cart <span style="color:#f92672">*</span>Cart) AddItem (item item) <span style="color:#960050;background-color:#1e0010">{</span>
@@ -186,7 +186,8 @@ func getDay() *string { return nil } Being that pointers can introduce null and 
     Salary <span style="color:#f92672">*</span>int   <span style="color:#f92672">`</span>json:<span style="color:#e6db74">&#34;salary&#34;</span><span style="color:#f92672">`</span>
 <span style="color:#960050;background-color:#1e0010">}</span>
 </code></pre></div><p>And the answer is yes, but at what cost? Do we want to introduce deliberately pointers in our system to solve this?</p>
-<h3 id="introducing-maybe-libraryhttpsgithubcompmorelli92maybe"><a href="https://github.com/pmorelli92/maybe/">Introducing Maybe library</a></h3>
+<h3 id="introducing-maybe-libraryhttpsgithubcompmorelli92maybe"><a href="https://github.com/pmorelli92/maybe/"  target="_blank" rel="noreferrer noopener" >Introducing Maybe library</a>
+</h3>
 <p>Functional languages have a lot of interesting features that are having more traction as time passes and end up being ported to other languages. One of my favorites is the <code>Option</code> data type. Think of it as Schrodinger&rsquo;s <del>cat</del> variable. It may have a value or it may not have a value; and the only way to know it is checking if effectively has one.</p>
 <p>Let&rsquo;s image the following struct:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">package maybe
@@ -264,14 +265,16 @@ func (mi <span style="color:#f92672">*</span>Int) UnmarshalJSON(<span style="col
     <span style="color:#66d9ef">return</span> p.Salary.HasValue()
 <span style="color:#960050;background-color:#1e0010">}</span>
 </code></pre></div><h3 id="next-steps">Next steps</h3>
-<p>Currently the library supports few native types (string, int, float, time, bool); however it would be useful to have this functionality for custom types. In order to achieve this generics are required. In <a href="https://go2goplay.golang.org/p/YBqR5GX7N6m">go2playgrounds</a> you can access a snippet on how this library would look like with the current draft of generics.</p>
+<p>Currently the library supports few native types (string, int, float, time, bool); however it would be useful to have this functionality for custom types. In order to achieve this generics are required. In <a href="https://go2goplay.golang.org/p/YBqR5GX7N6m"  target="_blank" rel="noreferrer noopener" >go2playgrounds</a>
+ you can access a snippet on how this library would look like with the current draft of generics.</p>
 <p>Other than that, the library is quite simple so there is no work planned ahead for it.</p>
 <h3 id="summary">Summary</h3>
 <ul>
 <li>Don&rsquo;t use pointers unless you really know what you are doing.</li>
 <li>Try to eliminate the need of <code>nil</code> whenever is possible.</li>
 <li>Option types are a really nice feature of functional languages.</li>
-<li>👉 <a href="https://github.com/pmorelli92/maybe">Link to the library.</a> 👈</li>
+<li>👉 <a href="https://github.com/pmorelli92/maybe"  target="_blank" rel="noreferrer noopener" >Link to the library.</a>
+ 👈</li>
 </ul>
 
     </div>
@@ -429,6 +432,13 @@ func (mi <span style="color:#f92672">*</span>Int) UnmarshalJSON(<span style="col
     </div>
 
     <div class="pagination__buttons">
+      
+      <span class="button previous">
+        <a href="https://devandchill.com/posts/2021/09/go-generate-and-serve-swagger-without-code-dependencies/">
+          <span class="button__icon">←</span>
+          <span class="button__text">Go - Generate and serve swagger without code dependencies</span>
+        </a>
+      </span>
       
 
       

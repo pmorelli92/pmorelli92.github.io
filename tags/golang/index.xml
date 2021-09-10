@@ -14,8 +14,7 @@
       <pubDate>Fri, 30 Apr 2021 12:40:00 +0200</pubDate>
       
       <guid>https://devandchill.com/posts/2021/04/introducing-maybe-package-bring-functional-to-go/</guid>
-      <description>One of the advantages of Go is that null (nil) values are rarer than in some other languages. The following snippet will fail:
-func getDay() string { return nil } In order to make that snippet work, a pointer is needed as null values are the zero value for pointers (the same applies for interfaces, channels and function types).
+      <description>One of the advantages of Go is that null (nil) values are rarer than in some other languages. The following snippet will fail: func getDay() string { return nil } In order to make that snippet work, a pointer is needed as null values are the zero value for pointers (the same applies for interfaces, channels and function types).
 func getDay() *string { return nil } Being that pointers can introduce null and hence panics, and knowing that null is considered to be &amp;ldquo;The billion dollar mistake&amp;rdquo;, why is still so common in Go to use pointers for everything?</description>
     </item>
     
@@ -36,7 +35,7 @@ import ( ... &amp;#34;github.com/jackc/pgx/v4/pgxpool&amp;#34; ) What is pgx, an
       <pubDate>Wed, 13 May 2020 16:40:29 +0100</pubDate>
       
       <guid>https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/</guid>
-      <description>In my previous post I covered how to build concurrently safe upsert queries.
+      <description>In my previous post I covered how to build concurrently safe upsert queries .
 This post serves as a continuation where different approaches will be battle tested to expose the performance of each one:
  Advisory lock On conflict update On conflict do nothing CTE queries  Without further ado, let&amp;rsquo;s start:
 The application In order to emulate the scenario described on the previous post, an HTTP API is required. This one will connect to a database to perform the calls.</description>

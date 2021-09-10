@@ -35,7 +35,7 @@ import ( ... &amp;#34;github.com/jackc/pgx/v4/pgxpool&amp;#34; ) What is pgx, an
       <pubDate>Wed, 13 May 2020 16:40:29 +0100</pubDate>
       
       <guid>https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/</guid>
-      <description>In my previous post I covered how to build concurrently safe upsert queries.
+      <description>In my previous post I covered how to build concurrently safe upsert queries .
 This post serves as a continuation where different approaches will be battle tested to expose the performance of each one:
  Advisory lock On conflict update On conflict do nothing CTE queries  Without further ado, let&amp;rsquo;s start:
 The application In order to emulate the scenario described on the previous post, an HTTP API is required. This one will connect to a database to perform the calls.</description>

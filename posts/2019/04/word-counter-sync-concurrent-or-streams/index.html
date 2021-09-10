@@ -319,7 +319,8 @@ BenchmarkWordCounterConcurrent-12     <span style="color:#ae81ff">19</span>    6
 <p>So we started with a single goroutine algorithm, we evolved it to run using more than one goroutine and having an orchestration for the algorithm to work. At the end we did a benchmark and compared the results.</p>
 <p>The value we can get out of this is to avoid <code>premature optimization</code>, how to <code>KISS</code> (keep it simple and stupid) and the most important one: We learned that concurrent flows are beneficial when the code inside the goroutine is CPU/time intensive.</p>
 <h2 id="2020-edit">2020 Edit</h2>
-<p>One alternative suggested by <a href="https://github.com/Xeoncross">David Pennington</a> was to use streams instead of loading the whole file to the disk. In this case the code will look like:</p>
+<p>One alternative suggested by <a href="https://github.com/Xeoncross"  target="_blank" rel="noreferrer noopener" >David Pennington</a>
+ was to use streams instead of loading the whole file to the disk. In this case the code will look like:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">wordCounterStream</span>() (<span style="color:#a6e22e">words</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span>) {
 	<span style="color:#a6e22e">file</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Open</span>(<span style="color:#e6db74">&#34;input.txt&#34;</span>)
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
@@ -358,7 +359,8 @@ BenchmarkWordCounterConcurrent-12     <span style="color:#ae81ff">19</span>    6
 BenchmarkWordCounter-12               <span style="color:#ae81ff">45</span>   25.88 ms/op   <span style="color:#ae81ff">4354027</span> B/op   <span style="color:#ae81ff">124918</span> allocs/op
 BenchmarkWordCounterConcurrent-12     <span style="color:#ae81ff">19</span>   59.70 ms/op   <span style="color:#ae81ff">5711640</span> B/op   <span style="color:#ae81ff">138290</span> allocs/op
 BenchmarkWordCounterStreams-12       <span style="color:#ae81ff">198</span>    5.93 ms/op    <span style="color:#ae81ff">330114</span> B/op    <span style="color:#ae81ff">44844</span> allocs/op
-</code></pre></div><p>👉 <a href="https://github.com/pmorelli92/go-word-counter">Repository with source files used</a> 👈</p>
+</code></pre></div><p>👉 <a href="https://github.com/pmorelli92/go-word-counter"  target="_blank" rel="noreferrer noopener" >Repository with source files used</a>
+ 👈</p>
 
     </div>
   </article>

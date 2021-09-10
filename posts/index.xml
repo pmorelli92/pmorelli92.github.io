@@ -6,8 +6,186 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
         <copyright>Pablo Morelli</copyright>
-        <lastBuildDate>Fri, 30 Apr 2021 12:40:00 +0200</lastBuildDate>
+        <lastBuildDate>Fri, 10 Sep 2021 13:00:00 +0200</lastBuildDate>
         <atom:link href="https://devandchill.com/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>Go - Generate and serve swagger without code dependencies</title>
+            <link>https://devandchill.com/posts/2021/09/go-generate-and-serve-swagger-without-code-dependencies/</link>
+            <pubDate>Fri, 10 Sep 2021 13:00:00 +0200</pubDate>
+            
+            <guid>https://devandchill.com/posts/2021/09/go-generate-and-serve-swagger-without-code-dependencies/</guid>
+            <description>One of the things that shocked me the most when I changed from C# to Golang is that developers are reluctant of adding libraries to solve problems unless it is strictly needed. This sentiment, at first annoying, turned out to be one of the things I liked the most about Go. The standard library alone is very powerful and you can achieve most of the stuff just with it.
+However, there was a little something that my mind keep thinking: it would be super good to have swagger docs out of the box like in C#.</description>
+            <content type="html"><![CDATA[<p>One of the things that shocked me the most when I changed from C# to Golang is that developers are reluctant of adding libraries to solve problems unless it is strictly needed. This sentiment, at first annoying, turned out to be one of the things I liked the most about Go. The standard library alone is very powerful and you can achieve most of the stuff just with it.</p>
+<p>However, there was a little something that my mind keep thinking: <em>it would be super good to have swagger docs out of the box like in C#</em>. Then, when I started researching I found out two different approaches:</p>
+<ol>
+<li>Create your OpenAPI spec (swagger) manually and use a generator to do code scaffolding.</li>
+<li>Decorate your code endpoints with comments describing OpenAPI spec parameters.</li>
+</ol>
+<p>It is not needed to say that the first option was something I did not even think of, as I seldom use code generators, limiting myself only to <code>moq</code> generators.</p>
+<p>Both options will end up with the codebase being cohesive to the OpenAPI specification, but that is just either a <code>.json</code> or a <code>.yaml</code> file, how about serving it as an <code>.HTML</code> page?</p>
+<p>Below, you can find a guide covering all the things needed to accomplish this quest without adding code dependencies.</p>
+<p><a href="https://github.com/pmorelli92/swagger-no-dep"  target="_blank" rel="noreferrer noopener" >👉 The complete example repository can be found on my Github. 👈</a>
+</p>
+<h3 id="swag">Swag</h3>
+<p>To generate the OpenAPI spec, one of the most suitable tools available is the CLI named <a href="https://github.com/swaggo/swag"  target="_blank" rel="noreferrer noopener" >swaggo/swag</a>
+. As mentioned before, this tool will parse the comments that are decorating the code endpoints to generate the correct specification. One of the good things of this CLI is that it has the capability of parsing the request and response structures and populating them with values.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">petResponse</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">Id</span>   <span style="color:#66d9ef">int</span>     <span style="color:#e6db74">`json:&#34;id&#34; example:&#34;1&#34;`</span>
+	<span style="color:#a6e22e">Name</span> <span style="color:#66d9ef">string</span>  <span style="color:#e6db74">`json:&#34;name&#34; example:&#34;Fenrir&#34;`</span>
+	<span style="color:#a6e22e">Type</span> <span style="color:#a6e22e">petType</span> <span style="color:#e6db74">`json:&#34;type&#34; example:&#34;dog&#34; enums:&#34;dog,cat&#34;`</span>
+}
+
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">errorResponse</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">Message</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;message&#34;`</span>
+}
+
+<span style="color:#75715e">// @summary Get pet by ID
+</span><span style="color:#75715e">// @description Gets a pet using the pet ID
+</span><span style="color:#75715e">// @id get-pet-by-id
+</span><span style="color:#75715e">// @produce json
+</span><span style="color:#75715e">// @Param id path int true &#34;Pet ID&#34;
+</span><span style="color:#75715e">// @Success 200 {object} main.petResponse
+</span><span style="color:#75715e">// @Success 400 {object} main.errorResponse
+</span><span style="color:#75715e">// @Success 404 {object} main.errorResponse
+</span><span style="color:#75715e">// @Success 405 {object} main.errorResponse
+</span><span style="color:#75715e">// @Router /api/pets/{id} [get]
+</span><span style="color:#75715e">// @tags Pets
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">getPetByID</span>() <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span> {
+	<span style="color:#f92672">...</span>
+}
+</code></pre></div><p>When the developer executes: <code>swag init -g main.go</code>, the resultant <code>swagger.yaml</code> will look like the following:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">definitions</span>:
+  <span style="color:#f92672">main.errorResponse</span>:
+    <span style="color:#f92672">properties</span>:
+      <span style="color:#f92672">message</span>:
+        <span style="color:#f92672">type</span>: <span style="color:#ae81ff">string</span>
+    <span style="color:#f92672">type</span>: <span style="color:#ae81ff">object</span>
+  <span style="color:#f92672">main.petResponse</span>:
+    <span style="color:#f92672">properties</span>:
+      <span style="color:#f92672">id</span>:
+        <span style="color:#f92672">example</span>: <span style="color:#ae81ff">1</span>
+        <span style="color:#f92672">type</span>: <span style="color:#ae81ff">integer</span>
+      <span style="color:#f92672">name</span>:
+        <span style="color:#f92672">example</span>: <span style="color:#ae81ff">Fenrir</span>
+        <span style="color:#f92672">type</span>: <span style="color:#ae81ff">string</span>
+      <span style="color:#f92672">type</span>:
+        <span style="color:#f92672">enum</span>:
+        - <span style="color:#ae81ff">dog</span>
+        - <span style="color:#ae81ff">cat</span>
+        <span style="color:#f92672">example</span>: <span style="color:#ae81ff">dog</span>
+        <span style="color:#f92672">type</span>: <span style="color:#ae81ff">string</span>
+    <span style="color:#f92672">type</span>: <span style="color:#ae81ff">object</span>
+<span style="color:#f92672">paths</span>:
+  <span style="color:#ae81ff">/api/pets/{id}:</span>
+    <span style="color:#f92672">get</span>:
+      <span style="color:#f92672">description</span>: <span style="color:#ae81ff">Gets a pet using the pet ID</span>
+      <span style="color:#f92672">operationId</span>: <span style="color:#ae81ff">get-pet-by-id</span>
+      <span style="color:#f92672">parameters</span>:
+      - <span style="color:#f92672">description</span>: <span style="color:#ae81ff">Pet ID</span>
+        <span style="color:#f92672">in</span>: <span style="color:#ae81ff">path</span>
+        <span style="color:#f92672">name</span>: <span style="color:#ae81ff">id</span>
+        <span style="color:#f92672">required</span>: <span style="color:#66d9ef">true</span>
+        <span style="color:#f92672">type</span>: <span style="color:#ae81ff">integer</span>
+      <span style="color:#f92672">produces</span>:
+      - <span style="color:#ae81ff">application/json</span>
+      <span style="color:#f92672">responses</span>:
+        <span style="color:#e6db74">&#34;200&#34;</span>:
+          <span style="color:#f92672">description</span>: <span style="color:#ae81ff">OK</span>
+          <span style="color:#f92672">schema</span>:
+            <span style="color:#f92672">$ref</span>: <span style="color:#e6db74">&#39;#/definitions/main.petResponse&#39;</span>
+        <span style="color:#e6db74">&#34;400&#34;</span>:
+          <span style="color:#f92672">description</span>: <span style="color:#ae81ff">Bad Request</span>
+          <span style="color:#f92672">schema</span>:
+            <span style="color:#f92672">$ref</span>: <span style="color:#e6db74">&#39;#/definitions/main.errorResponse&#39;</span>
+        <span style="color:#e6db74">&#34;404&#34;</span>:
+          <span style="color:#f92672">description</span>: <span style="color:#ae81ff">Not Found</span>
+          <span style="color:#f92672">schema</span>:
+            <span style="color:#f92672">$ref</span>: <span style="color:#e6db74">&#39;#/definitions/main.errorResponse&#39;</span>
+        <span style="color:#e6db74">&#34;405&#34;</span>:
+          <span style="color:#f92672">description</span>: <span style="color:#ae81ff">Method Not Allowed</span>
+          <span style="color:#f92672">schema</span>:
+            <span style="color:#f92672">$ref</span>: <span style="color:#e6db74">&#39;#/definitions/main.errorResponse&#39;</span>
+      <span style="color:#f92672">summary</span>: <span style="color:#ae81ff">Get pet by ID</span>
+      <span style="color:#f92672">tags</span>:
+      - <span style="color:#ae81ff">Pets</span>
+</code></pre></div><p>Now, another good thing is that <code>swag</code> will be installed in the developer&rsquo;s machine, so the code will not have a dependency.</p>
+<h3 id="redoc">Redoc</h3>
+<p>Redoc generates a zero dependency <code>.HTML</code> file from an OpenAPI specification. This utility has to be installed in the developer&rsquo;s machine, requiring npm, but again, there is no code dependency on doing so. To generate the <code>.HTML</code> file from the spec:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">redoc-cli bundle swagger.yaml -o swagger.html
+</code></pre></div><p><a href="https://devandchill.com/swagger-article-rendered.html"  target="_blank" rel="noreferrer noopener" >👉 The resultant file will look like this. 👈</a>
+</p>
+<h3 id="go-embed">Go embed</h3>
+<p>There are many ways one can serve an static <code>.HTML</code> file on Go, but the one that caught my attention is using embed files, which is a feature available from Go 1.16.</p>
+<p>Using this feature, the code will know that certain file, or files inside a directory, should be included in the resultant binary. This has many advantages in comparison to other approaches:</p>
+<p><em>Dockerfile does not have to explicitly add the HTML file to the execution container:</em></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Dockerfile" data-lang="Dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> scratch</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> --from<span style="color:#f92672">=</span>build-docs ./swagger.html /static/swagger.html &lt;- NOT NEEDED<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> --from<span style="color:#f92672">=</span>compiler /bin/app /app<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENTRYPOINT</span> [<span style="color:#e6db74">&#34;/app&#34;</span>]<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p><em>In case the codebase is used as a dependency downloaded via <code>go modules</code>, the <code>HTML</code> file wont be downloaded. This is intended and also happens with migration files like <code>.sql</code>. Dependencies installed with <code>go modules</code> only download the <code>*.go</code> files that are in it. Embed can solve this as well:</em></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">library</span>: <span style="color:#ae81ff">generic-service</span>
+- <span style="color:#ae81ff">file.go</span>
+	- <span style="color:#ae81ff">//go:embed database/migrations/*</span>
+	- <span style="color:#ae81ff">//go:embed server/static/index.html</span>
+- <span style="color:#ae81ff">database</span>
+	- <span style="color:#ae81ff">migrations</span>
+		- <span style="color:#ae81ff">01</span>-<span style="color:#ae81ff">up.sql</span>
+		- <span style="color:#ae81ff">01</span>-<span style="color:#ae81ff">down.sql</span>
+- <span style="color:#ae81ff">server</span>
+	- <span style="color:#ae81ff">static</span>
+    	- <span style="color:#ae81ff">index.html</span>
+
+<span style="color:#f92672">service</span>: <span style="color:#ae81ff">implementation-service</span>
+- <span style="color:#ae81ff">main.go</span>
+- <span style="color:#ae81ff">go.mod</span>
+    - <span style="color:#ae81ff">generic-service</span>
+		- <span style="color:#ae81ff">able to access the .sql and .html files</span>
+</code></pre></div><p>This can be verified doing <code>go mod vendor</code> on the <code>implementation-service</code> and checking that the mentioned files are included in the <code>vendor</code> folder.</p>
+<p>How does it look then in the code?</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+
+	<span style="color:#a6e22e">router</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">NewServeMux</span>()
+    <span style="color:#75715e">// Omitted some lines for brevity
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">router</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/api/docs&#34;</span>, <span style="color:#a6e22e">docs</span>())
+
+	<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ListenAndServe</span>(<span style="color:#e6db74">&#34;:8080&#34;</span>, <span style="color:#a6e22e">router</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+	}
+}
+
+<span style="color:#75715e">//go:embed swagger/swagger.html
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">swaggerHTML</span> <span style="color:#66d9ef">string</span>
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">docs</span>() <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span> {
+	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">rq</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) {
+		<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">Header</span>().<span style="color:#a6e22e">Set</span>(<span style="color:#e6db74">&#34;Content-Type&#34;</span>, <span style="color:#e6db74">&#34;text/html&#34;</span>)
+		<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">_</span> = <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Fprint</span>(<span style="color:#a6e22e">w</span>, <span style="color:#a6e22e">swaggerHTML</span>)
+	}
+}
+</code></pre></div><p>In the example above, the <code>swaggerHTML</code> is populated with the content of the generated <code>.HTML</code> file; then every time the <code>/api/docs</code> endpoint is called, the HTML will be served from memory.</p>
+<h3 id="all-in-one">All in one</h3>
+<p>In order to simplify the process, a Makefile rule can be exposed like:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Makefile" data-lang="Makefile"><span style="color:#75715e">## Requires developer to install on his/her machine both swag and redoc-cli
+</span><span style="color:#75715e">## go install github.com/swaggo/swag/cmd/swag@v1.7.1
+</span><span style="color:#75715e">## npm install -g redoc-cli@0.12.3
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">swagger/upd</span><span style="color:#f92672">:</span>
+	swag init -g main.go -o ./swagger
+	cd swagger <span style="color:#f92672">&amp;&amp;</span> rm docs.go swagger.json
+	cd swagger <span style="color:#f92672">&amp;&amp;</span> redoc-cli bundle swagger.yaml -o swagger.html
+
+</code></pre></div><ol>
+<li>Generate the <code>swagger.yaml</code> file in a specific folder.</li>
+<li>Remove the <code>docs.go</code> and <code>swagger.json</code> files that are also generated by <code>swag</code> and are not needed.</li>
+<li>Generate the <code>swagger.html</code> file.</li>
+</ol>
+<p>The result will be a folder containing both <code>swagger.yaml</code> and <code>swagger.html</code>. Then, the Makefile command can be invoked every time an endpoint is changed, or could potentially be added on a Git pre commit hook to ensure that the OpenAPI specification is always up to date.</p>
+<p><a href="https://github.com/pmorelli92/swagger-no-dep"  target="_blank" rel="noreferrer noopener" >👉 The complete example repository can be found on my Github. 👈</a>
+</p>
+]]></content>
+        </item>
         
         <item>
             <title>Introducing Maybe package, bring functional to Go</title>
@@ -15,10 +193,10 @@
             <pubDate>Fri, 30 Apr 2021 12:40:00 +0200</pubDate>
             
             <guid>https://devandchill.com/posts/2021/04/introducing-maybe-package-bring-functional-to-go/</guid>
-            <description>One of the advantages of Go is that null (nil) values are rarer than in some other languages. The following snippet will fail:
-func getDay() string { return nil } In order to make that snippet work, a pointer is needed as null values are the zero value for pointers (the same applies for interfaces, channels and function types).
+            <description>One of the advantages of Go is that null (nil) values are rarer than in some other languages. The following snippet will fail: func getDay() string { return nil } In order to make that snippet work, a pointer is needed as null values are the zero value for pointers (the same applies for interfaces, channels and function types).
 func getDay() *string { return nil } Being that pointers can introduce null and hence panics, and knowing that null is considered to be &amp;ldquo;The billion dollar mistake&amp;rdquo;, why is still so common in Go to use pointers for everything?</description>
-            <content type="html"><![CDATA[<p>One of the advantages of Go is that null (<code>nil</code>) values are rarer than in some other languages. <a href="https://play.golang.org/p/m_Q6CVtLFjK">The following snippet will fail:</a></p>
+            <content type="html"><![CDATA[<p>One of the advantages of Go is that null (<code>nil</code>) values are rarer than in some other languages. <a href="https://play.golang.org/p/m_Q6CVtLFjK"  target="_blank" rel="noreferrer noopener" >The following snippet will fail:</a>
+</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">func getDay() string <span style="color:#960050;background-color:#1e0010">{</span>
     <span style="color:#66d9ef">return</span> nil
 <span style="color:#960050;background-color:#1e0010">}</span>
@@ -30,7 +208,8 @@ func getDay() *string { return nil } Being that pointers can introduce null and 
 <h3 id="optimization">Optimization</h3>
 <p>The most common example here are slices. There is a general misconception on how much is a lot, in other words, how many items in a slice are too much to copy it by value. Of course, the answer is <em>it depends</em>. And this is true, a slice with 100 integers is probably less memory intensive that a slice with 50 complex structures with nested slices.</p>
 <p>That being said, there is a good saying: <em>avoid premature optimization</em>. Favor copying slices by value instead of using pointers unless you have a super specific case that proves the contrary.</p>
-<p><a href="https://medium.com/@philpearl/bad-go-slices-of-pointers-ed3c06b8bb41">You can find here a nice article doing benchmark on slices using pointers and values.</a></p>
+<p><a href="https://medium.com/@philpearl/bad-go-slices-of-pointers-ed3c06b8bb41"  target="_blank" rel="noreferrer noopener" >You can find here a nice article doing benchmark on slices using pointers and values.</a>
+</p>
 <h3 id="modifying-the-receiver">Modifying the receiver</h3>
 <p>Imagine the following func:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">func (cart <span style="color:#f92672">*</span>Cart) AddItem (item item) <span style="color:#960050;background-color:#1e0010">{</span>
@@ -63,7 +242,8 @@ func getDay() *string { return nil } Being that pointers can introduce null and 
     Salary <span style="color:#f92672">*</span>int   <span style="color:#f92672">`</span>json:<span style="color:#e6db74">&#34;salary&#34;</span><span style="color:#f92672">`</span>
 <span style="color:#960050;background-color:#1e0010">}</span>
 </code></pre></div><p>And the answer is yes, but at what cost? Do we want to introduce deliberately pointers in our system to solve this?</p>
-<h3 id="introducing-maybe-libraryhttpsgithubcompmorelli92maybe"><a href="https://github.com/pmorelli92/maybe/">Introducing Maybe library</a></h3>
+<h3 id="introducing-maybe-libraryhttpsgithubcompmorelli92maybe"><a href="https://github.com/pmorelli92/maybe/"  target="_blank" rel="noreferrer noopener" >Introducing Maybe library</a>
+</h3>
 <p>Functional languages have a lot of interesting features that are having more traction as time passes and end up being ported to other languages. One of my favorites is the <code>Option</code> data type. Think of it as Schrodinger&rsquo;s <del>cat</del> variable. It may have a value or it may not have a value; and the only way to know it is checking if effectively has one.</p>
 <p>Let&rsquo;s image the following struct:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">package maybe
@@ -141,14 +321,16 @@ func (mi <span style="color:#f92672">*</span>Int) UnmarshalJSON(<span style="col
     <span style="color:#66d9ef">return</span> p.Salary.HasValue()
 <span style="color:#960050;background-color:#1e0010">}</span>
 </code></pre></div><h3 id="next-steps">Next steps</h3>
-<p>Currently the library supports few native types (string, int, float, time, bool); however it would be useful to have this functionality for custom types. In order to achieve this generics are required. In <a href="https://go2goplay.golang.org/p/YBqR5GX7N6m">go2playgrounds</a> you can access a snippet on how this library would look like with the current draft of generics.</p>
+<p>Currently the library supports few native types (string, int, float, time, bool); however it would be useful to have this functionality for custom types. In order to achieve this generics are required. In <a href="https://go2goplay.golang.org/p/YBqR5GX7N6m"  target="_blank" rel="noreferrer noopener" >go2playgrounds</a>
+ you can access a snippet on how this library would look like with the current draft of generics.</p>
 <p>Other than that, the library is quite simple so there is no work planned ahead for it.</p>
 <h3 id="summary">Summary</h3>
 <ul>
 <li>Don&rsquo;t use pointers unless you really know what you are doing.</li>
 <li>Try to eliminate the need of <code>nil</code> whenever is possible.</li>
 <li>Option types are a really nice feature of functional languages.</li>
-<li>👉 <a href="https://github.com/pmorelli92/maybe">Link to the library.</a> 👈</li>
+<li>👉 <a href="https://github.com/pmorelli92/maybe"  target="_blank" rel="noreferrer noopener" >Link to the library.</a>
+ 👈</li>
 </ul>
 ]]></content>
         </item>
@@ -246,7 +428,8 @@ At least from my experience, SQL is taught in university/courses in an outdated 
 </tr>
 </tbody>
 </table>
-<p><a href="https://gist.github.com/pmorelli92/8d93820185bf9eb5142d43f604affd20"><strong>Here you can find the <code>sql</code> script for creating the database and tables with the data listed above.</strong></a></p>
+<p><a href="https://gist.github.com/pmorelli92/8d93820185bf9eb5142d43f604affd20"  target="_blank" rel="noreferrer noopener" ><strong>Here you can find the <code>sql</code> script for creating the database and tables with the data listed above.</strong></a>
+</p>
 <p>Now, imagine that another service needs to obtain all the people named <code>Pablo</code> with all their pets and the vaccines applied to them. Below you can find different approaches to fetch the required data for creating the required response.</p>
 <h3 id="approach-1-many-database-trips">Approach 1: Many database trips</h3>
 <ul>
@@ -461,7 +644,8 @@ At least from my experience, SQL is taught in university/courses in an outdated 
             <content type="html"><![CDATA[<p>Without any doubts the year 2020 is one everyone is going to remember and it will appear in the history books (and wikipedia). Amidst so much chaos, the established way of working was forced to change, and companies that before rejected work from home had to adapt. In this way, teams that before shared a room and suffered unnecessary meetings, now started functioning as distributed teams (or distributed systems), that share a queue of messages using tools like email and slack (async communication) - and have meetings with lesser frequency (sync communication).</p>
 <p>Great part of the IT industry agree with remote work, and beside topics like if the employer should pay for employees' monitors and internet there is not any major complain.</p>
 <p>If one make the assumption that a distribute team is better, can one also assume that a company using microservices is better? The answer is surely not black or white as there are certain topics to analyze.</p>
-<p>In the next paragraphs you will find &ldquo;the good, the bad and the ugly&rdquo; of the microservices. This is an extract of two podcast episodes of <a href="https://www.youtube.com/c/stream404">Stream 404</a>, a channel on which, me and my friends, stream monthly about different IT topics. The content of the episodes is on spanish, so the extract will be on english to cover a broader audience.</p>
+<p>In the next paragraphs you will find &ldquo;the good, the bad and the ugly&rdquo; of the microservices. This is an extract of two podcast episodes of <a href="https://www.youtube.com/c/stream404"  target="_blank" rel="noreferrer noopener" >Stream 404</a>
+, a channel on which, me and my friends, stream monthly about different IT topics. The content of the episodes is on spanish, so the extract will be on english to cover a broader audience.</p>
 
 <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
   <iframe src="https://www.youtube.com/embed/huv1c23YEG4" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
@@ -473,7 +657,8 @@ At least from my experience, SQL is taught in university/courses in an outdated 
 </div>
 
 <h2 id="the-good-the-bad-and-the-ugly">The good, the bad and the ugly</h2>
-<p>Title of an old film and also of a <a href="https://www.funretrospectives.com/the-good-the-bad-and-the-ugly/">retrospective</a>, consists on naming good things (that the team should repeat), bad things (that should have never happened) and ugly things (which the team need to work with to make beautiful).</p>
+<p>Title of an old film and also of a <a href="https://www.funretrospectives.com/the-good-the-bad-and-the-ugly/"  target="_blank" rel="noreferrer noopener" >retrospective</a>
+, consists on naming good things (that the team should repeat), bad things (that should have never happened) and ugly things (which the team need to work with to make beautiful).</p>
 <p>Applying this to microservices one can name:</p>
 <ul>
 <li>The good things of using them.</li>
@@ -509,14 +694,17 @@ If one has to deploy 10 services into production simultaneously and each time th
             <guid>https://devandchill.com/posts/2020/08/stop-storing-secrets-on-environment-variables-enter-gcp-secret-manager/</guid>
             <description>The other day I encountered the following post where Seth Vargo was doing some statements regarding the usage of environment variables:
  [&amp;hellip;] While this approach is simple and straightforward, it comes with considerable security drawbacks - the secrets exist in plaintext in the environment. Any other process, library, or dependency running inside the process has access to the environment which has already been exploited multiple times. Unfortunately, it is trivial for a malicious library author to inject this type of vulnerability into an otherwise helpful utility package.</description>
-            <content type="html"><![CDATA[<p>The other day I encountered the <a href="https://www.sethvargo.com/secrets-in-serverless/">following post</a> where Seth Vargo was doing some statements regarding the usage of environment variables:</p>
+            <content type="html"><![CDATA[<p>The other day I encountered the <a href="https://www.sethvargo.com/secrets-in-serverless/"  target="_blank" rel="noreferrer noopener" >following post</a>
+ where Seth Vargo was doing some statements regarding the usage of environment variables:</p>
 <blockquote>
 <p>[&hellip;] While this approach is simple and straightforward, it comes with considerable security drawbacks - the secrets exist in plaintext in the environment. Any other process, library, or dependency running inside the process has access to the environment which has already been exploited multiple times.
 Unfortunately, it is trivial for a malicious library author to inject this type of vulnerability into an otherwise helpful utility package.
 To be absolutely, unequivocally clear, you should not store secret or sensitive information in environment variables in plaintext.</p>
 </blockquote>
-<p>Then, the author, states some alternatives like using KMS to cypher values for the environment variables; using <a href="https://github.com/GoogleCloudPlatform/berglas">Berglas library</a> and also suggesting Hashicorp Vault.</p>
-<p>At the time of that post, GCP was not offering a direct rival to Hashicorp Vault but a few months ago <a href="https://cloud.google.com/blog/products/identity-security/improving-your-security-posture-with-centralized-secrets-management">Google announced Secret Manager being GA</a>.</p>
+<p>Then, the author, states some alternatives like using KMS to cypher values for the environment variables; using <a href="https://github.com/GoogleCloudPlatform/berglas"  target="_blank" rel="noreferrer noopener" >Berglas library</a>
+ and also suggesting Hashicorp Vault.</p>
+<p>At the time of that post, GCP was not offering a direct rival to Hashicorp Vault but a few months ago <a href="https://cloud.google.com/blog/products/identity-security/improving-your-security-posture-with-centralized-secrets-management"  target="_blank" rel="noreferrer noopener" >Google announced Secret Manager being GA</a>
+.</p>
 <p>As of now, at my current workplace we are migrating from a private cloud to GCP and I think there is not a better moment for me to analyze what are the benefits of using Secret Manager and how easy or hard is to make it work.</p>
 <h3 id="deploying-resources">Deploying resources</h3>
 <p>As some other companies, our workloads are deployed in a Kubernetes cluster (GKE on Google Cloud) while always trying to follow the Principle of Least Access in order to guarantee that a workload can only access to the resources it needs and cannot elevate privileges or modify some other resources.</p>
@@ -535,9 +723,11 @@ To be absolutely, unequivocally clear, you should not store secret or sensitive 
 </code></pre></div><p>For accessing Secret Manager API from our Google Kubernetes Engine there are three things that needs to be done.</p>
 <h4 id="enable-secret-manager-api">Enable Secret Manager API</h4>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud services enable secretmanager.googleapis.com
-</code></pre></div><p><a href="https://console.cloud.google.com/apis/library/secretmanager.googleapis.com">Or from the Console UI.</a></p>
+</code></pre></div><p><a href="https://console.cloud.google.com/apis/library/secretmanager.googleapis.com"  target="_blank" rel="noreferrer noopener" >Or from the Console UI.</a>
+</p>
 <h4 id="set-corresponding-iam-role-on-the-service-account-running-the-instance">Set corresponding IAM role on the service account running the instance</h4>
-<p><a href="https://cloud.google.com/compute/docs/access/service-accounts#service_account_permissions">From service account documentation.</a></p>
+<p><a href="https://cloud.google.com/compute/docs/access/service-accounts#service_account_permissions"  target="_blank" rel="noreferrer noopener" >From service account documentation.</a>
+</p>
 <blockquote>
 <p>When you set up an instance to run as a service account, you determine the level of access the service account has by the IAM roles that you grant to the service account. If the service account has no IAM roles, then no API methods can be run by the service account on that instance.
 Furthermore, an instance&rsquo;s access scopes determine the default OAuth scopes for requests made through the gcloud tool and client libraries on the instance. As a result, access scopes potentially further limit access to API methods when authenticating through OAuth. [&hellip;]</p>
@@ -546,12 +736,14 @@ Furthermore, an instance&rsquo;s access scopes determine the default OAuth scope
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud iam service-accounts create demo-service-account <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--description<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;Service account used for our demo cluster&#39;</span> <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--display-name<span style="color:#f92672">=</span>demo-service-account
-</code></pre></div><p>The role to be assigned to this service account is <a href="https://cloud.google.com/iam/docs/understanding-roles#secret-manager-roles">roles/secretmanager.secretAccessor</a> which allows accessing the payload of secrets:</p>
+</code></pre></div><p>The role to be assigned to this service account is <a href="https://cloud.google.com/iam/docs/understanding-roles#secret-manager-roles"  target="_blank" rel="noreferrer noopener" >roles/secretmanager.secretAccessor</a>
+ which allows accessing the payload of secrets:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud projects add-iam-policy-binding pablo-test-project <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--member<span style="color:#f92672">=</span>serviceAccount:demo-service-account@pablo-test-project.iam.gserviceaccount.com <span style="color:#ae81ff">\
 </span><span style="color:#ae81ff"></span>--role<span style="color:#f92672">=</span>roles/secretmanager.secretAccessor
 </code></pre></div><h4 id="configure-oauth-scopes-on-the-instance-that-consumes-the-api">Configure OAuth scopes on the instance that consumes the API</h4>
-<p><a href="https://cloud.google.com/secret-manager/docs/access-control">From access control documentation.</a></p>
+<p><a href="https://cloud.google.com/secret-manager/docs/access-control"  target="_blank" rel="noreferrer noopener" >From access control documentation.</a>
+</p>
 <blockquote>
 <p>To access the Secret Manager API from within a Compute Engine instance or a Google Kubernetes Engine node (which is also a Compute Engine instance), the instance must have the cloud-platform OAuth scope. For more information about access scopes in Compute Engine, see Service account permissions in the Compute Engine documentation.</p>
 </blockquote>
@@ -585,7 +777,8 @@ printf <span style="color:#e6db74">&#34;s3cr3t&#34;</span> | gcloud secrets vers
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl exec -it httpbin -- sh
 $ apt update; apt install curl;
 </code></pre></div><h3 id="trying-it-out">Trying it out</h3>
-<p>In order to try the Secret Manager API an OAuth2 token needs to be issued <a href="https://cloud.google.com/compute/docs/access/create-enable-service-accounts-for-instances#applications">as we can read on the documentation.</a></p>
+<p>In order to try the Secret Manager API an OAuth2 token needs to be issued <a href="https://cloud.google.com/compute/docs/access/create-enable-service-accounts-for-instances#applications"  target="_blank" rel="noreferrer noopener" >as we can read on the documentation.</a>
+</p>
 <blockquote>
 <p>For some applications, you might need to request an OAuth2 access token and use it directly without going through a client library or using the gcloud or gsutil tools. There are several options for obtaining and using these access tokens to authenticate your applications. [&hellip;]
 On the instance where your application runs, query the metadata server for an access token. [&hellip;]</p>
@@ -620,7 +813,8 @@ This worked fine, but then do we need the IAM permission or is it just enough wi
 </code></pre></div><p>So effectively, the IAM role is required for this to work. Now, you can add the IAM role again for the next part.</p>
 <h3 id="moving-this-to-a-more-realistic-scenario">Moving this to a more realistic scenario</h3>
 <p>It is very important not to break the current workflow as this Secret Manager API is probably an overkill for local and dev environment. This is one of the selling points.</p>
-<p>For this, I created a <a href="https://github.com/pmorelli92/secret-manager-demo">demo application</a> which is doing the following:</p>
+<p>For this, I created a <a href="https://github.com/pmorelli92/secret-manager-demo"  target="_blank" rel="noreferrer noopener" >demo application</a>
+ which is doing the following:</p>
 <ul>
 <li>Expects an environment variable named <code>GCP_PROJECT</code>, if the value is not present then it will try to read the keys from environment and use a default value when an environment variable is not found with the expected name.</li>
 <li>If <code>GCP_PROJECT</code> is defined, it will try to search the secret on Secret Manager. If the value is not found there it will use a default value as well.</li>
@@ -808,7 +1002,8 @@ This worked fine, but then do we need the IAM permission or is it just enough wi
 <li>(-) Vendor lockdown. It is understandable that this product is not directly interchangeable. That being said there are alternatives like Hashicorp Vault that also offers the same (and maybe more) functionality. However, it is clear that if you are on GCP you have already invested time on using cloud specific built-in solutions like CloudSQL and Cloud Storage which are not directly interchangeable either.</li>
 </ul>
 <h3 id="demo-application-repository">Demo application repository</h3>
-<p><a href="https://github.com/pmorelli92/secret-manager-demo">👉 Repository 👈</a></p>
+<p><a href="https://github.com/pmorelli92/secret-manager-demo"  target="_blank" rel="noreferrer noopener" >👉 Repository 👈</a>
+</p>
 ]]></content>
         </item>
         
@@ -821,14 +1016,17 @@ This worked fine, but then do we need the IAM permission or is it just enough wi
             <description>Some days ago a coworker of mine linked me to the source code of Google&amp;rsquo;s exposure notifications API and of course is a good chance to see how Google is doing Go related codebases.
 Continuing with the topic of Postgres and benchmarking, I decided to check out how Postgres configuration was done and this line got my attention:
 import ( ... &amp;#34;github.com/jackc/pgx/v4/pgxpool&amp;#34; ) What is pgx, and why should we care?</description>
-            <content type="html"><![CDATA[<p>Some days ago a coworker of mine linked me to the source code of <a href="https://github.com/google/exposure-notifications-server">Google&rsquo;s exposure notifications API</a> and of course is a good chance to see how Google is doing Go related codebases.</p>
-<p>Continuing with the topic of Postgres and benchmarking, I decided to check out how Postgres configuration was done and this <a href="https://github.com/google/exposure-notifications-server/blob/master/internal/database/connection.go#L27">line</a> got my attention:</p>
+            <content type="html"><![CDATA[<p>Some days ago a coworker of mine linked me to the source code of <a href="https://github.com/google/exposure-notifications-server"  target="_blank" rel="noreferrer noopener" >Google&rsquo;s exposure notifications API</a>
+ and of course is a good chance to see how Google is doing Go related codebases.</p>
+<p>Continuing with the topic of Postgres and benchmarking, I decided to check out how Postgres configuration was done and this <a href="https://github.com/google/exposure-notifications-server/blob/master/internal/database/connection.go#L27"  target="_blank" rel="noreferrer noopener" >line</a>
+ got my attention:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">import</span> (
 	<span style="color:#f92672">...</span>
 	<span style="color:#e6db74">&#34;github.com/jackc/pgx/v4/pgxpool&#34;</span>
 )
 </code></pre></div><h2 id="what-is-pgx-and-why-should-we-care">What is pgx, and why should we care?</h2>
-<p><code>Pgx</code> is a library that implements postgres connection without relying on the <code>database/sql</code> standard package. The source code can be found <a href="https://github.com/jackc/pgx">here</a>; and as the readme states:</p>
+<p><code>Pgx</code> is a library that implements postgres connection without relying on the <code>database/sql</code> standard package. The source code can be found <a href="https://github.com/jackc/pgx"  target="_blank" rel="noreferrer noopener" >here</a>
+; and as the readme states:</p>
 <blockquote>
 <p>pgx aims to be low-level, fast, and performant, while also enabling PostgreSQL-specific features that the standard database/sql package does not allow for.</p>
 </blockquote>
@@ -850,7 +1048,8 @@ import ( ... &amp;#34;github.com/jackc/pgx/v4/pgxpool&amp;#34; ) What is pgx, an
 </blockquote>
 <p>And these are just a bunch of things picked from the readme, but there are some strong statements which are analyzed below to see if they are true or not.</p>
 <h2 id="benchmarking">Benchmarking</h2>
-<p>On my previous post <a href="https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/">Benchmarking concurrently safe upsert queries</a> I showed an application using <code>lib/pq</code> and benchmark for different queries, all trying to solve the same scenario. In order not to make the post larger than necessary, please check the details on the link above.</p>
+<p>On my previous post <a href="https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/"  target="_blank" rel="noreferrer noopener" >Benchmarking concurrently safe upsert queries</a>
+ I showed an application using <code>lib/pq</code> and benchmark for different queries, all trying to solve the same scenario. In order not to make the post larger than necessary, please check the details on the link above.</p>
 <p>In this post, the application shown before will be used and we will cover:</p>
 <ul>
 <li>How to migrate from lib/pq to pgx.</li>
@@ -902,7 +1101,8 @@ import ( ... &amp;#34;github.com/jackc/pgx/v4/pgxpool&amp;#34; ) What is pgx, an
 }
 </code></pre></div><p>Since the idea is to try out the pooling mechanism, a pool configuration is created and used for the connection. This is fairly simple, but there is more than just that in the code.</p>
 <p>The function <code>AfterConnect</code> allows the developer to hook custom behaviors into the database connection. As for this example a custom mapping is added to map a <code>TID</code> field to a string. <code>TID</code> is the Postgres type we get when we query <code>SELECT ctid</code>.</p>
-<p>It is understandable that a real world application will not fetch this type of data thus the mapping was not implemented. For this <a href="https://github.com/jackc/pgtype/pull/29">I&rsquo;ve submitted a PR</a> but it did not reach a release tag at the moment I am writing this; so I added the custom hook in the code.</p>
+<p>It is understandable that a real world application will not fetch this type of data thus the mapping was not implemented. For this <a href="https://github.com/jackc/pgtype/pull/29"  target="_blank" rel="noreferrer noopener" >I&rsquo;ve submitted a PR</a>
+ but it did not reach a release tag at the moment I am writing this; so I added the custom hook in the code.</p>
 <p>Again, in a real world application it is likely that an <code>AfterConnect</code> hook is not needed, but it is valuable knowing that you can use it if you need it.</p>
 <p>With the connection covered, let&rsquo;s move to the queries:</p>
 <h3 id="advisory-lock">Advisory Lock</h3>
@@ -1121,7 +1321,8 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <h2 id="some-additional-notes">Some additional notes</h2>
 <ul>
 <li>I am not being sponsored nor paid by the author of the library.</li>
-<li>The code used for benchmarking can be found <a href="https://github.com/pmorelli92/pg-upsert-returning">here</a>. The <code>master</code> branch contains the <code>lib/pq</code> code and the branch <code>refactor/pgx</code> contains the <code>pgx</code> code.</li>
+<li>The code used for benchmarking can be found <a href="https://github.com/pmorelli92/pg-upsert-returning"  target="_blank" rel="noreferrer noopener" >here</a>
+. The <code>master</code> branch contains the <code>lib/pq</code> code and the branch <code>refactor/pgx</code> contains the <code>pgx</code> code.</li>
 <li>All the benchmarks can be executed easily by:</li>
 </ul>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">make run-db <span style="color:#f92672">(</span>create database and table after executing this<span style="color:#f92672">)</span>
@@ -1137,11 +1338,12 @@ make run-bench
             <pubDate>Wed, 13 May 2020 16:40:29 +0100</pubDate>
             
             <guid>https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/</guid>
-            <description>In my previous post I covered how to build concurrently safe upsert queries.
+            <description>In my previous post I covered how to build concurrently safe upsert queries .
 This post serves as a continuation where different approaches will be battle tested to expose the performance of each one:
  Advisory lock On conflict update On conflict do nothing CTE queries  Without further ado, let&amp;rsquo;s start:
 The application In order to emulate the scenario described on the previous post, an HTTP API is required. This one will connect to a database to perform the calls.</description>
-            <content type="html"><![CDATA[<p>In my previous post I covered how to <a href="https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries">build concurrently safe upsert queries</a>.</p>
+            <content type="html"><![CDATA[<p>In my previous post I covered how to <a href="https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries"  target="_blank" rel="noreferrer noopener" >build concurrently safe upsert queries</a>
+.</p>
 <p>This post serves as a continuation where different approaches will be battle tested to expose the performance of each one:</p>
 <ul>
 <li>Advisory lock</li>
@@ -1152,7 +1354,8 @@ The application In order to emulate the scenario described on the previous post,
 <p>Without further ado, let&rsquo;s start:</p>
 <h2 id="the-application">The application</h2>
 <p>In order to emulate the scenario described on the previous post, an HTTP API is required. This one will connect to a database to perform the calls.
-The application is written in Go and can be found <a href="https://github.com/pmorelli92/pg-upsert-returning">here</a>.</p>
+The application is written in Go and can be found <a href="https://github.com/pmorelli92/pg-upsert-returning"  target="_blank" rel="noreferrer noopener" >here</a>
+.</p>
 <p>The application is plain simple, as it contains few files:</p>
 <ul>
 <li><em>cmd/main.go</em>: Responsible for bootstrapping the postgres connection and http server.</li>
@@ -1171,7 +1374,8 @@ The application is written in Go and can be found <a href="https://github.com/pm
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker build -t pg-upsert-app:local .
 docker run -p 8080:8080 --link db --name app -i pg-upsert-app:local
 </code></pre></div><h2 id="benchmarking">Benchmarking</h2>
-<p>For the benchmark, the tool <a href="https://github.com/tsenart/vegeta">vegeta</a> is used. This tool allows doing HTTP load testing which will be used against the API.</p>
+<p>For the benchmark, the tool <a href="https://github.com/tsenart/vegeta"  target="_blank" rel="noreferrer noopener" >vegeta</a>
+ is used. This tool allows doing HTTP load testing which will be used against the API.</p>
 <p>The test suite is just a bash script that will feature a similar logic for each approach to be tested; example:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">UPSERT_LOCK<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>echo <span style="color:#e6db74">&#39;{
 </span><span style="color:#e6db74">  method: &#34;POST&#34;,
@@ -1255,7 +1459,8 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <li>It modifies the row transaction id, an &ldquo;old&rdquo; that got updated row will have a new transaction timestamp.</li>
 <li>Firing triggers affecting the table.</li>
 </ul>
-<p>For a better refresher, click <a href="https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries/#4-on-conflict-update">here</a></p>
+<p>For a better refresher, click <a href="https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries/#4-on-conflict-update"  target="_blank" rel="noreferrer noopener" >here</a>
+</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">EXECUTING FOR UPSERT CONFLICT
 Bucket         <span style="color:#75715e">#     %       Histogram</span>
 <span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1777</span>  44.42%  <span style="color:#75715e">#################################</span>
@@ -1478,7 +1683,8 @@ RETURNING id
 <li>This last query will not respond until the first transaction finishes.</li>
 </ul>
 <p>What does this mean? It means that concurrency is being handled explicitly with locks in a way that won&rsquo;t scale when having multiple requests using the same uuid.</p>
-<p><a href="https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/"><em>Benchmark for this approach in part 2</em></a></p>
+<p><a href="https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/"  target="_blank" rel="noreferrer noopener" ><em>Benchmark for this approach in part 2</em></a>
+</p>
 <hr>
 <h3 id="4-on-conflict-update">4. On conflict, update</h3>
 <ol>
@@ -1497,7 +1703,8 @@ RETURNING id
 | <span style="color:#ae81ff">3</span>  |
 | <span style="color:#ae81ff">3</span>  |
 | <span style="color:#ae81ff">3</span>  |
-</code></pre></div><p>As simple as that. Looks great doesn&rsquo;t it? Well I thought so until a colleague proved me wrong when he linked this <a href="https://stackoverflow.com/a/42217872">awesome stack overflow answer</a>.</p>
+</code></pre></div><p>As simple as that. Looks great doesn&rsquo;t it? Well I thought so until a colleague proved me wrong when he linked this <a href="https://stackoverflow.com/a/42217872"  target="_blank" rel="noreferrer noopener" >awesome stack overflow answer</a>
+.</p>
 <blockquote>
 <p>[&hellip;] Do not update identical rows without need. Even if you see no difference on the surface, there are various side effects:</p>
 <ul>
@@ -1522,7 +1729,8 @@ RETURNING ctid, xmin, xmax, id
 | <span style="color:#f92672">(</span>0,4<span style="color:#f92672">)</span> | <span style="color:#ae81ff">5879</span> | <span style="color:#ae81ff">5879</span> | <span style="color:#ae81ff">2</span>  |
 | <span style="color:#f92672">(</span>0,5<span style="color:#f92672">)</span> | <span style="color:#ae81ff">5880</span> | <span style="color:#ae81ff">5880</span> | <span style="color:#ae81ff">2</span>  |
 </code></pre></div><p>What is the definition of <code>ctid</code>, <code>xmin</code> and <code>xmax</code>, and why do they keep increasing?
-<a href="https://www.postgresql.org/docs/8.2/ddl-system-columns.html">Documentation</a></p>
+<a href="https://www.postgresql.org/docs/8.2/ddl-system-columns.html"  target="_blank" rel="noreferrer noopener" >Documentation</a>
+</p>
 <p><strong>ctid</strong></p>
 <blockquote>
 <p>The physical location of the row version within its table. Note that although the ctid can be used to locate the row version very quickly, a row&rsquo;s ctid will change if it is updated or moved by VACUUM FULL. Therefore ctid is useless as a long-term row identifier. A primary key should be used to identify logical rows.</p>
@@ -1541,7 +1749,8 @@ RETURNING ctid, xmin, xmax, id
 <li><code>xmin</code> is the creation transaction id of that row.</li>
 <li><code>xmax</code> is the destruction transaction id of that row.</li>
 </ul>
-<p>In order to elaborate it is important to take into consideration the MVCC (Multiversion Concurrency Control) nature of postgres. From the <a href="https://www.postgresql.org/docs/current/mvcc-intro.html">Documentation</a>:</p>
+<p>In order to elaborate it is important to take into consideration the MVCC (Multiversion Concurrency Control) nature of postgres. From the <a href="https://www.postgresql.org/docs/current/mvcc-intro.html"  target="_blank" rel="noreferrer noopener" >Documentation</a>
+:</p>
 <blockquote>
 <p>Each SQL statement sees a snapshot of data [&hellip;] regardless of the current state of the underlying data. This prevents statements from viewing inconsistent data produced by concurrent transactions performing updates on the same data rows. [&hellip;] MVCC, minimizes lock contention in order to allow for reasonable performance in multiuser environments.</p>
 </blockquote>
@@ -1591,7 +1800,8 @@ RETURNING ctid, xmin, xmax, id
 </ul>
 <p>As you can probably guess an <code>UPDATE</code> is a <code>DELETE + INSERT</code> under the hoods.</p>
 <p>With this explained, it is confirmed why doing <code>ON CONFLICT UPDATE</code> is not a good choice either.</p>
-<p><a href="https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/"><em>Benchmark for this approach in part 2</em></a></p>
+<p><a href="https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/"  target="_blank" rel="noreferrer noopener" ><em>Benchmark for this approach in part 2</em></a>
+</p>
 <hr>
 <h3 id="5-insert-first-read-later">5. Insert first, read later</h3>
 <p>On the first approach, the problem was that the <code>INSERT</code> query was not updating on conflict, thus the <code>RETURNING</code> row is empty when the row already exists. This can be solved by flipping the order of the statements.</p>
@@ -1630,10 +1840,12 @@ Execution Time: 0.244 ms
 Planning Time: 0.069 ms
 Execution Time: 0.111 ms
 </code></pre></div><p>The summarization between the insert and the select is less than a millisecond for both cases. Don&rsquo;t worry, on the next part this is proven.</p>
-<p><a href="https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/"><em>Benchmark for this approach in part 2</em></a></p>
+<p><a href="https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/"  target="_blank" rel="noreferrer noopener" ><em>Benchmark for this approach in part 2</em></a>
+</p>
 <hr>
 <h3 id="bonus-for-non-postgres-users-aka-cte-queries">Bonus for non Postgres users (a.k.a CTE queries)</h3>
-<p>CTE means Common Table Expression and documentation can be found <a href="https://www.postgresql.org/docs/current/queries-with.html">here</a></p>
+<p>CTE means Common Table Expression and documentation can be found <a href="https://www.postgresql.org/docs/current/queries-with.html"  target="_blank" rel="noreferrer noopener" >here</a>
+</p>
 <p>These kind of expressions are also useful when the database engine  does not support <code>ON CONFLICT DO NOTHING</code>.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">WITH</span>
 	<span style="color:#66d9ef">search</span> <span style="color:#66d9ef">AS</span> (<span style="color:#66d9ef">SELECT</span> ctid, xmax, id <span style="color:#66d9ef">FROM</span> customers <span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;8a57f8f4-aeed-412c-a6f6-5f9a03b17bc5&#39;</span> <span style="color:#66d9ef">LIMIT</span> <span style="color:#ae81ff">1</span>),
@@ -1662,7 +1874,8 @@ Execution Time: 0.111 ms
         -&gt;  CTE Scan on search
 Planning Time: 0.256 ms
 Execution Time: 2.483 ms
-</code></pre></div><p><a href="https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/"><em>Benchmark for this approach in part 2</em></a></p>
+</code></pre></div><p><a href="https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/"  target="_blank" rel="noreferrer noopener" ><em>Benchmark for this approach in part 2</em></a>
+</p>
 <hr>
 <p>And that is all for this post. On the next post, the benchmarks for the following approaches are going to be executed:</p>
 <ul>
@@ -1693,7 +1906,8 @@ Every company has a different way to work and configure CI/CD, and all of them h
 <li>Deploy to Okteto (which offers a free kubernetes cluster)</li>
 </ul>
 <h2 id="the-application">The application</h2>
-<p>You can find it on <a href="https://github.com/pmorelli92/go-with-azure">GitHub</a>. It is a rather simple rest application since the purpose here is not to dig into code but on the CI/CD.</p>
+<p>You can find it on <a href="https://github.com/pmorelli92/go-with-azure"  target="_blank" rel="noreferrer noopener" >GitHub</a>
+. It is a rather simple rest application since the purpose here is not to dig into code but on the CI/CD.</p>
 <p>It is runnable (downloading modules first with <code>go mod download</code>) executing <code>go run cmd/main.go</code>.
 The only functionality that exposes is a <code>GET /health</code> endpoint which will return a json informing that health is ok.</p>
 <p>The application can be dockerized executing <code>docker build -t gwa:local .</code> and then runnable using <code>docker run -p 80:8080 -it gwa:local</code>.</p>
@@ -1785,7 +1999,8 @@ In this case, the example repository is using semver for building versions.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">bash</span>: <span style="color:#ae81ff">sed -i &#34;s/latest/$(buildNumber)/g&#34; kubernetes/k8s-deployment.yml</span>
 </code></pre></div><p>A discussion could be hold on whether if a service should self contain information of deployment or be agnostic of it. As a personal preference, I think having everything related to the application on the same repository enables easier discoverability.</p>
 <p>Of course, we are not having any secrets here, if that was the case, Azure Pipelines offers a way to store them safely inside the azure devops project.</p>
-<p>That being said, the repository contains a <a href="https://github.com/pmorelli92/go-with-azure/blob/master/kubernetes/k8s-deployment.yml">file</a> <code>kubernetes/k8s-deployment.yml</code> which describes:</p>
+<p>That being said, the repository contains a <a href="https://github.com/pmorelli92/go-with-azure/blob/master/kubernetes/k8s-deployment.yml"  target="_blank" rel="noreferrer noopener" >file</a>
+ <code>kubernetes/k8s-deployment.yml</code> which describes:</p>
 <ul>
 <li>Deployment (information of the containers to be run)</li>
 <li>Service (enables communication from pods)</li>
@@ -1799,7 +2014,8 @@ In this case, the example repository is using semver for building versions.</p>
   <span style="color:#f92672">ports</span>:
   - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">http</span>
     <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">80</span>
-</code></pre></div><p>It is definitely not good to use <code>:latest</code> image on stage / production so the sed script will replace <code>:latest</code> with <code>0.0.X</code> (which will be the build number). This is also the same version that will be pushed to the selected docker registry: <a href="https://cloud.docker.com/u/pmorelli92/repository/docker/pmorelli92/go-with-azure">example</a>.</p>
+</code></pre></div><p>It is definitely not good to use <code>:latest</code> image on stage / production so the sed script will replace <code>:latest</code> with <code>0.0.X</code> (which will be the build number). This is also the same version that will be pushed to the selected docker registry: <a href="https://cloud.docker.com/u/pmorelli92/repository/docker/pmorelli92/go-with-azure"  target="_blank" rel="noreferrer noopener" >example</a>
+.</p>
 <figure><img src="/posts/images/docker-tags.png"/>
 </figure>
 
@@ -1819,7 +2035,8 @@ In this case, the example repository is using semver for building versions.</p>
 <figure><img src="/posts/images/cicd-logs.png"/>
 </figure>
 
-<p>And the demo app is now accessible from the following <a href="https://gwa-service-pmorelli92.cloud.okteto.net/health">link</a>.</p>
+<p>And the demo app is now accessible from the following <a href="https://gwa-service-pmorelli92.cloud.okteto.net/health"  target="_blank" rel="noreferrer noopener" >link</a>
+.</p>
 <h2 id="summary">Summary</h2>
 <p>In this tutorial we have seen how easy it is to set up a quick CI/CD pipeline that could be improved further according to the business / technical needs.
 If I were to give a verdict on Azure Pipelines:</p>
@@ -1865,14 +2082,16 @@ In order to add this feature in our .csproj, add the following lines:
 <p>After these flags had been set, the application is runnable using:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">dotnet publish -r osx-x64 -c Release -o ./deploy
 ./deploy/&lt;APP_NAME&gt; &lt;- Execute the application
-</code></pre></div><p>When publishing a single file, don&rsquo;t forget to add the <a href="https://docs.microsoft.com/en-us/dotnet/core/rid-catalog">runtime identifier catalog (RID)</a> corresponding to the platform where the application is going to be run. For example: <code>-r osx-x64</code></p>
+</code></pre></div><p>When publishing a single file, don&rsquo;t forget to add the <a href="https://docs.microsoft.com/en-us/dotnet/core/rid-catalog"  target="_blank" rel="noreferrer noopener" >runtime identifier catalog (RID)</a>
+ corresponding to the platform where the application is going to be run. For example: <code>-r osx-x64</code></p>
 <p>With the basics of this feature already covered, let&rsquo;s move to the important bit.</p>
 <h2 id="deploy-application-on-an-alpine-based-container">Deploy application on an Alpine based container</h2>
 <p>One important win using this approach is that the published binary does not need to be run in a container that has dotnet runtime installed. But one caveat for consideration is that those internal dependencies used under the hood by dotnet are still needed. There are two options:</p>
 <p>Use plain alpine and install dotnet internal dependencies:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Docker" data-lang="Docker"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> alpine</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> apk update <span style="color:#f92672">&amp;&amp;</span> apk add libstdc++ <span style="color:#f92672">&amp;&amp;</span> apk add libintl<span style="color:#960050;background-color:#1e0010">
-</span></code></pre></div><p>Use <code>runtime-deps</code> alpine image from <a href="https://hub.docker.com/_/microsoft-dotnet-core-runtime-deps/">Microsoft</a>:</p>
+</span></code></pre></div><p>Use <code>runtime-deps</code> alpine image from <a href="https://hub.docker.com/_/microsoft-dotnet-core-runtime-deps/"  target="_blank" rel="noreferrer noopener" >Microsoft</a>
+:</p>
 <blockquote>
 <p>This image contains the native dependencies needed by .NET Core. It does not include .NET Core. It is for self-contained applications.</p>
 </blockquote>
@@ -1898,7 +2117,8 @@ In order to add this feature in our .csproj, add the following lines:
 </span></code></pre></div><p>Basically the <code>Dockerfile</code> is publishing the application (as a binary) on an alpine container with dotnet sdk installed. This is important because the <code>builder</code> has to use the same architecture than the runner. It is not possible to build a <code>linux-musk-x64</code> binary on a windows container.</p>
 <p>Then the result files (the binary and a single DLL) are copied to an alpine container only having dotnet runtime dependencies.</p>
 <p>At the end the <code>ENTRYPOINT</code> line is executed. Check that this one is not doing <code>dotnet app/&lt;APP_NAME&gt;</code> but just <code>./app/&lt;APP_NAME&gt;</code></p>
-<p>I did a sample API with this approach, <a href="https://github.com/pmorelli92/dotnet3.executable.api">which can be found my github</a>. The container weighted <code>91MB</code>, used <code>30MB RAM</code> and <code>0.08% CPU</code>. Awesome, right?</p>
+<p>I did a sample API with this approach, <a href="https://github.com/pmorelli92/dotnet3.executable.api"  target="_blank" rel="noreferrer noopener" >which can be found my github</a>
+. The container weighted <code>91MB</code>, used <code>30MB RAM</code> and <code>0.08% CPU</code>. Awesome, right?</p>
 ]]></content>
         </item>
         
@@ -1917,12 +2137,15 @@ In order to add this feature in our .csproj, add the following lines:
 <p>If you commit from GitHub, for example: adding or editing a README, you will get the verified bagde. The same will happen with the client <code>GitKraken</code>, but if you commit using the <code>git cli</code> this will not happen unless you configure it.</p>
 <p>Now, I will assume that you are using a mac but in case you do not, you can google yourself some of the installation steps.</p>
 <h2 id="installing-gpg">Installing GPG</h2>
-<p>In order to sign a commit you will need to generate a key, and for this you are going to use <a href="https://gnupg.org/">GPG</a>. But first, you need brew to be installed, if you do not have it yet, it is a must have package manager for mac that you can download <a href="https://brew.sh/">here</a>.</p>
+<p>In order to sign a commit you will need to generate a key, and for this you are going to use <a href="https://gnupg.org/"  target="_blank" rel="noreferrer noopener" >GPG</a>
+. But first, you need brew to be installed, if you do not have it yet, it is a must have package manager for mac that you can download <a href="https://brew.sh/"  target="_blank" rel="noreferrer noopener" >here</a>
+.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; brew install gnupg
 &gt; brew install pinentry-mac
 &gt; echo <span style="color:#e6db74">&#34;pinentry-program /usr/local/bin/pinentry-mac&#34;</span> &gt;&gt; ~/.gnupg/gpg-agent.conf
 &gt; killall gpg-agent
-</code></pre></div><p><a href="https://www.gnupg.org/related_software/pinentry/index.en.html">Pinentry</a> as it is stated on the GPG site it is a collection of dialogs that allows you, for example, to input the passphrase of the private key. In order for this to work we need to indicate the path where it is installed into the GPG configuration and then kill the service (just in case) for it to take the changes.</p>
+</code></pre></div><p><a href="https://www.gnupg.org/related_software/pinentry/index.en.html"  target="_blank" rel="noreferrer noopener" >Pinentry</a>
+ as it is stated on the GPG site it is a collection of dialogs that allows you, for example, to input the passphrase of the private key. In order for this to work we need to indicate the path where it is installed into the GPG configuration and then kill the service (just in case) for it to take the changes.</p>
 <h2 id="generating-a-set-of-keys">Generating a set of keys</h2>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; gpg --full-generate-key
 <span style="color:#f92672">(</span>you can customise the key creation or just press enter to use the defaults<span style="color:#f92672">)</span>
@@ -2168,7 +2391,8 @@ BenchmarkWordCounterConcurrent-12     <span style="color:#ae81ff">19</span>    6
 <p>So we started with a single goroutine algorithm, we evolved it to run using more than one goroutine and having an orchestration for the algorithm to work. At the end we did a benchmark and compared the results.</p>
 <p>The value we can get out of this is to avoid <code>premature optimization</code>, how to <code>KISS</code> (keep it simple and stupid) and the most important one: We learned that concurrent flows are beneficial when the code inside the goroutine is CPU/time intensive.</p>
 <h2 id="2020-edit">2020 Edit</h2>
-<p>One alternative suggested by <a href="https://github.com/Xeoncross">David Pennington</a> was to use streams instead of loading the whole file to the disk. In this case the code will look like:</p>
+<p>One alternative suggested by <a href="https://github.com/Xeoncross"  target="_blank" rel="noreferrer noopener" >David Pennington</a>
+ was to use streams instead of loading the whole file to the disk. In this case the code will look like:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">wordCounterStream</span>() (<span style="color:#a6e22e">words</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">int</span>) {
 	<span style="color:#a6e22e">file</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Open</span>(<span style="color:#e6db74">&#34;input.txt&#34;</span>)
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
@@ -2207,7 +2431,8 @@ BenchmarkWordCounterConcurrent-12     <span style="color:#ae81ff">19</span>    6
 BenchmarkWordCounter-12               <span style="color:#ae81ff">45</span>   25.88 ms/op   <span style="color:#ae81ff">4354027</span> B/op   <span style="color:#ae81ff">124918</span> allocs/op
 BenchmarkWordCounterConcurrent-12     <span style="color:#ae81ff">19</span>   59.70 ms/op   <span style="color:#ae81ff">5711640</span> B/op   <span style="color:#ae81ff">138290</span> allocs/op
 BenchmarkWordCounterStreams-12       <span style="color:#ae81ff">198</span>    5.93 ms/op    <span style="color:#ae81ff">330114</span> B/op    <span style="color:#ae81ff">44844</span> allocs/op
-</code></pre></div><p>👉 <a href="https://github.com/pmorelli92/go-word-counter">Repository with source files used</a> 👈</p>
+</code></pre></div><p>👉 <a href="https://github.com/pmorelli92/go-word-counter"  target="_blank" rel="noreferrer noopener" >Repository with source files used</a>
+ 👈</p>
 ]]></content>
         </item>
         
@@ -2246,7 +2471,8 @@ My starting point was the following talk:</description>
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">EXPOSE</span><span style="color:#e6db74"> 8080</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENTRYPOINT</span> [<span style="color:#e6db74">&#34;./goapp&#34;</span>]<span style="color:#960050;background-color:#1e0010">
 </span></code></pre></div><p>That Dockerfile, as ugly as it looks, was the result of some iterations were I was getting path errors, dependency errors, and others. The constraint of only working on <code>GOPATH</code> gave me headaches and I had to use a really bad <code>WORKDIR</code> as you can see above.</p>
-<p>But then after some searching, I came across that <a href="https://github.com/golang/go/wiki/Modules">GO Modules</a> was supported from version 1.11, so I decided to give it a try.</p>
+<p>But then after some searching, I came across that <a href="https://github.com/golang/go/wiki/Modules"  target="_blank" rel="noreferrer noopener" >GO Modules</a>
+ was supported from version 1.11, so I decided to give it a try.</p>
 <p>And this is how the Dockerfile looks like now:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-docker" data-lang="docker"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> golang:1.12-alpine AS builder</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010">
