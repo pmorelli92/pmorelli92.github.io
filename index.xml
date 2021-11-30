@@ -33,7 +33,7 @@ However, there was a little something that my mind keep thinking: it would be su
       <pubDate>Fri, 10 Sep 2021 13:00:00 +0200</pubDate>
       
       <guid>https://devandchill.com/resume/</guid>
-      <description>WORKED WITH   .NET Core, Go. DDD, TDD, SOLID, CQRS, Clean Architecture, Event Sourcing (Akka.NET), Microservices, Scrum, Kanban. Docker, Kubernetes, CI/CD (Travis &amp;amp; Azure Pipelines), RabbitMQ (AMQP), Postgres (SQL), MongoDB (NoSQL), Terraform, GCP.   WORK EXPERIENCE  Backend Developer 💻 Lendo 🇸🇪  From 05.2019 - Present Developed fin-tech related microservices using Go (Golang) Worked on the migration from private cloud to GCP using Terraform as Infrastructure as Code to have our deployed infrastructure reflected on a git repository.</description>
+      <description>WORKED WITH   .NET Core, Go. DDD, TDD, SOLID, CQRS, Clean Architecture, Event Sourcing (Akka.NET), Microservices, Scrum, Kanban. Docker, Kubernetes, CI/CD (Travis &amp;amp; Azure Pipelines), RabbitMQ (AMQP), Postgres (SQL), MongoDB (NoSQL), Terraform, GCP.   WORK EXPERIENCE  Backend Developer @ Platform Team 💻 Lendo 🇸🇪  From 04.2021 - Present Currently integrating the newly formed Platform team with the hopes of accelerating the expansion throughout markets with less tech debt and repetition.</description>
     </item>
     
     <item>
