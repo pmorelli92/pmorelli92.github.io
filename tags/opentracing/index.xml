@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>opentracing on Dev &amp; Chill</title>
+    <link>https://devandchill.com/tags/opentracing/</link>
+    <description>Recent content in opentracing on Dev &amp; Chill</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Pablo Morelli</copyright>
+    <lastBuildDate>Fri, 03 Dec 2021 13:00:00 +0200</lastBuildDate><atom:link href="https://devandchill.com/tags/opentracing/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Go - Step by step guide for implementing tracing on a microservices architecture (1/2)</title>
+      <link>https://devandchill.com/posts/2021/12/go-step-by-step-guide-for-implementing-tracing-on-a-microservices-architecture-1/2/</link>
+      <pubDate>Fri, 03 Dec 2021 13:00:00 +0200</pubDate>
+      
+      <guid>https://devandchill.com/posts/2021/12/go-step-by-step-guide-for-implementing-tracing-on-a-microservices-architecture-1/2/</guid>
+      <description>This article is the first of a series of two. In this first one we are going to talk about what is tracing is used for, the scope of this proof of concept and implement the first service.
+What is the problem? Nowadays everyone wants to do microservices, it is a buzzword on every tech start up and while it brings a lot of benefits into the table it also brings some drawbacks that not everyone is aware at first.</description>
+    </item>
+    
+  </channel>
+</rss>

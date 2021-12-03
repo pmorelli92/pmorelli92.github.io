@@ -2,22 +2,43 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://devandchill.com/about/</loc>
-    <lastmod>2021-09-10T13:00:00+02:00</lastmod>
-  </url><url>
     <loc>https://devandchill.com/</loc>
-    <lastmod>2021-09-10T13:00:00+02:00</lastmod>
+    <lastmod>2021-12-03T13:00:00+02:00</lastmod>
   </url><url>
     <loc>https://devandchill.com/tags/go/</loc>
+    <lastmod>2021-12-03T13:00:00+02:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/posts/2021/12/go-step-by-step-guide-for-implementing-tracing-on-a-microservices-architecture-1/2/</loc>
+    <lastmod>2021-12-03T13:00:00+02:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/jaeger/</loc>
+    <lastmod>2021-12-03T13:00:00+02:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/opentelemetry/</loc>
+    <lastmod>2021-12-03T13:00:00+02:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/opentracing/</loc>
+    <lastmod>2021-12-03T13:00:00+02:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/posts/</loc>
+    <lastmod>2021-12-03T13:00:00+02:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/</loc>
+    <lastmod>2021-12-03T13:00:00+02:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/telemetry/</loc>
+    <lastmod>2021-12-03T13:00:00+02:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/tracing/</loc>
+    <lastmod>2021-12-03T13:00:00+02:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/about/</loc>
     <lastmod>2021-09-10T13:00:00+02:00</lastmod>
   </url><url>
     <loc>https://devandchill.com/posts/2021/09/go-generate-and-serve-swagger-without-code-dependencies/</loc>
     <lastmod>2021-09-10T13:00:00+02:00</lastmod>
   </url><url>
     <loc>https://devandchill.com/tags/openapi/</loc>
-    <lastmod>2021-09-10T13:00:00+02:00</lastmod>
-  </url><url>
-    <loc>https://devandchill.com/posts/</loc>
     <lastmod>2021-09-10T13:00:00+02:00</lastmod>
   </url><url>
     <loc>https://devandchill.com/tags/redoc/</loc>
@@ -27,9 +48,6 @@
     <lastmod>2021-09-10T13:00:00+02:00</lastmod>
   </url><url>
     <loc>https://devandchill.com/tags/swagger/</loc>
-    <lastmod>2021-09-10T13:00:00+02:00</lastmod>
-  </url><url>
-    <loc>https://devandchill.com/tags/</loc>
     <lastmod>2021-09-10T13:00:00+02:00</lastmod>
   </url><url>
     <loc>https://devandchill.com/tags/functional/</loc>
