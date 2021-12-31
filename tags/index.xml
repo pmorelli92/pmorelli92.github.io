@@ -7,11 +7,11 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Pablo Morelli</copyright>
-    <lastBuildDate>Fri, 03 Dec 2021 13:00:00 +0200</lastBuildDate><atom:link href="https://devandchill.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 31 Dec 2021 16:00:00 +0200</lastBuildDate><atom:link href="https://devandchill.com/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>go</title>
       <link>https://devandchill.com/tags/go/</link>
-      <pubDate>Fri, 03 Dec 2021 13:00:00 +0200</pubDate>
+      <pubDate>Fri, 31 Dec 2021 16:00:00 +0200</pubDate>
       
       <guid>https://devandchill.com/tags/go/</guid>
       <description></description>
@@ -20,7 +20,7 @@
     <item>
       <title>jaeger</title>
       <link>https://devandchill.com/tags/jaeger/</link>
-      <pubDate>Fri, 03 Dec 2021 13:00:00 +0200</pubDate>
+      <pubDate>Fri, 31 Dec 2021 16:00:00 +0200</pubDate>
       
       <guid>https://devandchill.com/tags/jaeger/</guid>
       <description></description>
@@ -29,7 +29,7 @@
     <item>
       <title>opentelemetry</title>
       <link>https://devandchill.com/tags/opentelemetry/</link>
-      <pubDate>Fri, 03 Dec 2021 13:00:00 +0200</pubDate>
+      <pubDate>Fri, 31 Dec 2021 16:00:00 +0200</pubDate>
       
       <guid>https://devandchill.com/tags/opentelemetry/</guid>
       <description></description>
@@ -38,7 +38,7 @@
     <item>
       <title>opentracing</title>
       <link>https://devandchill.com/tags/opentracing/</link>
-      <pubDate>Fri, 03 Dec 2021 13:00:00 +0200</pubDate>
+      <pubDate>Fri, 31 Dec 2021 16:00:00 +0200</pubDate>
       
       <guid>https://devandchill.com/tags/opentracing/</guid>
       <description></description>
@@ -47,7 +47,7 @@
     <item>
       <title>telemetry</title>
       <link>https://devandchill.com/tags/telemetry/</link>
-      <pubDate>Fri, 03 Dec 2021 13:00:00 +0200</pubDate>
+      <pubDate>Fri, 31 Dec 2021 16:00:00 +0200</pubDate>
       
       <guid>https://devandchill.com/tags/telemetry/</guid>
       <description></description>
@@ -56,7 +56,7 @@
     <item>
       <title>tracing</title>
       <link>https://devandchill.com/tags/tracing/</link>
-      <pubDate>Fri, 03 Dec 2021 13:00:00 +0200</pubDate>
+      <pubDate>Fri, 31 Dec 2021 16:00:00 +0200</pubDate>
       
       <guid>https://devandchill.com/tags/tracing/</guid>
       <description></description>
