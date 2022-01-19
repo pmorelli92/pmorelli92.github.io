@@ -1,7 +1,7 @@
 {
 	"version": 3,
 	"file": "main.css",
-	"sourceRoot": "/Users/pablo.morelli/Documents/pmorelli92/devandchill",
+	"sourceRoot": "/Users/pablo.morelli/Desktop/devandchill",
 	"sources": [
 		"themes/hello-friend-ng/assets/scss/main.scss",
 		"themes/hello-friend-ng/assets/scss/_normalize.scss",

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>sign on Dev &amp; Chill</title>
+    <link>https://devandchill.com/tags/sign/</link>
+    <description>Recent content in sign on Dev &amp; Chill</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Pablo Morelli</copyright>
+    <lastBuildDate>Wed, 19 Jan 2022 12:13:07 +0100</lastBuildDate><atom:link href="https://devandchill.com/tags/sign/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Set up the same terminal regardless your OS - and more</title>
+      <link>https://devandchill.com/posts/2022/01/set-up-the-same-terminal-regardless-your-os-and-more/</link>
+      <pubDate>Wed, 19 Jan 2022 12:13:07 +0100</pubDate>
+      
+      <guid>https://devandchill.com/posts/2022/01/set-up-the-same-terminal-regardless-your-os-and-more/</guid>
+      <description>Introduction Throughout my career I have used Windows, Linux, Mac and Windows again, and each year that passes I discover myself using the terminal more and more. Most of my work is done there, except when doing some heavy coding. Therefore I believe it is important to have the same flow no matter which operative system is in use in order not to lose productivity.
+Back when using Windows, the WSL (Windows Subsystem for Linux) did not exist, and therefore the portability between Unix and Windows was unthinkable.</description>
+    </item>
+    
+  </channel>
+</rss>

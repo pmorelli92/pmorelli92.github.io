@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="author" content="Pablo Morelli">
+<meta name="description" content="Devandchill is a coding and tech blog oriented to go, .net and databases made by Pablo Morelli" />
+<meta name="keywords"
+    content="blog, development, programming, tech, zsh, ohmyposh, windows, mac, git, sign, brew, terminal, winget" />
+<meta name="robots" content="noodp" />
+<meta name="theme-color" content="" />
+<link rel="canonical" href="https://devandchill.com/posts/2022/01/set-up-the-same-terminal-regardless-your-os-and-more/" />
+
+
+<title>
+    
+    Set up the same terminal regardless your OS - and more :: Dev &amp; Chill  — A blog about coding
+    
+</title>
+
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" rel="stylesheet"
+    type="text/css">
+
+
+
+<link rel="stylesheet" type="text/css" href="/main.a2b8a4b0f7c324e63653aa57eb9d5d028042ae2d3adf01fbcff08c375b752437.css">
+
+
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <meta name="msapplication-TileColor" content="">
+    <meta name="theme-color" content="">
+
+
+
+<meta itemprop="name" content="Set up the same terminal regardless your OS - and more">
+<meta itemprop="description" content="Introduction Throughout my career I have used Windows, Linux, Mac and Windows again, and each year that passes I discover myself using the terminal more and more. Most of my work is done there, except when doing some heavy coding. Therefore I believe it is important to have the same flow no matter which operative system is in use in order not to lose productivity.
+Back when using Windows, the WSL (Windows Subsystem for Linux) did not exist, and therefore the portability between Unix and Windows was unthinkable."><meta itemprop="datePublished" content="2022-01-19T12:13:07+01:00" />
+<meta itemprop="dateModified" content="2022-01-19T12:13:07+01:00" />
+<meta itemprop="wordCount" content="2263"><meta itemprop="image" content="https://devandchill.com/og-image.png"/>
+<meta itemprop="keywords" content="zsh,ohmyposh,windows,mac,git,sign,brew,terminal,winget," />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://devandchill.com/og-image.png"/>
+
+<meta name="twitter:title" content="Set up the same terminal regardless your OS - and more"/>
+<meta name="twitter:description" content="Introduction Throughout my career I have used Windows, Linux, Mac and Windows again, and each year that passes I discover myself using the terminal more and more. Most of my work is done there, except when doing some heavy coding. Therefore I believe it is important to have the same flow no matter which operative system is in use in order not to lose productivity.
+Back when using Windows, the WSL (Windows Subsystem for Linux) did not exist, and therefore the portability between Unix and Windows was unthinkable."/>
+
+
+
+
+
+
+
+
+<meta property="article:published_time" content="2022-01-19 12:13:07 &#43;0100 CET" />
+
+
+
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138171880-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-138171880-1');
+</script>
+
+
+
+    </head>
+
+    
+        <body>
+    
+    
+        <div class="container">
+            <header class="header">
+    <span class="header__inner">
+        <a href="/" style="text-decoration: none;">
+    <div class="logo">
+        
+            <img src="/dev-n-chill-logo.svg" alt="Dev &amp; Chill" />
+        
+    </div>
+</a>
+
+
+        <span class="header__right">
+            
+            <nav class="menu">
+    <ul class="menu__inner"><li><a href="/about">About</a></li><li><a href="/resume">Resume</a></li><li><a href="/posts">Posts</a></li>
+    </ul>
+</nav>
+
+            <span class="menu-trigger">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M0 0h24v24H0z" fill="none" />
+                    <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+                </svg>
+            </span>
+            
+        </span>
+    </span>
+</header>
+
+
+            <div class="content">
+                
+<main class="post">
+
+  <div class="post-info">
+    <p>
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="feather feather-clock">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 16 14"></polyline>
+      </svg>
+      11 minutes
+
+      
+    </p>
+  </div>
+
+  <article>
+    <h1 class="post-title">
+      <a href="https://devandchill.com/posts/2022/01/set-up-the-same-terminal-regardless-your-os-and-more/">Set up the same terminal regardless your OS - and more</a>
+    </h1>
+
+    
+
+    
+
+    
+
+    <div class="post-content">
+      <figure><img src="/posts/images/terminal.png"
+         alt="terminal"/>
+</figure>
+
+<h3 id="introduction">Introduction</h3>
+<p>Throughout my career I have used Windows, Linux, Mac and Windows again, and each year that passes I discover myself using the terminal more and more. Most of my work is done there, except when doing some heavy coding. Therefore I believe it is important to have the same flow no matter which operative system is in use in order not to lose productivity.</p>
+<p>Back when using Windows, the WSL (Windows Subsystem for Linux) did not exist, and therefore the portability between Unix and Windows was unthinkable. Now with WSL, one is able to install <code>brew</code> and manage all of the non-GUI related programs in the same way that on Mac and Linux.</p>
+<p>This guide is very opinionated towards what my flow is, however, you can pick and choose what you prefer. There are some sections that are only Windows or Mac related so do the ones that are applicable to your operative system.</p>
+<h3 id="windows-enable-wsl">[Windows] Enable WSL</h3>
+<p>As mentioned before, enabling the Linux sub-system is the starting point for Windows.</p>
+<ol>
+<li>Open a cmd terminal as administrator and execute: <code>wsl --install</code>.</li>
+<li>After logging in, execute: <code>sudo apt update; sudo apt upgrade</code>.</li>
+</ol>
+<p>A reboot might be needed after the 1st or 2nd step. When that is done, open the <em>Windows Terminal</em>, you can download it from the microsoft store if you don&rsquo;t have it, and set up Ubuntu as your default profile from the preferences menu.</p>
+<p>From now on, every time you have to execute a command you will do it on the <em>Windows Terminal</em> with the Ubuntu profile, unless the guide says otherwise. The Ubuntu profile will also be later configured in Visual Studio Code as the default terminal.</p>
+<h3 id="fonts">Fonts</h3>
+<p>The terminal tooling, that is going to be installed later, requires quite a lot of support for font icons such as folders, home, branches, etc; therefore a <em>complete</em> font is needed. <a href="https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/CascadiaCode.zip"  target="_blank" rel="noreferrer noopener" >Download and install CaskaydiaCove NF.</a>
+</p>
+<h3 id="homebrew">Homebrew</h3>
+<p>Brew is the preferred package manager on Mac and it also works on Ubuntu, meaning it also works on WSL. Install Homebrew by executing the following command either on the <em>Windows Terminal</em> or the default terminal on Mac / Linux.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">/bin/bash -c <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+</code></pre></div><p>After installing it, you will notice a suggestion message to execute two commands, these contain path related information, so be sure to copy paste from your terminal. In my case they looked like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">echo <span style="color:#e6db74">&#39;eval &#34;$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)&#34;&#39;</span> &gt;&gt; /home/pabmo/.profile
+eval <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>/home/linuxbrew/.linuxbrew/bin/brew shellenv<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+</code></pre></div><h3 id="zsh-jump-and-ohmyposh">ZSH, jump and OhMyPosh</h3>
+<p>OhMyPosh is a modern replacement for <code>oh-my-zsh</code> or <code>oh-my-fish</code>. It is built in Go and the configuration is described in a json file which is very understandable and portable. Create one you like, use it for all your environments, share it with your friends and community!</p>
+<p><code>Jump</code>, installed in the 5th step, allows one to jump from directory to directory; in other words, if you visit the path <code>user/documents/devandchill</code> you can later jump from any other directory to the mentioned one executing <code>j devand</code> and so.</p>
+<p>Execute in order:</p>
+<ol>
+<li><code>brew install zsh</code>.</li>
+<li>Follow instructions (if any) to make zsh default shell instead of bash.</li>
+<li><code>brew install zsh-completions</code>.</li>
+<li><code>brew install zsh-syntax-highlighting</code>.</li>
+<li>Save the path that brew reports after installing the syntax highlighting.</li>
+<li><code>brew install jump</code>.</li>
+<li><code>brew tap jandedobbeleer/oh-my-posh &amp;&amp; brew install oh-my-posh</code>.</li>
+</ol>
+<p>In your terminal create the file <code>~/.zshrc</code> if it does not yet exists and add the contents below. Feel free to remove the parts annotated with <code>## OPTIONAL</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">## MAKE HISTORY TO BE PRESERVED FOR SEARCH</span>
+HISTFILE<span style="color:#f92672">=</span>~/.zsh_history
+HISTSIZE<span style="color:#f92672">=</span><span style="color:#ae81ff">10000</span>
+SAVEHIST<span style="color:#f92672">=</span><span style="color:#ae81ff">10000</span>
+setopt appendhistory
+
+<span style="color:#75715e">## UP AND DOWN SEARCH HISTORY BEGINNING WITH BUFFERED WORD</span>
+<span style="color:#75715e">## https://superuser.com/a/418299</span>
+bindkey <span style="color:#e6db74">&#39;\e[A&#39;</span> history-beginning-search-backward
+bindkey <span style="color:#e6db74">&#39;\e[B&#39;</span> history-beginning-search-forward
+
+<span style="color:#75715e">## OPTIONAL: ALIASES</span>
+alias kb<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;kubectl&#39;</span>
+alias git<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;LANG=en_GB git&#39;</span>
+alias dcd<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;docker compose down -v --remove-orphans&#39;</span>
+alias dcu<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;docker compose pull; docker compose up -d&#39;</span>
+alias me<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;eval $(minikube -p minikube docker-env)&#39;</span>
+
+<span style="color:#75715e">## EXPORTS</span>
+export GPG_TTY<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>tty<span style="color:#66d9ef">)</span>
+
+<span style="color:#75715e">## OPTIONAL: EXPORTS - MAY NEED DIRECTORY MODIFICATIONS</span>
+export GOPATH<span style="color:#f92672">=</span>$HOME/go
+export DOTNET_HOME<span style="color:#f92672">=</span>/usr/local/share/dotnet/dotnet
+export PATH<span style="color:#f92672">=</span>$PATH:$GOPATH/bin:$DOTNET_HOME/bin
+
+<span style="color:#75715e">## ZSH COMPLETIONS</span>
+<span style="color:#66d9ef">if</span> type brew &amp;&gt;/dev/null; <span style="color:#66d9ef">then</span>
+    FPATH<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>brew --prefix<span style="color:#66d9ef">)</span>/share/zsh-completions:$FPATH
+    autoload -Uz compinit
+    compinit
+<span style="color:#66d9ef">fi</span>
+
+<span style="color:#75715e">## OPTIONAL: .NET COMPLETIONS</span>
+_dotnet_zsh_complete<span style="color:#f92672">()</span>
+<span style="color:#f92672">{</span>
+  local completions<span style="color:#f92672">=(</span><span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>dotnet complete <span style="color:#e6db74">&#34;</span>$words<span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">)</span>
+  reply<span style="color:#f92672">=(</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>(ps:<span style="color:#ae81ff">\n</span>:)completions<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">)</span>
+<span style="color:#f92672">}</span>
+compctl -K _dotnet_zsh_complete dotnet
+
+<span style="color:#75715e">## OPTIONAL: KUBERNETES AUTOCOMPLETE</span>
+source &lt;<span style="color:#f92672">(</span>kubectl completion zsh<span style="color:#f92672">)</span>
+
+<span style="color:#75715e">## ENABLE JUMP</span>
+eval <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>jump shell<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+
+<span style="color:#75715e">## OH MY POSH</span>
+eval <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>oh-my-posh --init --shell zsh --config <span style="color:#e6db74">&#39;~/ohmyposhv3.json&#39;</span><span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+
+<span style="color:#75715e">## SYNTAX HIGHLIGHT - GOES AT THE END</span>
+<span style="color:#75715e">## USE THE PATH SAVED FROM THE 4TH STEP</span>
+source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+</code></pre></div><p>As you can see on the OhMyPosh line, the configuration is being loaded from the specified path: <code>--config '~/ohmyposhv3.json'</code>. Adjust that if you want, and in the path chosen create the following json file:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#f92672">&#34;$schema&#34;</span>: <span style="color:#e6db74">&#34;https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json&#34;</span>,
+    <span style="color:#f92672">&#34;blocks&#34;</span>: [
+        {
+            <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;prompt&#34;</span>,
+            <span style="color:#f92672">&#34;alignment&#34;</span>: <span style="color:#e6db74">&#34;left&#34;</span>,
+            <span style="color:#f92672">&#34;segments&#34;</span>: [
+                {
+                    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;session&#34;</span>,
+                    <span style="color:#f92672">&#34;style&#34;</span>: <span style="color:#e6db74">&#34;diamond&#34;</span>,
+                    <span style="color:#f92672">&#34;leading_diamond&#34;</span>: <span style="color:#e6db74">&#34;\uE0B6&#34;</span>,
+                    <span style="color:#f92672">&#34;trailing_diamond&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>,
+                    <span style="color:#f92672">&#34;background&#34;</span>: <span style="color:#e6db74">&#34;#100e23&#34;</span>,
+                    <span style="color:#f92672">&#34;foreground&#34;</span>: <span style="color:#e6db74">&#34;#ffffff&#34;</span>,
+                    <span style="color:#f92672">&#34;properties&#34;</span>: {
+                        <span style="color:#f92672">&#34;template&#34;</span>: <span style="color:#e6db74">&#34;{{ .UserName }}&#34;</span>
+                    }
+                },
+                {
+                    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;kubectl&#34;</span>,
+                    <span style="color:#f92672">&#34;style&#34;</span>: <span style="color:#e6db74">&#34;powerline&#34;</span>,
+                    <span style="color:#f92672">&#34;powerline_symbol&#34;</span>: <span style="color:#e6db74">&#34;\uE0B0&#34;</span>,
+                    <span style="color:#f92672">&#34;foreground&#34;</span>: <span style="color:#e6db74">&#34;#000000&#34;</span>,
+                    <span style="color:#f92672">&#34;background&#34;</span>: <span style="color:#e6db74">&#34;#ffffff&#34;</span>,
+                    <span style="color:#f92672">&#34;properties&#34;</span>: {
+                        <span style="color:#f92672">&#34;template&#34;</span>: <span style="color:#e6db74">&#34;{{.Context}} {{.Namespace}}&#34;</span>
+                    }
+                },
+                {
+                    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;path&#34;</span>,
+                    <span style="color:#f92672">&#34;style&#34;</span>: <span style="color:#e6db74">&#34;powerline&#34;</span>,
+                    <span style="color:#f92672">&#34;powerline_symbol&#34;</span>: <span style="color:#e6db74">&#34;\uE0B0&#34;</span>,
+                    <span style="color:#f92672">&#34;foreground&#34;</span>: <span style="color:#e6db74">&#34;#100e23&#34;</span>,
+                    <span style="color:#f92672">&#34;background&#34;</span>: <span style="color:#e6db74">&#34;#91ddff&#34;</span>,
+                    <span style="color:#f92672">&#34;properties&#34;</span>: {
+                        <span style="color:#f92672">&#34;home_icon&#34;</span>: <span style="color:#e6db74">&#34;\uF7DB&#34;</span>,
+                        <span style="color:#f92672">&#34;folder_icon&#34;</span>: <span style="color:#e6db74">&#34;\uF115&#34;</span>,
+                        <span style="color:#f92672">&#34;folder_separator_icon&#34;</span>: <span style="color:#e6db74">&#34; \uE0B1 &#34;</span>,
+                        <span style="color:#f92672">&#34;style&#34;</span>: <span style="color:#e6db74">&#34;mixed&#34;</span>
+                    }
+                },
+                {
+                    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;git&#34;</span>,
+                    <span style="color:#f92672">&#34;style&#34;</span>: <span style="color:#e6db74">&#34;powerline&#34;</span>,
+                    <span style="color:#f92672">&#34;powerline_symbol&#34;</span>: <span style="color:#e6db74">&#34;\uE0B0&#34;</span>,
+                    <span style="color:#f92672">&#34;foreground&#34;</span>: <span style="color:#e6db74">&#34;#193549&#34;</span>,
+                    <span style="color:#f92672">&#34;background_templates&#34;</span>: [
+                        <span style="color:#e6db74">&#34;{{ if .Working.Changed }}#fffb38{{ else }}#95ffa4{{ end }}&#34;</span>
+                    ],
+                    <span style="color:#f92672">&#34;properties&#34;</span>: {
+                        <span style="color:#f92672">&#34;branch_icon&#34;</span>: <span style="color:#e6db74">&#34;\ue725&#34;</span>,
+                        <span style="color:#f92672">&#34;fetch_status&#34;</span>: <span style="color:#66d9ef">true</span>,
+                        <span style="color:#f92672">&#34;fetch_upstream_icon&#34;</span>: <span style="color:#66d9ef">true</span>,
+                        <span style="color:#f92672">&#34;template&#34;</span>: <span style="color:#e6db74">&#34;{{ .UpstreamIcon }}{{ .HEAD }}{{ .BranchStatus }}{{ if .Working.Changed }} \uF044 {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }}\uF046 {{ .Staging.String }}{{ end }}&#34;</span>
+                    }
+                },
+                {
+                    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;exit&#34;</span>,
+                    <span style="color:#f92672">&#34;style&#34;</span>: <span style="color:#e6db74">&#34;powerline&#34;</span>,
+                    <span style="color:#f92672">&#34;powerline_symbol&#34;</span>: <span style="color:#e6db74">&#34;\uE0B0&#34;</span>,
+                    <span style="color:#f92672">&#34;foreground&#34;</span>: <span style="color:#e6db74">&#34;#ffffff&#34;</span>,
+                    <span style="color:#f92672">&#34;background&#34;</span>: <span style="color:#e6db74">&#34;#ff8080&#34;</span>,
+                    <span style="color:#f92672">&#34;properties&#34;</span>: {
+                        <span style="color:#f92672">&#34;template&#34;</span>: <span style="color:#e6db74">&#34;{{ .Text }}&#34;</span>
+                    }
+                }
+            ]
+        }
+    ],
+    <span style="color:#f92672">&#34;final_space&#34;</span>: <span style="color:#66d9ef">true</span>
+}
+</code></pre></div><h3 id="windows-windows-terminal">[Windows] Windows Terminal</h3>
+<p>So far, the default profile is configured to be Ubuntu, now you need to configure the font and the font size for that profile. The font should be the previously installed: <code>CaskaydiaCove NF</code> and the size is up to you (but I don&rsquo;t see much anymore so I use <code>18px</code>).</p>
+<p>You can further customize the theme of the terminal so the background might be transparent, dark, etc.</p>
+<h3 id="mac-iterm2">[Mac] Iterm2</h3>
+<p>The default MacOS terminal does not support background colors for the segments defined on the OhMyPosh json file. Download <code>iTerm2</code> instead and enjoy of vertical and horizontal splits as well of other useful features. You can install it with <code>brew install --cask iterm2</code>.</p>
+<p>When you have finished the installation, configure the font to be <code>CaskaydiaCove NF</code> and the font size you want. For this, go to preferences (<code>cmd + ,</code>), profiles, default, text.</p>
+<p>In order to make <code>option + -&gt;</code> and <code>option + &lt;-</code> go one word forward and backwards you need to <a href="https://stackoverflow.com/a/20804240"  target="_blank" rel="noreferrer noopener" >follow the instructions here.</a>
+</p>
+<figure><img src="/posts/images/iterm2.png"
+         alt="iterm2"/>
+</figure>
+
+<h3 id="kubernetes-segment">Kubernetes segment</h3>
+<p>The OhMyPosh json contains a segment for displaying the current Kubernetes cluster:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;kubectl&#34;</span>,
+    <span style="color:#f92672">&#34;style&#34;</span>: <span style="color:#e6db74">&#34;powerline&#34;</span>,
+    <span style="color:#f92672">&#34;powerline_symbol&#34;</span>: <span style="color:#e6db74">&#34;\uE0B0&#34;</span>,
+    <span style="color:#f92672">&#34;foreground&#34;</span>: <span style="color:#e6db74">&#34;#000000&#34;</span>,
+    <span style="color:#f92672">&#34;background&#34;</span>: <span style="color:#e6db74">&#34;#ffffff&#34;</span>,
+    <span style="color:#f92672">&#34;properties&#34;</span>: {
+        <span style="color:#f92672">&#34;template&#34;</span>: <span style="color:#e6db74">&#34;{{.Context}} {{.Namespace}}&#34;</span>
+    }
+}<span style="color:#960050;background-color:#1e0010">,</span>
+</code></pre></div><p>In case there is no <code>~/.kube/config</code> file created it will just avoid the segment. If you use Kubernetes you have to install the command line to make this work, execute: <code>brew install kubernetes-cli</code>.</p>
+<h3 id="git-segment">Git segment</h3>
+<p>The OhMyPosh json also contains a <code>git</code> segment. In case you are not sure if it is installed, execute: <code>brew install git</code>.</p>
+<h3 id="windows-installing-git-on-windows">[Windows] Installing git on Windows</h3>
+<p>The <code>git</code> command line installed for WSL is not visible for Windows. This needs to be fixed as OhMyPosh is trying to use the <code>git.exe</code>. To solve this, open a cmd terminal and execute: <code>winget install -e --id Git.Git</code>.</p>
+<p>This is just for display purposes, as all the commits you are going to do with the terminal are going to go through the WSL one.</p>
+<hr>
+<h3 id="done">Done!</h3>
+<p>After finishing with the step above your terminal should be working correctly with the format displaying correctly as well.</p>
+<p>You can stop reading now that your terminal is working, or continue reading for:</p>
+<ul>
+<li>Sign git commits.</li>
+<li>Configure Visual Studio Code.</li>
+<li>Useful non-GUI applications</li>
+<li>Useful GUI applications.</li>
+</ul>
+<hr>
+<h3 id="sign-git-commits">Sign git commits</h3>
+<p>Regardless of your operative system, you can customize your global git configuration and <a href="https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits"  target="_blank" rel="noreferrer noopener" >enable signed commits</a>
+. Follow the steps:</p>
+<ol>
+<li>Execute <code>brew install gnupg</code>.</li>
+<li>If you are on Mac, execute also: <code>brew install pinentry-mac</code>.</li>
+</ol>
+<p>You can now follow the steps described here for <a href="https://devandchill.com/posts/2019/06/sign-github-commits-using-mac#generating-a-set-of-keys"  target="_blank" rel="noreferrer noopener" >generating a GPG key and adding it to Github.</a>
+</p>
+<p>In your terminal, create the file <code>~/.gitconfig</code>. Here you can add your basic git user data and your GPG key ID, indicating that you always want to sign your commits:</p>
+<pre tabindex="0"><code>[user]
+    name = Pablo Morelli
+    email = email@email.com
+    signingKey = &lt;SOME-KEY-ID&gt;
+[gpg]
+    program = gpg
+[commit]
+    gpgsign = true
+[credential]
+    helper = store
+</code></pre><p>You can also create the file <code>~/.gnupg/gpg-agent.conf</code> to add customizations like avoiding the gpg agent to ask you for your GPG passphrase every time you commit with <code>default-cache-ttl 3600</code>.</p>
+<h3 id="configure-visual-studio-code">Configure Visual Studio Code</h3>
+<p>Visual studio code is the default text editor and programming IDE for most of the developers nowadays. The way it allows one to configure both settings and keyboard shortcuts as a JSON makes it possible for developers to port configuration from a machine to other.</p>
+<ul>
+<li>MacOS: Execute: <code>brew install --cask visual-studio-code</code>.</li>
+<li>Windows: On a cmd terminal, execute: <code>winget install -e --id Microsoft.VisualStudioCode</code>.</li>
+</ul>
+<p><strong>Settings</strong></p>
+<p>Open VSCode and access the command pallette either with <code>Cmd + Shift + P</code> or <code>Control + Shift + P</code>. Write <code>Open Settings (JSON)</code> and replace the json with the following:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#f92672">&#34;search.useIgnoreFiles&#34;</span>: <span style="color:#66d9ef">false</span>,
+    <span style="color:#f92672">&#34;terminal.integrated.defaultProfile.osx&#34;</span>: <span style="color:#e6db74">&#34;zsh&#34;</span>,
+    <span style="color:#f92672">&#34;terminal.integrated.defaultProfile.windows&#34;</span>: <span style="color:#e6db74">&#34;Ubuntu (WSL)&#34;</span>,
+    <span style="color:#f92672">&#34;terminal.integrated.fontFamily&#34;</span>: <span style="color:#e6db74">&#34;CaskaydiaCove NF&#34;</span>,
+    <span style="color:#f92672">&#34;terminal.integrated.fontSize&#34;</span>: <span style="color:#ae81ff">18</span>,
+    <span style="color:#f92672">&#34;terminal.integrated.copyOnSelection&#34;</span>: <span style="color:#66d9ef">true</span>,
+    <span style="color:#f92672">&#34;files.trimTrailingWhitespace&#34;</span>: <span style="color:#66d9ef">true</span>,
+    <span style="color:#f92672">&#34;files.insertFinalNewline&#34;</span>: <span style="color:#66d9ef">true</span>,
+    <span style="color:#f92672">&#34;files.trimFinalNewlines&#34;</span>: <span style="color:#66d9ef">true</span>,
+    <span style="color:#f92672">&#34;editor.fontLigatures&#34;</span>: <span style="color:#66d9ef">true</span>,
+    <span style="color:#f92672">&#34;editor.fontSize&#34;</span>: <span style="color:#ae81ff">18</span>,
+    <span style="color:#f92672">&#34;editor.fontFamily&#34;</span>: <span style="color:#e6db74">&#34;CaskaydiaCove NF&#34;</span>,
+    <span style="color:#f92672">&#34;editor.formatOnSave&#34;</span>: <span style="color:#66d9ef">true</span>,
+    <span style="color:#f92672">&#34;diffEditor.ignoreTrimWhitespace&#34;</span>: <span style="color:#66d9ef">false</span>,
+    <span style="color:#f92672">&#34;explorer.confirmDelete&#34;</span>: <span style="color:#66d9ef">false</span>,
+    <span style="color:#f92672">&#34;go.formatTool&#34;</span>: <span style="color:#e6db74">&#34;goimports&#34;</span>,
+    <span style="color:#f92672">&#34;go.useLanguageServer&#34;</span>: <span style="color:#66d9ef">true</span>,
+    <span style="color:#f92672">&#34;go.toolsManagement.autoUpdate&#34;</span>: <span style="color:#66d9ef">true</span>,
+    <span style="color:#f92672">&#34;go.lintTool&#34;</span>: <span style="color:#e6db74">&#34;golangci-lint&#34;</span>,
+    <span style="color:#f92672">&#34;go.buildTags&#34;</span>: <span style="color:#e6db74">&#34;integration&#34;</span>,
+    <span style="color:#f92672">&#34;workbench.iconTheme&#34;</span>: <span style="color:#e6db74">&#34;material-icon-theme&#34;</span>,
+    <span style="color:#f92672">&#34;extensions.ignoreRecommendations&#34;</span>: <span style="color:#66d9ef">false</span>,
+    <span style="color:#f92672">&#34;window.zoomLevel&#34;</span>: <span style="color:#ae81ff">1</span>,
+    <span style="color:#f92672">&#34;security.workspace.trust.untrustedFiles&#34;</span>: <span style="color:#e6db74">&#34;open&#34;</span>,
+    <span style="color:#f92672">&#34;liveshare.presence&#34;</span>: <span style="color:#66d9ef">true</span>
+}
+</code></pre></div><p>Both <code>terminal.integrated.defaultProfile.osx</code> and <code>terminal.integrated.defaultProfile.windows</code> can coexist, but remove the one that does not apply to your environment if you don&rsquo;t like having both.</p>
+<p>Feel free to remove <code>workbench.iconTheme</code> if you do not wish to install the <em>Material Icon Theme</em> extension described on the section below, and same for the <code>liveshare.presence</code> in case you do not wish to install it either.</p>
+<p>The <code>terminal.integrated.fontFamily</code> should be the <code>CaskaydiaCove NF</code> as configured on iTerm2 / Windows Terminal; but feel free to change your <code>editor.fontFamily</code> as you see fit. Also feel free to change the font size on both parts.</p>
+<p>All the <code>go.*</code> settings might not be needed for you if you don&rsquo;t plan using Go, so you can remove them.</p>
+<p><strong>Keyboard shortcuts</strong></p>
+<p>This is very opinionated, but I am used to two things:</p>
+<ol>
+<li>Going back to a previous tab using <code>cmd/ctrl + -</code>, instead of zooming out a window.</li>
+<li>Getting the autocomplete suggestions to prompt when I press <code>cmd/ctrl + enter</code> instead of space.</li>
+</ol>
+<p>Open the command pallette once again and write <code>Open Keyboard Shortcuts (JSON)</code>, replace the json with the one shown below. If you are using Windows replace <code>cmd</code> with <code>ctrl</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">[
+    {
+        <span style="color:#f92672">&#34;key&#34;</span>: <span style="color:#e6db74">&#34;cmd+-&#34;</span>,
+        <span style="color:#f92672">&#34;command&#34;</span>: <span style="color:#e6db74">&#34;workbench.action.navigateBack&#34;</span>
+    },
+    {
+        <span style="color:#f92672">&#34;key&#34;</span>: <span style="color:#e6db74">&#34;cmd+[Enter]&#34;</span>,
+        <span style="color:#f92672">&#34;command&#34;</span>: <span style="color:#e6db74">&#34;editor.action.quickFix&#34;</span>,
+        <span style="color:#f92672">&#34;when&#34;</span>: <span style="color:#e6db74">&#34;editorHasCodeActionsProvider &amp;&amp; editorTextFocus &amp;&amp; !editorReadonly&#34;</span>
+    },
+]
+</code></pre></div><p><strong>Extensions</strong></p>
+<p>Go to the extensions tab and add <code>Material Icon Theme</code> and <code>Live Share</code>. Optionally, you can find below other extensions I use:</p>
+<ul>
+<li>C#: <em>Lint and syntax support.</em></li>
+<li>C# Extensions: <em>Useful right click actions such as create class, etc.</em></li>
+<li>Code Spell Checker: <em>Good for not native english speakers.</em></li>
+<li>Diff: <em>Shows the difference between two files.</em></li>
+<li>Go: <em>Lint and syntax support.</em></li>
+<li>HashiCorp Terraform: <em>Lint and syntax support.</em></li>
+<li>String Manipulation: <em>Provides functionality like reversing a word, etc.</em></li>
+<li>Trailing Spaces: <em>Highlights trailing spaces at the end of each line.</em></li>
+<li>vscode-base64: <em>Decode and encode utility.</em></li>
+</ul>
+<h3 id="useful-non-gui-applications">Useful non-GUI applications</h3>
+<p>Below you can find some utilities that I often use and are compatible with all the operative systems. Install the ones you need.</p>
+<p><strong>Programming languages</strong></p>
+<ol>
+<li><code>brew install go</code>.</li>
+<li><code>brew install golangci-lint</code>: <em>Linter for golang.</em></li>
+<li><code>brew install python@3.9</code>.</li>
+<li><code>brew install --cask dotnet-sdk</code>: <em>Only for MacOS.</em></li>
+</ol>
+<p>Installing .NET on Windows (and WSL):</p>
+<ol>
+<li>On a cmd terminal, execute: <code>winget install -e --id Microsoft.dotnet</code>.</li>
+<li><a href="https://docs.microsoft.com/en-us/dotnet/core/install/linux-ubuntu#2110-"  target="_blank" rel="noreferrer noopener" >For WSL follow the steps here.</a>
+</li>
+</ol>
+<p><strong>Docker</strong></p>
+<ul>
+<li>Mac: <code>brew install --cask docker</code>.</li>
+<li>Windows: On a cmd terminal execute: <code>winget install -e --id Docker.DockerDesktop</code>. Make sure to enable <em>WSL 2</em> while installing it, in case it never prompt check on preferences that <em>Use the WSL 2 based engine</em> is enabled.</li>
+</ul>
+<p>For both OS, go to preferences and tick the <em>Use Docker Compose V2</em> box, so you can now use <code>docker compose</code> instead of the old <code>docker-compose</code>.</p>
+<p><strong>Kubernetes related</strong></p>
+<ol>
+<li><code>brew tap johanhaleby/kubetail &amp;&amp; brew install kubetail</code>: <em>Displays the output of all containers sharing names or labels.</em></li>
+<li><code>brew install istioctl</code>: <em>Istio command line utility.</em></li>
+<li><code>brew install minikube</code>: <em>Your own Kubernetes cluster.</em></li>
+</ol>
+<p><strong>Other utilities</strong></p>
+<ol>
+<li><code>brew install git-crypt</code>: <em>Commit encrypted secrets in repositories.</em></li>
+<li><code>brew install hugo</code>: <em>The framework used to build this blog.</em></li>
+<li><code>brew install vegeta</code>: <em>Load testing utility for HTTP.</em></li>
+<li><code>brew install yq</code>: <em>Manipulate yaml files.</em></li>
+<li><code>brew install libpq</code>: <em>Adds <code>psql</code> to execute postgres database related commands.</em></li>
+<li><code>brew install terraform</code>: <em>Infrastructure as a code utility.</em></li>
+</ol>
+<p><strong>Ngrok</strong></p>
+<p>Reverse proxy utility for testing localhost callbacks from chat bots or others related.</p>
+<ul>
+<li>Mac: <code>brew install -cask ngrok</code>.</li>
+<li>Windows: Execute on the WSL the <a href="https://ngrok.com/download"  target="_blank" rel="noreferrer noopener" >download Linux steps via <code>apt</code>.</a>
+</li>
+</ul>
+<h3 id="useful-gui-applications">Useful GUI applications</h3>
+<p>MacOS:</p>
+<ol>
+<li><code>brew install --cask slack</code>.</li>
+<li><code>brew install --cask whatsapp</code>.</li>
+<li><code>brew install --cask postman</code>: <em>Suite for testing HTTP requests.</em></li>
+<li><code>brew install --cask dbeaver-community</code>: <em>Visual interface for database querying.</em></li>
+</ol>
+<p>Windows, on a cmd terminal:</p>
+<ol>
+<li><code>winget install -e --id SlackTechnologies.Slack</code>.</li>
+<li><code>winget install -e --id WhatsApp.WhatsApp</code>.</li>
+<li><code>winget install -e --id Postman.Postman</code>.</li>
+<li><code>winget install -e --id dbeaver.dbeaver</code>.</li>
+<li><code>winget install -e --id 7zip.7zip</code>: <em>If you need to decompress .rar</em>.</li>
+</ol>
+<h3 id="closing-line">Closing line</h3>
+<p>If you are setting up your computer from zero, a nice reminder:</p>
+<ul>
+<li>Change OS appearance to dark theme, which is mandatory for developers.</li>
+<li>Make your browser use a password manager, Privacy Badge, Adblock and Gmail Checker Plus.</li>
+<li><a href="https://wallpapercave.com/w/wp7637884"  target="_blank" rel="noreferrer noopener" >Here you have a nice wallpaper I like.</a>
+</li>
+<li>For Windows, download the <a href="https://drive.google.com/file/d/1wSVBpAISzerNZZRwGQJUhTZy2LmO-lwj/view"  target="_blank" rel="noreferrer noopener" >nice OSX icons for the mouse.</a>
+</li>
+</ul>
+
+    </div>
+  </article>
+
+  <hr />
+
+  <div class="post-info">
+    
+    <p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg>
+
+        <span class="tag"><a href="https://devandchill.com/tags/zsh/">zsh</a></span>
+        <span class="tag"><a href="https://devandchill.com/tags/ohmyposh/">ohmyposh</a></span>
+        <span class="tag"><a href="https://devandchill.com/tags/windows/">windows</a></span>
+        <span class="tag"><a href="https://devandchill.com/tags/mac/">mac</a></span>
+        <span class="tag"><a href="https://devandchill.com/tags/git/">git</a></span>
+        <span class="tag"><a href="https://devandchill.com/tags/sign/">sign</a></span>
+        <span class="tag"><a href="https://devandchill.com/tags/brew/">brew</a></span>
+        <span class="tag"><a href="https://devandchill.com/tags/terminal/">terminal</a></span>
+        <span class="tag"><a href="https://devandchill.com/tags/winget/">winget</a></span>
+        
+    </p>
+
+    
+
+    <p>
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="feather feather-file-text">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+        <line x1="16" y1="13" x2="8" y2="13"></line>
+        <line x1="16" y1="17" x2="8" y2="17"></line>
+        <polyline points="10 9 9 9 8 9"></polyline>
+      </svg>
+      2263 Words
+    </p>
+
+    <p>
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="feather feather-calendar">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
+      </svg>
+      
+      2022-01-19 12:13 &#43;0100
+      
+
+      
+      
+      
+    </p>
+  </div>
+  <hr />
+  <div class="sharing-buttons">
+    
+<a class="resp-sharing-button__link" href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fdevandchill.com%2fposts%2f2022%2f01%2fset-up-the-same-terminal-regardless-your-os-and-more%2f" target="_blank" rel="noopener" aria-label="" title="Share on facebook">
+  <div class="resp-sharing-button resp-sharing-button--facebook resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="https://twitter.com/intent/tweet/?url=https%3a%2f%2fdevandchill.com%2fposts%2f2022%2f01%2fset-up-the-same-terminal-regardless-your-os-and-more%2f" target="_blank" rel="noopener" aria-label="" title="Share on twitter">
+  <div class="resp-sharing-button resp-sharing-button--twitter resp-sharing-button--small">
+      <div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="https://www.tumblr.com/widgets/share/tool?posttype=link&amp;title=Set%20up%20the%20same%20terminal%20regardless%20your%20OS%20-%20and%20more&amp;caption=Set%20up%20the%20same%20terminal%20regardless%20your%20OS%20-%20and%20more&amp;canonicalUrl=https%3a%2f%2fdevandchill.com%2fposts%2f2022%2f01%2fset-up-the-same-terminal-regardless-your-os-and-more%2f" target="_blank" rel="noopener" aria-label="" title="Share on tumblr">
+  <div class="resp-sharing-button resp-sharing-button--tumblr resp-sharing-button--small">
+    <div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.563 24c-5.093 0-7.031-3.756-7.031-6.411V9.747H5.116V6.648c3.63-1.313 4.512-4.596 4.71-6.469C9.84.051 9.941 0 9.999 0h3.517v6.114h4.801v3.633h-4.82v7.47c.016 1.001.375 2.371 2.207 2.371h.09c.631-.02 1.486-.205 1.936-.419l1.156 3.425c-.436.636-2.4 1.374-4.156 1.404h-.178l.011.002z"/></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="mailto:?subject=Set%20up%20the%20same%20terminal%20regardless%20your%20OS%20-%20and%20more&amp;body=https%3a%2f%2fdevandchill.com%2fposts%2f2022%2f01%2fset-up-the-same-terminal-regardless-your-os-and-more%2f" target="_self" rel="noopener" aria-label="" title="Share via email">
+  <div class="resp-sharing-button resp-sharing-button--email resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="https://pinterest.com/pin/create/button/?url=https%3a%2f%2fdevandchill.com%2fposts%2f2022%2f01%2fset-up-the-same-terminal-regardless-your-os-and-more%2f&amp;media=https%3a%2f%2fdevandchill.com%2fposts%2f2022%2f01%2fset-up-the-same-terminal-regardless-your-os-and-more%2f;description=Set%20up%20the%20same%20terminal%20regardless%20your%20OS%20-%20and%20more" target="_blank" rel="noopener" aria-label="" title="Share on pinterest">
+  <div class="resp-sharing-button resp-sharing-button--pinterest resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026L12.017 0z"/></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2fdevandchill.com%2fposts%2f2022%2f01%2fset-up-the-same-terminal-regardless-your-os-and-more%2f&amp;title=Set%20up%20the%20same%20terminal%20regardless%20your%20OS%20-%20and%20more&amp;summary=Set%20up%20the%20same%20terminal%20regardless%20your%20OS%20-%20and%20more&amp;source=https%3a%2f%2fdevandchill.com%2fposts%2f2022%2f01%2fset-up-the-same-terminal-regardless-your-os-and-more%2f" target="_blank" rel="noopener" aria-label="" title="Share on linkedin">
+  <div class="resp-sharing-button resp-sharing-button--linkedin resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="https://reddit.com/submit/?url=https%3a%2f%2fdevandchill.com%2fposts%2f2022%2f01%2fset-up-the-same-terminal-regardless-your-os-and-more%2f&amp;resubmit=true&amp;title=Set%20up%20the%20same%20terminal%20regardless%20your%20OS%20-%20and%20more" target="_blank" rel="noopener" aria-label="" title="Share on reddit">
+  <div class="resp-sharing-button resp-sharing-button--reddit resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="https://www.xing.com/app/user?op=share;url=https%3a%2f%2fdevandchill.com%2fposts%2f2022%2f01%2fset-up-the-same-terminal-regardless-your-os-and-more%2f;title=Set%20up%20the%20same%20terminal%20regardless%20your%20OS%20-%20and%20more" target="_blank" rel="noopener" aria-label="" title="Share on xing">
+  <div class="resp-sharing-button resp-sharing-button--xing resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M18.188 0c-.517 0-.741.325-.927.66 0 0-7.455 13.224-7.702 13.657.015.024 4.919 9.023 4.919 9.023.17.308.436.66.967.66h3.454c.211 0 .375-.078.463-.22.089-.151.089-.346-.009-.536l-4.879-8.916c-.004-.006-.004-.016 0-.022L22.139.756c.095-.191.097-.387.006-.535C22.056.078 21.894 0 21.686 0h-3.498zM3.648 4.74c-.211 0-.385.074-.473.216-.09.149-.078.339.02.531l2.34 4.05c.004.01.004.016 0 .021L1.86 16.051c-.099.188-.093.381 0 .529.085.142.239.234.45.234h3.461c.518 0 .766-.348.945-.667l3.734-6.609-2.378-4.155c-.172-.315-.434-.659-.962-.659H3.648v.016z"/></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="whatsapp://send?text=Set%20up%20the%20same%20terminal%20regardless%20your%20OS%20-%20and%20more%20https%3a%2f%2fdevandchill.com%2fposts%2f2022%2f01%2fset-up-the-same-terminal-regardless-your-os-and-more%2f" target="_blank" rel="noopener" aria-label="" title="Share on whatsapp">
+  <div class="resp-sharing-button resp-sharing-button--whatsapp resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="https://news.ycombinator.com/submitlink?u=https%3a%2f%2fdevandchill.com%2fposts%2f2022%2f01%2fset-up-the-same-terminal-regardless-your-os-and-more%2f&amp;t=Set%20up%20the%20same%20terminal%20regardless%20your%20OS%20-%20and%20more" target="_blank" rel="noopener" aria-label="" title="Share on hacker news">
+  <div class="resp-sharing-button resp-sharing-button--hackernews resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M0 24V0h24v24H0zM6.951 5.896l4.112 7.708v5.064h1.583v-4.972l4.148-7.799h-1.749l-2.457 4.875c-.372.745-.688 1.434-.688 1.434s-.297-.708-.651-1.434L8.831 5.896h-1.88z"/></svg>
+    </div>
+  </div>
+</a>
+
+
+<a class="resp-sharing-button__link" href="https://telegram.me/share/url?text=Set%20up%20the%20same%20terminal%20regardless%20your%20OS%20-%20and%20more&amp;url=https%3a%2f%2fdevandchill.com%2fposts%2f2022%2f01%2fset-up-the-same-terminal-regardless-your-os-and-more%2f" target="_blank" rel="noopener" aria-label="" title="Share on telegram">
+  <div class="resp-sharing-button resp-sharing-button--telegram resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+    </div>
+  </div>
+</a>
+
+  </div>
+
+  
+  <div class="pagination">
+    <div class="pagination__title">
+      <span class="pagination__title-h">Read other posts</span>
+      <hr />
+    </div>
+
+    <div class="pagination__buttons">
+      
+
+      
+      <span class="button next">
+        <a href="https://devandchill.com/posts/2021/12/go-step-by-step-guide-for-implementing-tracing-on-a-microservices-architecture-2/2/">
+          <span class="button__text">Go - Step by step guide for implementing tracing on a microservices architecture (2/2)</span>
+          <span class="button__icon">→</span>
+        </a>
+      </span>
+      
+    </div>
+  </div>
+  
+
+  
+  
+
+  
+  
+
+</main>
+
+            </div>
+
+            
+                <footer class="footer">
+    
+    
+</footer>
+
+            
+        </div>
+
+        
+
+
+
+<script type="text/javascript" src="/bundle.min.f944224ac8e104e8f14a9d98224b628e383c8f2e63f95e54381ac414365bf32b8c5ae9a6c157271fe82938d66e1cf8399e34e6cb0ee7b711c58d167a4cfd6a6f.js" integrity="sha512-&#43;UQiSsjhBOjxSp2YIktijjg8jy5j&#43;V5UOBrEFDZb8yuMWummwVcnH&#43;gpONZuHPg5njTmyw7ntxHFjRZ6TP1qbw=="></script>
+
+
+
+    </body>
+</html>
