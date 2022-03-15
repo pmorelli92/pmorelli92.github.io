@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>yagni on Dev &amp; Chill</title>
+    <link>https://devandchill.com/tags/yagni/</link>
+    <description>Recent content in yagni on Dev &amp; Chill</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Pablo Morelli</copyright>
+    <lastBuildDate>Tue, 15 Mar 2022 18:30:00 +0100</lastBuildDate><atom:link href="https://devandchill.com/tags/yagni/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Keep it simple stupid, lessons learned</title>
+      <link>https://devandchill.com/posts/2022/03/keep-it-simple-stupid-lessons-learned/</link>
+      <pubDate>Tue, 15 Mar 2022 18:30:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/posts/2022/03/keep-it-simple-stupid-lessons-learned/</guid>
+      <description>We as humans are always changing and evolving, sometimes for the best and sometimes not. In our professional life this is expected, one gains experience, learns new tools, knowns different people with different background, etc.
+Back when I was working for a consultancy company in 2016 I met a wonderful person who at that time was an architect, and right now one of my best friends. Our main topic of conversation was technology, and we always dug deeper and deeper into it.</description>
+    </item>
+    
+  </channel>
+</rss>

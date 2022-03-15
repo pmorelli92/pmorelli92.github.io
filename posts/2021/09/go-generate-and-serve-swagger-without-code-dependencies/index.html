@@ -37,8 +37,6 @@
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
     <link rel="shortcut icon" href="/favicon.ico">
     <meta name="msapplication-TileColor" content="">
-    <meta name="theme-color" content="">
-
 
 
 <meta itemprop="name" content="Go - Generate and serve swagger without code dependencies">
@@ -161,152 +159,151 @@ However, there was a little something that my mind keep thinking: it would be su
 <h3 id="swag">Swag</h3>
 <p>To generate the OpenAPI spec, one of the most suitable tools available is the CLI named <a href="https://github.com/swaggo/swag"  target="_blank" rel="noreferrer noopener" >swaggo/swag</a>
 . As mentioned before, this tool will parse the comments that are decorating the code endpoints to generate the correct specification. One of the good things of this CLI is that it has the capability of parsing the request and response structures and populating them with values.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">petResponse</span> <span style="color:#66d9ef">struct</span> {
-	<span style="color:#a6e22e">Id</span>   <span style="color:#66d9ef">int</span>     <span style="color:#e6db74">`json:&#34;id&#34; example:&#34;1&#34;`</span>
-	<span style="color:#a6e22e">Name</span> <span style="color:#66d9ef">string</span>  <span style="color:#e6db74">`json:&#34;name&#34; example:&#34;Fenrir&#34;`</span>
-	<span style="color:#a6e22e">Type</span> <span style="color:#a6e22e">petType</span> <span style="color:#e6db74">`json:&#34;type&#34; example:&#34;dog&#34; enums:&#34;dog,cat&#34;`</span>
-}
-
-<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">errorResponse</span> <span style="color:#66d9ef">struct</span> {
-	<span style="color:#a6e22e">Message</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;message&#34;`</span>
-}
-
-<span style="color:#75715e">// @summary Get pet by ID
-</span><span style="color:#75715e">// @description Gets a pet using the pet ID
-</span><span style="color:#75715e">// @id get-pet-by-id
-</span><span style="color:#75715e">// @produce json
-</span><span style="color:#75715e">// @Param id path int true &#34;Pet ID&#34;
-</span><span style="color:#75715e">// @Success 200 {object} main.petResponse
-</span><span style="color:#75715e">// @Success 400 {object} main.errorResponse
-</span><span style="color:#75715e">// @Success 404 {object} main.errorResponse
-</span><span style="color:#75715e">// @Success 405 {object} main.errorResponse
-</span><span style="color:#75715e">// @Router /api/pets/{id} [get]
-</span><span style="color:#75715e">// @tags Pets
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">getPetByID</span>() <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span> {
-	<span style="color:#f92672">...</span>
-}
-</code></pre></div><p>When the developer executes: <code>swag init -g main.go</code>, the resultant <code>swagger.yaml</code> will look like the following:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">definitions</span>:
-  <span style="color:#f92672">main.errorResponse</span>:
-    <span style="color:#f92672">properties</span>:
-      <span style="color:#f92672">message</span>:
-        <span style="color:#f92672">type</span>: <span style="color:#ae81ff">string</span>
-    <span style="color:#f92672">type</span>: <span style="color:#ae81ff">object</span>
-  <span style="color:#f92672">main.petResponse</span>:
-    <span style="color:#f92672">properties</span>:
-      <span style="color:#f92672">id</span>:
-        <span style="color:#f92672">example</span>: <span style="color:#ae81ff">1</span>
-        <span style="color:#f92672">type</span>: <span style="color:#ae81ff">integer</span>
-      <span style="color:#f92672">name</span>:
-        <span style="color:#f92672">example</span>: <span style="color:#ae81ff">Fenrir</span>
-        <span style="color:#f92672">type</span>: <span style="color:#ae81ff">string</span>
-      <span style="color:#f92672">type</span>:
-        <span style="color:#f92672">enum</span>:
-        - <span style="color:#ae81ff">dog</span>
-        - <span style="color:#ae81ff">cat</span>
-        <span style="color:#f92672">example</span>: <span style="color:#ae81ff">dog</span>
-        <span style="color:#f92672">type</span>: <span style="color:#ae81ff">string</span>
-    <span style="color:#f92672">type</span>: <span style="color:#ae81ff">object</span>
-<span style="color:#f92672">paths</span>:
-  <span style="color:#ae81ff">/api/pets/{id}:</span>
-    <span style="color:#f92672">get</span>:
-      <span style="color:#f92672">description</span>: <span style="color:#ae81ff">Gets a pet using the pet ID</span>
-      <span style="color:#f92672">operationId</span>: <span style="color:#ae81ff">get-pet-by-id</span>
-      <span style="color:#f92672">parameters</span>:
-      - <span style="color:#f92672">description</span>: <span style="color:#ae81ff">Pet ID</span>
-        <span style="color:#f92672">in</span>: <span style="color:#ae81ff">path</span>
-        <span style="color:#f92672">name</span>: <span style="color:#ae81ff">id</span>
-        <span style="color:#f92672">required</span>: <span style="color:#66d9ef">true</span>
-        <span style="color:#f92672">type</span>: <span style="color:#ae81ff">integer</span>
-      <span style="color:#f92672">produces</span>:
-      - <span style="color:#ae81ff">application/json</span>
-      <span style="color:#f92672">responses</span>:
-        <span style="color:#e6db74">&#34;200&#34;</span>:
-          <span style="color:#f92672">description</span>: <span style="color:#ae81ff">OK</span>
-          <span style="color:#f92672">schema</span>:
-            <span style="color:#f92672">$ref</span>: <span style="color:#e6db74">&#39;#/definitions/main.petResponse&#39;</span>
-        <span style="color:#e6db74">&#34;400&#34;</span>:
-          <span style="color:#f92672">description</span>: <span style="color:#ae81ff">Bad Request</span>
-          <span style="color:#f92672">schema</span>:
-            <span style="color:#f92672">$ref</span>: <span style="color:#e6db74">&#39;#/definitions/main.errorResponse&#39;</span>
-        <span style="color:#e6db74">&#34;404&#34;</span>:
-          <span style="color:#f92672">description</span>: <span style="color:#ae81ff">Not Found</span>
-          <span style="color:#f92672">schema</span>:
-            <span style="color:#f92672">$ref</span>: <span style="color:#e6db74">&#39;#/definitions/main.errorResponse&#39;</span>
-        <span style="color:#e6db74">&#34;405&#34;</span>:
-          <span style="color:#f92672">description</span>: <span style="color:#ae81ff">Method Not Allowed</span>
-          <span style="color:#f92672">schema</span>:
-            <span style="color:#f92672">$ref</span>: <span style="color:#e6db74">&#39;#/definitions/main.errorResponse&#39;</span>
-      <span style="color:#f92672">summary</span>: <span style="color:#ae81ff">Get pet by ID</span>
-      <span style="color:#f92672">tags</span>:
-      - <span style="color:#ae81ff">Pets</span>
-</code></pre></div><p>Now, another good thing is that <code>swag</code> will be installed in the developer&rsquo;s machine, so the code will not have a dependency.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">petResponse</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Id</span>   <span style="color:#66d9ef">int</span>     <span style="color:#e6db74">`json:&#34;id&#34; example:&#34;1&#34;`</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Name</span> <span style="color:#66d9ef">string</span>  <span style="color:#e6db74">`json:&#34;name&#34; example:&#34;Fenrir&#34;`</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Type</span> <span style="color:#a6e22e">petType</span> <span style="color:#e6db74">`json:&#34;type&#34; example:&#34;dog&#34; enums:&#34;dog,cat&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">errorResponse</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Message</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;message&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// @summary Get pet by ID
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// @description Gets a pet using the pet ID
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// @id get-pet-by-id
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// @produce json
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// @Param id path int true &#34;Pet ID&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// @Success 200 {object} main.petResponse
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// @Success 400 {object} main.errorResponse
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// @Success 404 {object} main.errorResponse
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// @Success 405 {object} main.errorResponse
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// @Router /api/pets/{id} [get]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// @tags Pets
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">getPetByID</span>() <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>When the developer executes: <code>swag init -g main.go</code>, the resultant <code>swagger.yaml</code> will look like the following:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">definitions</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">main.errorResponse</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">properties</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">message</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">type</span>: <span style="color:#ae81ff">string</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">type</span>: <span style="color:#ae81ff">object</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">main.petResponse</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">properties</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">id</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">example</span>: <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">type</span>: <span style="color:#ae81ff">integer</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">name</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">example</span>: <span style="color:#ae81ff">Fenrir</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">type</span>: <span style="color:#ae81ff">string</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">type</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">enum</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">dog</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">cat</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">example</span>: <span style="color:#ae81ff">dog</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">type</span>: <span style="color:#ae81ff">string</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">type</span>: <span style="color:#ae81ff">object</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">paths</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">/api/pets/{id}:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">get</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">description</span>: <span style="color:#ae81ff">Gets a pet using the pet ID</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">operationId</span>: <span style="color:#ae81ff">get-pet-by-id</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">parameters</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">description</span>: <span style="color:#ae81ff">Pet ID</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">in</span>: <span style="color:#ae81ff">path</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">name</span>: <span style="color:#ae81ff">id</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">required</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">type</span>: <span style="color:#ae81ff">integer</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">produces</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">application/json</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">responses</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;200&#34;</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">description</span>: <span style="color:#ae81ff">OK</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">schema</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">$ref</span>: <span style="color:#e6db74">&#39;#/definitions/main.petResponse&#39;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;400&#34;</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">description</span>: <span style="color:#ae81ff">Bad Request</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">schema</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">$ref</span>: <span style="color:#e6db74">&#39;#/definitions/main.errorResponse&#39;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;404&#34;</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">description</span>: <span style="color:#ae81ff">Not Found</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">schema</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">$ref</span>: <span style="color:#e6db74">&#39;#/definitions/main.errorResponse&#39;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;405&#34;</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">description</span>: <span style="color:#ae81ff">Method Not Allowed</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">schema</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">$ref</span>: <span style="color:#e6db74">&#39;#/definitions/main.errorResponse&#39;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">summary</span>: <span style="color:#ae81ff">Get pet by ID</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">tags</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">Pets</span>
+</span></span></code></pre></div><p>Now, another good thing is that <code>swag</code> will be installed in the developer&rsquo;s machine, so the code will not have a dependency.</p>
 <h3 id="redoc">Redoc</h3>
 <p>Redoc generates a zero dependency <code>.HTML</code> file from an OpenAPI specification. This utility has to be installed in the developer&rsquo;s machine, requiring npm, but again, there is no code dependency on doing so. To generate the <code>.HTML</code> file from the spec:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">redoc-cli bundle swagger.yaml -o swagger.html
-</code></pre></div><p><a href="https://devandchill.com/swagger-article-rendered.html"  target="_blank" rel="noreferrer noopener" >👉 The resultant file will look like this. 👈</a>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>redoc-cli bundle swagger.yaml -o swagger.html
+</span></span></code></pre></div><p><a href="https://devandchill.com/swagger-article-rendered.html"  target="_blank" rel="noreferrer noopener" >👉 The resultant file will look like this. 👈</a>
 </p>
 <h3 id="go-embed">Go embed</h3>
 <p>There are many ways one can serve an static <code>.HTML</code> file on Go, but the one that caught my attention is using embed files, which is a feature available from Go 1.16.</p>
 <p>Using this feature, the code will know that certain file, or files inside a directory, should be included in the resultant binary. This has many advantages in comparison to other approaches:</p>
 <p><em>Dockerfile does not have to explicitly add the HTML file to the execution container:</em></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Dockerfile" data-lang="Dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> scratch</span><span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> --from<span style="color:#f92672">=</span>build-docs ./swagger.html /static/swagger.html &lt;- NOT NEEDED<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> --from<span style="color:#f92672">=</span>compiler /bin/app /app<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENTRYPOINT</span> [<span style="color:#e6db74">&#34;/app&#34;</span>]<span style="color:#960050;background-color:#1e0010">
-</span></code></pre></div><p><em>In case the codebase is used as a dependency downloaded via <code>go modules</code>, the <code>HTML</code> file wont be downloaded. This is intended and also happens with migration files like <code>.sql</code>. Dependencies installed with <code>go modules</code> only download the <code>*.go</code> files that are in it. Embed can solve this as well:</em></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">library</span>: <span style="color:#ae81ff">generic-service</span>
-- <span style="color:#ae81ff">file.go</span>
-	- <span style="color:#ae81ff">//go:embed database/migrations/*</span>
-	- <span style="color:#ae81ff">//go:embed server/static/index.html</span>
-- <span style="color:#ae81ff">database</span>
-	- <span style="color:#ae81ff">migrations</span>
-		- <span style="color:#ae81ff">01</span>-<span style="color:#ae81ff">up.sql</span>
-		- <span style="color:#ae81ff">01</span>-<span style="color:#ae81ff">down.sql</span>
-- <span style="color:#ae81ff">server</span>
-	- <span style="color:#ae81ff">static</span>
-    	- <span style="color:#ae81ff">index.html</span>
-
-<span style="color:#f92672">service</span>: <span style="color:#ae81ff">implementation-service</span>
-- <span style="color:#ae81ff">main.go</span>
-- <span style="color:#ae81ff">go.mod</span>
-    - <span style="color:#ae81ff">generic-service</span>
-		- <span style="color:#ae81ff">able to access the .sql and .html files</span>
-</code></pre></div><p>This can be verified doing <code>go mod vendor</code> on the <code>implementation-service</code> and checking that the mentioned files are included in the <code>vendor</code> folder.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Dockerfile" data-lang="Dockerfile"><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> scratch</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> --from<span style="color:#f92672">=</span>build-docs ./swagger.html /static/swagger.html &lt;- NOT NEEDED<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> --from<span style="color:#f92672">=</span>compiler /bin/app /app<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENTRYPOINT</span> [<span style="color:#e6db74">&#34;/app&#34;</span>]<span style="color:#960050;background-color:#1e0010">
+</span></span></span></code></pre></div><p><em>In case the codebase is used as a dependency downloaded via <code>go modules</code>, the <code>HTML</code> file wont be downloaded. This is intended and also happens with migration files like <code>.sql</code>. Dependencies installed with <code>go modules</code> only download the <code>*.go</code> files that are in it. Embed can solve this as well:</em></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">library</span>: <span style="color:#ae81ff">generic-service</span>
+</span></span><span style="display:flex;"><span>- <span style="color:#ae81ff">file.go</span>
+</span></span><span style="display:flex;"><span>	- <span style="color:#ae81ff">//go:embed database/migrations/*</span>
+</span></span><span style="display:flex;"><span>	- <span style="color:#ae81ff">//go:embed server/static/index.html</span>
+</span></span><span style="display:flex;"><span>- <span style="color:#ae81ff">database</span>
+</span></span><span style="display:flex;"><span>	- <span style="color:#ae81ff">migrations</span>
+</span></span><span style="display:flex;"><span>		- <span style="color:#ae81ff">01</span>-<span style="color:#ae81ff">up.sql</span>
+</span></span><span style="display:flex;"><span>		- <span style="color:#ae81ff">01</span>-<span style="color:#ae81ff">down.sql</span>
+</span></span><span style="display:flex;"><span>- <span style="color:#ae81ff">server</span>
+</span></span><span style="display:flex;"><span>	- <span style="color:#ae81ff">static</span>
+</span></span><span style="display:flex;"><span>    	- <span style="color:#ae81ff">index.html</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">service</span>: <span style="color:#ae81ff">implementation-service</span>
+</span></span><span style="display:flex;"><span>- <span style="color:#ae81ff">main.go</span>
+</span></span><span style="display:flex;"><span>- <span style="color:#ae81ff">go.mod</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">generic-service</span>
+</span></span><span style="display:flex;"><span>		- <span style="color:#ae81ff">able to access the .sql and .html files</span>
+</span></span></code></pre></div><p>This can be verified doing <code>go mod vendor</code> on the <code>implementation-service</code> and checking that the mentioned files are included in the <code>vendor</code> folder.</p>
 <p>How does it look then in the code?</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
-
-	<span style="color:#a6e22e">router</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">NewServeMux</span>()
-    <span style="color:#75715e">// Omitted some lines for brevity
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">router</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/api/docs&#34;</span>, <span style="color:#a6e22e">docs</span>())
-
-	<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ListenAndServe</span>(<span style="color:#e6db74">&#34;:8080&#34;</span>, <span style="color:#a6e22e">router</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
-	}
-}
-
-<span style="color:#75715e">//go:embed swagger/swagger.html
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">swaggerHTML</span> <span style="color:#66d9ef">string</span>
-
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">docs</span>() <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span> {
-	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">rq</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) {
-		<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">Header</span>().<span style="color:#a6e22e">Set</span>(<span style="color:#e6db74">&#34;Content-Type&#34;</span>, <span style="color:#e6db74">&#34;text/html&#34;</span>)
-		<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">_</span> = <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Fprint</span>(<span style="color:#a6e22e">w</span>, <span style="color:#a6e22e">swaggerHTML</span>)
-	}
-}
-</code></pre></div><p>In the example above, the <code>swaggerHTML</code> is populated with the content of the generated <code>.HTML</code> file; then every time the <code>/api/docs</code> endpoint is called, the HTML will be served from memory.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">router</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">NewServeMux</span>()
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Omitted some lines for brevity
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">router</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/api/docs&#34;</span>, <span style="color:#a6e22e">docs</span>())
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ListenAndServe</span>(<span style="color:#e6db74">&#34;:8080&#34;</span>, <span style="color:#a6e22e">router</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//go:embed swagger/swagger.html
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">swaggerHTML</span> <span style="color:#66d9ef">string</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">docs</span>() <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">rq</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">Header</span>().<span style="color:#a6e22e">Set</span>(<span style="color:#e6db74">&#34;Content-Type&#34;</span>, <span style="color:#e6db74">&#34;text/html&#34;</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">_</span> = <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Fprint</span>(<span style="color:#a6e22e">w</span>, <span style="color:#a6e22e">swaggerHTML</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>In the example above, the <code>swaggerHTML</code> is populated with the content of the generated <code>.HTML</code> file; then every time the <code>/api/docs</code> endpoint is called, the HTML will be served from memory.</p>
 <h3 id="all-in-one">All in one</h3>
 <p>In order to simplify the process, a Makefile rule can be exposed like:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Makefile" data-lang="Makefile"><span style="color:#75715e">## Requires developer to install on his/her machine both swag and redoc-cli
-</span><span style="color:#75715e">## go install github.com/swaggo/swag/cmd/swag@v1.7.1
-</span><span style="color:#75715e">## npm install -g redoc-cli@0.12.3
-</span><span style="color:#75715e"></span><span style="color:#a6e22e">swagger/upd</span><span style="color:#f92672">:</span>
-	swag init -g main.go -o ./swagger
-	cd swagger <span style="color:#f92672">&amp;&amp;</span> rm docs.go swagger.json
-	cd swagger <span style="color:#f92672">&amp;&amp;</span> redoc-cli bundle swagger.yaml -o swagger.html
-
-</code></pre></div><ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Makefile" data-lang="Makefile"><span style="display:flex;"><span><span style="color:#75715e">## Requires developer to install on his/her machine both swag and redoc-cli
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">## go install github.com/swaggo/swag/cmd/swag@v1.7.1
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">## npm install -g redoc-cli@0.12.3
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">swagger/upd</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>	swag init -g main.go -o ./swagger
+</span></span><span style="display:flex;"><span>	cd swagger <span style="color:#f92672">&amp;&amp;</span> rm docs.go swagger.json
+</span></span><span style="display:flex;"><span>	cd swagger <span style="color:#f92672">&amp;&amp;</span> redoc-cli bundle swagger.yaml -o swagger.html
+</span></span></code></pre></div><ol>
 <li>Generate the <code>swagger.yaml</code> file in a specific folder.</li>
 <li>Remove the <code>docs.go</code> and <code>swagger.json</code> files that are also generated by <code>swag</code> and are not needed.</li>
 <li>Generate the <code>swagger.html</code> file.</li>
@@ -511,7 +508,7 @@ However, there was a little something that my mind keep thinking: it would be su
 
 
 
-<script type="text/javascript" src="/bundle.min.f944224ac8e104e8f14a9d98224b628e383c8f2e63f95e54381ac414365bf32b8c5ae9a6c157271fe82938d66e1cf8399e34e6cb0ee7b711c58d167a4cfd6a6f.js" integrity="sha512-&#43;UQiSsjhBOjxSp2YIktijjg8jy5j&#43;V5UOBrEFDZb8yuMWummwVcnH&#43;gpONZuHPg5njTmyw7ntxHFjRZ6TP1qbw=="></script>
+<script type="text/javascript" src="/bundle.min.e073c6bca809af5c516c3777e3441958267b377fb29e3c9471c558a6711b62d7819807a126e3378f03763928ef7b09a6cdcb1693bf5719e81e15e60176854b26.js" integrity="sha512-4HPGvKgJr1xRbDd340QZWCZ7N3&#43;ynjyUccVYpnEbYteBmAehJuM3jwN2OSjvewmmzcsWk79XGegeFeYBdoVLJg=="></script>
 
 
 

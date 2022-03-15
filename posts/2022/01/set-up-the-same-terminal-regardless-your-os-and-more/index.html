@@ -37,8 +37,6 @@
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
     <link rel="shortcut icon" href="/favicon.ico">
     <meta name="msapplication-TileColor" content="">
-    <meta name="theme-color" content="">
-
 
 
 <meta itemprop="name" content="Set up the same terminal regardless your OS - and more">
@@ -168,11 +166,11 @@ Back when using Windows, the WSL (Windows Subsystem for Linux) did not exist, an
 </p>
 <h3 id="homebrew">Homebrew</h3>
 <p>Brew is the preferred package manager on Mac and it also works on Ubuntu, meaning it also works on WSL. Install Homebrew by executing the following command either on the <em>Windows Terminal</em> or the default terminal on Mac / Linux.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">/bin/bash -c <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
-</code></pre></div><p>After installing it, you will notice a suggestion message to execute two commands, these contain path related information, so be sure to copy paste from your terminal. In my case they looked like this:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">echo <span style="color:#e6db74">&#39;eval &#34;$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)&#34;&#39;</span> &gt;&gt; /home/pabmo/.profile
-eval <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>/home/linuxbrew/.linuxbrew/bin/brew shellenv<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
-</code></pre></div><h3 id="zsh-jump-and-ohmyposh">ZSH, jump and OhMyPosh</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>/bin/bash -c <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+</span></span></code></pre></div><p>After installing it, you will notice a suggestion message to execute two commands, these contain path related information, so be sure to copy paste from your terminal. In my case they looked like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>echo <span style="color:#e6db74">&#39;eval &#34;$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)&#34;&#39;</span> &gt;&gt; /home/pabmo/.profile
+</span></span><span style="display:flex;"><span>eval <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>/home/linuxbrew/.linuxbrew/bin/brew shellenv<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+</span></span></code></pre></div><h3 id="zsh-jump-and-ohmyposh">ZSH, jump and OhMyPosh</h3>
 <p>OhMyPosh is a modern replacement for <code>oh-my-zsh</code> or <code>oh-my-fish</code>. It is built in Go and the configuration is described in a json file which is very understandable and portable. Create one you like, use it for all your environments, share it with your friends and community!</p>
 <p><code>Jump</code>, installed in the 5th step, allows one to jump from directory to directory; in other words, if you visit the path <code>user/documents/devandchill</code> you can later jump from any other directory to the mentioned one executing <code>j devand</code> and so.</p>
 <p>Execute in order:</p>
@@ -186,132 +184,132 @@ eval <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</spa
 <li><code>brew tap jandedobbeleer/oh-my-posh &amp;&amp; brew install oh-my-posh</code>.</li>
 </ol>
 <p>In your terminal create the file <code>~/.zshrc</code> if it does not yet exists and add the contents below. Feel free to remove the parts annotated with <code>## OPTIONAL</code>.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">## MAKE HISTORY TO BE PRESERVED FOR SEARCH</span>
-HISTFILE<span style="color:#f92672">=</span>~/.zsh_history
-HISTSIZE<span style="color:#f92672">=</span><span style="color:#ae81ff">10000</span>
-SAVEHIST<span style="color:#f92672">=</span><span style="color:#ae81ff">10000</span>
-setopt appendhistory
-
-<span style="color:#75715e">## UP AND DOWN SEARCH HISTORY BEGINNING WITH BUFFERED WORD</span>
-<span style="color:#75715e">## https://superuser.com/a/418299</span>
-bindkey <span style="color:#e6db74">&#39;\e[A&#39;</span> history-beginning-search-backward
-bindkey <span style="color:#e6db74">&#39;\e[B&#39;</span> history-beginning-search-forward
-
-<span style="color:#75715e">## OPTIONAL: ALIASES</span>
-alias kb<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;kubectl&#39;</span>
-alias git<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;LANG=en_GB git&#39;</span>
-alias dcd<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;docker compose down -v --remove-orphans&#39;</span>
-alias dcu<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;docker compose pull; docker compose up -d&#39;</span>
-alias me<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;eval $(minikube -p minikube docker-env)&#39;</span>
-
-<span style="color:#75715e">## EXPORTS</span>
-export GPG_TTY<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>tty<span style="color:#66d9ef">)</span>
-
-<span style="color:#75715e">## OPTIONAL: EXPORTS - MAY NEED DIRECTORY MODIFICATIONS</span>
-export GOPATH<span style="color:#f92672">=</span>$HOME/go
-export DOTNET_HOME<span style="color:#f92672">=</span>/usr/local/share/dotnet/dotnet
-export PATH<span style="color:#f92672">=</span>$PATH:$GOPATH/bin:$DOTNET_HOME/bin
-
-<span style="color:#75715e">## ZSH COMPLETIONS</span>
-<span style="color:#66d9ef">if</span> type brew &amp;&gt;/dev/null; <span style="color:#66d9ef">then</span>
-    FPATH<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>brew --prefix<span style="color:#66d9ef">)</span>/share/zsh-completions:$FPATH
-    autoload -Uz compinit
-    compinit
-<span style="color:#66d9ef">fi</span>
-
-<span style="color:#75715e">## OPTIONAL: .NET COMPLETIONS</span>
-_dotnet_zsh_complete<span style="color:#f92672">()</span>
-<span style="color:#f92672">{</span>
-  local completions<span style="color:#f92672">=(</span><span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>dotnet complete <span style="color:#e6db74">&#34;</span>$words<span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">)</span>
-  reply<span style="color:#f92672">=(</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>(ps:<span style="color:#ae81ff">\n</span>:)completions<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">)</span>
-<span style="color:#f92672">}</span>
-compctl -K _dotnet_zsh_complete dotnet
-
-<span style="color:#75715e">## OPTIONAL: KUBERNETES AUTOCOMPLETE</span>
-source &lt;<span style="color:#f92672">(</span>kubectl completion zsh<span style="color:#f92672">)</span>
-
-<span style="color:#75715e">## ENABLE JUMP</span>
-eval <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>jump shell<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
-
-<span style="color:#75715e">## OH MY POSH</span>
-eval <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>oh-my-posh --init --shell zsh --config <span style="color:#e6db74">&#39;~/ohmyposhv3.json&#39;</span><span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
-
-<span style="color:#75715e">## SYNTAX HIGHLIGHT - GOES AT THE END</span>
-<span style="color:#75715e">## USE THE PATH SAVED FROM THE 4TH STEP</span>
-source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-</code></pre></div><p>As you can see on the OhMyPosh line, the configuration is being loaded from the specified path: <code>--config '~/ohmyposhv3.json'</code>. Adjust that if you want, and in the path chosen create the following json file:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
-    <span style="color:#f92672">&#34;$schema&#34;</span>: <span style="color:#e6db74">&#34;https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json&#34;</span>,
-    <span style="color:#f92672">&#34;blocks&#34;</span>: [
-        {
-            <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;prompt&#34;</span>,
-            <span style="color:#f92672">&#34;alignment&#34;</span>: <span style="color:#e6db74">&#34;left&#34;</span>,
-            <span style="color:#f92672">&#34;segments&#34;</span>: [
-                {
-                    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;session&#34;</span>,
-                    <span style="color:#f92672">&#34;style&#34;</span>: <span style="color:#e6db74">&#34;diamond&#34;</span>,
-                    <span style="color:#f92672">&#34;leading_diamond&#34;</span>: <span style="color:#e6db74">&#34;\uE0B6&#34;</span>,
-                    <span style="color:#f92672">&#34;trailing_diamond&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>,
-                    <span style="color:#f92672">&#34;background&#34;</span>: <span style="color:#e6db74">&#34;#100e23&#34;</span>,
-                    <span style="color:#f92672">&#34;foreground&#34;</span>: <span style="color:#e6db74">&#34;#ffffff&#34;</span>,
-                    <span style="color:#f92672">&#34;properties&#34;</span>: {
-                        <span style="color:#f92672">&#34;template&#34;</span>: <span style="color:#e6db74">&#34;{{ .UserName }}&#34;</span>
-                    }
-                },
-                {
-                    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;kubectl&#34;</span>,
-                    <span style="color:#f92672">&#34;style&#34;</span>: <span style="color:#e6db74">&#34;powerline&#34;</span>,
-                    <span style="color:#f92672">&#34;powerline_symbol&#34;</span>: <span style="color:#e6db74">&#34;\uE0B0&#34;</span>,
-                    <span style="color:#f92672">&#34;foreground&#34;</span>: <span style="color:#e6db74">&#34;#000000&#34;</span>,
-                    <span style="color:#f92672">&#34;background&#34;</span>: <span style="color:#e6db74">&#34;#ffffff&#34;</span>,
-                    <span style="color:#f92672">&#34;properties&#34;</span>: {
-                        <span style="color:#f92672">&#34;template&#34;</span>: <span style="color:#e6db74">&#34;{{.Context}} {{.Namespace}}&#34;</span>
-                    }
-                },
-                {
-                    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;path&#34;</span>,
-                    <span style="color:#f92672">&#34;style&#34;</span>: <span style="color:#e6db74">&#34;powerline&#34;</span>,
-                    <span style="color:#f92672">&#34;powerline_symbol&#34;</span>: <span style="color:#e6db74">&#34;\uE0B0&#34;</span>,
-                    <span style="color:#f92672">&#34;foreground&#34;</span>: <span style="color:#e6db74">&#34;#100e23&#34;</span>,
-                    <span style="color:#f92672">&#34;background&#34;</span>: <span style="color:#e6db74">&#34;#91ddff&#34;</span>,
-                    <span style="color:#f92672">&#34;properties&#34;</span>: {
-                        <span style="color:#f92672">&#34;home_icon&#34;</span>: <span style="color:#e6db74">&#34;\uF7DB&#34;</span>,
-                        <span style="color:#f92672">&#34;folder_icon&#34;</span>: <span style="color:#e6db74">&#34;\uF115&#34;</span>,
-                        <span style="color:#f92672">&#34;folder_separator_icon&#34;</span>: <span style="color:#e6db74">&#34; \uE0B1 &#34;</span>,
-                        <span style="color:#f92672">&#34;style&#34;</span>: <span style="color:#e6db74">&#34;mixed&#34;</span>
-                    }
-                },
-                {
-                    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;git&#34;</span>,
-                    <span style="color:#f92672">&#34;style&#34;</span>: <span style="color:#e6db74">&#34;powerline&#34;</span>,
-                    <span style="color:#f92672">&#34;powerline_symbol&#34;</span>: <span style="color:#e6db74">&#34;\uE0B0&#34;</span>,
-                    <span style="color:#f92672">&#34;foreground&#34;</span>: <span style="color:#e6db74">&#34;#193549&#34;</span>,
-                    <span style="color:#f92672">&#34;background_templates&#34;</span>: [
-                        <span style="color:#e6db74">&#34;{{ if .Working.Changed }}#fffb38{{ else }}#95ffa4{{ end }}&#34;</span>
-                    ],
-                    <span style="color:#f92672">&#34;properties&#34;</span>: {
-                        <span style="color:#f92672">&#34;branch_icon&#34;</span>: <span style="color:#e6db74">&#34;\ue725&#34;</span>,
-                        <span style="color:#f92672">&#34;fetch_status&#34;</span>: <span style="color:#66d9ef">true</span>,
-                        <span style="color:#f92672">&#34;fetch_upstream_icon&#34;</span>: <span style="color:#66d9ef">true</span>,
-                        <span style="color:#f92672">&#34;template&#34;</span>: <span style="color:#e6db74">&#34;{{ .UpstreamIcon }}{{ .HEAD }}{{ .BranchStatus }}{{ if .Working.Changed }} \uF044 {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }}\uF046 {{ .Staging.String }}{{ end }}&#34;</span>
-                    }
-                },
-                {
-                    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;exit&#34;</span>,
-                    <span style="color:#f92672">&#34;style&#34;</span>: <span style="color:#e6db74">&#34;powerline&#34;</span>,
-                    <span style="color:#f92672">&#34;powerline_symbol&#34;</span>: <span style="color:#e6db74">&#34;\uE0B0&#34;</span>,
-                    <span style="color:#f92672">&#34;foreground&#34;</span>: <span style="color:#e6db74">&#34;#ffffff&#34;</span>,
-                    <span style="color:#f92672">&#34;background&#34;</span>: <span style="color:#e6db74">&#34;#ff8080&#34;</span>,
-                    <span style="color:#f92672">&#34;properties&#34;</span>: {
-                        <span style="color:#f92672">&#34;template&#34;</span>: <span style="color:#e6db74">&#34;{{ .Text }}&#34;</span>
-                    }
-                }
-            ]
-        }
-    ],
-    <span style="color:#f92672">&#34;final_space&#34;</span>: <span style="color:#66d9ef">true</span>
-}
-</code></pre></div><h3 id="windows-windows-terminal">[Windows] Windows Terminal</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e">## MAKE HISTORY TO BE PRESERVED FOR SEARCH</span>
+</span></span><span style="display:flex;"><span>HISTFILE<span style="color:#f92672">=</span>~/.zsh_history
+</span></span><span style="display:flex;"><span>HISTSIZE<span style="color:#f92672">=</span><span style="color:#ae81ff">10000</span>
+</span></span><span style="display:flex;"><span>SAVEHIST<span style="color:#f92672">=</span><span style="color:#ae81ff">10000</span>
+</span></span><span style="display:flex;"><span>setopt appendhistory
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## UP AND DOWN SEARCH HISTORY BEGINNING WITH BUFFERED WORD</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## https://superuser.com/a/418299</span>
+</span></span><span style="display:flex;"><span>bindkey <span style="color:#e6db74">&#39;\e[A&#39;</span> history-beginning-search-backward
+</span></span><span style="display:flex;"><span>bindkey <span style="color:#e6db74">&#39;\e[B&#39;</span> history-beginning-search-forward
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## OPTIONAL: ALIASES</span>
+</span></span><span style="display:flex;"><span>alias kb<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;kubectl&#39;</span>
+</span></span><span style="display:flex;"><span>alias git<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;LANG=en_GB git&#39;</span>
+</span></span><span style="display:flex;"><span>alias dcd<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;docker compose down -v --remove-orphans&#39;</span>
+</span></span><span style="display:flex;"><span>alias dcu<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;docker compose pull; docker compose up -d&#39;</span>
+</span></span><span style="display:flex;"><span>alias me<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;eval $(minikube -p minikube docker-env)&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## EXPORTS</span>
+</span></span><span style="display:flex;"><span>export GPG_TTY<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>tty<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## OPTIONAL: EXPORTS - MAY NEED DIRECTORY MODIFICATIONS</span>
+</span></span><span style="display:flex;"><span>export GOPATH<span style="color:#f92672">=</span>$HOME/go
+</span></span><span style="display:flex;"><span>export DOTNET_HOME<span style="color:#f92672">=</span>/usr/local/share/dotnet/dotnet
+</span></span><span style="display:flex;"><span>export PATH<span style="color:#f92672">=</span>$PATH:$GOPATH/bin:$DOTNET_HOME/bin
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## ZSH COMPLETIONS</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> type brew &amp;&gt;/dev/null; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    FPATH<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>brew --prefix<span style="color:#66d9ef">)</span>/share/zsh-completions:$FPATH
+</span></span><span style="display:flex;"><span>    autoload -Uz compinit
+</span></span><span style="display:flex;"><span>    compinit
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## OPTIONAL: .NET COMPLETIONS</span>
+</span></span><span style="display:flex;"><span>_dotnet_zsh_complete<span style="color:#f92672">()</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>  local completions<span style="color:#f92672">=(</span><span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>dotnet complete <span style="color:#e6db74">&#34;</span>$words<span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>  reply<span style="color:#f92672">=(</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>(ps:<span style="color:#ae81ff">\n</span>:)completions<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>compctl -K _dotnet_zsh_complete dotnet
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## OPTIONAL: KUBERNETES AUTOCOMPLETE</span>
+</span></span><span style="display:flex;"><span>source &lt;<span style="color:#f92672">(</span>kubectl completion zsh<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## ENABLE JUMP</span>
+</span></span><span style="display:flex;"><span>eval <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>jump shell<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## OH MY POSH</span>
+</span></span><span style="display:flex;"><span>eval <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>oh-my-posh --init --shell zsh --config <span style="color:#e6db74">&#39;~/ohmyposhv3.json&#39;</span><span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## SYNTAX HIGHLIGHT - GOES AT THE END</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## USE THE PATH SAVED FROM THE 4TH STEP</span>
+</span></span><span style="display:flex;"><span>source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+</span></span></code></pre></div><p>As you can see on the OhMyPosh line, the configuration is being loaded from the specified path: <code>--config '~/ohmyposhv3.json'</code>. Adjust that if you want, and in the path chosen create the following json file:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;$schema&#34;</span>: <span style="color:#e6db74">&#34;https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;blocks&#34;</span>: [
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;prompt&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;alignment&#34;</span>: <span style="color:#e6db74">&#34;left&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;segments&#34;</span>: [
+</span></span><span style="display:flex;"><span>                {
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;session&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;style&#34;</span>: <span style="color:#e6db74">&#34;diamond&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;leading_diamond&#34;</span>: <span style="color:#e6db74">&#34;\uE0B6&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;trailing_diamond&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;background&#34;</span>: <span style="color:#e6db74">&#34;#100e23&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;foreground&#34;</span>: <span style="color:#e6db74">&#34;#ffffff&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;properties&#34;</span>: {
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&#34;template&#34;</span>: <span style="color:#e6db74">&#34;{{ .UserName }}&#34;</span>
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                },
+</span></span><span style="display:flex;"><span>                {
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;kubectl&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;style&#34;</span>: <span style="color:#e6db74">&#34;powerline&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;powerline_symbol&#34;</span>: <span style="color:#e6db74">&#34;\uE0B0&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;foreground&#34;</span>: <span style="color:#e6db74">&#34;#000000&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;background&#34;</span>: <span style="color:#e6db74">&#34;#ffffff&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;properties&#34;</span>: {
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&#34;template&#34;</span>: <span style="color:#e6db74">&#34;{{.Context}} {{.Namespace}}&#34;</span>
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                },
+</span></span><span style="display:flex;"><span>                {
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;path&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;style&#34;</span>: <span style="color:#e6db74">&#34;powerline&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;powerline_symbol&#34;</span>: <span style="color:#e6db74">&#34;\uE0B0&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;foreground&#34;</span>: <span style="color:#e6db74">&#34;#100e23&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;background&#34;</span>: <span style="color:#e6db74">&#34;#91ddff&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;properties&#34;</span>: {
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&#34;home_icon&#34;</span>: <span style="color:#e6db74">&#34;\uF7DB&#34;</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&#34;folder_icon&#34;</span>: <span style="color:#e6db74">&#34;\uF115&#34;</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&#34;folder_separator_icon&#34;</span>: <span style="color:#e6db74">&#34; \uE0B1 &#34;</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&#34;style&#34;</span>: <span style="color:#e6db74">&#34;mixed&#34;</span>
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                },
+</span></span><span style="display:flex;"><span>                {
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;git&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;style&#34;</span>: <span style="color:#e6db74">&#34;powerline&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;powerline_symbol&#34;</span>: <span style="color:#e6db74">&#34;\uE0B0&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;foreground&#34;</span>: <span style="color:#e6db74">&#34;#193549&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;background_templates&#34;</span>: [
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#34;{{ if .Working.Changed }}#fffb38{{ else }}#95ffa4{{ end }}&#34;</span>
+</span></span><span style="display:flex;"><span>                    ],
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;properties&#34;</span>: {
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&#34;branch_icon&#34;</span>: <span style="color:#e6db74">&#34;\ue725&#34;</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&#34;fetch_status&#34;</span>: <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&#34;fetch_upstream_icon&#34;</span>: <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&#34;template&#34;</span>: <span style="color:#e6db74">&#34;{{ .UpstreamIcon }}{{ .HEAD }}{{ .BranchStatus }}{{ if .Working.Changed }} \uF044 {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }}\uF046 {{ .Staging.String }}{{ end }}&#34;</span>
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                },
+</span></span><span style="display:flex;"><span>                {
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;exit&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;style&#34;</span>: <span style="color:#e6db74">&#34;powerline&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;powerline_symbol&#34;</span>: <span style="color:#e6db74">&#34;\uE0B0&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;foreground&#34;</span>: <span style="color:#e6db74">&#34;#ffffff&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;background&#34;</span>: <span style="color:#e6db74">&#34;#ff8080&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">&#34;properties&#34;</span>: {
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">&#34;template&#34;</span>: <span style="color:#e6db74">&#34;{{ .Text }}&#34;</span>
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            ]
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    ],
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;final_space&#34;</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="windows-windows-terminal">[Windows] Windows Terminal</h3>
 <p>So far, the default profile is configured to be Ubuntu, now you need to configure the font and the font size for that profile. The font should be the previously installed: <code>CaskaydiaCove NF</code> and the size is up to you (but I don&rsquo;t see much anymore so I use <code>18px</code>).</p>
 <p>You can further customize the theme of the terminal so the background might be transparent, dark, etc.</p>
 <h3 id="mac-iterm2">[Mac] Iterm2</h3>
@@ -325,17 +323,17 @@ source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 <h3 id="kubernetes-segment">Kubernetes segment</h3>
 <p>The OhMyPosh json contains a segment for displaying the current Kubernetes cluster:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
-    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;kubectl&#34;</span>,
-    <span style="color:#f92672">&#34;style&#34;</span>: <span style="color:#e6db74">&#34;powerline&#34;</span>,
-    <span style="color:#f92672">&#34;powerline_symbol&#34;</span>: <span style="color:#e6db74">&#34;\uE0B0&#34;</span>,
-    <span style="color:#f92672">&#34;foreground&#34;</span>: <span style="color:#e6db74">&#34;#000000&#34;</span>,
-    <span style="color:#f92672">&#34;background&#34;</span>: <span style="color:#e6db74">&#34;#ffffff&#34;</span>,
-    <span style="color:#f92672">&#34;properties&#34;</span>: {
-        <span style="color:#f92672">&#34;template&#34;</span>: <span style="color:#e6db74">&#34;{{.Context}} {{.Namespace}}&#34;</span>
-    }
-}<span style="color:#960050;background-color:#1e0010">,</span>
-</code></pre></div><p>In case there is no <code>~/.kube/config</code> file created it will just avoid the segment. If you use Kubernetes you have to install the command line to make this work, execute: <code>brew install kubernetes-cli</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;kubectl&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;style&#34;</span>: <span style="color:#e6db74">&#34;powerline&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;powerline_symbol&#34;</span>: <span style="color:#e6db74">&#34;\uE0B0&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;foreground&#34;</span>: <span style="color:#e6db74">&#34;#000000&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;background&#34;</span>: <span style="color:#e6db74">&#34;#ffffff&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;properties&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;template&#34;</span>: <span style="color:#e6db74">&#34;{{.Context}} {{.Namespace}}&#34;</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}<span style="color:#960050;background-color:#1e0010">,</span>
+</span></span></code></pre></div><p>In case there is no <code>~/.kube/config</code> file created it will just avoid the segment. If you use Kubernetes you have to install the command line to make this work, execute: <code>brew install kubernetes-cli</code>.</p>
 <h3 id="git-segment">Git segment</h3>
 <p>The OhMyPosh json also contains a <code>git</code> segment. In case you are not sure if it is installed, execute: <code>brew install git</code>.</p>
 <h3 id="windows-installing-git-on-windows">[Windows] Installing git on Windows</h3>
@@ -381,34 +379,34 @@ source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 </ul>
 <p><strong>Settings</strong></p>
 <p>Open VSCode and access the command pallette either with <code>Cmd + Shift + P</code> or <code>Control + Shift + P</code>. Write <code>Open Settings (JSON)</code> and replace the json with the following:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
-    <span style="color:#f92672">&#34;search.useIgnoreFiles&#34;</span>: <span style="color:#66d9ef">false</span>,
-    <span style="color:#f92672">&#34;terminal.integrated.defaultProfile.osx&#34;</span>: <span style="color:#e6db74">&#34;zsh&#34;</span>,
-    <span style="color:#f92672">&#34;terminal.integrated.defaultProfile.windows&#34;</span>: <span style="color:#e6db74">&#34;Ubuntu (WSL)&#34;</span>,
-    <span style="color:#f92672">&#34;terminal.integrated.fontFamily&#34;</span>: <span style="color:#e6db74">&#34;CaskaydiaCove NF&#34;</span>,
-    <span style="color:#f92672">&#34;terminal.integrated.fontSize&#34;</span>: <span style="color:#ae81ff">18</span>,
-    <span style="color:#f92672">&#34;terminal.integrated.copyOnSelection&#34;</span>: <span style="color:#66d9ef">true</span>,
-    <span style="color:#f92672">&#34;files.trimTrailingWhitespace&#34;</span>: <span style="color:#66d9ef">true</span>,
-    <span style="color:#f92672">&#34;files.insertFinalNewline&#34;</span>: <span style="color:#66d9ef">true</span>,
-    <span style="color:#f92672">&#34;files.trimFinalNewlines&#34;</span>: <span style="color:#66d9ef">true</span>,
-    <span style="color:#f92672">&#34;editor.fontLigatures&#34;</span>: <span style="color:#66d9ef">true</span>,
-    <span style="color:#f92672">&#34;editor.fontSize&#34;</span>: <span style="color:#ae81ff">18</span>,
-    <span style="color:#f92672">&#34;editor.fontFamily&#34;</span>: <span style="color:#e6db74">&#34;CaskaydiaCove NF&#34;</span>,
-    <span style="color:#f92672">&#34;editor.formatOnSave&#34;</span>: <span style="color:#66d9ef">true</span>,
-    <span style="color:#f92672">&#34;diffEditor.ignoreTrimWhitespace&#34;</span>: <span style="color:#66d9ef">false</span>,
-    <span style="color:#f92672">&#34;explorer.confirmDelete&#34;</span>: <span style="color:#66d9ef">false</span>,
-    <span style="color:#f92672">&#34;go.formatTool&#34;</span>: <span style="color:#e6db74">&#34;goimports&#34;</span>,
-    <span style="color:#f92672">&#34;go.useLanguageServer&#34;</span>: <span style="color:#66d9ef">true</span>,
-    <span style="color:#f92672">&#34;go.toolsManagement.autoUpdate&#34;</span>: <span style="color:#66d9ef">true</span>,
-    <span style="color:#f92672">&#34;go.lintTool&#34;</span>: <span style="color:#e6db74">&#34;golangci-lint&#34;</span>,
-    <span style="color:#f92672">&#34;go.buildTags&#34;</span>: <span style="color:#e6db74">&#34;integration&#34;</span>,
-    <span style="color:#f92672">&#34;workbench.iconTheme&#34;</span>: <span style="color:#e6db74">&#34;material-icon-theme&#34;</span>,
-    <span style="color:#f92672">&#34;extensions.ignoreRecommendations&#34;</span>: <span style="color:#66d9ef">false</span>,
-    <span style="color:#f92672">&#34;window.zoomLevel&#34;</span>: <span style="color:#ae81ff">1</span>,
-    <span style="color:#f92672">&#34;security.workspace.trust.untrustedFiles&#34;</span>: <span style="color:#e6db74">&#34;open&#34;</span>,
-    <span style="color:#f92672">&#34;liveshare.presence&#34;</span>: <span style="color:#66d9ef">true</span>
-}
-</code></pre></div><p>Both <code>terminal.integrated.defaultProfile.osx</code> and <code>terminal.integrated.defaultProfile.windows</code> can coexist, but remove the one that does not apply to your environment if you don&rsquo;t like having both.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;search.useIgnoreFiles&#34;</span>: <span style="color:#66d9ef">false</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;terminal.integrated.defaultProfile.osx&#34;</span>: <span style="color:#e6db74">&#34;zsh&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;terminal.integrated.defaultProfile.windows&#34;</span>: <span style="color:#e6db74">&#34;Ubuntu (WSL)&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;terminal.integrated.fontFamily&#34;</span>: <span style="color:#e6db74">&#34;CaskaydiaCove NF&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;terminal.integrated.fontSize&#34;</span>: <span style="color:#ae81ff">18</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;terminal.integrated.copyOnSelection&#34;</span>: <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;files.trimTrailingWhitespace&#34;</span>: <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;files.insertFinalNewline&#34;</span>: <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;files.trimFinalNewlines&#34;</span>: <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;editor.fontLigatures&#34;</span>: <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;editor.fontSize&#34;</span>: <span style="color:#ae81ff">18</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;editor.fontFamily&#34;</span>: <span style="color:#e6db74">&#34;CaskaydiaCove NF&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;editor.formatOnSave&#34;</span>: <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;diffEditor.ignoreTrimWhitespace&#34;</span>: <span style="color:#66d9ef">false</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;explorer.confirmDelete&#34;</span>: <span style="color:#66d9ef">false</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;go.formatTool&#34;</span>: <span style="color:#e6db74">&#34;goimports&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;go.useLanguageServer&#34;</span>: <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;go.toolsManagement.autoUpdate&#34;</span>: <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;go.lintTool&#34;</span>: <span style="color:#e6db74">&#34;golangci-lint&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;go.buildTags&#34;</span>: <span style="color:#e6db74">&#34;integration&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;workbench.iconTheme&#34;</span>: <span style="color:#e6db74">&#34;material-icon-theme&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;extensions.ignoreRecommendations&#34;</span>: <span style="color:#66d9ef">false</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;window.zoomLevel&#34;</span>: <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;security.workspace.trust.untrustedFiles&#34;</span>: <span style="color:#e6db74">&#34;open&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;liveshare.presence&#34;</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Both <code>terminal.integrated.defaultProfile.osx</code> and <code>terminal.integrated.defaultProfile.windows</code> can coexist, but remove the one that does not apply to your environment if you don&rsquo;t like having both.</p>
 <p>Feel free to remove <code>workbench.iconTheme</code> if you do not wish to install the <em>Material Icon Theme</em> extension described on the section below, and same for the <code>liveshare.presence</code> in case you do not wish to install it either.</p>
 <p>The <code>terminal.integrated.fontFamily</code> should be the <code>CaskaydiaCove NF</code> as configured on iTerm2 / Windows Terminal; but feel free to change your <code>editor.fontFamily</code> as you see fit. Also feel free to change the font size on both parts.</p>
 <p>All the <code>go.*</code> settings might not be needed for you if you don&rsquo;t plan using Go, so you can remove them.</p>
@@ -419,18 +417,18 @@ source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 <li>Getting the autocomplete suggestions to prompt when I press <code>cmd/ctrl + enter</code> instead of space.</li>
 </ol>
 <p>Open the command pallette once again and write <code>Open Keyboard Shortcuts (JSON)</code>, replace the json with the one shown below. If you are using Windows replace <code>cmd</code> with <code>ctrl</code>.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">[
-    {
-        <span style="color:#f92672">&#34;key&#34;</span>: <span style="color:#e6db74">&#34;cmd+-&#34;</span>,
-        <span style="color:#f92672">&#34;command&#34;</span>: <span style="color:#e6db74">&#34;workbench.action.navigateBack&#34;</span>
-    },
-    {
-        <span style="color:#f92672">&#34;key&#34;</span>: <span style="color:#e6db74">&#34;cmd+[Enter]&#34;</span>,
-        <span style="color:#f92672">&#34;command&#34;</span>: <span style="color:#e6db74">&#34;editor.action.quickFix&#34;</span>,
-        <span style="color:#f92672">&#34;when&#34;</span>: <span style="color:#e6db74">&#34;editorHasCodeActionsProvider &amp;&amp; editorTextFocus &amp;&amp; !editorReadonly&#34;</span>
-    },
-]
-</code></pre></div><p><strong>Extensions</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>[
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;key&#34;</span>: <span style="color:#e6db74">&#34;cmd+-&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;command&#34;</span>: <span style="color:#e6db74">&#34;workbench.action.navigateBack&#34;</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;key&#34;</span>: <span style="color:#e6db74">&#34;cmd+[Enter]&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;command&#34;</span>: <span style="color:#e6db74">&#34;editor.action.quickFix&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;when&#34;</span>: <span style="color:#e6db74">&#34;editorHasCodeActionsProvider &amp;&amp; editorTextFocus &amp;&amp; !editorReadonly&#34;</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>]
+</span></span></code></pre></div><p><strong>Extensions</strong></p>
 <p>Go to the extensions tab and add <code>Material Icon Theme</code> and <code>Live Share</code>. Optionally, you can find below other extensions I use:</p>
 <ul>
 <li>C#: <em>Lint and syntax support.</em></li>
@@ -671,6 +669,13 @@ source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
     <div class="pagination__buttons">
       
+      <span class="button previous">
+        <a href="https://devandchill.com/posts/2022/03/keep-it-simple-stupid-lessons-learned/">
+          <span class="button__icon">←</span>
+          <span class="button__text">Keep it simple stupid, lessons learned</span>
+        </a>
+      </span>
+      
 
       
       <span class="button next">
@@ -707,7 +712,7 @@ source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 
 
-<script type="text/javascript" src="/bundle.min.f944224ac8e104e8f14a9d98224b628e383c8f2e63f95e54381ac414365bf32b8c5ae9a6c157271fe82938d66e1cf8399e34e6cb0ee7b711c58d167a4cfd6a6f.js" integrity="sha512-&#43;UQiSsjhBOjxSp2YIktijjg8jy5j&#43;V5UOBrEFDZb8yuMWummwVcnH&#43;gpONZuHPg5njTmyw7ntxHFjRZ6TP1qbw=="></script>
+<script type="text/javascript" src="/bundle.min.e073c6bca809af5c516c3777e3441958267b377fb29e3c9471c558a6711b62d7819807a126e3378f03763928ef7b09a6cdcb1693bf5719e81e15e60176854b26.js" integrity="sha512-4HPGvKgJr1xRbDd340QZWCZ7N3&#43;ynjyUccVYpnEbYteBmAehJuM3jwN2OSjvewmmzcsWk79XGegeFeYBdoVLJg=="></script>
 
 
 

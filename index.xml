@@ -7,7 +7,17 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Pablo Morelli</copyright>
-    <lastBuildDate>Wed, 19 Jan 2022 12:13:07 +0100</lastBuildDate><atom:link href="https://devandchill.com/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 15 Mar 2022 18:30:00 +0100</lastBuildDate><atom:link href="https://devandchill.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Keep it simple stupid, lessons learned</title>
+      <link>https://devandchill.com/posts/2022/03/keep-it-simple-stupid-lessons-learned/</link>
+      <pubDate>Tue, 15 Mar 2022 18:30:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/posts/2022/03/keep-it-simple-stupid-lessons-learned/</guid>
+      <description>We as humans are always changing and evolving, sometimes for the best and sometimes not. In our professional life this is expected, one gains experience, learns new tools, knowns different people with different background, etc.
+Back when I was working for a consultancy company in 2016 I met a wonderful person who at that time was an architect, and right now one of my best friends. Our main topic of conversation was technology, and we always dug deeper and deeper into it.</description>
+    </item>
+    
     <item>
       <title>Set up the same terminal regardless your OS - and more</title>
       <link>https://devandchill.com/posts/2022/01/set-up-the-same-terminal-regardless-your-os-and-more/</link>
@@ -44,7 +54,7 @@ What is the problem? Nowadays everyone wants to do microservices, it is a buzzwo
       <pubDate>Fri, 10 Sep 2021 13:00:00 +0200</pubDate>
       
       <guid>https://devandchill.com/about/</guid>
-      <description>Hey! Nice to see you around here. I am Pablo Morelli 🧔🏻 and I am working as a backend developer at Lendo. Currently living in Stockholm 🇸🇪 but was born and lived most of my life in Buenos Aires 🇦🇷. Coding since 2010, I started with .NET (and .NET Core) but currently coding in Go. I&amp;#39;ve been working with DevOps concepts in the recent years and I have experience on GitOps and Infrastructure as Code.</description>
+      <description>Hey! Nice to see you around here. I am Pablo Morelli 🧔🏻 and I am working as a backend developer at Lendo. Currently living in Stockholm 🇸🇪 but was born and lived most of my life in Buenos Aires 🇦🇷. Coding since 2010, I started with .NET, switched to Go, and back to .NET. I&amp;#39;ve been working with DevOps concepts in the recent years and I have experience on GitOps and Infrastructure as Code.</description>
     </item>
     
     <item>
@@ -72,8 +82,8 @@ However, there was a little something that my mind keep thinking: it would be su
       <pubDate>Fri, 30 Apr 2021 12:40:00 +0200</pubDate>
       
       <guid>https://devandchill.com/posts/2021/04/introducing-maybe-package-bring-functional-to-go/</guid>
-      <description>One of the advantages of Go is that null (nil) values are rarer than in some other languages. The following snippet will fail: func getDay() string { return nil } In order to make that snippet work, a pointer is needed as null values are the zero value for pointers (the same applies for interfaces, channels and function types).
-func getDay() *string { return nil } Being that pointers can introduce null and hence panics, and knowing that null is considered to be &amp;ldquo;The billion dollar mistake&amp;rdquo;, why is still so common in Go to use pointers for everything?</description>
+      <description>One of the advantages of Go is that null (nil) values are rarer than in some other languages. The following snippet will fail: func getDay() string {  return nil } In order to make that snippet work, a pointer is needed as null values are the zero value for pointers (the same applies for interfaces, channels and function types).
+func getDay() *string {  return nil } Being that pointers can introduce null and hence panics, and knowing that null is considered to be &amp;ldquo;The billion dollar mistake&amp;rdquo;, why is still so common in Go to use pointers for everything?</description>
     </item>
     
     <item>
@@ -113,7 +123,7 @@ At least from my experience, SQL is taught in university/courses in an outdated 
       <guid>https://devandchill.com/posts/2020/05/go-lib/pq-or-pgx-which-performs-better/</guid>
       <description>Some days ago a coworker of mine linked me to the source code of Google&amp;rsquo;s exposure notifications API and of course is a good chance to see how Google is doing Go related codebases.
 Continuing with the topic of Postgres and benchmarking, I decided to check out how Postgres configuration was done and this line got my attention:
-import ( ... &amp;#34;github.com/jackc/pgx/v4/pgxpool&amp;#34; ) What is pgx, and why should we care?</description>
+import ( 	... 	&amp;#34;github.com/jackc/pgx/v4/pgxpool&amp;#34; ) What is pgx, and why should we care?</description>
     </item>
     
     <item>
@@ -156,7 +166,7 @@ Every company has a different way to work and configure CI/CD, and all of them h
       <guid>https://devandchill.com/posts/2019/06/net-core-3.0-publish-single-file-binary-on-alpine-container/</guid>
       <description>The newly released dotnet 3 preview 6 has an interesting feature called publish single file where an application can be published as a self contained app that will extract and run on the platform it was compiled for.
 In order to add this feature in our .csproj, add the following lines:
-&amp;lt;PropertyGroup&amp;gt; &amp;lt;TargetFramework&amp;gt;netcoreapp3.0&amp;lt;/TargetFramework&amp;gt; &amp;lt;PublishTrimmed&amp;gt;true&amp;lt;/PublishTrimmed&amp;gt; &amp;lt;PublishReadyToRun&amp;gt;true&amp;lt;/PublishReadyToRun&amp;gt; &amp;lt;PublishSingleFile&amp;gt;true&amp;lt;/PublishSingleFile&amp;gt; &amp;lt;CrossGenDuringPublish&amp;gt;false&amp;lt;/CrossGenDuringPublish&amp;gt; &amp;lt;/PropertyGroup&amp;gt; There are some flags that may sound weird, let&amp;rsquo;s go through them:</description>
+&amp;lt;PropertyGroup&amp;gt;  &amp;lt;TargetFramework&amp;gt;netcoreapp3.0&amp;lt;/TargetFramework&amp;gt;  &amp;lt;PublishTrimmed&amp;gt;true&amp;lt;/PublishTrimmed&amp;gt;  &amp;lt;PublishReadyToRun&amp;gt;true&amp;lt;/PublishReadyToRun&amp;gt;  &amp;lt;PublishSingleFile&amp;gt;true&amp;lt;/PublishSingleFile&amp;gt;  &amp;lt;CrossGenDuringPublish&amp;gt;false&amp;lt;/CrossGenDuringPublish&amp;gt; &amp;lt;/PropertyGroup&amp;gt; There are some flags that may sound weird, let&amp;rsquo;s go through them:</description>
     </item>
     
     <item>
@@ -177,7 +187,7 @@ In order to add this feature in our .csproj, add the following lines:
       <guid>https://devandchill.com/posts/2019/04/word-counter-sync-concurrent-or-streams/</guid>
       <description>One day I was given the task of doing a whiteboard word counter algorithm. The requirements were:
  Print on console all the words and the quantity of times they appear on a 40.000 lines input. Make it as fast as possible.  For a start one can do it as simple as possible instead, and then try to see whether it can be made faster:
-func wordCounter() (words map[string]int) { b, err := ioutil.</description>
+func wordCounter() (words map[string]int) { 	b, err := ioutil.</description>
     </item>
     
     <item>

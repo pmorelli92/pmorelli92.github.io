@@ -37,14 +37,12 @@
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
     <link rel="shortcut icon" href="/favicon.ico">
     <meta name="msapplication-TileColor" content="">
-    <meta name="theme-color" content="">
-
 
 
 <meta itemprop="name" content="Go - lib/pq or pgx - which performs better?">
 <meta itemprop="description" content="Some days ago a coworker of mine linked me to the source code of Google&rsquo;s exposure notifications API and of course is a good chance to see how Google is doing Go related codebases.
 Continuing with the topic of Postgres and benchmarking, I decided to check out how Postgres configuration was done and this line got my attention:
-import ( ... &#34;github.com/jackc/pgx/v4/pgxpool&#34; ) What is pgx, and why should we care?"><meta itemprop="datePublished" content="2020-05-27T15:40:29+01:00" />
+import ( 	... 	&#34;github.com/jackc/pgx/v4/pgxpool&#34; ) What is pgx, and why should we care?"><meta itemprop="datePublished" content="2020-05-27T15:40:29+01:00" />
 <meta itemprop="dateModified" content="2020-05-27T15:40:29+01:00" />
 <meta itemprop="wordCount" content="1917"><meta itemprop="image" content="https://devandchill.com/og-image.png"/>
 <meta itemprop="keywords" content="golang,go,postgres,database,sql,benchmark,libpq,pgx,batch,cache," />
@@ -54,7 +52,7 @@ import ( ... &#34;github.com/jackc/pgx/v4/pgxpool&#34; ) What is pgx, and why sh
 <meta name="twitter:title" content="Go - lib/pq or pgx - which performs better?"/>
 <meta name="twitter:description" content="Some days ago a coworker of mine linked me to the source code of Google&rsquo;s exposure notifications API and of course is a good chance to see how Google is doing Go related codebases.
 Continuing with the topic of Postgres and benchmarking, I decided to check out how Postgres configuration was done and this line got my attention:
-import ( ... &#34;github.com/jackc/pgx/v4/pgxpool&#34; ) What is pgx, and why should we care?"/>
+import ( 	... 	&#34;github.com/jackc/pgx/v4/pgxpool&#34; ) What is pgx, and why should we care?"/>
 
 
 
@@ -153,11 +151,11 @@ import ( ... &#34;github.com/jackc/pgx/v4/pgxpool&#34; ) What is pgx, and why sh
  and of course is a good chance to see how Google is doing Go related codebases.</p>
 <p>Continuing with the topic of Postgres and benchmarking, I decided to check out how Postgres configuration was done and this <a href="https://github.com/google/exposure-notifications-server/blob/master/internal/database/connection.go#L27"  target="_blank" rel="noreferrer noopener" >line</a>
  got my attention:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">import</span> (
-	<span style="color:#f92672">...</span>
-	<span style="color:#e6db74">&#34;github.com/jackc/pgx/v4/pgxpool&#34;</span>
-)
-</code></pre></div><h2 id="what-is-pgx-and-why-should-we-care">What is pgx, and why should we care?</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;github.com/jackc/pgx/v4/pgxpool&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><h2 id="what-is-pgx-and-why-should-we-care">What is pgx, and why should we care?</h2>
 <p><code>Pgx</code> is a library that implements postgres connection without relying on the <code>database/sql</code> standard package. The source code can be found <a href="https://github.com/jackc/pgx"  target="_blank" rel="noreferrer noopener" >here</a>
 ; and as the readme states:</p>
 <blockquote>
@@ -191,48 +189,48 @@ import ( ... &#34;github.com/jackc/pgx/v4/pgxpool&#34; ) What is pgx, and why sh
 <p>Without further ado, let&rsquo;s begin.</p>
 <h2 id="connection-handling">Connection handling</h2>
 <p>On the <code>lib/pq</code> version, <code>database/sql</code> is being used to create a struct holding a <code>*sql.Db</code> variable which was being used for every call to the database.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">pgCustomerRepo</span> <span style="color:#66d9ef">struct</span> {
-	<span style="color:#a6e22e">dbHandler</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">sql</span>.<span style="color:#a6e22e">DB</span>
-}
-
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewPgCustomerRepo</span>(<span style="color:#a6e22e">connString</span> <span style="color:#66d9ef">string</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">pgCustomerRepo</span>, <span style="color:#66d9ef">error</span>) {
-	<span style="color:#a6e22e">db</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">sql</span>.<span style="color:#a6e22e">Open</span>(<span style="color:#e6db74">&#34;postgres&#34;</span>, <span style="color:#a6e22e">connString</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
-	}
-	<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">pgCustomerRepo</span>{
-		<span style="color:#a6e22e">dbHandler</span>: <span style="color:#a6e22e">db</span>,
-	}, <span style="color:#66d9ef">nil</span>
-}
-</code></pre></div><p>Using <code>pgx</code> this is changed to:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">pgCustomerRepo</span> <span style="color:#66d9ef">struct</span> {
-	<span style="color:#a6e22e">dbHandler</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pgxpool</span>.<span style="color:#a6e22e">Pool</span>
-}
-
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewPgCustomerRepo</span>(<span style="color:#a6e22e">connString</span> <span style="color:#66d9ef">string</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">pgCustomerRepo</span>, <span style="color:#66d9ef">error</span>) {
-	<span style="color:#a6e22e">config</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">pgxpool</span>.<span style="color:#a6e22e">ParseConfig</span>(<span style="color:#a6e22e">connString</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
-	}
-	<span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">AfterConnect</span> = <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">conn</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pgx</span>.<span style="color:#a6e22e">Conn</span>) <span style="color:#66d9ef">error</span> {
-		<span style="color:#a6e22e">conn</span>.<span style="color:#a6e22e">ConnInfo</span>().<span style="color:#a6e22e">RegisterDataType</span>(<span style="color:#a6e22e">pgtype</span>.<span style="color:#a6e22e">DataType</span>{
-			<span style="color:#a6e22e">Value</span>: <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">MyTid</span>{<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">pgtype</span>.<span style="color:#a6e22e">TID</span>{}},
-			<span style="color:#a6e22e">Name</span>:  <span style="color:#e6db74">&#34;tid&#34;</span>,
-			<span style="color:#a6e22e">OID</span>:   <span style="color:#a6e22e">pgtype</span>.<span style="color:#a6e22e">TIDOID</span>,
-		})
-		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
-	}
-
-	<span style="color:#a6e22e">db</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">pgxpool</span>.<span style="color:#a6e22e">ConnectConfig</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>(), <span style="color:#a6e22e">config</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
-	}
-
-	<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">pgCustomerRepo</span>{
-		<span style="color:#a6e22e">dbHandler</span>: <span style="color:#a6e22e">db</span>,
-	}, <span style="color:#66d9ef">nil</span>
-}
-</code></pre></div><p>Since the idea is to try out the pooling mechanism, a pool configuration is created and used for the connection. This is fairly simple, but there is more than just that in the code.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">pgCustomerRepo</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">dbHandler</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">sql</span>.<span style="color:#a6e22e">DB</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewPgCustomerRepo</span>(<span style="color:#a6e22e">connString</span> <span style="color:#66d9ef">string</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">pgCustomerRepo</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">db</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">sql</span>.<span style="color:#a6e22e">Open</span>(<span style="color:#e6db74">&#34;postgres&#34;</span>, <span style="color:#a6e22e">connString</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">pgCustomerRepo</span>{
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">dbHandler</span>: <span style="color:#a6e22e">db</span>,
+</span></span><span style="display:flex;"><span>	}, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Using <code>pgx</code> this is changed to:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">pgCustomerRepo</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">dbHandler</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pgxpool</span>.<span style="color:#a6e22e">Pool</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewPgCustomerRepo</span>(<span style="color:#a6e22e">connString</span> <span style="color:#66d9ef">string</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">pgCustomerRepo</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">config</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">pgxpool</span>.<span style="color:#a6e22e">ParseConfig</span>(<span style="color:#a6e22e">connString</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">AfterConnect</span> = <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">conn</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pgx</span>.<span style="color:#a6e22e">Conn</span>) <span style="color:#66d9ef">error</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">conn</span>.<span style="color:#a6e22e">ConnInfo</span>().<span style="color:#a6e22e">RegisterDataType</span>(<span style="color:#a6e22e">pgtype</span>.<span style="color:#a6e22e">DataType</span>{
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">Value</span>: <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">MyTid</span>{<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">pgtype</span>.<span style="color:#a6e22e">TID</span>{}},
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">Name</span>:  <span style="color:#e6db74">&#34;tid&#34;</span>,
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">OID</span>:   <span style="color:#a6e22e">pgtype</span>.<span style="color:#a6e22e">TIDOID</span>,
+</span></span><span style="display:flex;"><span>		})
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">db</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">pgxpool</span>.<span style="color:#a6e22e">ConnectConfig</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>(), <span style="color:#a6e22e">config</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">pgCustomerRepo</span>{
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">dbHandler</span>: <span style="color:#a6e22e">db</span>,
+</span></span><span style="display:flex;"><span>	}, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Since the idea is to try out the pooling mechanism, a pool configuration is created and used for the connection. This is fairly simple, but there is more than just that in the code.</p>
 <p>The function <code>AfterConnect</code> allows the developer to hook custom behaviors into the database connection. As for this example a custom mapping is added to map a <code>TID</code> field to a string. <code>TID</code> is the Postgres type we get when we query <code>SELECT ctid</code>.</p>
 <p>It is understandable that a real world application will not fetch this type of data thus the mapping was not implemented. For this <a href="https://github.com/jackc/pgtype/pull/29"  target="_blank" rel="noreferrer noopener" >I&rsquo;ve submitted a PR</a>
  but it did not reach a release tag at the moment I am writing this; so I added the custom hook in the code.</p>
@@ -240,215 +238,215 @@ import ( ... &#34;github.com/jackc/pgx/v4/pgxpool&#34; ) What is pgx, and why sh
 <p>With the connection covered, let&rsquo;s move to the queries:</p>
 <h3 id="advisory-lock">Advisory Lock</h3>
 <p>The changes to the code are barely there. All of the <code>pgx</code> functions that go against the database expect a <code>context</code> and there is none non-context alternative.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">tx</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">BeginTx</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#66d9ef">nil</span>)
-<span style="color:#f92672">--</span>&gt;
-<span style="color:#a6e22e">tx</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">BeginTx</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">pgx</span>.<span style="color:#a6e22e">TxOptions</span>{})
-
-
-<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">tx</span>.<span style="color:#a6e22e">ExecContext</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#e6db74">&#34;SELECT pg_advisory_xact_lock($1)&#34;</span>, <span style="color:#a6e22e">hash</span>(<span style="color:#a6e22e">id</span>.<span style="color:#a6e22e">String</span>()))
-<span style="color:#f92672">--</span>&gt;
-<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">tx</span>.<span style="color:#a6e22e">Exec</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#e6db74">&#34;SELECT pg_advisory_xact_lock($1)&#34;</span>, <span style="color:#a6e22e">hash</span>(<span style="color:#a6e22e">id</span>.<span style="color:#a6e22e">String</span>()))
-
-
-<span style="color:#a6e22e">r</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">tx</span>.<span style="color:#a6e22e">QueryRowContext</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#e6db74">&#34;SELECT ctid, xmax, id FROM customers WHERE customer_id = $1&#34;</span>, <span style="color:#a6e22e">id</span>)
-<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
-<span style="color:#f92672">--</span>&gt;
-<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">tx</span>.<span style="color:#a6e22e">QueryRow</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#e6db74">&#34;SELECT ctid, xmax, id FROM customers WHERE customer_id = $1&#34;</span>, <span style="color:#a6e22e">id</span>).<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
-
-
-<span style="color:#a6e22e">q</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">&#34;INSERT INTO customers(customer_id) VALUES($1) RETURNING ctid, xmax, id&#34;</span>
-<span style="color:#a6e22e">row</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">tx</span>.<span style="color:#a6e22e">QueryRowContext</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">q</span>, <span style="color:#a6e22e">id</span>)
-<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">row</span>.<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
-<span style="color:#f92672">--</span>&gt;
-<span style="color:#a6e22e">q</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">&#34;INSERT INTO customers(customer_id) VALUES($1) RETURNING ctid, xmax, id&#34;</span>
-<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">tx</span>.<span style="color:#a6e22e">QueryRow</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">q</span>, <span style="color:#a6e22e">id</span>).<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
-
-
-<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">tx</span>.<span style="color:#a6e22e">Commit</span>()
-<span style="color:#f92672">--</span>&gt;
-<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">tx</span>.<span style="color:#a6e22e">Commit</span>(<span style="color:#a6e22e">ctx</span>)
-
-
-<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">tx</span>.<span style="color:#a6e22e">Rollback</span>()
-<span style="color:#f92672">--</span>&gt;
-<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">tx</span>.<span style="color:#a6e22e">Rollback</span>(<span style="color:#a6e22e">ctx</span>)
-</code></pre></div><p>As for the performance:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LIB/PQ: EXECUTING FOR LOCKS
-Bucket         <span style="color:#75715e">#     %       Histogram</span>
-<span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">974</span>   24.35%  <span style="color:#75715e">##################</span>
-<span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2771</span>  69.27%  <span style="color:#75715e">###################################################</span>
-<span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">244</span>   6.10%   <span style="color:#75715e">####</span>
-<span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">10</span>    0.25%
-<span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
-<span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">1</span>     0.03%
-<span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
-
-PGX: EXECUTING FOR LOCKS
-Bucket         <span style="color:#75715e">#     %       Histogram</span>
-<span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2442</span>  61.05%  <span style="color:#75715e">#############################################</span>
-<span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1506</span>  37.65%  <span style="color:#75715e">############################</span>
-<span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">38</span>    0.95%
-<span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">11</span>    0.27%
-<span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">2</span>     0.05%
-<span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">1</span>     0.03%
-<span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
-</code></pre></div><p>And this is awesome! Out of the box without changing too much the code, the result is already speaking for itself.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">tx</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">BeginTx</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#66d9ef">nil</span>)
+</span></span><span style="display:flex;"><span><span style="color:#f92672">--</span>&gt;
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">tx</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">BeginTx</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">pgx</span>.<span style="color:#a6e22e">TxOptions</span>{})
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">tx</span>.<span style="color:#a6e22e">ExecContext</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#e6db74">&#34;SELECT pg_advisory_xact_lock($1)&#34;</span>, <span style="color:#a6e22e">hash</span>(<span style="color:#a6e22e">id</span>.<span style="color:#a6e22e">String</span>()))
+</span></span><span style="display:flex;"><span><span style="color:#f92672">--</span>&gt;
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">tx</span>.<span style="color:#a6e22e">Exec</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#e6db74">&#34;SELECT pg_advisory_xact_lock($1)&#34;</span>, <span style="color:#a6e22e">hash</span>(<span style="color:#a6e22e">id</span>.<span style="color:#a6e22e">String</span>()))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">r</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">tx</span>.<span style="color:#a6e22e">QueryRowContext</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#e6db74">&#34;SELECT ctid, xmax, id FROM customers WHERE customer_id = $1&#34;</span>, <span style="color:#a6e22e">id</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
+</span></span><span style="display:flex;"><span><span style="color:#f92672">--</span>&gt;
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">tx</span>.<span style="color:#a6e22e">QueryRow</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#e6db74">&#34;SELECT ctid, xmax, id FROM customers WHERE customer_id = $1&#34;</span>, <span style="color:#a6e22e">id</span>).<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">q</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">&#34;INSERT INTO customers(customer_id) VALUES($1) RETURNING ctid, xmax, id&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">row</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">tx</span>.<span style="color:#a6e22e">QueryRowContext</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">q</span>, <span style="color:#a6e22e">id</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">row</span>.<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
+</span></span><span style="display:flex;"><span><span style="color:#f92672">--</span>&gt;
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">q</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">&#34;INSERT INTO customers(customer_id) VALUES($1) RETURNING ctid, xmax, id&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">tx</span>.<span style="color:#a6e22e">QueryRow</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">q</span>, <span style="color:#a6e22e">id</span>).<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">tx</span>.<span style="color:#a6e22e">Commit</span>()
+</span></span><span style="display:flex;"><span><span style="color:#f92672">--</span>&gt;
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">tx</span>.<span style="color:#a6e22e">Commit</span>(<span style="color:#a6e22e">ctx</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">tx</span>.<span style="color:#a6e22e">Rollback</span>()
+</span></span><span style="display:flex;"><span><span style="color:#f92672">--</span>&gt;
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">tx</span>.<span style="color:#a6e22e">Rollback</span>(<span style="color:#a6e22e">ctx</span>)
+</span></span></code></pre></div><p>As for the performance:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>LIB/PQ: EXECUTING FOR LOCKS
+</span></span><span style="display:flex;"><span>Bucket         <span style="color:#75715e">#     %       Histogram</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">974</span>   24.35%  <span style="color:#75715e">##################</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2771</span>  69.27%  <span style="color:#75715e">###################################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">244</span>   6.10%   <span style="color:#75715e">####</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">10</span>    0.25%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">1</span>     0.03%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>PGX: EXECUTING FOR LOCKS
+</span></span><span style="display:flex;"><span>Bucket         <span style="color:#75715e">#     %       Histogram</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2442</span>  61.05%  <span style="color:#75715e">#############################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1506</span>  37.65%  <span style="color:#75715e">############################</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">38</span>    0.95%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">11</span>    0.27%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">2</span>     0.05%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">1</span>     0.03%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+</span></span></code></pre></div><p>And this is awesome! Out of the box without changing too much the code, the result is already speaking for itself.</p>
 <h2 id="upsert-on-conflict">Upsert on conflict</h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span>
-	<span style="color:#e6db74">&#34;INSERT INTO customers(customer_id) VALUES($1) &#34;</span> <span style="color:#f92672">+</span>
-	<span style="color:#e6db74">&#34;ON CONFLICT (customer_id) DO UPDATE SET customer_id = excluded.customer_id RETURNING ctid, xmax, id&#34;</span>
-
-<span style="color:#a6e22e">row</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">QueryRowContext</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">id</span>)
-<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">row</span>.<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
-<span style="color:#f92672">--</span>&gt;
-<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">QueryRow</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">id</span>).<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
-</code></pre></div><p>Even simpler than the previous one, now there is a one liner.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;INSERT INTO customers(customer_id) VALUES($1) &#34;</span> <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;ON CONFLICT (customer_id) DO UPDATE SET customer_id = excluded.customer_id RETURNING ctid, xmax, id&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">row</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">QueryRowContext</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">id</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">row</span>.<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
+</span></span><span style="display:flex;"><span><span style="color:#f92672">--</span>&gt;
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">QueryRow</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">id</span>).<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
+</span></span></code></pre></div><p>Even simpler than the previous one, now there is a one liner.</p>
 <p>Benchmark:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LIB/PQ: EXECUTING FOR UPSERT CONFLICT
-Bucket         <span style="color:#75715e">#     %       Histogram</span>
-<span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1777</span>  44.42%  <span style="color:#75715e">#################################</span>
-<span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1938</span>  48.45%  <span style="color:#75715e">####################################</span>
-<span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">158</span>   3.95%   <span style="color:#75715e">##</span>
-<span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">72</span>    1.80%   <span style="color:#75715e">#</span>
-<span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">33</span>    0.83%
-<span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">18</span>    0.45%
-<span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">4</span>     0.10%
-
-PGX: EXECUTING FOR UPSERT CONFLICT
-Bucket         <span style="color:#75715e">#     %       Histogram</span>
-<span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2676</span>  66.90%  <span style="color:#75715e">##################################################</span>
-<span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1295</span>  32.38%  <span style="color:#75715e">########################</span>
-<span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">21</span>    0.53%
-<span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">6</span>     0.15%
-<span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">1</span>     0.03%
-<span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">1</span>     0.03%
-<span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
-</code></pre></div><p>Yes, I am running the benchmark on the same computer, doing a warm up phase in which the results are discarded to be fair with the old benchmarks as well.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>LIB/PQ: EXECUTING FOR UPSERT CONFLICT
+</span></span><span style="display:flex;"><span>Bucket         <span style="color:#75715e">#     %       Histogram</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1777</span>  44.42%  <span style="color:#75715e">#################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1938</span>  48.45%  <span style="color:#75715e">####################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">158</span>   3.95%   <span style="color:#75715e">##</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">72</span>    1.80%   <span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">33</span>    0.83%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">18</span>    0.45%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">4</span>     0.10%
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>PGX: EXECUTING FOR UPSERT CONFLICT
+</span></span><span style="display:flex;"><span>Bucket         <span style="color:#75715e">#     %       Histogram</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2676</span>  66.90%  <span style="color:#75715e">##################################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1295</span>  32.38%  <span style="color:#75715e">########################</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">21</span>    0.53%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">6</span>     0.15%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">1</span>     0.03%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">1</span>     0.03%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+</span></span></code></pre></div><p>Yes, I am running the benchmark on the same computer, doing a warm up phase in which the results are discarded to be fair with the old benchmarks as well.</p>
 <h2 id="upsert-do-nothing">Upsert do nothing</h2>
 <p>As you can recall (if you read my previous post), there is a limitation when sending on the same <code>QueryContext</code> more than one parameterized query.</p>
 <p>On the previous post, this was bypassed by a non good practice that was not sending parameterized queries but injecting the string; which as I stated previously it is a bad practice that can led to security vulnerabilities.</p>
 <p>But on <code>pgx</code> there is a built-in support for sending a query batch in a single trip. And this definitely draw my attention since I find this approach the easiest to understand a.k.a <code>write first, read later</code>.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span>
-	<span style="color:#e6db74">&#34;INSERT INTO customers(customer_id)	VALUES($1) ON CONFLICT DO NOTHING;&#34;</span> <span style="color:#f92672">+</span>
-	<span style="color:#e6db74">&#34;SELECT ctid, xmax, id FROM customers WHERE customer_id = $1&#34;</span>
-
-<span style="color:#a6e22e">query</span> = <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">ReplaceAll</span>(<span style="color:#a6e22e">query</span>, <span style="color:#e6db74">&#34;$1&#34;</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;&#39;%s&#39;&#34;</span>, <span style="color:#a6e22e">id</span>.<span style="color:#a6e22e">String</span>()))
-<span style="color:#a6e22e">row</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">QueryRowContext</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">query</span>)
-<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">row</span>.<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
-</code></pre></div><p>This unsafe piece of code now can be converted to an elegant and performant way:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">batch</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">pgx</span>.<span style="color:#a6e22e">Batch</span>{}
-<span style="color:#a6e22e">batch</span>.<span style="color:#a6e22e">Queue</span>(<span style="color:#e6db74">&#34;INSERT INTO customers(customer_id) VALUES($1) ON CONFLICT DO NOTHING&#34;</span>, <span style="color:#a6e22e">id</span>)
-<span style="color:#a6e22e">batch</span>.<span style="color:#a6e22e">Queue</span>(<span style="color:#e6db74">&#34;SELECT ctid, xmax, id FROM customers WHERE customer_id = $1&#34;</span>, <span style="color:#a6e22e">id</span>)
-<span style="color:#a6e22e">results</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">SendBatch</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">batch</span>)
-
-<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">results</span>.<span style="color:#a6e22e">Exec</span>()
-<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-	<span style="color:#66d9ef">return</span>
-}
-
-<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">results</span>.<span style="color:#a6e22e">QueryRow</span>().<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
-<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-	<span style="color:#66d9ef">return</span>
-}
-
-<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">results</span>.<span style="color:#a6e22e">Close</span>()
-</code></pre></div><p>But does this truly work?</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LIB/PQ: EXECUTING FOR UPSERT DO NOTHING
-Bucket         <span style="color:#75715e">#     %       Histogram</span>
-<span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">3426</span>  85.65%  <span style="color:#75715e">################################################################</span>
-<span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">572</span>   14.30%  <span style="color:#75715e">##########</span>
-<span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1</span>     0.03%
-<span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">0</span>     0.00%
-<span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">1</span>     0.03%
-<span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
-<span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
-
-PGX: EXECUTING FOR UPSERT DO NOTHING
-Bucket         <span style="color:#75715e">#     %       Histogram</span>
-<span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">3878</span>  96.95%  <span style="color:#75715e">########################################################################</span>
-<span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">118</span>   2.95%   <span style="color:#75715e">##</span>
-<span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">4</span>     0.10%
-<span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">0</span>     0.00%
-<span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
-<span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
-<span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
-</code></pre></div><p>And the answer is yes, it does work. Not only it is faster, but it managed to get rid of the vulnerability issue and allows the code to send two parameterized queries in one round trip.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;INSERT INTO customers(customer_id)	VALUES($1) ON CONFLICT DO NOTHING;&#34;</span> <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;SELECT ctid, xmax, id FROM customers WHERE customer_id = $1&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">query</span> = <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">ReplaceAll</span>(<span style="color:#a6e22e">query</span>, <span style="color:#e6db74">&#34;$1&#34;</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;&#39;%s&#39;&#34;</span>, <span style="color:#a6e22e">id</span>.<span style="color:#a6e22e">String</span>()))
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">row</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">QueryRowContext</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">query</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">row</span>.<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
+</span></span></code></pre></div><p>This unsafe piece of code now can be converted to an elegant and performant way:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">batch</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">pgx</span>.<span style="color:#a6e22e">Batch</span>{}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">batch</span>.<span style="color:#a6e22e">Queue</span>(<span style="color:#e6db74">&#34;INSERT INTO customers(customer_id) VALUES($1) ON CONFLICT DO NOTHING&#34;</span>, <span style="color:#a6e22e">id</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">batch</span>.<span style="color:#a6e22e">Queue</span>(<span style="color:#e6db74">&#34;SELECT ctid, xmax, id FROM customers WHERE customer_id = $1&#34;</span>, <span style="color:#a6e22e">id</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">results</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">SendBatch</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">batch</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">results</span>.<span style="color:#a6e22e">Exec</span>()
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">results</span>.<span style="color:#a6e22e">QueryRow</span>().<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">results</span>.<span style="color:#a6e22e">Close</span>()
+</span></span></code></pre></div><p>But does this truly work?</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>LIB/PQ: EXECUTING FOR UPSERT DO NOTHING
+</span></span><span style="display:flex;"><span>Bucket         <span style="color:#75715e">#     %       Histogram</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">3426</span>  85.65%  <span style="color:#75715e">################################################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">572</span>   14.30%  <span style="color:#75715e">##########</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1</span>     0.03%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">0</span>     0.00%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">1</span>     0.03%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>PGX: EXECUTING FOR UPSERT DO NOTHING
+</span></span><span style="display:flex;"><span>Bucket         <span style="color:#75715e">#     %       Histogram</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">3878</span>  96.95%  <span style="color:#75715e">########################################################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">118</span>   2.95%   <span style="color:#75715e">##</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">4</span>     0.10%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">0</span>     0.00%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+</span></span></code></pre></div><p>And the answer is yes, it does work. Not only it is faster, but it managed to get rid of the vulnerability issue and allows the code to send two parameterized queries in one round trip.</p>
 <p>Now if someone asks me if I choose doing this over CTE queries for this scenario, I will lean more on this approach since it is easier to comprehend.</p>
 <h2 id="cte-queries">CTE queries</h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span>
-	<span style="color:#e6db74">&#34;WITH &#34;</span> <span style="color:#f92672">+</span>
-		<span style="color:#e6db74">&#34;search AS (SELECT ctid, xmax, id FROM customers WHERE customer_id = $1 LIMIT 1),&#34;</span> <span style="color:#f92672">+</span>
-		<span style="color:#e6db74">&#34;add AS (INSERT INTO customers (customer_id) SELECT $1 WHERE NOT EXISTS(SELECT id from search) RETURNING ctid, xmax, id)&#34;</span> <span style="color:#f92672">+</span>
-	<span style="color:#e6db74">&#34;SELECT ctid, xmax, id from add	UNION ALL SELECT ctid, xmax, id from search&#34;</span>
-
-<span style="color:#a6e22e">row</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">QueryRowContext</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">id</span>)
-<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">row</span>.<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
-<span style="color:#f92672">--</span>&gt;
-<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">QueryRow</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">id</span>).<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
-</code></pre></div><p>As with the other approaches, not much to change here.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;WITH &#34;</span> <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#e6db74">&#34;search AS (SELECT ctid, xmax, id FROM customers WHERE customer_id = $1 LIMIT 1),&#34;</span> <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#e6db74">&#34;add AS (INSERT INTO customers (customer_id) SELECT $1 WHERE NOT EXISTS(SELECT id from search) RETURNING ctid, xmax, id)&#34;</span> <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;SELECT ctid, xmax, id from add	UNION ALL SELECT ctid, xmax, id from search&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">row</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">QueryRowContext</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">id</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">row</span>.<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
+</span></span><span style="display:flex;"><span><span style="color:#f92672">--</span>&gt;
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">QueryRow</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">id</span>).<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
+</span></span></code></pre></div><p>As with the other approaches, not much to change here.</p>
 <p>Benchmark:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LIB/PQ: EXECUTING FOR UPSERT CTE
-Bucket         <span style="color:#75715e">#     %       Histogram</span>
-<span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2950</span>  73.75%  <span style="color:#75715e">#######################################################</span>
-<span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1034</span>  25.85%  <span style="color:#75715e">###################</span>
-<span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">14</span>    0.35%
-<span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2</span>     0.05%
-<span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
-<span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
-<span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
-
-PGX: EXECUTING FOR UPSERT CTE
-Bucket         <span style="color:#75715e">#     %       Histogram</span>
-<span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">3893</span>  97.32%  <span style="color:#75715e">########################################################################</span>
-<span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">106</span>   2.65%   <span style="color:#75715e">#</span>
-<span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1</span>     0.03%
-<span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">0</span>     0.00%
-<span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
-<span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
-<span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
-</code></pre></div><p>And again, the results are impressive, but one can say now:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>LIB/PQ: EXECUTING FOR UPSERT CTE
+</span></span><span style="display:flex;"><span>Bucket         <span style="color:#75715e">#     %       Histogram</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2950</span>  73.75%  <span style="color:#75715e">#######################################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1034</span>  25.85%  <span style="color:#75715e">###################</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">14</span>    0.35%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2</span>     0.05%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>PGX: EXECUTING FOR UPSERT CTE
+</span></span><span style="display:flex;"><span>Bucket         <span style="color:#75715e">#     %       Histogram</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">3893</span>  97.32%  <span style="color:#75715e">########################################################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">106</span>   2.65%   <span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1</span>     0.03%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">0</span>     0.00%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+</span></span></code></pre></div><p>And again, the results are impressive, but one can say now:</p>
 <blockquote>
 <p>In all of these approaches shown, the use case was to bombard the database in order to insert and fetch a customer with the same ID. Maybe the cache stops working when the parameter changes.</p>
 </blockquote>
 <p>Let&rsquo;s try it out:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">routes</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/upsert-cte-random&#34;</span>, <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">UpsertCustomerRandom</span>(<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">CustomerRepo</span>.<span style="color:#a6e22e">UpsertCustomerCte</span>))
-</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Server</span>) <span style="color:#a6e22e">UpsertCustomerRandom</span>(<span style="color:#a6e22e">repoUpsert</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">id</span> <span style="color:#a6e22e">uuid</span>.<span style="color:#a6e22e">UUID</span>) (<span style="color:#a6e22e">res</span> <span style="color:#a6e22e">domain</span>.<span style="color:#a6e22e">UpsertedRow</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>)) <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span> {
-	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) {
-		<span style="color:#f92672">...</span>
-
-		<span style="color:#75715e">// Call the repo generating a random UUID for each time
-</span><span style="color:#75715e"></span>		<span style="color:#a6e22e">start</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Now</span>()
-		<span style="color:#a6e22e">upserted</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">repoUpsert</span>(<span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">Context</span>(), <span style="color:#a6e22e">uuid</span>.<span style="color:#a6e22e">New</span>())
-		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-			<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">WriteHeader</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">StatusInternalServerError</span>)
-			<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span>)
-			<span style="color:#66d9ef">return</span>
-		}
-
-		<span style="color:#f92672">...</span>
-	}
-}
-</code></pre></div><p>Of course, in order to do a comparison, this new route was benchmarked using both <code>lib/pq</code> and <code>pgx</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LIB/PQ: EXECUTING FOR UPSERT CTE RANDOM
-Bucket         <span style="color:#75715e">#     %       Histogram</span>
-<span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1744</span>  43.60%  <span style="color:#75715e">################################</span>
-<span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2208</span>  55.20%  <span style="color:#75715e">#########################################</span>
-<span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">45</span>    1.12%
-<span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2</span>     0.05%
-<span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
-<span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
-<span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">1</span>     0.03%
-
-PGX: EXECUTING FOR UPSERT CTE RANDOM
-Bucket         <span style="color:#75715e">#     %       Histogram</span>
-<span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2643</span>  66.07%  <span style="color:#75715e">#################################################</span>
-<span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1356</span>  33.90%  <span style="color:#75715e">#########################</span>
-<span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1</span>     0.03%
-<span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">0</span>     0.00%
-<span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
-<span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
-<span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
-</code></pre></div><p>And as we can see, the cache is still doing its job.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">routes</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/upsert-cte-random&#34;</span>, <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">UpsertCustomerRandom</span>(<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">CustomerRepo</span>.<span style="color:#a6e22e">UpsertCustomerCte</span>))
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Server</span>) <span style="color:#a6e22e">UpsertCustomerRandom</span>(<span style="color:#a6e22e">repoUpsert</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">id</span> <span style="color:#a6e22e">uuid</span>.<span style="color:#a6e22e">UUID</span>) (<span style="color:#a6e22e">res</span> <span style="color:#a6e22e">domain</span>.<span style="color:#a6e22e">UpsertedRow</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>)) <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Call the repo generating a random UUID for each time
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#a6e22e">start</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Now</span>()
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">upserted</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">repoUpsert</span>(<span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">Context</span>(), <span style="color:#a6e22e">uuid</span>.<span style="color:#a6e22e">New</span>())
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">WriteHeader</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">StatusInternalServerError</span>)
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Of course, in order to do a comparison, this new route was benchmarked using both <code>lib/pq</code> and <code>pgx</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>LIB/PQ: EXECUTING FOR UPSERT CTE RANDOM
+</span></span><span style="display:flex;"><span>Bucket         <span style="color:#75715e">#     %       Histogram</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1744</span>  43.60%  <span style="color:#75715e">################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2208</span>  55.20%  <span style="color:#75715e">#########################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">45</span>    1.12%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2</span>     0.05%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">1</span>     0.03%
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>PGX: EXECUTING FOR UPSERT CTE RANDOM
+</span></span><span style="display:flex;"><span>Bucket         <span style="color:#75715e">#     %       Histogram</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2643</span>  66.07%  <span style="color:#75715e">#################################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1356</span>  33.90%  <span style="color:#75715e">#########################</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1</span>     0.03%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">0</span>     0.00%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+</span></span></code></pre></div><p>And as we can see, the cache is still doing its job.</p>
 <h2 id="summary">Summary</h2>
 <p>I discovered this library due to some luck but so far I have not been disappointed. I am not seeing a reason on not picking this library as default for standard CRUD applications. Of course, there might be use cases where it is not possible and then <code>lib/pq</code> can still do the job.</p>
 <h2 id="some-additional-notes">Some additional notes</h2>
@@ -458,10 +456,10 @@ Bucket         <span style="color:#75715e">#     %       Histogram</span>
 . The <code>master</code> branch contains the <code>lib/pq</code> code and the branch <code>refactor/pgx</code> contains the <code>pgx</code> code.</li>
 <li>All the benchmarks can be executed easily by:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">make run-db <span style="color:#f92672">(</span>create database and table after executing this<span style="color:#f92672">)</span>
-make run-app
-make run-bench
-</code></pre></div><p>Last, but not least, if you consider this is useful, do not hesitate on sharing it on your favorite social media; and if there is a particular topic you want me to cover, just put it on the comments below.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>make run-db <span style="color:#f92672">(</span>create database and table after executing this<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>make run-app
+</span></span><span style="display:flex;"><span>make run-bench
+</span></span></code></pre></div><p>Last, but not least, if you consider this is useful, do not hesitate on sharing it on your favorite social media; and if there is a particular topic you want me to cover, just put it on the comments below.</p>
 
     </div>
   </article>
@@ -665,7 +663,7 @@ make run-bench
 
 
 
-<script type="text/javascript" src="/bundle.min.f944224ac8e104e8f14a9d98224b628e383c8f2e63f95e54381ac414365bf32b8c5ae9a6c157271fe82938d66e1cf8399e34e6cb0ee7b711c58d167a4cfd6a6f.js" integrity="sha512-&#43;UQiSsjhBOjxSp2YIktijjg8jy5j&#43;V5UOBrEFDZb8yuMWummwVcnH&#43;gpONZuHPg5njTmyw7ntxHFjRZ6TP1qbw=="></script>
+<script type="text/javascript" src="/bundle.min.e073c6bca809af5c516c3777e3441958267b377fb29e3c9471c558a6711b62d7819807a126e3378f03763928ef7b09a6cdcb1693bf5719e81e15e60176854b26.js" integrity="sha512-4HPGvKgJr1xRbDd340QZWCZ7N3&#43;ynjyUccVYpnEbYteBmAehJuM3jwN2OSjvewmmzcsWk79XGegeFeYBdoVLJg=="></script>
 
 
 

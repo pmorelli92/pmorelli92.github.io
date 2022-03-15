@@ -37,8 +37,6 @@
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
     <link rel="shortcut icon" href="/favicon.ico">
     <meta name="msapplication-TileColor" content="">
-    <meta name="theme-color" content="">
-
 
 
 <meta itemprop="name" content="The good, the bad and the ugly of microservices">
@@ -146,7 +144,7 @@
 
     <div class="post-content">
       <p>Without any doubts the year 2020 is one everyone is going to remember and it will appear in the history books (and wikipedia). Amidst so much chaos, the established way of working was forced to change, and companies that before rejected work from home had to adapt. In this way, teams that before shared a room and suffered unnecessary meetings, now started functioning as distributed teams (or distributed systems), that share a queue of messages using tools like email and slack (async communication) - and have meetings with lesser frequency (sync communication).</p>
-<p>Great part of the IT industry agree with remote work, and beside topics like if the employer should pay for employees' monitors and internet there is not any major complain.</p>
+<p>Great part of the IT industry agree with remote work, and beside topics like if the employer should pay for employees&rsquo; monitors and internet there is not any major complain.</p>
 <p>If one make the assumption that a distribute team is better, can one also assume that a company using microservices is better? The answer is surely not black or white as there are certain topics to analyze.</p>
 <p>In the next paragraphs you will find &ldquo;the good, the bad and the ugly&rdquo; of the microservices. This is an extract of two podcast episodes of <a href="https://www.youtube.com/c/stream404"  target="_blank" rel="noreferrer noopener" >Stream 404</a>
 , a channel on which, me and my friends, stream monthly about different IT topics. The content of the episodes is on spanish, so the extract will be on english to cover a broader audience.</p>
@@ -180,7 +178,7 @@
 <p>A company that handles a lot of languages also needs a lot of employees with different skill sets which can be a complication in case one employee leaves or wants to change team. Even when I do not agree that one only knows how to code on certain language and needs to start from &ldquo;trainee&rdquo; to learn a new one; there is still a learning curve in order to familiarize with syntax, frameworks and others.</p>
 <h2 id="the-ugly">The ugly</h2>
 <p>Microservices are not good for a new business in which there are no domain experts to brainstorm with. This, also mentioned in the bad, is something the team needs to work with. A monolith can be split gradually when the business scopes are stable and this can take from months to years.</p>
-<p>There is also a change of paradigm in terms on how to test the system. Many teams rely too much on automated E2E (end to end) that covers the entire system. Even when this seems like a good idea, one of the microservices' principles is that the deploy should be independent.
+<p>There is also a change of paradigm in terms on how to test the system. Many teams rely too much on automated E2E (end to end) that covers the entire system. Even when this seems like a good idea, one of the microservices&rsquo; principles is that the deploy should be independent.
 If one has to deploy 10 services into production simultaneously and each time the E2E are executed takes 5 minutes; a total of 50 minutes is going to be spent rerunning the test one after another. This is not scalable on bigger systems and this is why the unit tests (for testing business logic) and integration tests (for testing database, amqp, other APIs) are favoured instead.</p>
 <p>Everything needs to be observable and measurable. In a monolith the failure points are easier to detect as everything is on the same application. In a distributed system every service need to have their metrics and alerts in place to know when there is a problem and be prepared to downgrade functionality when this happens. Networks fail, it is not about how to avoid something breaking but how to alert and proceed when it happens.</p>
 <p>From sync to async communication. A lot of the operations do not need to happen in batch. This is another change of paradigm. If a customer performs a buying operation it is probably not necessary for the sending of the receipt to happen in sync in the same transaction. For this, one can implement the pattern &ldquo;Tell don&rsquo;t ask&rdquo; where a service tells the other (via an event) that something has happened. This is an async operation that decouples the transaction and that can be retried the amount of times needed. So if the mail service for sending the receipt fails, the buying operation of the customer will not fail and he/she will get the receipt whenever the mail service is working properly again.</p>
@@ -387,7 +385,7 @@ If one has to deploy 10 services into production simultaneously and each time th
 
 
 
-<script type="text/javascript" src="/bundle.min.f944224ac8e104e8f14a9d98224b628e383c8f2e63f95e54381ac414365bf32b8c5ae9a6c157271fe82938d66e1cf8399e34e6cb0ee7b711c58d167a4cfd6a6f.js" integrity="sha512-&#43;UQiSsjhBOjxSp2YIktijjg8jy5j&#43;V5UOBrEFDZb8yuMWummwVcnH&#43;gpONZuHPg5njTmyw7ntxHFjRZ6TP1qbw=="></script>
+<script type="text/javascript" src="/bundle.min.e073c6bca809af5c516c3777e3441958267b377fb29e3c9471c558a6711b62d7819807a126e3378f03763928ef7b09a6cdcb1693bf5719e81e15e60176854b26.js" integrity="sha512-4HPGvKgJr1xRbDd340QZWCZ7N3&#43;ynjyUccVYpnEbYteBmAehJuM3jwN2OSjvewmmzcsWk79XGegeFeYBdoVLJg=="></script>
 
 
 

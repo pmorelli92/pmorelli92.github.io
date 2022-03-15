@@ -7,7 +7,61 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Pablo Morelli</copyright>
-    <lastBuildDate>Wed, 19 Jan 2022 12:13:07 +0100</lastBuildDate><atom:link href="https://devandchill.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 15 Mar 2022 18:30:00 +0100</lastBuildDate><atom:link href="https://devandchill.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>.net</title>
+      <link>https://devandchill.com/tags/.net/</link>
+      <pubDate>Tue, 15 Mar 2022 18:30:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/.net/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>autofixture</title>
+      <link>https://devandchill.com/tags/autofixture/</link>
+      <pubDate>Tue, 15 Mar 2022 18:30:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/autofixture/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>go</title>
+      <link>https://devandchill.com/tags/go/</link>
+      <pubDate>Tue, 15 Mar 2022 18:30:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/go/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>kiss</title>
+      <link>https://devandchill.com/tags/kiss/</link>
+      <pubDate>Tue, 15 Mar 2022 18:30:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/kiss/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>test</title>
+      <link>https://devandchill.com/tags/test/</link>
+      <pubDate>Tue, 15 Mar 2022 18:30:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/test/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>yagni</title>
+      <link>https://devandchill.com/tags/yagni/</link>
+      <pubDate>Tue, 15 Mar 2022 18:30:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/tags/yagni/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>brew</title>
       <link>https://devandchill.com/tags/brew/</link>
@@ -86,15 +140,6 @@
       <pubDate>Wed, 19 Jan 2022 12:13:07 +0100</pubDate>
       
       <guid>https://devandchill.com/tags/zsh/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>go</title>
-      <link>https://devandchill.com/tags/go/</link>
-      <pubDate>Fri, 31 Dec 2021 16:00:00 +0200</pubDate>
-      
-      <guid>https://devandchill.com/tags/go/</guid>
       <description></description>
     </item>
     

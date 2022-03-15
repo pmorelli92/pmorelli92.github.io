@@ -2,10 +2,37 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://devandchill.com/tags/brew/</loc>
-    <lastmod>2022-01-19T12:13:07+01:00</lastmod>
+    <loc>https://devandchill.com/tags/.net/</loc>
+    <lastmod>2022-03-15T18:30:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/autofixture/</loc>
+    <lastmod>2022-03-15T18:30:00+01:00</lastmod>
   </url><url>
     <loc>https://devandchill.com/</loc>
+    <lastmod>2022-03-15T18:30:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/go/</loc>
+    <lastmod>2022-03-15T18:30:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/posts/2022/03/keep-it-simple-stupid-lessons-learned/</loc>
+    <lastmod>2022-03-15T18:30:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/kiss/</loc>
+    <lastmod>2022-03-15T18:30:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/posts/</loc>
+    <lastmod>2022-03-15T18:30:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/</loc>
+    <lastmod>2022-03-15T18:30:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/test/</loc>
+    <lastmod>2022-03-15T18:30:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/yagni/</loc>
+    <lastmod>2022-03-15T18:30:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/brew/</loc>
     <lastmod>2022-01-19T12:13:07+01:00</lastmod>
   </url><url>
     <loc>https://devandchill.com/tags/git/</loc>
@@ -17,16 +44,10 @@
     <loc>https://devandchill.com/tags/ohmyposh/</loc>
     <lastmod>2022-01-19T12:13:07+01:00</lastmod>
   </url><url>
-    <loc>https://devandchill.com/posts/</loc>
-    <lastmod>2022-01-19T12:13:07+01:00</lastmod>
-  </url><url>
     <loc>https://devandchill.com/posts/2022/01/set-up-the-same-terminal-regardless-your-os-and-more/</loc>
     <lastmod>2022-01-19T12:13:07+01:00</lastmod>
   </url><url>
     <loc>https://devandchill.com/tags/sign/</loc>
-    <lastmod>2022-01-19T12:13:07+01:00</lastmod>
-  </url><url>
-    <loc>https://devandchill.com/tags/</loc>
     <lastmod>2022-01-19T12:13:07+01:00</lastmod>
   </url><url>
     <loc>https://devandchill.com/tags/terminal/</loc>
@@ -40,9 +61,6 @@
   </url><url>
     <loc>https://devandchill.com/tags/zsh/</loc>
     <lastmod>2022-01-19T12:13:07+01:00</lastmod>
-  </url><url>
-    <loc>https://devandchill.com/tags/go/</loc>
-    <lastmod>2021-12-31T16:00:00+02:00</lastmod>
   </url><url>
     <loc>https://devandchill.com/posts/2021/12/go-step-by-step-guide-for-implementing-tracing-on-a-microservices-architecture-2/2/</loc>
     <lastmod>2021-12-31T16:00:00+02:00</lastmod>

@@ -7,7 +7,17 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Pablo Morelli</copyright>
-    <lastBuildDate>Fri, 31 Dec 2021 16:00:00 +0200</lastBuildDate><atom:link href="https://devandchill.com/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 15 Mar 2022 18:30:00 +0100</lastBuildDate><atom:link href="https://devandchill.com/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Keep it simple stupid, lessons learned</title>
+      <link>https://devandchill.com/posts/2022/03/keep-it-simple-stupid-lessons-learned/</link>
+      <pubDate>Tue, 15 Mar 2022 18:30:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/posts/2022/03/keep-it-simple-stupid-lessons-learned/</guid>
+      <description>We as humans are always changing and evolving, sometimes for the best and sometimes not. In our professional life this is expected, one gains experience, learns new tools, knowns different people with different background, etc.
+Back when I was working for a consultancy company in 2016 I met a wonderful person who at that time was an architect, and right now one of my best friends. Our main topic of conversation was technology, and we always dug deeper and deeper into it.</description>
+    </item>
+    
     <item>
       <title>Go - Step by step guide for implementing tracing on a microservices architecture (2/2)</title>
       <link>https://devandchill.com/posts/2021/12/go-step-by-step-guide-for-implementing-tracing-on-a-microservices-architecture-2/2/</link>
@@ -46,7 +56,7 @@ However, there was a little something that my mind keep thinking: it would be su
       <guid>https://devandchill.com/posts/2020/05/go-lib/pq-or-pgx-which-performs-better/</guid>
       <description>Some days ago a coworker of mine linked me to the source code of Google&amp;rsquo;s exposure notifications API and of course is a good chance to see how Google is doing Go related codebases.
 Continuing with the topic of Postgres and benchmarking, I decided to check out how Postgres configuration was done and this line got my attention:
-import ( ... &amp;#34;github.com/jackc/pgx/v4/pgxpool&amp;#34; ) What is pgx, and why should we care?</description>
+import ( 	... 	&amp;#34;github.com/jackc/pgx/v4/pgxpool&amp;#34; ) What is pgx, and why should we care?</description>
     </item>
     
     <item>
@@ -79,7 +89,7 @@ Every company has a different way to work and configure CI/CD, and all of them h
       <guid>https://devandchill.com/posts/2019/04/word-counter-sync-concurrent-or-streams/</guid>
       <description>One day I was given the task of doing a whiteboard word counter algorithm. The requirements were:
  Print on console all the words and the quantity of times they appear on a 40.000 lines input. Make it as fast as possible.  For a start one can do it as simple as possible instead, and then try to see whether it can be made faster:
-func wordCounter() (words map[string]int) { b, err := ioutil.</description>
+func wordCounter() (words map[string]int) { 	b, err := ioutil.</description>
     </item>
     
     <item>

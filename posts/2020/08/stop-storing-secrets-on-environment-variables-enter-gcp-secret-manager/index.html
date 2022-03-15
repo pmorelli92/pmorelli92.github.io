@@ -37,8 +37,6 @@
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
     <link rel="shortcut icon" href="/favicon.ico">
     <meta name="msapplication-TileColor" content="">
-    <meta name="theme-color" content="">
-
 
 
 <meta itemprop="name" content="Stop storing secrets on environment variables: Enter GCP Secret Manager">
@@ -172,11 +170,11 @@ To be absolutely, unequivocally clear, you should not store secret or sensitive 
 <blockquote>
 <p>From now on, replace pablo-test-project with your GCP project identifier when executing the commands.</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud config set project pablo-test-project
-</code></pre></div><p>For accessing Secret Manager API from our Google Kubernetes Engine there are three things that needs to be done.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>gcloud config set project pablo-test-project
+</span></span></code></pre></div><p>For accessing Secret Manager API from our Google Kubernetes Engine there are three things that needs to be done.</p>
 <h4 id="enable-secret-manager-api">Enable Secret Manager API</h4>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud services enable secretmanager.googleapis.com
-</code></pre></div><p><a href="https://console.cloud.google.com/apis/library/secretmanager.googleapis.com"  target="_blank" rel="noreferrer noopener" >Or from the Console UI.</a>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>gcloud services enable secretmanager.googleapis.com
+</span></span></code></pre></div><p><a href="https://console.cloud.google.com/apis/library/secretmanager.googleapis.com"  target="_blank" rel="noreferrer noopener" >Or from the Console UI.</a>
 </p>
 <h4 id="set-corresponding-iam-role-on-the-service-account-running-the-instance">Set corresponding IAM role on the service account running the instance</h4>
 <p><a href="https://cloud.google.com/compute/docs/access/service-accounts#service_account_permissions"  target="_blank" rel="noreferrer noopener" >From service account documentation.</a>
@@ -186,50 +184,50 @@ To be absolutely, unequivocally clear, you should not store secret or sensitive 
 Furthermore, an instance&rsquo;s access scopes determine the default OAuth scopes for requests made through the gcloud tool and client libraries on the instance. As a result, access scopes potentially further limit access to API methods when authenticating through OAuth. [&hellip;]</p>
 </blockquote>
 <p>In order to assign the corresponding IAM roles to the service account, the account should be created first:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud iam service-accounts create demo-service-account <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--description<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;Service account used for our demo cluster&#39;</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--display-name<span style="color:#f92672">=</span>demo-service-account
-</code></pre></div><p>The role to be assigned to this service account is <a href="https://cloud.google.com/iam/docs/understanding-roles#secret-manager-roles"  target="_blank" rel="noreferrer noopener" >roles/secretmanager.secretAccessor</a>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>gcloud iam service-accounts create demo-service-account <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--description<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;Service account used for our demo cluster&#39;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--display-name<span style="color:#f92672">=</span>demo-service-account
+</span></span></code></pre></div><p>The role to be assigned to this service account is <a href="https://cloud.google.com/iam/docs/understanding-roles#secret-manager-roles"  target="_blank" rel="noreferrer noopener" >roles/secretmanager.secretAccessor</a>
  which allows accessing the payload of secrets:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud projects add-iam-policy-binding pablo-test-project <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--member<span style="color:#f92672">=</span>serviceAccount:demo-service-account@pablo-test-project.iam.gserviceaccount.com <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--role<span style="color:#f92672">=</span>roles/secretmanager.secretAccessor
-</code></pre></div><h4 id="configure-oauth-scopes-on-the-instance-that-consumes-the-api">Configure OAuth scopes on the instance that consumes the API</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>gcloud projects add-iam-policy-binding pablo-test-project <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--member<span style="color:#f92672">=</span>serviceAccount:demo-service-account@pablo-test-project.iam.gserviceaccount.com <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--role<span style="color:#f92672">=</span>roles/secretmanager.secretAccessor
+</span></span></code></pre></div><h4 id="configure-oauth-scopes-on-the-instance-that-consumes-the-api">Configure OAuth scopes on the instance that consumes the API</h4>
 <p><a href="https://cloud.google.com/secret-manager/docs/access-control"  target="_blank" rel="noreferrer noopener" >From access control documentation.</a>
 </p>
 <blockquote>
 <p>To access the Secret Manager API from within a Compute Engine instance or a Google Kubernetes Engine node (which is also a Compute Engine instance), the instance must have the cloud-platform OAuth scope. For more information about access scopes in Compute Engine, see Service account permissions in the Compute Engine documentation.</p>
 </blockquote>
 <p>As mentioned before, an instance&rsquo;s access scopes determine the default OAuth2 scopes for requests made. So the Kubernetes instance that is going to be created needs the <code>cloud-platform</code> scope. And also don&rsquo;t forget to indicate the service account created before.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud container clusters create demo-cluster <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--zone<span style="color:#f92672">=</span>europe-west3-a <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--num-nodes<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--machine-type<span style="color:#f92672">=</span>n1-standard-1 <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--service-account<span style="color:#f92672">=</span>demo-service-account@pablo-test-project.iam.gserviceaccount.com <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--scopes<span style="color:#f92672">=</span>https://www.googleapis.com/auth/monitoring,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/cloud-platform
-</code></pre></div><p>After the cluster is deployed, get the credentials for <code>kubectl</code>.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud container clusters get-credentials demo-cluster --zone europe-west3-a
-</code></pre></div><p>Before proceeding further with the cluster, create a secret and add a value on the Secret Manager:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud secrets create MY_SECRET
-printf <span style="color:#e6db74">&#34;s3cr3t&#34;</span> | gcloud secrets versions add MY_SECRET --data-file<span style="color:#f92672">=</span>-
-</code></pre></div><p>To test that the instance can access to Secret Manager API, a dummy pod will be deployed so that you can exec into it:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#ae81ff">cat &lt;&lt;EOF | kubectl apply -f -</span>
-<span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
-<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Pod</span>
-<span style="color:#f92672">metadata</span>:
-  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">httpbin</span>
-<span style="color:#f92672">spec</span>:
-  <span style="color:#f92672">containers</span>:
-  - <span style="color:#f92672">image</span>: <span style="color:#ae81ff">docker.io/kennethreitz/httpbin</span>
-    <span style="color:#f92672">imagePullPolicy</span>: <span style="color:#ae81ff">IfNotPresent</span>
-    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">httpbin</span>
-    <span style="color:#f92672">ports</span>:
-    - <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">80</span>
-<span style="color:#ae81ff">EOF</span>
-</code></pre></div><p>Exec into the created container and install curl on it:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl exec -it httpbin -- sh
-$ apt update; apt install curl;
-</code></pre></div><h3 id="trying-it-out">Trying it out</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>gcloud container clusters create demo-cluster <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--zone<span style="color:#f92672">=</span>europe-west3-a <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--num-nodes<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--machine-type<span style="color:#f92672">=</span>n1-standard-1 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--service-account<span style="color:#f92672">=</span>demo-service-account@pablo-test-project.iam.gserviceaccount.com <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--scopes<span style="color:#f92672">=</span>https://www.googleapis.com/auth/monitoring,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/cloud-platform
+</span></span></code></pre></div><p>After the cluster is deployed, get the credentials for <code>kubectl</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>gcloud container clusters get-credentials demo-cluster --zone europe-west3-a
+</span></span></code></pre></div><p>Before proceeding further with the cluster, create a secret and add a value on the Secret Manager:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>gcloud secrets create MY_SECRET
+</span></span><span style="display:flex;"><span>printf <span style="color:#e6db74">&#34;s3cr3t&#34;</span> | gcloud secrets versions add MY_SECRET --data-file<span style="color:#f92672">=</span>-
+</span></span></code></pre></div><p>To test that the instance can access to Secret Manager API, a dummy pod will be deployed so that you can exec into it:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#ae81ff">cat &lt;&lt;EOF | kubectl apply -f -</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Pod</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">httpbin</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">containers</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">image</span>: <span style="color:#ae81ff">docker.io/kennethreitz/httpbin</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">imagePullPolicy</span>: <span style="color:#ae81ff">IfNotPresent</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">httpbin</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">80</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">EOF</span>
+</span></span></code></pre></div><p>Exec into the created container and install curl on it:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl exec -it httpbin -- sh
+</span></span><span style="display:flex;"><span>$ apt update; apt install curl;
+</span></span></code></pre></div><h3 id="trying-it-out">Trying it out</h3>
 <p>In order to try the Secret Manager API an OAuth2 token needs to be issued <a href="https://cloud.google.com/compute/docs/access/create-enable-service-accounts-for-instances#applications"  target="_blank" rel="noreferrer noopener" >as we can read on the documentation.</a>
 </p>
 <blockquote>
@@ -237,33 +235,33 @@ $ apt update; apt install curl;
 On the instance where your application runs, query the metadata server for an access token. [&hellip;]</p>
 </blockquote>
 <p>When inside the deployed container:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token -H <span style="color:#e6db74">&#34;Metadata-Flavor: Google&#34;</span>
-</code></pre></div><p>Since the OAuth2 scopes defined for the instances contains the <code>cloud-platform</code> one, the service account will be able to send requests towards Secret Manager API.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>curl http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token -H <span style="color:#e6db74">&#34;Metadata-Flavor: Google&#34;</span>
+</span></span></code></pre></div><p>Since the OAuth2 scopes defined for the instances contains the <code>cloud-platform</code> one, the service account will be able to send requests towards Secret Manager API.</p>
 <p>Copy the <code>access_token</code> from the response and execute the following call:</p>
 <p><em>Remember to replace pablo-test-project with your project name.</em></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl https://content-secretmanager.googleapis.com/v1beta1/projects/pablo-test-project/secrets/MY_SECRET/versions/latest:access -H <span style="color:#e6db74">&#34;Authorization&#34;</span>:<span style="color:#e6db74">&#34;Bearer &lt;access_token&gt;&#34;</span>
-</code></pre></div><p>The response should look like this:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">{</span>
-  <span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;projects/127553260172/secrets/MY_SECRET/versions/1&#34;</span>,
-  <span style="color:#e6db74">&#34;payload&#34;</span>: <span style="color:#f92672">{</span>
-    <span style="color:#e6db74">&#34;data&#34;</span>: <span style="color:#e6db74">&#34;czNjcjN0&#34;</span>
-  <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span>
-</code></pre></div><p>Decoding base64 <code>czNjcjN0</code> is <code>s3cr3t</code>.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>curl https://content-secretmanager.googleapis.com/v1beta1/projects/pablo-test-project/secrets/MY_SECRET/versions/latest:access -H <span style="color:#e6db74">&#34;Authorization&#34;</span>:<span style="color:#e6db74">&#34;Bearer &lt;access_token&gt;&#34;</span>
+</span></span></code></pre></div><p>The response should look like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;projects/127553260172/secrets/MY_SECRET/versions/1&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;payload&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;data&#34;</span>: <span style="color:#e6db74">&#34;czNjcjN0&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>Decoding base64 <code>czNjcjN0</code> is <code>s3cr3t</code>.
 This worked fine, but then do we need the IAM permission or is it just enough with the OAuth2 scope?</p>
 <p>Remove the IAM permission from the service account:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud projects remove-iam-policy-binding pablo-test-project <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--member<span style="color:#f92672">=</span>serviceAccount:demo-service-account@pablo-test-project.iam.gserviceaccount.com <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--role<span style="color:#f92672">=</span>roles/secretmanager.secretAccessor
-</code></pre></div><p>Wait a minute until the change is propagated and issue the requests again. The response should look like this:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">{</span>
-  <span style="color:#e6db74">&#34;error&#34;</span>: <span style="color:#f92672">{</span>
-    <span style="color:#e6db74">&#34;code&#34;</span>: 403,
-    <span style="color:#e6db74">&#34;message&#34;</span>: <span style="color:#e6db74">&#34;Permission &#39;secretmanager.versions.access&#39; denied for resource &#39;projects/pablo-test-project/secrets/MY_SECRET/versions/latest&#39; (or it may not exist).&#34;</span>,
-    <span style="color:#e6db74">&#34;status&#34;</span>: <span style="color:#e6db74">&#34;PERMISSION_DENIED&#34;</span>
-  <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span>
-</code></pre></div><p>So effectively, the IAM role is required for this to work. Now, you can add the IAM role again for the next part.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>gcloud projects remove-iam-policy-binding pablo-test-project <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--member<span style="color:#f92672">=</span>serviceAccount:demo-service-account@pablo-test-project.iam.gserviceaccount.com <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--role<span style="color:#f92672">=</span>roles/secretmanager.secretAccessor
+</span></span></code></pre></div><p>Wait a minute until the change is propagated and issue the requests again. The response should look like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;error&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;code&#34;</span>: 403,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;message&#34;</span>: <span style="color:#e6db74">&#34;Permission &#39;secretmanager.versions.access&#39; denied for resource &#39;projects/pablo-test-project/secrets/MY_SECRET/versions/latest&#39; (or it may not exist).&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;status&#34;</span>: <span style="color:#e6db74">&#34;PERMISSION_DENIED&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>So effectively, the IAM role is required for this to work. Now, you can add the IAM role again for the next part.</p>
 <h3 id="moving-this-to-a-more-realistic-scenario">Moving this to a more realistic scenario</h3>
 <p>It is very important not to break the current workflow as this Secret Manager API is probably an overkill for local and dev environment. This is one of the selling points.</p>
 <p>For this, I created a <a href="https://github.com/pmorelli92/secret-manager-demo"  target="_blank" rel="noreferrer noopener" >demo application</a>
@@ -274,180 +272,180 @@ This worked fine, but then do we need the IAM permission or is it just enough wi
 <li>The application listens on the port <code>8080</code> and exposes the following route <code>GET /get-secret</code> expecting the header <code>secret: &lt;secret-name&gt;</code>.</li>
 </ul>
 <p>On the next section, this application is explained but for now we can just add it do the cluster:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#ae81ff">cat &lt;&lt;EOF | kubectl apply -f -</span>
-<span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
-<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Pod</span>
-<span style="color:#f92672">metadata</span>:
-  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">secret-manager</span>
-<span style="color:#f92672">spec</span>:
-  <span style="color:#f92672">containers</span>:
-  - <span style="color:#f92672">image</span>: <span style="color:#ae81ff">docker.io/pmorelli92/secret-manager:latest</span>
-    <span style="color:#f92672">imagePullPolicy</span>: <span style="color:#ae81ff">Always</span>
-    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">secret-manager</span>
-    <span style="color:#f92672">ports</span>:
-    - <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">8080</span>
-    <span style="color:#f92672">env</span>:
-    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">GCP_PROJECT</span>
-      <span style="color:#f92672">value</span>: <span style="color:#ae81ff">pablo-test-project</span>
-<span style="color:#ae81ff">EOF</span>
-</code></pre></div><p>For simplicity, one can just port forward it:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl port-forward secret-manager 8080:8080
-</code></pre></div><p>For existing secret:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl localhost:8080/get-secret -H <span style="color:#e6db74">&#34;secret: MY_SECRET&#34;</span>
-&gt; <span style="color:#f92672">{</span><span style="color:#e6db74">&#34;name&#34;</span>:<span style="color:#e6db74">&#34;MY_SECRET&#34;</span>,<span style="color:#e6db74">&#34;value&#34;</span>:<span style="color:#e6db74">&#34;s3cr3t&#34;</span><span style="color:#f92672">}</span>
-</code></pre></div><p>For non existing secret:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl localhost:8080/get-secret -H <span style="color:#e6db74">&#34;secret: OTHER_SECRET&#34;</span>
-&gt; <span style="color:#f92672">{</span><span style="color:#e6db74">&#34;name&#34;</span>:<span style="color:#e6db74">&#34;MY_SECRET&#34;</span>,<span style="color:#e6db74">&#34;value&#34;</span>:<span style="color:#e6db74">&#34;default-for-OTHER_SECRET&#34;</span><span style="color:#f92672">}</span>
-</code></pre></div><p>Now, let&rsquo;s do another test and deploy the pod without <code>GCP_PROJECT</code> environment variable but with the <code>MY_SECRET</code> one:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#ae81ff">kubectl delete pod secret-manager;</span>
-
-<span style="color:#ae81ff">cat &lt;&lt;EOF | kubectl apply -f -</span>
-<span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
-<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Pod</span>
-<span style="color:#f92672">metadata</span>:
-  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">secret-manager</span>
-<span style="color:#f92672">spec</span>:
-  <span style="color:#f92672">containers</span>:
-  - <span style="color:#f92672">image</span>: <span style="color:#ae81ff">docker.io/pmorelli92/secret-manager:latest</span>
-    <span style="color:#f92672">imagePullPolicy</span>: <span style="color:#ae81ff">Always</span>
-    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">secret-manager</span>
-    <span style="color:#f92672">ports</span>:
-    - <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">8080</span>
-    <span style="color:#f92672">env</span>:
-    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">MY_SECRET</span>
-      <span style="color:#f92672">value</span>: <span style="color:#ae81ff">hello-from-env</span>
-<span style="color:#ae81ff">EOF</span>
-</code></pre></div><p>Stop the port-forwarding, and execute it again:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl port-forward secret-manager 8080:8080
-</code></pre></div><p>For existing secret:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl localhost:8080/get-secret -H <span style="color:#e6db74">&#34;secret: MY_SECRET&#34;</span>
-&gt; <span style="color:#f92672">{</span><span style="color:#e6db74">&#34;name&#34;</span>:<span style="color:#e6db74">&#34;MY_SECRET&#34;</span>,<span style="color:#e6db74">&#34;value&#34;</span>:<span style="color:#e6db74">&#34;hello-from-env&#34;</span><span style="color:#f92672">}</span>
-</code></pre></div><p>For non existing secret:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl localhost:8080/get-secret -H <span style="color:#e6db74">&#34;secret: OTHER_SECRET&#34;</span>
-&gt; <span style="color:#f92672">{</span><span style="color:#e6db74">&#34;name&#34;</span>:<span style="color:#e6db74">&#34;MY_SECRET&#34;</span>,<span style="color:#e6db74">&#34;value&#34;</span>:<span style="color:#e6db74">&#34;default-for-OTHER_SECRET&#34;</span><span style="color:#f92672">}</span>
-</code></pre></div><p>Easy, right?</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#ae81ff">cat &lt;&lt;EOF | kubectl apply -f -</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Pod</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">secret-manager</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">containers</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">image</span>: <span style="color:#ae81ff">docker.io/pmorelli92/secret-manager:latest</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">imagePullPolicy</span>: <span style="color:#ae81ff">Always</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">secret-manager</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">8080</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">env</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">GCP_PROJECT</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">value</span>: <span style="color:#ae81ff">pablo-test-project</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">EOF</span>
+</span></span></code></pre></div><p>For simplicity, one can just port forward it:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl port-forward secret-manager 8080:8080
+</span></span></code></pre></div><p>For existing secret:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>curl localhost:8080/get-secret -H <span style="color:#e6db74">&#34;secret: MY_SECRET&#34;</span>
+</span></span><span style="display:flex;"><span>&gt; <span style="color:#f92672">{</span><span style="color:#e6db74">&#34;name&#34;</span>:<span style="color:#e6db74">&#34;MY_SECRET&#34;</span>,<span style="color:#e6db74">&#34;value&#34;</span>:<span style="color:#e6db74">&#34;s3cr3t&#34;</span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>For non existing secret:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>curl localhost:8080/get-secret -H <span style="color:#e6db74">&#34;secret: OTHER_SECRET&#34;</span>
+</span></span><span style="display:flex;"><span>&gt; <span style="color:#f92672">{</span><span style="color:#e6db74">&#34;name&#34;</span>:<span style="color:#e6db74">&#34;MY_SECRET&#34;</span>,<span style="color:#e6db74">&#34;value&#34;</span>:<span style="color:#e6db74">&#34;default-for-OTHER_SECRET&#34;</span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>Now, let&rsquo;s do another test and deploy the pod without <code>GCP_PROJECT</code> environment variable but with the <code>MY_SECRET</code> one:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#ae81ff">kubectl delete pod secret-manager;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">cat &lt;&lt;EOF | kubectl apply -f -</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Pod</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">secret-manager</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">containers</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">image</span>: <span style="color:#ae81ff">docker.io/pmorelli92/secret-manager:latest</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">imagePullPolicy</span>: <span style="color:#ae81ff">Always</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">secret-manager</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">8080</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">env</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">MY_SECRET</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">value</span>: <span style="color:#ae81ff">hello-from-env</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">EOF</span>
+</span></span></code></pre></div><p>Stop the port-forwarding, and execute it again:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl port-forward secret-manager 8080:8080
+</span></span></code></pre></div><p>For existing secret:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>curl localhost:8080/get-secret -H <span style="color:#e6db74">&#34;secret: MY_SECRET&#34;</span>
+</span></span><span style="display:flex;"><span>&gt; <span style="color:#f92672">{</span><span style="color:#e6db74">&#34;name&#34;</span>:<span style="color:#e6db74">&#34;MY_SECRET&#34;</span>,<span style="color:#e6db74">&#34;value&#34;</span>:<span style="color:#e6db74">&#34;hello-from-env&#34;</span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>For non existing secret:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>curl localhost:8080/get-secret -H <span style="color:#e6db74">&#34;secret: OTHER_SECRET&#34;</span>
+</span></span><span style="display:flex;"><span>&gt; <span style="color:#f92672">{</span><span style="color:#e6db74">&#34;name&#34;</span>:<span style="color:#e6db74">&#34;MY_SECRET&#34;</span>,<span style="color:#e6db74">&#34;value&#34;</span>:<span style="color:#e6db74">&#34;default-for-OTHER_SECRET&#34;</span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>Easy, right?</p>
 <h3 id="breakdown-the-demo-application">Breakdown the demo application</h3>
 <p>The application is fairly easy. On startup it looks for the value of the <code>GCP_PROJECT</code> environment variable. This value is supplied to the <code>SecretGetter</code> struct which defines the <code>GetSecret</code> function.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">SecretGetter</span> <span style="color:#66d9ef">struct</span> {
-	<span style="color:#a6e22e">GoogleCloudProject</span> <span style="color:#66d9ef">string</span>
-}
-
-<span style="color:#75715e">// GetSecret gets a secret either from environment variable or from GCP Secret Manager
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">sg</span> <span style="color:#a6e22e">SecretGetter</span>) <span style="color:#a6e22e">GetSecret</span>(<span style="color:#a6e22e">name</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">fallback</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">string</span> {
-	<span style="color:#75715e">// If GCP project is not present, get value from environment variables
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">sg</span>.<span style="color:#a6e22e">GoogleCloudProject</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">getEnv</span>(<span style="color:#a6e22e">name</span>, <span style="color:#a6e22e">fallback</span>)
-  }
-  <span style="color:#f92672">...</span>
-}
-
-<span style="color:#75715e">// getEnv returns the value for an environment value, or a fallback if not found
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">getEnv</span>(<span style="color:#a6e22e">name</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">fallback</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">string</span> {
-	<span style="color:#a6e22e">value</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">Getenv</span>(<span style="color:#a6e22e">name</span>)
-	<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ok</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fallback</span>
-	}
-	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">value</span>
-}
-</code></pre></div><p>If <code>GoogleCloudProject</code> is empty, then the value will be taken from environment variables. Otherwise it does the following, shorten for brevity:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">sg</span> <span style="color:#a6e22e">SecretGetter</span>) <span style="color:#a6e22e">GetSecret</span>(<span style="color:#a6e22e">name</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">fallback</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">string</span> {
-	<span style="color:#75715e">// If GCP project is not present, get value from environment variables
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">sg</span>.<span style="color:#a6e22e">GoogleCloudProject</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">getEnv</span>(<span style="color:#a6e22e">name</span>, <span style="color:#a6e22e">fallback</span>)
-	}
-
-	<span style="color:#75715e">// Get the token for the service account that runs the node pool
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">tokenUrl</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">&#34;http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token&#34;</span>
-	<span style="color:#a6e22e">rq</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">NewRequest</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">MethodGet</span>, <span style="color:#a6e22e">tokenUrl</span>, <span style="color:#66d9ef">nil</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span>)
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fallback</span>
-	}
-
-    <span style="color:#f92672">...</span>
-
-	<span style="color:#75715e">// Get the secret value using the access_token that we fetched above
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">secretUrl</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(
-		<span style="color:#e6db74">&#34;https://content-secretmanager.googleapis.com/v1beta1/projects/%s/secrets/%s/versions/latest:access&#34;</span>,
-		<span style="color:#a6e22e">sg</span>.<span style="color:#a6e22e">GoogleCloudProject</span>, <span style="color:#a6e22e">name</span>)
-	<span style="color:#a6e22e">rq</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">NewRequest</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">MethodGet</span>, <span style="color:#a6e22e">secretUrl</span>, <span style="color:#66d9ef">nil</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span>)
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fallback</span>
-	}
-
-	<span style="color:#a6e22e">rq</span>.<span style="color:#a6e22e">Header</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#e6db74">&#34;Authorization&#34;</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;Bearer %s&#34;</span>, <span style="color:#a6e22e">tokenResponse</span>.<span style="color:#a6e22e">AccessToken</span>))
-	<span style="color:#a6e22e">rs</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">DefaultClient</span>.<span style="color:#a6e22e">Do</span>(<span style="color:#a6e22e">rq</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span>)
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fallback</span>
-	}
-
-	<span style="color:#a6e22e">secretResponse</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">struct</span> {
-		<span style="color:#a6e22e">Error</span>   <span style="color:#66d9ef">int</span>    <span style="color:#e6db74">`json:&#34;error&#34;`</span>
-		<span style="color:#a6e22e">Status</span>  <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;status&#34;`</span>
-		<span style="color:#a6e22e">Payload</span> <span style="color:#66d9ef">struct</span> {
-			<span style="color:#a6e22e">Data</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;data&#34;`</span>
-		} <span style="color:#e6db74">`json:&#34;payload&#34;`</span>
-	}{}
-
-	<span style="color:#f92672">...</span>
-
-	<span style="color:#75715e">// In case there is an error because of privileges or oauth scopes, return the fallback
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">secretResponse</span>.<span style="color:#a6e22e">Error</span> <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span> {
-		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;error %d - status %s&#34;</span>, <span style="color:#a6e22e">secretResponse</span>.<span style="color:#a6e22e">Error</span>, <span style="color:#a6e22e">secretResponse</span>.<span style="color:#a6e22e">Status</span>))
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fallback</span>
-	}
-
-	<span style="color:#75715e">// Secret Manager returns the secret on base64
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">data</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">base64</span>.<span style="color:#a6e22e">StdEncoding</span>.<span style="color:#a6e22e">DecodeString</span>(<span style="color:#a6e22e">secretResponse</span>.<span style="color:#a6e22e">Payload</span>.<span style="color:#a6e22e">Data</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span>)
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fallback</span>
-	}
-
-	<span style="color:#66d9ef">return</span> string(<span style="color:#a6e22e">data</span>)
-}
-</code></pre></div><p>And then for the API handler:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// getSecretHandler gets the secret value according to the name sent on the header
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">getSecretHandler</span>(<span style="color:#a6e22e">secretGetter</span> <span style="color:#a6e22e">SecretGetter</span>) <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span> {
-	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">rq</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) {
-		<span style="color:#75715e">// Only work with GET requests
-</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">rq</span>.<span style="color:#a6e22e">Method</span> <span style="color:#f92672">!=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">MethodGet</span> {
-			<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">WriteHeader</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">StatusMethodNotAllowed</span>)
-			<span style="color:#66d9ef">return</span>
-		}
-
-		<span style="color:#75715e">// Fetch the secret name on the header
-</span><span style="color:#75715e"></span>		<span style="color:#a6e22e">secretName</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">rq</span>.<span style="color:#a6e22e">Header</span>.<span style="color:#a6e22e">Get</span>(<span style="color:#e6db74">&#34;secret&#34;</span>)
-		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">secretName</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> {
-			<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">WriteHeader</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">StatusBadRequest</span>)
-			<span style="color:#66d9ef">return</span>
-		}
-
-		<span style="color:#75715e">// Create the struct definition for the response
-</span><span style="color:#75715e"></span>		<span style="color:#a6e22e">bytes</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Marshal</span>(<span style="color:#66d9ef">struct</span> {
-			<span style="color:#a6e22e">Name</span>  <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;name&#34;`</span>
-			<span style="color:#a6e22e">Value</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;value&#34;`</span>
-		}{
-			<span style="color:#a6e22e">Name</span>: <span style="color:#a6e22e">secretName</span>,
-			<span style="color:#75715e">// Use the secret getter to get the secret or the fallback
-</span><span style="color:#75715e"></span>			<span style="color:#a6e22e">Value</span>: <span style="color:#a6e22e">secretGetter</span>.<span style="color:#a6e22e">GetSecret</span>(<span style="color:#a6e22e">secretName</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;default-for-%s&#34;</span>, <span style="color:#a6e22e">secretName</span>)),
-		})
-		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-			<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">WriteHeader</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">StatusInternalServerError</span>)
-			<span style="color:#66d9ef">return</span>
-		}
-
-		<span style="color:#75715e">// Return the secret value
-</span><span style="color:#75715e"></span>		<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">Header</span>().<span style="color:#a6e22e">Set</span>(<span style="color:#e6db74">&#34;Content-Type&#34;</span>, <span style="color:#e6db74">&#34;application/json&#34;</span>)
-		<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">WriteHeader</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">StatusOK</span>)
-		<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">_</span> = <span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">Write</span>(<span style="color:#a6e22e">bytes</span>)
-	}
-}
-</code></pre></div><p>Of course there is a catch. When working on local environment if the value for <code>GCP_PROJECT</code> is set, then only the default value will be returned as the call to get the token of the instance running inside GCP will fail:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Get <span style="color:#e6db74">&#34;http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token&#34;</span>: dial tcp: lookup metadata.google.internal: no such host
-</code></pre></div><h3 id="summary">Summary</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">SecretGetter</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">GoogleCloudProject</span> <span style="color:#66d9ef">string</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// GetSecret gets a secret either from environment variable or from GCP Secret Manager
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">sg</span> <span style="color:#a6e22e">SecretGetter</span>) <span style="color:#a6e22e">GetSecret</span>(<span style="color:#a6e22e">name</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">fallback</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">string</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// If GCP project is not present, get value from environment variables
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">sg</span>.<span style="color:#a6e22e">GoogleCloudProject</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">getEnv</span>(<span style="color:#a6e22e">name</span>, <span style="color:#a6e22e">fallback</span>)
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// getEnv returns the value for an environment value, or a fallback if not found
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">getEnv</span>(<span style="color:#a6e22e">name</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">fallback</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">string</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">value</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">Getenv</span>(<span style="color:#a6e22e">name</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ok</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fallback</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">value</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>If <code>GoogleCloudProject</code> is empty, then the value will be taken from environment variables. Otherwise it does the following, shorten for brevity:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">sg</span> <span style="color:#a6e22e">SecretGetter</span>) <span style="color:#a6e22e">GetSecret</span>(<span style="color:#a6e22e">name</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">fallback</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">string</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// If GCP project is not present, get value from environment variables
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">sg</span>.<span style="color:#a6e22e">GoogleCloudProject</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">getEnv</span>(<span style="color:#a6e22e">name</span>, <span style="color:#a6e22e">fallback</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Get the token for the service account that runs the node pool
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">tokenUrl</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">&#34;http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">rq</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">NewRequest</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">MethodGet</span>, <span style="color:#a6e22e">tokenUrl</span>, <span style="color:#66d9ef">nil</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fallback</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Get the secret value using the access_token that we fetched above
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">secretUrl</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(
+</span></span><span style="display:flex;"><span>		<span style="color:#e6db74">&#34;https://content-secretmanager.googleapis.com/v1beta1/projects/%s/secrets/%s/versions/latest:access&#34;</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">sg</span>.<span style="color:#a6e22e">GoogleCloudProject</span>, <span style="color:#a6e22e">name</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">rq</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">NewRequest</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">MethodGet</span>, <span style="color:#a6e22e">secretUrl</span>, <span style="color:#66d9ef">nil</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fallback</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">rq</span>.<span style="color:#a6e22e">Header</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#e6db74">&#34;Authorization&#34;</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;Bearer %s&#34;</span>, <span style="color:#a6e22e">tokenResponse</span>.<span style="color:#a6e22e">AccessToken</span>))
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">rs</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">DefaultClient</span>.<span style="color:#a6e22e">Do</span>(<span style="color:#a6e22e">rq</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fallback</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">secretResponse</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">Error</span>   <span style="color:#66d9ef">int</span>    <span style="color:#e6db74">`json:&#34;error&#34;`</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">Status</span>  <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;status&#34;`</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">Payload</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">Data</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;data&#34;`</span>
+</span></span><span style="display:flex;"><span>		} <span style="color:#e6db74">`json:&#34;payload&#34;`</span>
+</span></span><span style="display:flex;"><span>	}{}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// In case there is an error because of privileges or oauth scopes, return the fallback
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">secretResponse</span>.<span style="color:#a6e22e">Error</span> <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;error %d - status %s&#34;</span>, <span style="color:#a6e22e">secretResponse</span>.<span style="color:#a6e22e">Error</span>, <span style="color:#a6e22e">secretResponse</span>.<span style="color:#a6e22e">Status</span>))
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fallback</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Secret Manager returns the secret on base64
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">data</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">base64</span>.<span style="color:#a6e22e">StdEncoding</span>.<span style="color:#a6e22e">DecodeString</span>(<span style="color:#a6e22e">secretResponse</span>.<span style="color:#a6e22e">Payload</span>.<span style="color:#a6e22e">Data</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fallback</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> string(<span style="color:#a6e22e">data</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>And then for the API handler:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// getSecretHandler gets the secret value according to the name sent on the header
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">getSecretHandler</span>(<span style="color:#a6e22e">secretGetter</span> <span style="color:#a6e22e">SecretGetter</span>) <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">rq</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Only work with GET requests
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">rq</span>.<span style="color:#a6e22e">Method</span> <span style="color:#f92672">!=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">MethodGet</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">WriteHeader</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">StatusMethodNotAllowed</span>)
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Fetch the secret name on the header
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#a6e22e">secretName</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">rq</span>.<span style="color:#a6e22e">Header</span>.<span style="color:#a6e22e">Get</span>(<span style="color:#e6db74">&#34;secret&#34;</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">secretName</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">WriteHeader</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">StatusBadRequest</span>)
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Create the struct definition for the response
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#a6e22e">bytes</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Marshal</span>(<span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">Name</span>  <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;name&#34;`</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">Value</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;value&#34;`</span>
+</span></span><span style="display:flex;"><span>		}{
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">Name</span>: <span style="color:#a6e22e">secretName</span>,
+</span></span><span style="display:flex;"><span>			<span style="color:#75715e">// Use the secret getter to get the secret or the fallback
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>			<span style="color:#a6e22e">Value</span>: <span style="color:#a6e22e">secretGetter</span>.<span style="color:#a6e22e">GetSecret</span>(<span style="color:#a6e22e">secretName</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;default-for-%s&#34;</span>, <span style="color:#a6e22e">secretName</span>)),
+</span></span><span style="display:flex;"><span>		})
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">WriteHeader</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">StatusInternalServerError</span>)
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Return the secret value
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">Header</span>().<span style="color:#a6e22e">Set</span>(<span style="color:#e6db74">&#34;Content-Type&#34;</span>, <span style="color:#e6db74">&#34;application/json&#34;</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">WriteHeader</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">StatusOK</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">_</span> = <span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">Write</span>(<span style="color:#a6e22e">bytes</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Of course there is a catch. When working on local environment if the value for <code>GCP_PROJECT</code> is set, then only the default value will be returned as the call to get the token of the instance running inside GCP will fail:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Get <span style="color:#e6db74">&#34;http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token&#34;</span>: dial tcp: lookup metadata.google.internal: no such host
+</span></span></code></pre></div><h3 id="summary">Summary</h3>
 <ul>
 <li>(+) Secret Manager has a very intuitive API which also has some nice dedicated UI for developers to access secrets (if they also have the required IAM), see key versions and configure policies for expiration.</li>
 <li>(+) Moving away from storing secrets on plain text on environment variables is also a correct step in order to secure our applications.</li>
@@ -661,7 +659,7 @@ This worked fine, but then do we need the IAM permission or is it just enough wi
 
 
 
-<script type="text/javascript" src="/bundle.min.f944224ac8e104e8f14a9d98224b628e383c8f2e63f95e54381ac414365bf32b8c5ae9a6c157271fe82938d66e1cf8399e34e6cb0ee7b711c58d167a4cfd6a6f.js" integrity="sha512-&#43;UQiSsjhBOjxSp2YIktijjg8jy5j&#43;V5UOBrEFDZb8yuMWummwVcnH&#43;gpONZuHPg5njTmyw7ntxHFjRZ6TP1qbw=="></script>
+<script type="text/javascript" src="/bundle.min.e073c6bca809af5c516c3777e3441958267b377fb29e3c9471c558a6711b62d7819807a126e3378f03763928ef7b09a6cdcb1693bf5719e81e15e60176854b26.js" integrity="sha512-4HPGvKgJr1xRbDd340QZWCZ7N3&#43;ynjyUccVYpnEbYteBmAehJuM3jwN2OSjvewmmzcsWk79XGegeFeYBdoVLJg=="></script>
 
 
 
