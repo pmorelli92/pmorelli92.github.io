@@ -1598,38 +1598,39 @@ func getDay() *string {  return nil } Being that pointers can introduce null and
 <h3 id="introducing-maybe-libraryhttpsgithubcompmorelli92maybe"><a href="https://github.com/pmorelli92/maybe/"  target="_blank" rel="noreferrer noopener" >Introducing Maybe library</a>
 </h3>
 <p>Functional languages have a lot of interesting features that are having more traction as time passes and end up being ported to other languages. One of my favorites is the <code>Option</code> data type. Think of it as Schrodinger&rsquo;s <del>cat</del> variable. It may have a value or it may not have a value; and the only way to know it is checking if effectively has one.</p>
+<p><strong>UPDATE</strong>: Since Go 1.18 has been released, the library now supports generics so it is not limited to string, int, float, time, bool.</p>
 <p>Let&rsquo;s image the following struct:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span>package maybe
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> Int struct <span style="color:#960050;background-color:#1e0010">{</span>
-</span></span><span style="display:flex;"><span>	value    int
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> Maybe[T <span style="color:#66d9ef">any</span>] struct <span style="color:#960050;background-color:#1e0010">{</span>
+</span></span><span style="display:flex;"><span>	value    T
 </span></span><span style="display:flex;"><span>	hasValue bool
 </span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">}</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>func SetInt(value int) Int <span style="color:#960050;background-color:#1e0010">{</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> Int<span style="color:#960050;background-color:#1e0010">{</span>
+</span></span><span style="display:flex;"><span>func <span style="color:#66d9ef">Set</span>[T <span style="color:#66d9ef">any</span>](value T) Maybe[T] <span style="color:#960050;background-color:#1e0010">{</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> Maybe[T]<span style="color:#960050;background-color:#1e0010">{</span>
 </span></span><span style="display:flex;"><span>		value:    value,
 </span></span><span style="display:flex;"><span>		hasValue: <span style="color:#66d9ef">true</span>,
 </span></span><span style="display:flex;"><span>	<span style="color:#960050;background-color:#1e0010">}</span>
 </span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">}</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>func (mi Int) HasValue() bool <span style="color:#960050;background-color:#1e0010">{</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> mi.hasValue
+</span></span><span style="display:flex;"><span>func (m Maybe[T]) HasValue() bool <span style="color:#960050;background-color:#1e0010">{</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> m.hasValue
 </span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">}</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>func (mi Int) Value() int <span style="color:#960050;background-color:#1e0010">{</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> mi.value
+</span></span><span style="display:flex;"><span>func (m Maybe[T]) Value() T <span style="color:#960050;background-color:#1e0010">{</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> m.value
 </span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">}</span>
-</span></span></code></pre></div><p>This is how an option implementation can look in Go 1.16 (which can be simplified when generics are out in 1.18). By doing so, <code>null</code> values are not possible. As stated before, while I cannot recommend designing a system where <code>null</code> and <code>0</code> represent different things, we can take another look at the previous example:</p>
+</span></span></code></pre></div><p>This is how an option implementation can look in Go 1.18. By doing so, <code>null</code> values are not possible. As stated before, while I cannot recommend designing a system where <code>null</code> and <code>0</code> represent different things, we can take another look at the previous example:</p>
 <ul>
-<li>Salary 100 -&gt; <code>Int.HasValue()</code> will be <code>true</code> and <code>Int.Value()</code> will be <code>100</code>.</li>
-<li>Salary 0 -&gt; <code>Int.HasValue()</code> will be <code>true</code> and <code>Int.Value()</code> will be <code>0</code>.</li>
-<li>Salary null -&gt; <code>Int.HasValue()</code> will be <code>false</code> and <code>Int.Value()</code> will be <code>0</code>.</li>
+<li>Salary 100 -&gt; <code>Maybe.HasValue()</code> will be <code>true</code> and <code>Maybe.Value()</code> will be <code>100</code>.</li>
+<li>Salary 0 -&gt; <code>Maybe.HasValue()</code> will be <code>true</code> and <code>Maybe.Value()</code> will be <code>0</code>.</li>
+<li>Salary null -&gt; <code>Maybe.HasValue()</code> will be <code>false</code> and <code>Maybe.Value()</code> will be <code>0</code>.</li>
 </ul>
 <p>This is how it looks like in our previous struct:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> Person struct <span style="color:#960050;background-color:#1e0010">{</span>
-</span></span><span style="display:flex;"><span>    Name   string    <span style="color:#f92672">`</span>json:<span style="color:#e6db74">&#34;name&#34;</span><span style="color:#f92672">`</span>
-</span></span><span style="display:flex;"><span>    Salary maybe.Int <span style="color:#f92672">`</span>json:<span style="color:#e6db74">&#34;salary&#34;</span><span style="color:#f92672">`</span>
+</span></span><span style="display:flex;"><span>    Name   string     		<span style="color:#f92672">`</span>json:<span style="color:#e6db74">&#34;name&#34;</span><span style="color:#f92672">`</span>
+</span></span><span style="display:flex;"><span>    Salary maybe.Maybe[int] <span style="color:#f92672">`</span>json:<span style="color:#e6db74">&#34;salary&#34;</span><span style="color:#f92672">`</span>
 </span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">}</span>
 </span></span></code></pre></div><p>But Pablo, this is serialized in the following way, right?</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">{</span>
@@ -1642,42 +1643,36 @@ func getDay() *string {  return nil } Being that pointers can introduce null and
 </span></span></code></pre></div><p>Not really! Go allows customization of the <code>MarshalJSON()</code> and <code>UnmarshalJSON()</code> of a struct, so the serialization will look like:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span>package maybe
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>func (mi Int) MarshalJSON() ([]byte, error) <span style="color:#960050;background-color:#1e0010">{</span>
-</span></span><span style="display:flex;"><span>	var i <span style="color:#f92672">*</span>int
+</span></span><span style="display:flex;"><span>func (m Maybe[T]) MarshalJSON() ([]byte, error) <span style="color:#960050;background-color:#1e0010">{</span>
+</span></span><span style="display:flex;"><span>	var t <span style="color:#f92672">*</span>T
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> mi.hasValue <span style="color:#960050;background-color:#1e0010">{</span>
-</span></span><span style="display:flex;"><span>		i <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>mi.value
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> m.hasValue <span style="color:#960050;background-color:#1e0010">{</span>
+</span></span><span style="display:flex;"><span>		t <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>m.value
 </span></span><span style="display:flex;"><span>	<span style="color:#960050;background-color:#1e0010">}</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> json.Marshal(i)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> json.Marshal(t)
 </span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">}</span>
-</span></span></code></pre></div><p>If the <code>maybe.Int</code> was not initialized, then the serialization in our example will look like <code>{ &quot;salary&quot;: null }</code>; however if <code>maybe.SetInt(100)</code> was called, then the <code>hasValue</code> will be true and the serialization will be <code>{ &quot;salary&quot;: 100 }</code>.</p>
+</span></span></code></pre></div><p>If the <code>maybe.Maybe[int]</code> was not initialized, then the serialization in our example will look like <code>{ &quot;salary&quot;: null }</code>; however if <code>maybe.Set(100)</code> was called, then the <code>hasValue</code> will be true and the serialization will be <code>{ &quot;salary&quot;: 100 }</code>.</p>
 <p>Now for the unmarshal, the usage of pointers and null are being handled by the library:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span>package maybe
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>func (mi <span style="color:#f92672">*</span>Int) UnmarshalJSON(<span style="color:#66d9ef">data</span> []byte) error <span style="color:#960050;background-color:#1e0010">{</span>
-</span></span><span style="display:flex;"><span>	var i <span style="color:#f92672">*</span>int
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> err :<span style="color:#f92672">=</span> json.Unmarshal(<span style="color:#66d9ef">data</span>, <span style="color:#f92672">&amp;</span>i); err <span style="color:#f92672">!=</span> nil <span style="color:#960050;background-color:#1e0010">{</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span>func (m <span style="color:#f92672">*</span>Maybe[T]) UnmarshalJSON(<span style="color:#66d9ef">data</span> []byte) error <span style="color:#960050;background-color:#1e0010">{</span>
+</span></span><span style="display:flex;"><span>	var t <span style="color:#f92672">*</span>T
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> err :<span style="color:#f92672">=</span> json.Unmarshal(<span style="color:#66d9ef">data</span>, <span style="color:#f92672">&amp;</span>t); err <span style="color:#f92672">!=</span> nil <span style="color:#960050;background-color:#1e0010">{</span>
 </span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> err
 </span></span><span style="display:flex;"><span>	<span style="color:#960050;background-color:#1e0010">}</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> i <span style="color:#f92672">!=</span> nil <span style="color:#960050;background-color:#1e0010">{</span>
-</span></span><span style="display:flex;"><span>		<span style="color:#f92672">*</span>mi <span style="color:#f92672">=</span> SetInt(<span style="color:#f92672">*</span>i)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> t <span style="color:#f92672">!=</span> nil <span style="color:#960050;background-color:#1e0010">{</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">*</span>m <span style="color:#f92672">=</span> <span style="color:#66d9ef">Set</span>(<span style="color:#f92672">*</span>t)
 </span></span><span style="display:flex;"><span>	<span style="color:#960050;background-color:#1e0010">}</span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> nil
 </span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">}</span>
-</span></span></code></pre></div><p>If the json is <code>{ &quot;salary&quot;: 100 }</code> then the pointer is not null and the <code>maybe.Int</code> will be set to <code>HasValue() = true</code> and <code>Value() = 100</code>. In the case of <code>{ &quot;salary&quot;: null }</code>, the pointer will be <code>nil</code> and therefore the <code>maybe.Int</code> will contain <code>HasValue() = false</code> and <code>Value() = 0</code>.</p>
+</span></span></code></pre></div><p>If the json is <code>{ &quot;salary&quot;: 100 }</code> then the pointer is not null and the <code>maybe.Maybe[int]</code> will be set to <code>HasValue() = true</code> and <code>Value() = 100</code>. In the case of <code>{ &quot;salary&quot;: null }</code>, the pointer will be <code>nil</code> and therefore the <code>maybe.Maybe[int]</code> will contain <code>HasValue() = false</code> and <code>Value() = 0</code>.</p>
 <p>With this implementation we can code the following assumption:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span>func (p Person) IsEmployed() bool <span style="color:#960050;background-color:#1e0010">{</span>
 </span></span><span style="display:flex;"><span>    <span style="color:#f92672">//</span> <span style="color:#66d9ef">If</span> salary has value, but it <span style="color:#66d9ef">is</span> <span style="color:#ae81ff">0</span> we assume unpaid internship
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> p.Salary.HasValue()
 </span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">}</span>
-</span></span></code></pre></div><h3 id="next-steps">Next steps</h3>
-<p>Currently the library supports few native types (string, int, float, time, bool); however it would be useful to have this functionality for custom types. In order to achieve this generics are required. In <a href="https://go2goplay.golang.org/p/YBqR5GX7N6m"  target="_blank" rel="noreferrer noopener" >go2playgrounds</a>
- you can access a snippet on how this library would look like with the current draft of generics.</p>
-<p>Other than that, the library is quite simple so there is no work planned ahead for it.</p>
-<h3 id="summary">Summary</h3>
+</span></span></code></pre></div><h3 id="summary">Summary</h3>
 <ul>
 <li>Don&rsquo;t use pointers unless you really know what you are doing.</li>
 <li>Try to eliminate the need of <code>nil</code> whenever is possible.</li>
