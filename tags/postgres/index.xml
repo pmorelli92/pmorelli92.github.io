@@ -26,7 +26,7 @@ At least from my experience, SQL is taught in university/courses in an outdated 
       <guid>https://devandchill.com/posts/2020/05/go-lib/pq-or-pgx-which-performs-better/</guid>
       <description>Some days ago a coworker of mine linked me to the source code of Google&amp;rsquo;s exposure notifications API and of course is a good chance to see how Google is doing Go related codebases.
 Continuing with the topic of Postgres and benchmarking, I decided to check out how Postgres configuration was done and this line got my attention:
-import ( 	... 	&amp;#34;github.com/jackc/pgx/v4/pgxpool&amp;#34; ) What is pgx, and why should we care?</description>
+import ( ... &amp;#34;github.com/jackc/pgx/v4/pgxpool&amp;#34; ) What is pgx, and why should we care?</description>
     </item>
     
     <item>
@@ -37,7 +37,7 @@ import ( 	... 	&amp;#34;github.com/jackc/pgx/v4/pgxpool&amp;#34; ) What is pgx, 
       <guid>https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/</guid>
       <description>In my previous post I covered how to build concurrently safe upsert queries .
 This post serves as a continuation where different approaches will be battle tested to expose the performance of each one:
- Advisory lock On conflict update On conflict do nothing CTE queries  Without further ado, let&amp;rsquo;s start:
+Advisory lock On conflict update On conflict do nothing CTE queries Without further ado, let&amp;rsquo;s start:
 The application In order to emulate the scenario described on the previous post, an HTTP API is required. This one will connect to a database to perform the calls.</description>
     </item>
     

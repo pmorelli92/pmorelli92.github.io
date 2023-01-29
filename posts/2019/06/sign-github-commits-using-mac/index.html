@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="author" content="Pablo Morelli">
-<meta name="description" content="Devandchill is a coding and tech blog oriented to go, .net and databases made by Pablo Morelli" />
+<meta name="description" content="Devandchill is a coding blog where I share my ideas and insights on various programming topics." />
 <meta name="keywords"
     content="blog, development, programming, tech, github, commits, ssh, gpg, verify, verified" />
 <meta name="robots" content="noodp" />
@@ -26,7 +26,7 @@
 
 
 
-<link rel="stylesheet" type="text/css" href="/main.a2b8a4b0f7c324e63653aa57eb9d5d028042ae2d3adf01fbcff08c375b752437.css">
+<link rel="stylesheet" type="text/css" href="/main.045f18da88f8cb42336977558c8919c77ba0afb78827b7a1250d971d6cfd080e.css">
 
 
 
@@ -41,7 +41,7 @@
 
 <meta itemprop="name" content="Sign GitHub commits (using Mac)">
 <meta itemprop="description" content="Generally speaking, most organisations do not check if a commit is signed or not. Even worse, more companies do not care about this. It might subjective but I like to have the verified badge.
- If you commit from GitHub, for example: adding or editing a README, you will get the verified bagde. The same will happen with the client GitKraken, but if you commit using the git cli this will not happen unless you configure it."><meta itemprop="datePublished" content="2019-06-09T20:22:29+02:00" />
+If you commit from GitHub, for example: adding or editing a README, you will get the verified bagde. The same will happen with the client GitKraken, but if you commit using the git cli this will not happen unless you configure it."><meta itemprop="datePublished" content="2019-06-09T20:22:29+02:00" />
 <meta itemprop="dateModified" content="2019-06-09T20:22:29+02:00" />
 <meta itemprop="wordCount" content="853"><meta itemprop="image" content="https://devandchill.com/og-image.png"/>
 <meta itemprop="keywords" content="github,commits,ssh,gpg,verify,verified," />
@@ -50,8 +50,7 @@
 
 <meta name="twitter:title" content="Sign GitHub commits (using Mac)"/>
 <meta name="twitter:description" content="Generally speaking, most organisations do not check if a commit is signed or not. Even worse, more companies do not care about this. It might subjective but I like to have the verified badge.
- If you commit from GitHub, for example: adding or editing a README, you will get the verified bagde. The same will happen with the client GitKraken, but if you commit using the git cli this will not happen unless you configure it."/>
-
+If you commit from GitHub, for example: adding or editing a README, you will get the verified bagde. The same will happen with the client GitKraken, but if you commit using the git cli this will not happen unless you configure it."/>
 
 
 
@@ -99,7 +98,7 @@
         <span class="header__right">
             
             <nav class="menu">
-    <ul class="menu__inner"><li><a href="/about">About</a></li><li><a href="/resume">Resume</a></li><li><a href="/posts">Posts</a></li>
+    <ul class="menu__inner"><li><a href="/blog">The blog</a></li><li><a href="/resume">Resume</a></li><li><a href="/posts">Posts</a></li>
     </ul>
 </nav>
 
@@ -155,24 +154,24 @@
 <p>In order to sign a commit you will need to generate a key, and for this you are going to use <a href="https://gnupg.org/"  target="_blank" rel="noreferrer noopener" >GPG</a>
 . But first, you need brew to be installed, if you do not have it yet, it is a must have package manager for mac that you can download <a href="https://brew.sh/"  target="_blank" rel="noreferrer noopener" >here</a>
 .</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>&gt; brew install gnupg
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>&gt; brew install gnupg
 </span></span><span style="display:flex;"><span>&gt; brew install pinentry-mac
-</span></span><span style="display:flex;"><span>&gt; echo <span style="color:#e6db74">&#34;pinentry-program /usr/local/bin/pinentry-mac&#34;</span> &gt;&gt; ~/.gnupg/gpg-agent.conf
+</span></span><span style="display:flex;"><span>&gt; <span style="color:#81a1c1">echo</span> <span style="color:#a3be8c">&#34;pinentry-program /usr/local/bin/pinentry-mac&#34;</span> &gt;&gt; ~/.gnupg/gpg-agent.conf
 </span></span><span style="display:flex;"><span>&gt; killall gpg-agent
 </span></span></code></pre></div><p><a href="https://www.gnupg.org/related_software/pinentry/index.en.html"  target="_blank" rel="noreferrer noopener" >Pinentry</a>
  as it is stated on the GPG site it is a collection of dialogs that allows you, for example, to input the passphrase of the private key. In order for this to work we need to indicate the path where it is installed into the GPG configuration and then kill the service (just in case) for it to take the changes.</p>
 <h2 id="generating-a-set-of-keys">Generating a set of keys</h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>&gt; gpg --full-generate-key
-</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>you can customise the key creation or just press enter to use the defaults<span style="color:#f92672">)</span>
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>&gt; gpg --full-generate-key
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">(</span>you can customise the key creation or just press enter to use the defaults<span style="color:#81a1c1">)</span>
 </span></span></code></pre></div><p>Will generate a private key from which you are going to generate and export the public key. The id of the key will be shown when you generate the key or you can fetch it by running:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>&gt; gpg --list-secret-keys
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>&gt; gpg --list-secret-keys
 </span></span></code></pre></div><p>And you will get something like this:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sec   rsa2048 2019-06-07 <span style="color:#f92672">[</span>SC<span style="color:#f92672">]</span>
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sec   rsa2048 2019-06-07 <span style="color:#81a1c1">[</span>SC<span style="color:#81a1c1">]</span>
 </span></span><span style="display:flex;"><span>      KEY_ID_HERE
-</span></span><span style="display:flex;"><span>uid   <span style="color:#f92672">[</span>  absolut <span style="color:#f92672">]</span> Pablo Morelli &lt;devandchill@gmail.com&gt;
-</span></span><span style="display:flex;"><span>ssb   rsa2048 2019-06-07 <span style="color:#f92672">[</span>E<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>uid   <span style="color:#81a1c1">[</span>  absolut <span style="color:#81a1c1">]</span> Pablo Morelli &lt;devandchill@gmail.com&gt;
+</span></span><span style="display:flex;"><span>ssb   rsa2048 2019-06-07 <span style="color:#81a1c1">[</span>E<span style="color:#81a1c1">]</span>
 </span></span></code></pre></div><p>After you have your ID, execute:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>&gt; gpg --export --armor YOUR_KEY_ID 2&gt; cat
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>&gt; gpg --export --armor YOUR_KEY_ID 2&gt; cat
 </span></span></code></pre></div><p>You will see the public key on the terminal, now you can copy it and go to GitHub.</p>
 <h2 id="adding-public-key-to-github-account">Adding public key to GitHub account</h2>
 <p>Go to <code>Settings -&gt; SSH and GPG Keys -&gt; New GPG Key</code> and paste the content of your key and after submiting you will see something like this.</p>
@@ -182,30 +181,30 @@
 <h2 id="doing-your-first-verified-commit">Doing your first verified commit</h2>
 <p>When you work with the <code>git cli</code> there is a huge probability that you work with different accounts (for example one for work and one personal) and/or that you have more than one GPG key on your system.
 To avoid problems with git not knowing which configuration to pick you will indicate that for the repo where you are standing or for all the repos you will use the GPG key that contains a certain ID.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>&gt; git config --local gpg.program <span style="color:#e6db74">&#34;gpg&#34;</span>
-</span></span><span style="display:flex;"><span>&gt; git config --local user.signingKey <span style="color:#e6db74">&#34;YOUR_KEY_ID_INSIDE_THE_QUOTES&#34;</span> // will apply to the working directory
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>&gt; git config --local gpg.program <span style="color:#a3be8c">&#34;gpg&#34;</span>
+</span></span><span style="display:flex;"><span>&gt; git config --local user.signingKey <span style="color:#a3be8c">&#34;YOUR_KEY_ID_INSIDE_THE_QUOTES&#34;</span> // will apply to the working directory
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>&gt; git config --global gpg.program <span style="color:#e6db74">&#34;gpg&#34;</span>
-</span></span><span style="display:flex;"><span>&gt; git config --global user.signingKey <span style="color:#e6db74">&#34;YOUR_KEY_ID_INSIDE_THE_QUOTES&#34;</span> // will apply to the all the repositories except when overriden
+</span></span><span style="display:flex;"><span>&gt; git config --global gpg.program <span style="color:#a3be8c">&#34;gpg&#34;</span>
+</span></span><span style="display:flex;"><span>&gt; git config --global user.signingKey <span style="color:#a3be8c">&#34;YOUR_KEY_ID_INSIDE_THE_QUOTES&#34;</span> // will apply to the all the repositories except when overriden
 </span></span></code></pre></div><p>You are almost ready to go, but you need to know that by default <code>git commit</code> does not sign the commits unless you specify the argument <code>-S</code>. So you have two options:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>&gt; git commit -S -m <span style="color:#e6db74">&#34;My commit message&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>&gt; git commit -S -m <span style="color:#a3be8c">&#34;My commit message&#34;</span>
 </span></span></code></pre></div><p>Or you can setup automatic signing for the repository or all the repositories.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>&gt; git config --local commit.gpgsign <span style="color:#e6db74">&#34;true&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>&gt; git config --local commit.gpgsign <span style="color:#a3be8c">&#34;true&#34;</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>&gt; git config --global commit.gpgsign <span style="color:#e6db74">&#34;true&#34;</span> // <span style="color:#66d9ef">if</span> you want to set up <span style="color:#66d9ef">for</span> all the repositories
+</span></span><span style="display:flex;"><span>&gt; git config --global commit.gpgsign <span style="color:#a3be8c">&#34;true&#34;</span> // <span style="color:#81a1c1;font-weight:bold">if</span> you want to <span style="color:#81a1c1">set</span> up <span style="color:#81a1c1;font-weight:bold">for</span> all the repositories
 </span></span></code></pre></div><p>If you did the step above, the argument <code>-S</code> is no longer needed.</p>
 <h2 id="checking-git-configuration">Checking git configuration</h2>
 <p>When you are unsure about your configuration you can execute <code>git config --local -l</code> to list the configuration for the working directory and you should see something like this:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>gpg.program<span style="color:#f92672">=</span>gpg
-</span></span><span style="display:flex;"><span>commit.gpgsign<span style="color:#f92672">=</span>true
-</span></span><span style="display:flex;"><span>user.signingkey<span style="color:#f92672">=</span>YOUR_KEY_ID
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>gpg.program<span style="color:#81a1c1">=</span>gpg
+</span></span><span style="display:flex;"><span>commit.gpgsign<span style="color:#81a1c1">=</span><span style="color:#81a1c1">true</span>
+</span></span><span style="display:flex;"><span>user.signingkey<span style="color:#81a1c1">=</span>YOUR_KEY_ID
 </span></span></code></pre></div><h2 id="back-up-your-private-key">Back up your private key</h2>
 <p>Keys are passwords, so you should save them somewhere safe and revoke + change periodically.
 It is trivial to revoke and to generate a new key for GitHub but it may be troublesome for some other systems that uses your public key.
 Now lets image that you change your computer, you wont be able to sign because you don&rsquo;t have your key; in this case a backup is recommended.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>gpg --export-secret-keys YOUR_KEY_ID &gt; some_private_key_name
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>gpg --export-secret-keys YOUR_KEY_ID &gt; some_private_key_name
 </span></span></code></pre></div><p>Now you can save this file to some secure vault, and if you ever need to import it on a new machine, execute:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>gpg --import some_private_key_name
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>gpg --import some_private_key_name
 </span></span></code></pre></div><h2 id="bonus-track">Bonus track</h2>
 <p>As I mentioned before, some times when you work using the <code>git cli</code> you end up mixing accounts, and it could happen to commit like this:</p>
 <figure><img src="/posts/images/incorrect-user.png"/>
@@ -213,8 +212,8 @@ Now lets image that you change your computer, you wont be able to sign because y
 
 <p>You can of course leave it like that or do a rebase of the commit; but you can also check first using <code>git config --local -l</code> which is the <code>user.name</code> and <code>user.email</code> for that working directory.
 In case the email does not match with the email linked in GitHub you can change it doing:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>&gt; git config --local user.name <span style="color:#e6db74">&#34;GitHub name&#34;</span>
-</span></span><span style="display:flex;"><span>&gt; git config --local user.email <span style="color:#e6db74">&#34;my.github@email.com&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>&gt; git config --local user.name <span style="color:#a3be8c">&#34;GitHub name&#34;</span>
+</span></span><span style="display:flex;"><span>&gt; git config --local user.email <span style="color:#a3be8c">&#34;my.github@email.com&#34;</span>
 </span></span></code></pre></div><p>I hope you liked the post, if so, don&rsquo;t forget to share it so this can reach to more people :)</p>
 
     </div>
@@ -269,99 +268,6 @@ In case the email does not match with the email linked in GitHub you can change 
       
     </p>
   </div>
-  <hr />
-  <div class="sharing-buttons">
-    
-<a class="resp-sharing-button__link" href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fdevandchill.com%2fposts%2f2019%2f06%2fsign-github-commits-using-mac%2f" target="_blank" rel="noopener" aria-label="" title="Share on facebook">
-  <div class="resp-sharing-button resp-sharing-button--facebook resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://twitter.com/intent/tweet/?url=https%3a%2f%2fdevandchill.com%2fposts%2f2019%2f06%2fsign-github-commits-using-mac%2f" target="_blank" rel="noopener" aria-label="" title="Share on twitter">
-  <div class="resp-sharing-button resp-sharing-button--twitter resp-sharing-button--small">
-      <div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://www.tumblr.com/widgets/share/tool?posttype=link&amp;title=Sign%20GitHub%20commits%20%28using%20Mac%29&amp;caption=Sign%20GitHub%20commits%20%28using%20Mac%29&amp;canonicalUrl=https%3a%2f%2fdevandchill.com%2fposts%2f2019%2f06%2fsign-github-commits-using-mac%2f" target="_blank" rel="noopener" aria-label="" title="Share on tumblr">
-  <div class="resp-sharing-button resp-sharing-button--tumblr resp-sharing-button--small">
-    <div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.563 24c-5.093 0-7.031-3.756-7.031-6.411V9.747H5.116V6.648c3.63-1.313 4.512-4.596 4.71-6.469C9.84.051 9.941 0 9.999 0h3.517v6.114h4.801v3.633h-4.82v7.47c.016 1.001.375 2.371 2.207 2.371h.09c.631-.02 1.486-.205 1.936-.419l1.156 3.425c-.436.636-2.4 1.374-4.156 1.404h-.178l.011.002z"/></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="mailto:?subject=Sign%20GitHub%20commits%20%28using%20Mac%29&amp;body=https%3a%2f%2fdevandchill.com%2fposts%2f2019%2f06%2fsign-github-commits-using-mac%2f" target="_self" rel="noopener" aria-label="" title="Share via email">
-  <div class="resp-sharing-button resp-sharing-button--email resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://pinterest.com/pin/create/button/?url=https%3a%2f%2fdevandchill.com%2fposts%2f2019%2f06%2fsign-github-commits-using-mac%2f&amp;media=https%3a%2f%2fdevandchill.com%2fposts%2f2019%2f06%2fsign-github-commits-using-mac%2f;description=Sign%20GitHub%20commits%20%28using%20Mac%29" target="_blank" rel="noopener" aria-label="" title="Share on pinterest">
-  <div class="resp-sharing-button resp-sharing-button--pinterest resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026L12.017 0z"/></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2fdevandchill.com%2fposts%2f2019%2f06%2fsign-github-commits-using-mac%2f&amp;title=Sign%20GitHub%20commits%20%28using%20Mac%29&amp;summary=Sign%20GitHub%20commits%20%28using%20Mac%29&amp;source=https%3a%2f%2fdevandchill.com%2fposts%2f2019%2f06%2fsign-github-commits-using-mac%2f" target="_blank" rel="noopener" aria-label="" title="Share on linkedin">
-  <div class="resp-sharing-button resp-sharing-button--linkedin resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://reddit.com/submit/?url=https%3a%2f%2fdevandchill.com%2fposts%2f2019%2f06%2fsign-github-commits-using-mac%2f&amp;resubmit=true&amp;title=Sign%20GitHub%20commits%20%28using%20Mac%29" target="_blank" rel="noopener" aria-label="" title="Share on reddit">
-  <div class="resp-sharing-button resp-sharing-button--reddit resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://www.xing.com/app/user?op=share;url=https%3a%2f%2fdevandchill.com%2fposts%2f2019%2f06%2fsign-github-commits-using-mac%2f;title=Sign%20GitHub%20commits%20%28using%20Mac%29" target="_blank" rel="noopener" aria-label="" title="Share on xing">
-  <div class="resp-sharing-button resp-sharing-button--xing resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M18.188 0c-.517 0-.741.325-.927.66 0 0-7.455 13.224-7.702 13.657.015.024 4.919 9.023 4.919 9.023.17.308.436.66.967.66h3.454c.211 0 .375-.078.463-.22.089-.151.089-.346-.009-.536l-4.879-8.916c-.004-.006-.004-.016 0-.022L22.139.756c.095-.191.097-.387.006-.535C22.056.078 21.894 0 21.686 0h-3.498zM3.648 4.74c-.211 0-.385.074-.473.216-.09.149-.078.339.02.531l2.34 4.05c.004.01.004.016 0 .021L1.86 16.051c-.099.188-.093.381 0 .529.085.142.239.234.45.234h3.461c.518 0 .766-.348.945-.667l3.734-6.609-2.378-4.155c-.172-.315-.434-.659-.962-.659H3.648v.016z"/></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="whatsapp://send?text=Sign%20GitHub%20commits%20%28using%20Mac%29%20https%3a%2f%2fdevandchill.com%2fposts%2f2019%2f06%2fsign-github-commits-using-mac%2f" target="_blank" rel="noopener" aria-label="" title="Share on whatsapp">
-  <div class="resp-sharing-button resp-sharing-button--whatsapp resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://news.ycombinator.com/submitlink?u=https%3a%2f%2fdevandchill.com%2fposts%2f2019%2f06%2fsign-github-commits-using-mac%2f&amp;t=Sign%20GitHub%20commits%20%28using%20Mac%29" target="_blank" rel="noopener" aria-label="" title="Share on hacker news">
-  <div class="resp-sharing-button resp-sharing-button--hackernews resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M0 24V0h24v24H0zM6.951 5.896l4.112 7.708v5.064h1.583v-4.972l4.148-7.799h-1.749l-2.457 4.875c-.372.745-.688 1.434-.688 1.434s-.297-.708-.651-1.434L8.831 5.896h-1.88z"/></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://telegram.me/share/url?text=Sign%20GitHub%20commits%20%28using%20Mac%29&amp;url=https%3a%2f%2fdevandchill.com%2fposts%2f2019%2f06%2fsign-github-commits-using-mac%2f" target="_blank" rel="noopener" aria-label="" title="Share on telegram">
-  <div class="resp-sharing-button resp-sharing-button--telegram resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-    </div>
-  </div>
-</a>
-
-  </div>
 
   
   <div class="pagination">
@@ -414,8 +320,7 @@ In case the email does not match with the email linked in GitHub you can change 
         
 
 
-
-<script type="text/javascript" src="/bundle.min.e073c6bca809af5c516c3777e3441958267b377fb29e3c9471c558a6711b62d7819807a126e3378f03763928ef7b09a6cdcb1693bf5719e81e15e60176854b26.js" integrity="sha512-4HPGvKgJr1xRbDd340QZWCZ7N3&#43;ynjyUccVYpnEbYteBmAehJuM3jwN2OSjvewmmzcsWk79XGegeFeYBdoVLJg=="></script>
+<script type="text/javascript" src="/bundle.min.69fb501ac7bace7c0ca982d98573883fe084cb258084917289a51bc0bc04868a1b91b95a34c641d2854f64b4b0245430430f86fa70e19f7425062100c9b69215.js" integrity="sha512-aftQGse6znwMqYLZhXOIP&#43;CEyyWAhJFyiaUbwLwEhoobkblaNMZB0oVPZLSwJFQwQw&#43;G&#43;nDhn3QlBiEAybaSFQ=="></script>
 
 
 

@@ -7,7 +7,17 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Pablo Morelli</copyright>
-    <lastBuildDate>Sat, 19 Oct 2019 22:22:29 +0200</lastBuildDate><atom:link href="https://devandchill.com/tags/docker/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 29 Jan 2023 18:30:00 +0100</lastBuildDate><atom:link href="https://devandchill.com/tags/docker/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>How I approach microservice testing in 2023</title>
+      <link>https://devandchill.com/posts/2023/01/how-i-approach-microservice-testing-in-2023/</link>
+      <pubDate>Sun, 29 Jan 2023 18:30:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/posts/2023/01/how-i-approach-microservice-testing-in-2023/</guid>
+      <description>👉 The codebase used in this post can be found in my Github. 👈
+Introduction As a software engineer, I&amp;rsquo;ve had the opportunity to work with microservices in various companies and each one had its own unique approach to testing the codebase. From my experience, I&amp;rsquo;ve come to realize that there&amp;rsquo;s no one-size-fits-all solution when it comes to testing microservices. Should there be only unit test? What about the external dependencies?</description>
+    </item>
+    
     <item>
       <title>Azure Pipelines: Build a dockerized app and deploy to kubernetes</title>
       <link>https://devandchill.com/posts/2019/10/azure-pipelines-build-a-dockerized-app-and-deploy-to-kubernetes/</link>
@@ -26,7 +36,7 @@ Every company has a different way to work and configure CI/CD, and all of them h
       <guid>https://devandchill.com/posts/2019/06/net-core-3.0-publish-single-file-binary-on-alpine-container/</guid>
       <description>The newly released dotnet 3 preview 6 has an interesting feature called publish single file where an application can be published as a self contained app that will extract and run on the platform it was compiled for.
 In order to add this feature in our .csproj, add the following lines:
-&amp;lt;PropertyGroup&amp;gt;  &amp;lt;TargetFramework&amp;gt;netcoreapp3.0&amp;lt;/TargetFramework&amp;gt;  &amp;lt;PublishTrimmed&amp;gt;true&amp;lt;/PublishTrimmed&amp;gt;  &amp;lt;PublishReadyToRun&amp;gt;true&amp;lt;/PublishReadyToRun&amp;gt;  &amp;lt;PublishSingleFile&amp;gt;true&amp;lt;/PublishSingleFile&amp;gt;  &amp;lt;CrossGenDuringPublish&amp;gt;false&amp;lt;/CrossGenDuringPublish&amp;gt; &amp;lt;/PropertyGroup&amp;gt; There are some flags that may sound weird, let&amp;rsquo;s go through them:</description>
+&amp;lt;PropertyGroup&amp;gt; &amp;lt;TargetFramework&amp;gt;netcoreapp3.0&amp;lt;/TargetFramework&amp;gt; &amp;lt;PublishTrimmed&amp;gt;true&amp;lt;/PublishTrimmed&amp;gt; &amp;lt;PublishReadyToRun&amp;gt;true&amp;lt;/PublishReadyToRun&amp;gt; &amp;lt;PublishSingleFile&amp;gt;true&amp;lt;/PublishSingleFile&amp;gt; &amp;lt;CrossGenDuringPublish&amp;gt;false&amp;lt;/CrossGenDuringPublish&amp;gt; &amp;lt;/PropertyGroup&amp;gt; There are some flags that may sound weird, let&amp;rsquo;s go through them:</description>
     </item>
     
     <item>

@@ -14,8 +14,8 @@
       <pubDate>Fri, 30 Apr 2021 12:40:00 +0200</pubDate>
       
       <guid>https://devandchill.com/posts/2021/04/introducing-maybe-package-bring-functional-to-go/</guid>
-      <description>One of the advantages of Go is that null (nil) values are rarer than in some other languages. The following snippet will fail: func getDay() string {  return nil } In order to make that snippet work, a pointer is needed as null values are the zero value for pointers (the same applies for interfaces, channels and function types).
-func getDay() *string {  return nil } Being that pointers can introduce null and hence panics, and knowing that null is considered to be &amp;ldquo;The billion dollar mistake&amp;rdquo;, why is still so common in Go to use pointers for everything?</description>
+      <description>One of the advantages of Go is that null (nil) values are rarer than in some other languages. The following snippet will fail: func getDay() string { return nil } In order to make that snippet work, a pointer is needed as null values are the zero value for pointers (the same applies for interfaces, channels and function types).
+func getDay() *string { return nil } Being that pointers can introduce null and hence panics, and knowing that null is considered to be &amp;ldquo;The billion dollar mistake&amp;rdquo;, why is still so common in Go to use pointers for everything?</description>
     </item>
     
     <item>
@@ -26,7 +26,7 @@ func getDay() *string {  return nil } Being that pointers can introduce null and
       <guid>https://devandchill.com/posts/2020/05/go-lib/pq-or-pgx-which-performs-better/</guid>
       <description>Some days ago a coworker of mine linked me to the source code of Google&amp;rsquo;s exposure notifications API and of course is a good chance to see how Google is doing Go related codebases.
 Continuing with the topic of Postgres and benchmarking, I decided to check out how Postgres configuration was done and this line got my attention:
-import ( 	... 	&amp;#34;github.com/jackc/pgx/v4/pgxpool&amp;#34; ) What is pgx, and why should we care?</description>
+import ( ... &amp;#34;github.com/jackc/pgx/v4/pgxpool&amp;#34; ) What is pgx, and why should we care?</description>
     </item>
     
     <item>
@@ -37,7 +37,7 @@ import ( 	... 	&amp;#34;github.com/jackc/pgx/v4/pgxpool&amp;#34; ) What is pgx, 
       <guid>https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/</guid>
       <description>In my previous post I covered how to build concurrently safe upsert queries .
 This post serves as a continuation where different approaches will be battle tested to expose the performance of each one:
- Advisory lock On conflict update On conflict do nothing CTE queries  Without further ado, let&amp;rsquo;s start:
+Advisory lock On conflict update On conflict do nothing CTE queries Without further ado, let&amp;rsquo;s start:
 The application In order to emulate the scenario described on the previous post, an HTTP API is required. This one will connect to a database to perform the calls.</description>
     </item>
     
@@ -58,8 +58,8 @@ Every company has a different way to work and configure CI/CD, and all of them h
       
       <guid>https://devandchill.com/posts/2019/04/word-counter-sync-concurrent-or-streams/</guid>
       <description>One day I was given the task of doing a whiteboard word counter algorithm. The requirements were:
- Print on console all the words and the quantity of times they appear on a 40.000 lines input. Make it as fast as possible.  For a start one can do it as simple as possible instead, and then try to see whether it can be made faster:
-func wordCounter() (words map[string]int) { 	b, err := ioutil.</description>
+Print on console all the words and the quantity of times they appear on a 40.000 lines input. Make it as fast as possible. For a start one can do it as simple as possible instead, and then try to see whether it can be made faster:
+func wordCounter() (words map[string]int) { b, err := ioutil.</description>
     </item>
     
     <item>

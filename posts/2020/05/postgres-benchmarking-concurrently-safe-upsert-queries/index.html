@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="author" content="Pablo Morelli">
-<meta name="description" content="Devandchill is a coding and tech blog oriented to go, .net and databases made by Pablo Morelli" />
+<meta name="description" content="Devandchill is a coding blog where I share my ideas and insights on various programming topics." />
 <meta name="keywords"
     content="blog, development, programming, tech, go, golang, postgres, database, sql, benchmark, upsert, queries, cte, concurrency" />
 <meta name="robots" content="noodp" />
@@ -26,7 +26,7 @@
 
 
 
-<link rel="stylesheet" type="text/css" href="/main.a2b8a4b0f7c324e63653aa57eb9d5d028042ae2d3adf01fbcff08c375b752437.css">
+<link rel="stylesheet" type="text/css" href="/main.045f18da88f8cb42336977558c8919c77ba0afb78827b7a1250d971d6cfd080e.css">
 
 
 
@@ -42,7 +42,7 @@
 <meta itemprop="name" content="Postgres: Benchmarking concurrently safe upsert queries">
 <meta itemprop="description" content="In my previous post I covered how to build concurrently safe upsert queries .
 This post serves as a continuation where different approaches will be battle tested to expose the performance of each one:
- Advisory lock On conflict update On conflict do nothing CTE queries  Without further ado, let&rsquo;s start:
+Advisory lock On conflict update On conflict do nothing CTE queries Without further ado, let&rsquo;s start:
 The application In order to emulate the scenario described on the previous post, an HTTP API is required. This one will connect to a database to perform the calls."><meta itemprop="datePublished" content="2020-05-13T16:40:29+01:00" />
 <meta itemprop="dateModified" content="2020-05-13T16:40:29+01:00" />
 <meta itemprop="wordCount" content="1574"><meta itemprop="image" content="https://devandchill.com/og-image.png"/>
@@ -53,9 +53,8 @@ The application In order to emulate the scenario described on the previous post,
 <meta name="twitter:title" content="Postgres: Benchmarking concurrently safe upsert queries"/>
 <meta name="twitter:description" content="In my previous post I covered how to build concurrently safe upsert queries .
 This post serves as a continuation where different approaches will be battle tested to expose the performance of each one:
- Advisory lock On conflict update On conflict do nothing CTE queries  Without further ado, let&rsquo;s start:
+Advisory lock On conflict update On conflict do nothing CTE queries Without further ado, let&rsquo;s start:
 The application In order to emulate the scenario described on the previous post, an HTTP API is required. This one will connect to a database to perform the calls."/>
-
 
 
 
@@ -103,7 +102,7 @@ The application In order to emulate the scenario described on the previous post,
         <span class="header__right">
             
             <nav class="menu">
-    <ul class="menu__inner"><li><a href="/about">About</a></li><li><a href="/resume">Resume</a></li><li><a href="/posts">Posts</a></li>
+    <ul class="menu__inner"><li><a href="/blog">The blog</a></li><li><a href="/resume">Resume</a></li><li><a href="/posts">Posts</a></li>
     </ul>
 </nav>
 
@@ -172,28 +171,28 @@ The application is written in Go and can be found <a href="https://github.com/pm
 </ul>
 <h2 id="pre-requisites">Pre-requisites</h2>
 <p>Since we are going to use postgres, an instance needs to be set up, and for convenience this example uses docker:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker run --name db -p 5432:5432 -e POSTGRES_HOST_AUTH_METHOD<span style="color:#f92672">=</span>trust postgres:latest
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker run --name db -p 5432:5432 -e POSTGRES_HOST_AUTH_METHOD<span style="color:#81a1c1">=</span>trust postgres:latest
 </span></span></code></pre></div><p>A file named <code>seed.psql</code> is also present on the root of the repository:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">DATABASE</span> customer_svc;
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> customers(id SERIAL, customer_id UUID <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span>);
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">CREATE</span> <span style="color:#81a1c1;font-weight:bold">DATABASE</span> customer_svc<span style="color:#eceff4">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">CREATE</span> <span style="color:#81a1c1;font-weight:bold">TABLE</span> customers<span style="color:#eceff4">(</span>id <span style="color:#81a1c1">SERIAL</span><span style="color:#eceff4">,</span> customer_id UUID <span style="color:#81a1c1;font-weight:bold">NOT</span> <span style="color:#81a1c1;font-weight:bold">NULL</span> <span style="color:#81a1c1;font-weight:bold">PRIMARY</span> <span style="color:#81a1c1;font-weight:bold">KEY</span><span style="color:#eceff4">);</span>
 </span></span></code></pre></div><h2 id="running-the-application">Running the application</h2>
 <p>The application can be run in a container as well:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker build -t pg-upsert-app:local .
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker build -t pg-upsert-app:local .
 </span></span><span style="display:flex;"><span>docker run -p 8080:8080 --link db --name app -i pg-upsert-app:local
 </span></span></code></pre></div><h2 id="benchmarking">Benchmarking</h2>
 <p>For the benchmark, the tool <a href="https://github.com/tsenart/vegeta"  target="_blank" rel="noreferrer noopener" >vegeta</a>
  is used. This tool allows doing HTTP load testing which will be used against the API.</p>
 <p>The test suite is just a bash script that will feature a similar logic for each approach to be tested; example:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>UPSERT_LOCK<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>echo <span style="color:#e6db74">&#39;{
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  method: &#34;POST&#34;,
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  url: &#34;http://app:8080/upsert-lock&#34;,
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  body:&#34;{\&#34;id\&#34;: \&#34;&lt;ruuid&gt;\&#34;}&#34; | @base64,
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  header: {&#34;Content-Type&#34;: [&#34;application/json&#34;]}
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">}&#39;</span> | sed <span style="color:#e6db74">&#34;s/&lt;ruuid&gt;/</span><span style="color:#66d9ef">$(</span>uuidgen | tr <span style="color:#e6db74">&#39;[:upper:]&#39;</span> <span style="color:#e6db74">&#39;[:lower:]&#39;</span><span style="color:#66d9ef">)</span><span style="color:#e6db74">/g&#34;</span><span style="color:#66d9ef">)</span>
-</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;EXECUTING FOR LOCKS&#34;</span>
-</span></span><span style="display:flex;"><span>jq -ncM <span style="color:#e6db74">&#34;</span>$UPSERT_LOCK<span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  | vegeta attack -format<span style="color:#f92672">=</span>json -duration<span style="color:#f92672">=</span>40s -connections<span style="color:#f92672">=</span><span style="color:#ae81ff">20</span> -rate<span style="color:#f92672">=</span><span style="color:#ae81ff">100</span> | vegeta encode <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  | vegeta report -type<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;hist[0,2ms,4ms,6ms,8ms,10ms,15ms]&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>UPSERT_LOCK<span style="color:#81a1c1">=</span><span style="color:#81a1c1;font-weight:bold">$(</span><span style="color:#81a1c1">echo</span> <span style="color:#a3be8c">&#39;{
+</span></span></span><span style="display:flex;"><span><span style="color:#a3be8c">  method: &#34;POST&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#a3be8c">  url: &#34;http://app:8080/upsert-lock&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#a3be8c">  body:&#34;{\&#34;id\&#34;: \&#34;&lt;ruuid&gt;\&#34;}&#34; | @base64,
+</span></span></span><span style="display:flex;"><span><span style="color:#a3be8c">  header: {&#34;Content-Type&#34;: [&#34;application/json&#34;]}
+</span></span></span><span style="display:flex;"><span><span style="color:#a3be8c">}&#39;</span> <span style="color:#eceff4">|</span> sed <span style="color:#a3be8c">&#34;s/&lt;ruuid&gt;/</span><span style="color:#81a1c1;font-weight:bold">$(</span>uuidgen <span style="color:#eceff4">|</span> tr <span style="color:#a3be8c">&#39;[:upper:]&#39;</span> <span style="color:#a3be8c">&#39;[:lower:]&#39;</span><span style="color:#81a1c1;font-weight:bold">)</span><span style="color:#a3be8c">/g&#34;</span><span style="color:#81a1c1;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">echo</span> <span style="color:#a3be8c">&#34;EXECUTING FOR LOCKS&#34;</span>
+</span></span><span style="display:flex;"><span>jq -ncM <span style="color:#a3be8c">&#34;</span>$UPSERT_LOCK<span style="color:#a3be8c">&#34;</span> <span style="color:#ebcb8b">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ebcb8b"></span>  <span style="color:#eceff4">|</span> vegeta attack -format<span style="color:#81a1c1">=</span>json -duration<span style="color:#81a1c1">=</span>40s -connections<span style="color:#81a1c1">=</span><span style="color:#b48ead">20</span> -rate<span style="color:#81a1c1">=</span><span style="color:#b48ead">100</span> <span style="color:#eceff4">|</span> vegeta encode <span style="color:#ebcb8b">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ebcb8b"></span>  <span style="color:#eceff4">|</span> vegeta report -type<span style="color:#81a1c1">=</span><span style="color:#a3be8c">&#34;hist[0,2ms,4ms,6ms,8ms,10ms,15ms]&#34;</span>
 </span></span></code></pre></div><p>This is translated to the following:</p>
 <ul>
 <li>Echo a <code>POST</code> request towards <code>http://app:8080/upsert-lock</code> with the payload <code>{&quot;id&quot;: &quot;some-uuid-generated-at-runtime&quot;}</code>. This uuid will be repeated for each call performed in the given scenario.</li>
@@ -202,55 +201,55 @@ The application is written in Go and can be found <a href="https://github.com/pm
 <li>The results will be aggregated into different buckets determined by <code>hist[0,2ms,4ms,6ms,8ms,10ms,15ms]</code>.</li>
 </ul>
 <p>The execution of this test is also dockerized so there is no need to download additional tools:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker build -t benchmark:local -f benchmark/Dockerfile benchmark/.
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker build -t benchmark:local -f benchmark/Dockerfile benchmark/.
 </span></span><span style="display:flex;"><span>docker run --link app -t benchmark:local
 </span></span></code></pre></div><p>In order to avoid results influenced by the warm up phase of the app, the test suite was executed twice and only the results from the last execution are shown below.</p>
 <h2 id="advisory-lock">Advisory lock</h2>
 <p>As the previous post indicates this approach is the less scalable. The introduction of a custom application lock in the database is not a good design model and the results are showing that:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>EXECUTING FOR LOCKS
-</span></span><span style="display:flex;"><span>Bucket         <span style="color:#75715e">#     %       Histogram</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">974</span>   24.35%  <span style="color:#75715e">##################</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2771</span>  69.27%  <span style="color:#75715e">###################################################</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">244</span>   6.10%   <span style="color:#75715e">####</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">10</span>    0.25%
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">1</span>     0.03%
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>EXECUTING FOR LOCKS
+</span></span><span style="display:flex;"><span>Bucket         <span style="color:#616e87;font-style:italic">#     %       Histogram</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">[</span>0s,    2ms<span style="color:#81a1c1">]</span>   <span style="color:#b48ead">974</span>   24.35%  <span style="color:#616e87;font-style:italic">##################</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">[</span>2ms,   4ms<span style="color:#81a1c1">]</span>   <span style="color:#b48ead">2771</span>  69.27%  <span style="color:#616e87;font-style:italic">###################################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">[</span>4ms,   6ms<span style="color:#81a1c1">]</span>   <span style="color:#b48ead">244</span>   6.10%   <span style="color:#616e87;font-style:italic">####</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">[</span>6ms,   8ms<span style="color:#81a1c1">]</span>   <span style="color:#b48ead">10</span>    0.25%
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">[</span>8ms,   10ms<span style="color:#81a1c1">]</span>  <span style="color:#b48ead">0</span>     0.00%
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">[</span>10ms,  15ms<span style="color:#81a1c1">]</span>  <span style="color:#b48ead">1</span>     0.03%
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">[</span>15ms,  +Inf<span style="color:#81a1c1">]</span>  <span style="color:#b48ead">0</span>     0.00%
 </span></span></code></pre></div><p>Not only that but the code is also more complex than other solutions:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">repo</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pgCustomerRepo</span>) <span style="color:#a6e22e">UpsertCustomerLock</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">id</span> <span style="color:#a6e22e">uuid</span>.<span style="color:#a6e22e">UUID</span>) (<span style="color:#a6e22e">res</span> <span style="color:#a6e22e">domain</span>.<span style="color:#a6e22e">UpsertedRow</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
-</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">tx</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">BeginTx</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#66d9ef">nil</span>)
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span>
-</span></span><span style="display:flex;"><span>	}
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">func</span> <span style="color:#eceff4">(</span>repo <span style="color:#81a1c1">*</span>pgCustomerRepo<span style="color:#eceff4">)</span> <span style="color:#88c0d0">UpsertCustomerLock</span><span style="color:#eceff4">(</span>ctx context<span style="color:#eceff4">.</span>Context<span style="color:#eceff4">,</span> id uuid<span style="color:#eceff4">.</span>UUID<span style="color:#eceff4">)</span> <span style="color:#eceff4">(</span>res domain<span style="color:#eceff4">.</span>UpsertedRow<span style="color:#eceff4">,</span> err <span style="color:#81a1c1">error</span><span style="color:#eceff4">)</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>	tx<span style="color:#eceff4">,</span> err <span style="color:#81a1c1">:=</span> repo<span style="color:#eceff4">.</span>dbHandler<span style="color:#eceff4">.</span><span style="color:#88c0d0">BeginTx</span><span style="color:#eceff4">(</span>ctx<span style="color:#eceff4">,</span> <span style="color:#81a1c1;font-weight:bold">nil</span><span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">if</span> err <span style="color:#81a1c1">!=</span> <span style="color:#81a1c1;font-weight:bold">nil</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#81a1c1;font-weight:bold">return</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#eceff4">}</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">tx</span>.<span style="color:#a6e22e">ExecContext</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#e6db74">&#34;SELECT pg_advisory_xact_lock($1)&#34;</span>, <span style="color:#a6e22e">hash</span>(<span style="color:#a6e22e">id</span>.<span style="color:#a6e22e">String</span>()))
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span>
-</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	_<span style="color:#eceff4">,</span> err <span style="color:#eceff4">=</span> tx<span style="color:#eceff4">.</span><span style="color:#88c0d0">ExecContext</span><span style="color:#eceff4">(</span>ctx<span style="color:#eceff4">,</span> <span style="color:#a3be8c">&#34;SELECT pg_advisory_xact_lock($1)&#34;</span><span style="color:#eceff4">,</span> <span style="color:#88c0d0">hash</span><span style="color:#eceff4">(</span>id<span style="color:#eceff4">.</span><span style="color:#88c0d0">String</span><span style="color:#eceff4">()))</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">if</span> err <span style="color:#81a1c1">!=</span> <span style="color:#81a1c1;font-weight:bold">nil</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#81a1c1;font-weight:bold">return</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#eceff4">}</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">r</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">tx</span>.<span style="color:#a6e22e">QueryRowContext</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#e6db74">&#34;SELECT ctid, xmax, id FROM customers WHERE customer_id = $1&#34;</span>, <span style="color:#a6e22e">id</span>)
-</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
+</span></span><span style="display:flex;"><span>	r <span style="color:#81a1c1">:=</span> tx<span style="color:#eceff4">.</span><span style="color:#88c0d0">QueryRowContext</span><span style="color:#eceff4">(</span>ctx<span style="color:#eceff4">,</span> <span style="color:#a3be8c">&#34;SELECT ctid, xmax, id FROM customers WHERE customer_id = $1&#34;</span><span style="color:#eceff4">,</span> id<span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span>	err <span style="color:#eceff4">=</span> r<span style="color:#eceff4">.</span><span style="color:#88c0d0">Scan</span><span style="color:#eceff4">(</span><span style="color:#81a1c1">&amp;</span>res<span style="color:#eceff4">.</span>CTID<span style="color:#eceff4">,</span> <span style="color:#81a1c1">&amp;</span>res<span style="color:#eceff4">.</span>XMAX<span style="color:#eceff4">,</span> <span style="color:#81a1c1">&amp;</span>res<span style="color:#eceff4">.</span>ID<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">sql</span>.<span style="color:#a6e22e">ErrNoRows</span> {
-</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">q</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">&#34;INSERT INTO customers(customer_id) VALUES($1) RETURNING ctid, xmax, id&#34;</span>
-</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">row</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">tx</span>.<span style="color:#a6e22e">QueryRowContext</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">q</span>, <span style="color:#a6e22e">id</span>)
-</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">row</span>.<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
-</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">if</span> err <span style="color:#81a1c1">!=</span> <span style="color:#81a1c1;font-weight:bold">nil</span> <span style="color:#81a1c1">&amp;&amp;</span> err <span style="color:#81a1c1">==</span> sql<span style="color:#eceff4">.</span>ErrNoRows <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>		q <span style="color:#81a1c1">:=</span> <span style="color:#a3be8c">&#34;INSERT INTO customers(customer_id) VALUES($1) RETURNING ctid, xmax, id&#34;</span>
+</span></span><span style="display:flex;"><span>		row <span style="color:#81a1c1">:=</span> tx<span style="color:#eceff4">.</span><span style="color:#88c0d0">QueryRowContext</span><span style="color:#eceff4">(</span>ctx<span style="color:#eceff4">,</span> q<span style="color:#eceff4">,</span> id<span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span>		err <span style="color:#eceff4">=</span> row<span style="color:#eceff4">.</span><span style="color:#88c0d0">Scan</span><span style="color:#eceff4">(</span><span style="color:#81a1c1">&amp;</span>res<span style="color:#eceff4">.</span>CTID<span style="color:#eceff4">,</span> <span style="color:#81a1c1">&amp;</span>res<span style="color:#eceff4">.</span>XMAX<span style="color:#eceff4">,</span> <span style="color:#81a1c1">&amp;</span>res<span style="color:#eceff4">.</span>ID<span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#eceff4">}</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
-</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">tx</span>.<span style="color:#a6e22e">Commit</span>()
-</span></span><span style="display:flex;"><span>	} <span style="color:#66d9ef">else</span> {
-</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">tx</span>.<span style="color:#a6e22e">Rollback</span>()
-</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">if</span> err <span style="color:#81a1c1">==</span> <span style="color:#81a1c1;font-weight:bold">nil</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>		err <span style="color:#eceff4">=</span> tx<span style="color:#eceff4">.</span><span style="color:#88c0d0">Commit</span><span style="color:#eceff4">()</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#eceff4">}</span> <span style="color:#81a1c1;font-weight:bold">else</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>		err <span style="color:#eceff4">=</span> tx<span style="color:#eceff4">.</span><span style="color:#88c0d0">Rollback</span><span style="color:#eceff4">()</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#eceff4">}</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span>
-</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">return</span>
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">}</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">hash</span>(<span style="color:#a6e22e">s</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">int64</span> {
-</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">h</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">fnv</span>.<span style="color:#a6e22e">New64a</span>()
-</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">h</span>.<span style="color:#a6e22e">Write</span>([]byte(<span style="color:#a6e22e">s</span>))
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> int64(<span style="color:#a6e22e">h</span>.<span style="color:#a6e22e">Sum64</span>())
-</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">func</span> <span style="color:#88c0d0">hash</span><span style="color:#eceff4">(</span>s <span style="color:#81a1c1">string</span><span style="color:#eceff4">)</span> <span style="color:#81a1c1">int64</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>	h <span style="color:#81a1c1">:=</span> fnv<span style="color:#eceff4">.</span><span style="color:#88c0d0">New64a</span><span style="color:#eceff4">()</span>
+</span></span><span style="display:flex;"><span>	h<span style="color:#eceff4">.</span><span style="color:#88c0d0">Write</span><span style="color:#eceff4">([]</span><span style="color:#81a1c1">byte</span><span style="color:#eceff4">(</span>s<span style="color:#eceff4">))</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">return</span> <span style="color:#81a1c1">int64</span><span style="color:#eceff4">(</span>h<span style="color:#eceff4">.</span><span style="color:#88c0d0">Sum64</span><span style="color:#eceff4">())</span>
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">}</span>
 </span></span></code></pre></div><ol>
 <li>Create the transaction.</li>
 <li>Get a deterministic <code>int64</code> for the given uuid, and perform the lock (subsequent calls will have to wait here until the transaction ends)</li>
@@ -268,26 +267,26 @@ The application is written in Go and can be found <a href="https://github.com/pm
 </ul>
 <p>For a better refresher, click <a href="https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries/#4-on-conflict-update"  target="_blank" rel="noreferrer noopener" >here</a>
 </p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>EXECUTING FOR UPSERT CONFLICT
-</span></span><span style="display:flex;"><span>Bucket         <span style="color:#75715e">#     %       Histogram</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1777</span>  44.42%  <span style="color:#75715e">#################################</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1938</span>  48.45%  <span style="color:#75715e">####################################</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">158</span>   3.95%   <span style="color:#75715e">##</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">72</span>    1.80%   <span style="color:#75715e">#</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">33</span>    0.83%
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">18</span>    0.45%
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">4</span>     0.10%
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>EXECUTING FOR UPSERT CONFLICT
+</span></span><span style="display:flex;"><span>Bucket         <span style="color:#616e87;font-style:italic">#     %       Histogram</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">[</span>0s,    2ms<span style="color:#81a1c1">]</span>   <span style="color:#b48ead">1777</span>  44.42%  <span style="color:#616e87;font-style:italic">#################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">[</span>2ms,   4ms<span style="color:#81a1c1">]</span>   <span style="color:#b48ead">1938</span>  48.45%  <span style="color:#616e87;font-style:italic">####################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">[</span>4ms,   6ms<span style="color:#81a1c1">]</span>   <span style="color:#b48ead">158</span>   3.95%   <span style="color:#616e87;font-style:italic">##</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">[</span>6ms,   8ms<span style="color:#81a1c1">]</span>   <span style="color:#b48ead">72</span>    1.80%   <span style="color:#616e87;font-style:italic">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">[</span>8ms,   10ms<span style="color:#81a1c1">]</span>  <span style="color:#b48ead">33</span>    0.83%
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">[</span>10ms,  15ms<span style="color:#81a1c1">]</span>  <span style="color:#b48ead">18</span>    0.45%
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">[</span>15ms,  +Inf<span style="color:#81a1c1">]</span>  <span style="color:#b48ead">4</span>     0.10%
 </span></span></code></pre></div><p>The code here is simpler, so this one feels easier:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">repo</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pgCustomerRepo</span>) <span style="color:#a6e22e">UpsertCustomerConflict</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">id</span> <span style="color:#a6e22e">uuid</span>.<span style="color:#a6e22e">UUID</span>) (<span style="color:#a6e22e">res</span> <span style="color:#a6e22e">domain</span>.<span style="color:#a6e22e">UpsertedRow</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
-</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span>
-</span></span><span style="display:flex;"><span>		<span style="color:#e6db74">&#34;INSERT INTO customers(customer_id) VALUES($1) &#34;</span> <span style="color:#f92672">+</span>
-</span></span><span style="display:flex;"><span>		<span style="color:#e6db74">&#34;ON CONFLICT (customer_id) DO UPDATE SET customer_id = excluded.customer_id &#34;</span> <span style="color:#f92672">+</span>
-</span></span><span style="display:flex;"><span>		<span style="color:#e6db74">&#34;RETURNING ctid, xmax, id&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">func</span> <span style="color:#eceff4">(</span>repo <span style="color:#81a1c1">*</span>pgCustomerRepo<span style="color:#eceff4">)</span> <span style="color:#88c0d0">UpsertCustomerConflict</span><span style="color:#eceff4">(</span>ctx context<span style="color:#eceff4">.</span>Context<span style="color:#eceff4">,</span> id uuid<span style="color:#eceff4">.</span>UUID<span style="color:#eceff4">)</span> <span style="color:#eceff4">(</span>res domain<span style="color:#eceff4">.</span>UpsertedRow<span style="color:#eceff4">,</span> err <span style="color:#81a1c1">error</span><span style="color:#eceff4">)</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>	query <span style="color:#81a1c1">:=</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a3be8c">&#34;INSERT INTO customers(customer_id) VALUES($1) &#34;</span> <span style="color:#81a1c1">+</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a3be8c">&#34;ON CONFLICT (customer_id) DO UPDATE SET customer_id = excluded.customer_id &#34;</span> <span style="color:#81a1c1">+</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a3be8c">&#34;RETURNING ctid, xmax, id&#34;</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">row</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">QueryRowContext</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">id</span>)
-</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">row</span>.<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span>
-</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>	row <span style="color:#81a1c1">:=</span> repo<span style="color:#eceff4">.</span>dbHandler<span style="color:#eceff4">.</span><span style="color:#88c0d0">QueryRowContext</span><span style="color:#eceff4">(</span>ctx<span style="color:#eceff4">,</span> query<span style="color:#eceff4">,</span> id<span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span>	err <span style="color:#eceff4">=</span> row<span style="color:#eceff4">.</span><span style="color:#88c0d0">Scan</span><span style="color:#eceff4">(</span><span style="color:#81a1c1">&amp;</span>res<span style="color:#eceff4">.</span>CTID<span style="color:#eceff4">,</span> <span style="color:#81a1c1">&amp;</span>res<span style="color:#eceff4">.</span>XMAX<span style="color:#eceff4">,</span> <span style="color:#81a1c1">&amp;</span>res<span style="color:#eceff4">.</span>ID<span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">return</span>
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">}</span>
 </span></span></code></pre></div><ol>
 <li>Insert the customer.</li>
 <li>If customer exists, update (delete + create) the row overriding the id with the same id.</li>
@@ -303,30 +302,30 @@ The application is written in Go and can be found <a href="https://github.com/pm
 <p>If two batches are going to be used, the performance will end up being somewhat like the locking scenario, since there is a need of going several times to the database.</p>
 <p>The example displayed below shows how to achieve it in only one batch; but then again this is part of the cons. By nature Postgres does not allow sending two parameterized query statements on the same batch; so the parameters should be resolved before sending the query which can led to SQL injection.</p>
 <p>The example below shows how to bypass Postgres limit avoiding parameters; but this is not a good practice, as it can introduce security vulnerabilities in case we are dealing with parameters like strings.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">repo</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pgCustomerRepo</span>) <span style="color:#a6e22e">UpsertCustomerDoNothing</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">id</span> <span style="color:#a6e22e">uuid</span>.<span style="color:#a6e22e">UUID</span>) (<span style="color:#a6e22e">res</span> <span style="color:#a6e22e">domain</span>.<span style="color:#a6e22e">UpsertedRow</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
-</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span>
-</span></span><span style="display:flex;"><span>		<span style="color:#e6db74">&#34;INSERT INTO customers(customer_id)	VALUES($1) ON CONFLICT DO NOTHING;&#34;</span> <span style="color:#f92672">+</span>
-</span></span><span style="display:flex;"><span>		<span style="color:#e6db74">&#34;SELECT ctid, xmax, id FROM customers WHERE customer_id = $1&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">func</span> <span style="color:#eceff4">(</span>repo <span style="color:#81a1c1">*</span>pgCustomerRepo<span style="color:#eceff4">)</span> <span style="color:#88c0d0">UpsertCustomerDoNothing</span><span style="color:#eceff4">(</span>ctx context<span style="color:#eceff4">.</span>Context<span style="color:#eceff4">,</span> id uuid<span style="color:#eceff4">.</span>UUID<span style="color:#eceff4">)</span> <span style="color:#eceff4">(</span>res domain<span style="color:#eceff4">.</span>UpsertedRow<span style="color:#eceff4">,</span> err <span style="color:#81a1c1">error</span><span style="color:#eceff4">)</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>	query <span style="color:#81a1c1">:=</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a3be8c">&#34;INSERT INTO customers(customer_id)	VALUES($1) ON CONFLICT DO NOTHING;&#34;</span> <span style="color:#81a1c1">+</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a3be8c">&#34;SELECT ctid, xmax, id FROM customers WHERE customer_id = $1&#34;</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">query</span> = <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">ReplaceAll</span>(<span style="color:#a6e22e">query</span>, <span style="color:#e6db74">&#34;$1&#34;</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;&#39;%s&#39;&#34;</span>, <span style="color:#a6e22e">id</span>.<span style="color:#a6e22e">String</span>()))
-</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">row</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">QueryRowContext</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">query</span>)
-</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">row</span>.<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span>
-</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>	query <span style="color:#eceff4">=</span> strings<span style="color:#eceff4">.</span><span style="color:#88c0d0">ReplaceAll</span><span style="color:#eceff4">(</span>query<span style="color:#eceff4">,</span> <span style="color:#a3be8c">&#34;$1&#34;</span><span style="color:#eceff4">,</span> fmt<span style="color:#eceff4">.</span><span style="color:#88c0d0">Sprintf</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;&#39;%s&#39;&#34;</span><span style="color:#eceff4">,</span> id<span style="color:#eceff4">.</span><span style="color:#88c0d0">String</span><span style="color:#eceff4">()))</span>
+</span></span><span style="display:flex;"><span>	row <span style="color:#81a1c1">:=</span> repo<span style="color:#eceff4">.</span>dbHandler<span style="color:#eceff4">.</span><span style="color:#88c0d0">QueryRowContext</span><span style="color:#eceff4">(</span>ctx<span style="color:#eceff4">,</span> query<span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span>	err <span style="color:#eceff4">=</span> row<span style="color:#eceff4">.</span><span style="color:#88c0d0">Scan</span><span style="color:#eceff4">(</span><span style="color:#81a1c1">&amp;</span>res<span style="color:#eceff4">.</span>CTID<span style="color:#eceff4">,</span> <span style="color:#81a1c1">&amp;</span>res<span style="color:#eceff4">.</span>XMAX<span style="color:#eceff4">,</span> <span style="color:#81a1c1">&amp;</span>res<span style="color:#eceff4">.</span>ID<span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">return</span>
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">}</span>
 </span></span></code></pre></div><ol>
 <li>Insert the customer, if the customer exists, do nothing.</li>
 <li>Fetch the customer.</li>
 </ol>
 <p>The performance if this is accomplished in one batch is good, but don&rsquo;t do it as security is more important than premature optimization:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>EXECUTING FOR UPSERT DO NOTHING
-</span></span><span style="display:flex;"><span>Bucket         <span style="color:#75715e">#     %       Histogram</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">3426</span>  85.65%  <span style="color:#75715e">################################################################</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">572</span>   14.30%  <span style="color:#75715e">##########</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1</span>     0.03%
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">0</span>     0.00%
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">1</span>     0.03%
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>EXECUTING FOR UPSERT DO NOTHING
+</span></span><span style="display:flex;"><span>Bucket         <span style="color:#616e87;font-style:italic">#     %       Histogram</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">[</span>0s,    2ms<span style="color:#81a1c1">]</span>   <span style="color:#b48ead">3426</span>  85.65%  <span style="color:#616e87;font-style:italic">################################################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">[</span>2ms,   4ms<span style="color:#81a1c1">]</span>   <span style="color:#b48ead">572</span>   14.30%  <span style="color:#616e87;font-style:italic">##########</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">[</span>4ms,   6ms<span style="color:#81a1c1">]</span>   <span style="color:#b48ead">1</span>     0.03%
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">[</span>6ms,   8ms<span style="color:#81a1c1">]</span>   <span style="color:#b48ead">0</span>     0.00%
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">[</span>8ms,   10ms<span style="color:#81a1c1">]</span>  <span style="color:#b48ead">1</span>     0.03%
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">[</span>10ms,  15ms<span style="color:#81a1c1">]</span>  <span style="color:#b48ead">0</span>     0.00%
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">[</span>15ms,  +Inf<span style="color:#81a1c1">]</span>  <span style="color:#b48ead">0</span>     0.00%
 </span></span></code></pre></div><h2 id="cte-queries">CTE queries</h2>
 <p>Last, this approach is not the most pleasant to read but it has some pros:</p>
 <ul>
@@ -335,27 +334,27 @@ The application is written in Go and can be found <a href="https://github.com/pm
 <li>Parameterized queries.</li>
 <li>Works with database engines that do not support <code>ON CONFLICT DO ...</code></li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>EXECUTING FOR UPSERT CTE
-</span></span><span style="display:flex;"><span>Bucket         <span style="color:#75715e">#     %       Histogram</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>0s,    2ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2950</span>  73.75%  <span style="color:#75715e">#######################################################</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>2ms,   4ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">1034</span>  25.85%  <span style="color:#75715e">###################</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>4ms,   6ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">14</span>    0.35%
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>6ms,   8ms<span style="color:#f92672">]</span>   <span style="color:#ae81ff">2</span>     0.05%
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>8ms,   10ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>10ms,  15ms<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>15ms,  +Inf<span style="color:#f92672">]</span>  <span style="color:#ae81ff">0</span>     0.00%
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>EXECUTING FOR UPSERT CTE
+</span></span><span style="display:flex;"><span>Bucket         <span style="color:#616e87;font-style:italic">#     %       Histogram</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">[</span>0s,    2ms<span style="color:#81a1c1">]</span>   <span style="color:#b48ead">2950</span>  73.75%  <span style="color:#616e87;font-style:italic">#######################################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">[</span>2ms,   4ms<span style="color:#81a1c1">]</span>   <span style="color:#b48ead">1034</span>  25.85%  <span style="color:#616e87;font-style:italic">###################</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">[</span>4ms,   6ms<span style="color:#81a1c1">]</span>   <span style="color:#b48ead">14</span>    0.35%
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">[</span>6ms,   8ms<span style="color:#81a1c1">]</span>   <span style="color:#b48ead">2</span>     0.05%
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">[</span>8ms,   10ms<span style="color:#81a1c1">]</span>  <span style="color:#b48ead">0</span>     0.00%
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">[</span>10ms,  15ms<span style="color:#81a1c1">]</span>  <span style="color:#b48ead">0</span>     0.00%
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">[</span>15ms,  +Inf<span style="color:#81a1c1">]</span>  <span style="color:#b48ead">0</span>     0.00%
 </span></span></code></pre></div><p>The code is displayed below:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">repo</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pgCustomerRepo</span>) <span style="color:#a6e22e">UpsertCustomerCte</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">id</span> <span style="color:#a6e22e">uuid</span>.<span style="color:#a6e22e">UUID</span>) (<span style="color:#a6e22e">res</span> <span style="color:#a6e22e">domain</span>.<span style="color:#a6e22e">UpsertedRow</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
-</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span>
-</span></span><span style="display:flex;"><span>		<span style="color:#e6db74">&#34;WITH &#34;</span> <span style="color:#f92672">+</span>
-</span></span><span style="display:flex;"><span>			<span style="color:#e6db74">&#34;search AS (SELECT ctid, xmax, id FROM customers WHERE customer_id = $1 LIMIT 1),&#34;</span> <span style="color:#f92672">+</span>
-</span></span><span style="display:flex;"><span>			<span style="color:#e6db74">&#34;add AS (INSERT INTO customers (customer_id) SELECT $1 WHERE NOT EXISTS(SELECT id from search) RETURNING ctid, xmax, id)&#34;</span> <span style="color:#f92672">+</span>
-</span></span><span style="display:flex;"><span>		<span style="color:#e6db74">&#34;SELECT ctid, xmax, id from add	UNION ALL SELECT ctid, xmax, id from search&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">func</span> <span style="color:#eceff4">(</span>repo <span style="color:#81a1c1">*</span>pgCustomerRepo<span style="color:#eceff4">)</span> <span style="color:#88c0d0">UpsertCustomerCte</span><span style="color:#eceff4">(</span>ctx context<span style="color:#eceff4">.</span>Context<span style="color:#eceff4">,</span> id uuid<span style="color:#eceff4">.</span>UUID<span style="color:#eceff4">)</span> <span style="color:#eceff4">(</span>res domain<span style="color:#eceff4">.</span>UpsertedRow<span style="color:#eceff4">,</span> err <span style="color:#81a1c1">error</span><span style="color:#eceff4">)</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>	query <span style="color:#81a1c1">:=</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a3be8c">&#34;WITH &#34;</span> <span style="color:#81a1c1">+</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#a3be8c">&#34;search AS (SELECT ctid, xmax, id FROM customers WHERE customer_id = $1 LIMIT 1),&#34;</span> <span style="color:#81a1c1">+</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#a3be8c">&#34;add AS (INSERT INTO customers (customer_id) SELECT $1 WHERE NOT EXISTS(SELECT id from search) RETURNING ctid, xmax, id)&#34;</span> <span style="color:#81a1c1">+</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a3be8c">&#34;SELECT ctid, xmax, id from add	UNION ALL SELECT ctid, xmax, id from search&#34;</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">row</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">repo</span>.<span style="color:#a6e22e">dbHandler</span>.<span style="color:#a6e22e">QueryRowContext</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">id</span>)
-</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">row</span>.<span style="color:#a6e22e">Scan</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">CTID</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">XMAX</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">ID</span>)
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span>
-</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>	row <span style="color:#81a1c1">:=</span> repo<span style="color:#eceff4">.</span>dbHandler<span style="color:#eceff4">.</span><span style="color:#88c0d0">QueryRowContext</span><span style="color:#eceff4">(</span>ctx<span style="color:#eceff4">,</span> query<span style="color:#eceff4">,</span> id<span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span>	err <span style="color:#eceff4">=</span> row<span style="color:#eceff4">.</span><span style="color:#88c0d0">Scan</span><span style="color:#eceff4">(</span><span style="color:#81a1c1">&amp;</span>res<span style="color:#eceff4">.</span>CTID<span style="color:#eceff4">,</span> <span style="color:#81a1c1">&amp;</span>res<span style="color:#eceff4">.</span>XMAX<span style="color:#eceff4">,</span> <span style="color:#81a1c1">&amp;</span>res<span style="color:#eceff4">.</span>ID<span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">return</span>
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">}</span>
 </span></span></code></pre></div><ol>
 <li>Prepare the <code>search</code> statement.</li>
 <li>Prepare the <code>add</code> statement that will only add a customer if <code>search</code> does not return one.</li>
@@ -430,99 +429,6 @@ The application is written in Go and can be found <a href="https://github.com/pm
       
     </p>
   </div>
-  <hr />
-  <div class="sharing-buttons">
-    
-<a class="resp-sharing-button__link" href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fdevandchill.com%2fposts%2f2020%2f05%2fpostgres-benchmarking-concurrently-safe-upsert-queries%2f" target="_blank" rel="noopener" aria-label="" title="Share on facebook">
-  <div class="resp-sharing-button resp-sharing-button--facebook resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://twitter.com/intent/tweet/?url=https%3a%2f%2fdevandchill.com%2fposts%2f2020%2f05%2fpostgres-benchmarking-concurrently-safe-upsert-queries%2f" target="_blank" rel="noopener" aria-label="" title="Share on twitter">
-  <div class="resp-sharing-button resp-sharing-button--twitter resp-sharing-button--small">
-      <div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://www.tumblr.com/widgets/share/tool?posttype=link&amp;title=Postgres%3a%20Benchmarking%20concurrently%20safe%20upsert%20queries&amp;caption=Postgres%3a%20Benchmarking%20concurrently%20safe%20upsert%20queries&amp;canonicalUrl=https%3a%2f%2fdevandchill.com%2fposts%2f2020%2f05%2fpostgres-benchmarking-concurrently-safe-upsert-queries%2f" target="_blank" rel="noopener" aria-label="" title="Share on tumblr">
-  <div class="resp-sharing-button resp-sharing-button--tumblr resp-sharing-button--small">
-    <div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.563 24c-5.093 0-7.031-3.756-7.031-6.411V9.747H5.116V6.648c3.63-1.313 4.512-4.596 4.71-6.469C9.84.051 9.941 0 9.999 0h3.517v6.114h4.801v3.633h-4.82v7.47c.016 1.001.375 2.371 2.207 2.371h.09c.631-.02 1.486-.205 1.936-.419l1.156 3.425c-.436.636-2.4 1.374-4.156 1.404h-.178l.011.002z"/></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="mailto:?subject=Postgres%3a%20Benchmarking%20concurrently%20safe%20upsert%20queries&amp;body=https%3a%2f%2fdevandchill.com%2fposts%2f2020%2f05%2fpostgres-benchmarking-concurrently-safe-upsert-queries%2f" target="_self" rel="noopener" aria-label="" title="Share via email">
-  <div class="resp-sharing-button resp-sharing-button--email resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://pinterest.com/pin/create/button/?url=https%3a%2f%2fdevandchill.com%2fposts%2f2020%2f05%2fpostgres-benchmarking-concurrently-safe-upsert-queries%2f&amp;media=https%3a%2f%2fdevandchill.com%2fposts%2f2020%2f05%2fpostgres-benchmarking-concurrently-safe-upsert-queries%2f;description=Postgres%3a%20Benchmarking%20concurrently%20safe%20upsert%20queries" target="_blank" rel="noopener" aria-label="" title="Share on pinterest">
-  <div class="resp-sharing-button resp-sharing-button--pinterest resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026L12.017 0z"/></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2fdevandchill.com%2fposts%2f2020%2f05%2fpostgres-benchmarking-concurrently-safe-upsert-queries%2f&amp;title=Postgres%3a%20Benchmarking%20concurrently%20safe%20upsert%20queries&amp;summary=Postgres%3a%20Benchmarking%20concurrently%20safe%20upsert%20queries&amp;source=https%3a%2f%2fdevandchill.com%2fposts%2f2020%2f05%2fpostgres-benchmarking-concurrently-safe-upsert-queries%2f" target="_blank" rel="noopener" aria-label="" title="Share on linkedin">
-  <div class="resp-sharing-button resp-sharing-button--linkedin resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://reddit.com/submit/?url=https%3a%2f%2fdevandchill.com%2fposts%2f2020%2f05%2fpostgres-benchmarking-concurrently-safe-upsert-queries%2f&amp;resubmit=true&amp;title=Postgres%3a%20Benchmarking%20concurrently%20safe%20upsert%20queries" target="_blank" rel="noopener" aria-label="" title="Share on reddit">
-  <div class="resp-sharing-button resp-sharing-button--reddit resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://www.xing.com/app/user?op=share;url=https%3a%2f%2fdevandchill.com%2fposts%2f2020%2f05%2fpostgres-benchmarking-concurrently-safe-upsert-queries%2f;title=Postgres%3a%20Benchmarking%20concurrently%20safe%20upsert%20queries" target="_blank" rel="noopener" aria-label="" title="Share on xing">
-  <div class="resp-sharing-button resp-sharing-button--xing resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M18.188 0c-.517 0-.741.325-.927.66 0 0-7.455 13.224-7.702 13.657.015.024 4.919 9.023 4.919 9.023.17.308.436.66.967.66h3.454c.211 0 .375-.078.463-.22.089-.151.089-.346-.009-.536l-4.879-8.916c-.004-.006-.004-.016 0-.022L22.139.756c.095-.191.097-.387.006-.535C22.056.078 21.894 0 21.686 0h-3.498zM3.648 4.74c-.211 0-.385.074-.473.216-.09.149-.078.339.02.531l2.34 4.05c.004.01.004.016 0 .021L1.86 16.051c-.099.188-.093.381 0 .529.085.142.239.234.45.234h3.461c.518 0 .766-.348.945-.667l3.734-6.609-2.378-4.155c-.172-.315-.434-.659-.962-.659H3.648v.016z"/></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="whatsapp://send?text=Postgres%3a%20Benchmarking%20concurrently%20safe%20upsert%20queries%20https%3a%2f%2fdevandchill.com%2fposts%2f2020%2f05%2fpostgres-benchmarking-concurrently-safe-upsert-queries%2f" target="_blank" rel="noopener" aria-label="" title="Share on whatsapp">
-  <div class="resp-sharing-button resp-sharing-button--whatsapp resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://news.ycombinator.com/submitlink?u=https%3a%2f%2fdevandchill.com%2fposts%2f2020%2f05%2fpostgres-benchmarking-concurrently-safe-upsert-queries%2f&amp;t=Postgres%3a%20Benchmarking%20concurrently%20safe%20upsert%20queries" target="_blank" rel="noopener" aria-label="" title="Share on hacker news">
-  <div class="resp-sharing-button resp-sharing-button--hackernews resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M0 24V0h24v24H0zM6.951 5.896l4.112 7.708v5.064h1.583v-4.972l4.148-7.799h-1.749l-2.457 4.875c-.372.745-.688 1.434-.688 1.434s-.297-.708-.651-1.434L8.831 5.896h-1.88z"/></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://telegram.me/share/url?text=Postgres%3a%20Benchmarking%20concurrently%20safe%20upsert%20queries&amp;url=https%3a%2f%2fdevandchill.com%2fposts%2f2020%2f05%2fpostgres-benchmarking-concurrently-safe-upsert-queries%2f" target="_blank" rel="noopener" aria-label="" title="Share on telegram">
-  <div class="resp-sharing-button resp-sharing-button--telegram resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-    </div>
-  </div>
-</a>
-
-  </div>
 
   
   <div class="pagination">
@@ -575,8 +481,7 @@ The application is written in Go and can be found <a href="https://github.com/pm
         
 
 
-
-<script type="text/javascript" src="/bundle.min.e073c6bca809af5c516c3777e3441958267b377fb29e3c9471c558a6711b62d7819807a126e3378f03763928ef7b09a6cdcb1693bf5719e81e15e60176854b26.js" integrity="sha512-4HPGvKgJr1xRbDd340QZWCZ7N3&#43;ynjyUccVYpnEbYteBmAehJuM3jwN2OSjvewmmzcsWk79XGegeFeYBdoVLJg=="></script>
+<script type="text/javascript" src="/bundle.min.69fb501ac7bace7c0ca982d98573883fe084cb258084917289a51bc0bc04868a1b91b95a34c641d2854f64b4b0245430430f86fa70e19f7425062100c9b69215.js" integrity="sha512-aftQGse6znwMqYLZhXOIP&#43;CEyyWAhJFyiaUbwLwEhoobkblaNMZB0oVPZLSwJFQwQw&#43;G&#43;nDhn3QlBiEAybaSFQ=="></script>
 
 
 

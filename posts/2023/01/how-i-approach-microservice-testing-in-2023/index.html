@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="author" content="Pablo Morelli">
+<meta name="description" content="Devandchill is a coding blog where I share my ideas and insights on various programming topics." />
+<meta name="keywords"
+    content="blog, development, programming, tech, microservice, architecture, test, acceptance, integration, unit, behavior, service, go, vscode, docker" />
+<meta name="robots" content="noodp" />
+<meta name="theme-color" content="" />
+<link rel="canonical" href="https://devandchill.com/posts/2023/01/how-i-approach-microservice-testing-in-2023/" />
+
+
+<title>
+    
+    How I approach microservice testing in 2023 :: Dev &amp; Chill  — A blog about coding
+    
+</title>
+
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" rel="stylesheet"
+    type="text/css">
+
+
+
+<link rel="stylesheet" type="text/css" href="/main.045f18da88f8cb42336977558c8919c77ba0afb78827b7a1250d971d6cfd080e.css">
+
+
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <meta name="msapplication-TileColor" content="">
+
+
+<meta itemprop="name" content="How I approach microservice testing in 2023">
+<meta itemprop="description" content="👉 The codebase used in this post can be found in my Github. 👈
+Introduction As a software engineer, I&rsquo;ve had the opportunity to work with microservices in various companies and each one had its own unique approach to testing the codebase. From my experience, I&rsquo;ve come to realize that there&rsquo;s no one-size-fits-all solution when it comes to testing microservices. Should there be only unit test? What about the external dependencies?"><meta itemprop="datePublished" content="2023-01-29T18:30:00+01:00" />
+<meta itemprop="dateModified" content="2023-01-29T18:30:00+01:00" />
+<meta itemprop="wordCount" content="2826"><meta itemprop="image" content="https://devandchill.com/og-image.png"/>
+<meta itemprop="keywords" content="microservice,architecture,test,acceptance,integration,unit,behavior,service,go,vscode,docker," />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://devandchill.com/og-image.png"/>
+
+<meta name="twitter:title" content="How I approach microservice testing in 2023"/>
+<meta name="twitter:description" content="👉 The codebase used in this post can be found in my Github. 👈
+Introduction As a software engineer, I&rsquo;ve had the opportunity to work with microservices in various companies and each one had its own unique approach to testing the codebase. From my experience, I&rsquo;ve come to realize that there&rsquo;s no one-size-fits-all solution when it comes to testing microservices. Should there be only unit test? What about the external dependencies?"/>
+
+
+
+
+
+
+
+<meta property="article:published_time" content="2023-01-29 18:30:00 &#43;0100 CET" />
+
+
+
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138171880-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-138171880-1');
+</script>
+
+
+
+    </head>
+
+    
+        <body>
+    
+    
+        <div class="container">
+            <header class="header">
+    <span class="header__inner">
+        <a href="/" style="text-decoration: none;">
+    <div class="logo">
+        
+            <img src="/dev-n-chill-logo.svg" alt="Dev &amp; Chill" />
+        
+    </div>
+</a>
+
+
+        <span class="header__right">
+            
+            <nav class="menu">
+    <ul class="menu__inner"><li><a href="/blog">The blog</a></li><li><a href="/resume">Resume</a></li><li><a href="/posts">Posts</a></li>
+    </ul>
+</nav>
+
+            <span class="menu-trigger">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M0 0h24v24H0z" fill="none" />
+                    <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+                </svg>
+            </span>
+            
+        </span>
+    </span>
+</header>
+
+
+            <div class="content">
+                
+<main class="post">
+
+  <div class="post-info">
+    <p>
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="feather feather-clock">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 16 14"></polyline>
+      </svg>
+      14 minutes
+
+      
+    </p>
+  </div>
+
+  <article>
+    <h1 class="post-title">
+      <a href="https://devandchill.com/posts/2023/01/how-i-approach-microservice-testing-in-2023/">How I approach microservice testing in 2023</a>
+    </h1>
+
+    
+
+    
+
+    
+
+    <div class="post-content">
+      <p>👉 <a href="https://github.com/pmorelli92/how-I-test-microservices-2023"  target="_blank" rel="noreferrer noopener" >The codebase used in this post can be found in my Github.</a>
+ 👈</p>
+<h3 id="introduction">Introduction</h3>
+<p>As a software engineer, I&rsquo;ve had the opportunity to work with microservices in various companies and each one had its own unique approach to testing the codebase. From my experience, I&rsquo;ve come to realize that there&rsquo;s no one-size-fits-all solution when it comes to testing microservices. Should there be only unit test? What about the external dependencies? Do we care about what happen if a third party returns a response that is not expected? Is contract testing needed? So, what do we do?</p>
+<p>In this post the microservice used as example will have the following traits:</p>
+<ul>
+<li>Entrypoint as REST API.</li>
+<li>Domain logic that defines the business rules of the service.</li>
+<li>A connection to a database for data persistence.</li>
+</ul>
+<p>To keep it simple, there will not be any other entrypoint and there are no integration events. Additionally, before diving into the specifics of testing microservices, it&rsquo;s important to understand what microservices are and the different types of tests that are available. We&rsquo;ll start by discussing those.</p>
+<h3 id="microservice-definition">Microservice definition</h3>
+<p>There are a lot of definitions, but the one I always choose to go with is written by Sam Newman and is quite fitting:</p>
+<blockquote>
+<p>Microservices are small, autonomous services that work together. [&hellip;] A Microservice is a stand-alone service that can be (re)built in no more than two weeks.</p>
+</blockquote>
+<p>Given the fast-paced nature of microservices development, it&rsquo;s essential to have tests that can quickly provide confidence in the codebase. One starting point is to focus on the Pareto principle, which states that 80% of the results come from 20% of the effort. This means that it&rsquo;s not necessary to test every single aspect of a microservice, but rather to focus on the areas that will provide the most value, in other words, aim for the <em>good enough</em>.</p>
+<p>It&rsquo;s also important to note that there is no holy grail approach to testing microservices. Different teams may have different testing strategies that work best for them, depending on their domain and the specific needs of their project. Some teams may find that using TDD (Test-Driven Development) practices works well, while others may find that it&rsquo;s not the best fit. The key is to find a testing strategy that works for your team and your specific microservices project otherwise you can end incurring in wasting time.</p>
+<h3 id="different-type-of-tests">Different type of tests</h3>
+<p>Testing is an essential part of software development and there are several types of tests that can be used to ensure the quality of your code, for example:</p>
+<p><strong>Unit tests</strong>: These tests focus on individual units of code, such as single functions or methods. They are designed to test code in isolation, without the need for external dependencies. However, this approach can be less effective when dealing with the mentioned, such as a database or other service:</p>
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">func</span> <span style="color:#eceff4">(</span>s Service<span style="color:#eceff4">)</span> <span style="color:#88c0d0">CreatePost</span><span style="color:#eceff4">(</span>ctx context<span style="color:#eceff4">.</span>Context<span style="color:#eceff4">,</span> userID <span style="color:#81a1c1">string</span><span style="color:#eceff4">)</span> <span style="color:#81a1c1">error</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>    user<span style="color:#eceff4">,</span> err <span style="color:#81a1c1">:=</span> s<span style="color:#eceff4">.</span>repository<span style="color:#eceff4">.</span><span style="color:#88c0d0">GetUser</span><span style="color:#eceff4">(</span>ctx<span style="color:#eceff4">,</span> userID<span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">if</span> err <span style="color:#81a1c1">!=</span> <span style="color:#81a1c1;font-weight:bold">nil</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#81a1c1;font-weight:bold">return</span> err
+</span></span><span style="display:flex;"><span>	<span style="color:#eceff4">}</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#81a1c1">...</span>
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">}</span>
+</span></span></code></pre></div><p>In those cases, unit tests drastically loses the effectiveness, as you will need to mock these dependencies which in most cases requires working with interfaces, that in return is going to add complexity to your codebase.</p>
+<p><strong>Integration tests</strong>: These tests focus on the interaction and exception handling between different components. They should not aim for testing business logic as that should be covered with the unit tests. There might be an overlap, but the intent is different.</p>
+<p><strong>Acceptance tests</strong>: Used to ensure that the system meets the criteria specified by stakeholders and the development team. These could include functionality such as allowing a user to create a post or manage their profile on a social media platform.</p>
+<p><strong>Behavioral tests</strong>: Test the behavior of the system by simulating user or system interactions. These tests can be used to ensure things such as usability.</p>
+<hr>
+<p>In reality, it&rsquo;s hard to separate these types of tests completely and they often overlap. However, it&rsquo;s important to understand the different purposes and what is the intention of each type of test. If you take for instance an acceptance test that checks whether a <em>user can create a post</em> we can see that it will also share traits of a unit test, integration test, and behavioral test.</p>
+<p><strong>Unit test:</strong> The test will likely call domain functions that validate the post content, such as a blacklist filter. These functions should be pure and testable in isolation, but they still need to be valid for the acceptance test to pass.</p>
+<p><strong>Integration test:</strong> The post needs to be stored somewhere, such as in a Postgres database. This requires testing that the communication between the service and the database is working properly. If an integration with in-house service is required, one can use containers that return stub data to simulate that service with tools like <a href="https://github.com/natenho/Mockaco"  target="_blank" rel="noreferrer noopener" >Mockaco</a>
+ or <a href="https://github.com/tokopedia/gripmock"  target="_blank" rel="noreferrer noopener" >grpc-mock</a>
+. This ensures that the mocks are not part of the codebase and avoids creating mock interfaces.</p>
+<p><strong>Behavioral test</strong>: The entry point of the test is the <code>POST /post</code> endpoint, simulating a user interaction.</p>
+<p>With that stated, it can be difficult or undesirable to isolate one specific aspect in practice. In most cases then, I found it useful to refer to my tests as acceptance tests, which assert against use cases or features such as:</p>
+<ul>
+<li>Allowing the user to create a post.</li>
+<li>Allowing the user to remove a post.</li>
+<li>Allowing the user to like a post.</li>
+</ul>
+<p>It is possible that these tests do not cover 100% of the domain rules or third-party integrations. In that case, it may be necessary to supplement them with more specific unit tests or integration tests, or to make the call on whether the level of confidence in the codebase is good enough.</p>
+<h3 id="confidence-versus-coverage">Confidence versus coverage</h3>
+<p>In this post, we&rsquo;ve used <strong>confidence</strong> as a measure of our codebase instead of <strong>coverage</strong>. Confidence refers to the sense of security one feels when working on a codebase and making changes. It&rsquo;s that feeling of <em>I know this is going to work</em>. Good coverage is one way to achieve confidence, but it can also be achieved through sound coding practices.</p>
+<p>On the other hand, coverage refers to the percentage of the codebase that is executed while running the test cases. However, high coverage does not necessarily indicate that the codebase is reliable if the assertions in the test cases are incorrect. A test suite with only the assertion of <code>true = true</code> will execute successfully, but it won&rsquo;t provide any real assurance that the codebase is functioning as intended.</p>
+<h3 id="gwt-approach">GWT approach</h3>
+<p>The Given-When-Then (GWT) approach is a way to write test cases that is based on behavior testing. This method can help to make tests more readable and allow for the reuse of preconditions and assertions.</p>
+<p>In the case of creating a post, there are some preconditions that must be met. For example, a user must have an account and the post cannot contain blacklisted words. The GWT approach can be used to test these scenarios:</p>
+<p><strong>Scenario 1: User can create a post</strong></p>
+<ol>
+<li><strong>Given</strong> the user has an account.</li>
+<li><strong>When</strong> the user makes a post via <code>POST /post</code>.</li>
+<li><strong>Then</strong> the HTTP response should be 200 and the post should be stored in the database.</li>
+</ol>
+<p><strong>Scenario 2: User should not be able to create a post with blacklisted words</strong></p>
+<ol>
+<li><strong>Given</strong> the user has an account.</li>
+<li><strong>When</strong> the user makes a post with blacklisted words.</li>
+<li><strong>Then</strong> the user should receive an error message.</li>
+</ol>
+<p>In a real-world microservices scenario, there would likely be an additional step where a <code>post.created</code> integration event is fired, and this is something that can be asserted on. However, for the sake of simplicity, this step has been omitted in the example provided.</p>
+<h3 id="how-does-this-look-in-the-codebase">How does this look in the codebase?</h3>
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">func</span> <span style="color:#88c0d0">TestCreatePost</span><span style="color:#eceff4">(</span>t <span style="color:#81a1c1">*</span>testing<span style="color:#eceff4">.</span>T<span style="color:#eceff4">)</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#81a1c1">...</span>
+</span></span><span style="display:flex;"><span>	t<span style="color:#eceff4">.</span><span style="color:#88c0d0">Run</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;Create post without blacklisted terms&#34;</span><span style="color:#eceff4">,</span> <span style="color:#81a1c1;font-weight:bold">func</span><span style="color:#eceff4">(</span>t <span style="color:#81a1c1">*</span>testing<span style="color:#eceff4">.</span>T<span style="color:#eceff4">)</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>		arg <span style="color:#81a1c1">:=</span> testCreatePost<span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>			db<span style="color:#eceff4">:</span>          db<span style="color:#eceff4">,</span>
+</span></span><span style="display:flex;"><span>			HTTPAddress<span style="color:#eceff4">:</span> cfg<span style="color:#eceff4">.</span>HTTPAddress<span style="color:#eceff4">,</span>
+</span></span><span style="display:flex;"><span>			userID<span style="color:#eceff4">:</span>      uuid<span style="color:#eceff4">.</span><span style="color:#88c0d0">NewString</span><span style="color:#eceff4">(),</span>
+</span></span><span style="display:flex;"><span>			content<span style="color:#eceff4">:</span>     <span style="color:#a3be8c">&#34;some text without blacklist&#34;</span><span style="color:#eceff4">,</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#eceff4">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		NewCase<span style="color:#eceff4">[</span>testCreatePostResult<span style="color:#eceff4">](</span>ctx<span style="color:#eceff4">,</span> t<span style="color:#eceff4">).</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#88c0d0">Given</span><span style="color:#eceff4">(</span>arg<span style="color:#eceff4">.</span>userExists<span style="color:#eceff4">).</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#88c0d0">When</span><span style="color:#eceff4">(</span>arg<span style="color:#eceff4">.</span>userCreatesPost<span style="color:#eceff4">).</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#88c0d0">Then</span><span style="color:#eceff4">(</span>arg<span style="color:#eceff4">.</span>responseShouldBeStatus201<span style="color:#eceff4">).</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#88c0d0">Then</span><span style="color:#eceff4">(</span>arg<span style="color:#eceff4">.</span>postShouldExistsOnDatabase<span style="color:#eceff4">).</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#88c0d0">Run</span><span style="color:#eceff4">()</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#eceff4">})</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	t<span style="color:#eceff4">.</span><span style="color:#88c0d0">Run</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;Create post with blacklisted terms&#34;</span><span style="color:#eceff4">,</span> <span style="color:#81a1c1;font-weight:bold">func</span><span style="color:#eceff4">(</span>t <span style="color:#81a1c1">*</span>testing<span style="color:#eceff4">.</span>T<span style="color:#eceff4">)</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>		arg <span style="color:#81a1c1">:=</span> testCreatePost<span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>			db<span style="color:#eceff4">:</span>          db<span style="color:#eceff4">,</span>
+</span></span><span style="display:flex;"><span>			HTTPAddress<span style="color:#eceff4">:</span> cfg<span style="color:#eceff4">.</span>HTTPAddress<span style="color:#eceff4">,</span>
+</span></span><span style="display:flex;"><span>			userID<span style="color:#eceff4">:</span>      uuid<span style="color:#eceff4">.</span><span style="color:#88c0d0">NewString</span><span style="color:#eceff4">(),</span>
+</span></span><span style="display:flex;"><span>			content<span style="color:#eceff4">:</span>     <span style="color:#a3be8c">&#34;some text with foo&#34;</span><span style="color:#eceff4">,</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#eceff4">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		NewCase<span style="color:#eceff4">[</span>testCreatePostResult<span style="color:#eceff4">](</span>ctx<span style="color:#eceff4">,</span> t<span style="color:#eceff4">).</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#88c0d0">Given</span><span style="color:#eceff4">(</span>arg<span style="color:#eceff4">.</span>userExists<span style="color:#eceff4">).</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#88c0d0">When</span><span style="color:#eceff4">(</span>arg<span style="color:#eceff4">.</span>userCreatesPost<span style="color:#eceff4">).</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#88c0d0">Then</span><span style="color:#eceff4">(</span>arg<span style="color:#eceff4">.</span>responseShouldBeStatus400<span style="color:#eceff4">).</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#88c0d0">Then</span><span style="color:#eceff4">(</span>arg<span style="color:#eceff4">.</span>postIDShouldBeEmpty<span style="color:#eceff4">).</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#88c0d0">Run</span><span style="color:#eceff4">()</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#eceff4">})</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	t<span style="color:#eceff4">.</span><span style="color:#88c0d0">Run</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;Create post for non existing user&#34;</span><span style="color:#eceff4">,</span> <span style="color:#81a1c1;font-weight:bold">func</span><span style="color:#eceff4">(</span>t <span style="color:#81a1c1">*</span>testing<span style="color:#eceff4">.</span>T<span style="color:#eceff4">)</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>		arg <span style="color:#81a1c1">:=</span> testCreatePost<span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>			db<span style="color:#eceff4">:</span>          db<span style="color:#eceff4">,</span>
+</span></span><span style="display:flex;"><span>			HTTPAddress<span style="color:#eceff4">:</span> cfg<span style="color:#eceff4">.</span>HTTPAddress<span style="color:#eceff4">,</span>
+</span></span><span style="display:flex;"><span>			userID<span style="color:#eceff4">:</span>      uuid<span style="color:#eceff4">.</span><span style="color:#88c0d0">NewString</span><span style="color:#eceff4">(),</span>
+</span></span><span style="display:flex;"><span>			content<span style="color:#eceff4">:</span>     <span style="color:#a3be8c">&#34;some text for non existing user&#34;</span><span style="color:#eceff4">,</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#eceff4">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		NewCase<span style="color:#eceff4">[</span>testCreatePostResult<span style="color:#eceff4">](</span>ctx<span style="color:#eceff4">,</span> t<span style="color:#eceff4">).</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#88c0d0">Given</span><span style="color:#eceff4">(</span>arg<span style="color:#eceff4">.</span>userDoesNotExists<span style="color:#eceff4">).</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#88c0d0">When</span><span style="color:#eceff4">(</span>arg<span style="color:#eceff4">.</span>userCreatesPost<span style="color:#eceff4">).</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#88c0d0">Then</span><span style="color:#eceff4">(</span>arg<span style="color:#eceff4">.</span>responseShouldBeStatus400<span style="color:#eceff4">).</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#88c0d0">Then</span><span style="color:#eceff4">(</span>arg<span style="color:#eceff4">.</span>postIDShouldBeEmpty<span style="color:#eceff4">).</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#88c0d0">Run</span><span style="color:#eceff4">()</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#eceff4">})</span>
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">}</span>
+</span></span></code></pre></div><p><a href="https://github.com/pmorelli92/how-I-test-microservices-2023/blob/main/accept_test/create_post_test.go#L123-L182"  target="_blank" rel="noreferrer noopener" >The codebase</a>
+, as shown in the snippet above, lays out the GWT approach in an easy to follow manner. If you&rsquo;re interested in learning more about how this approach is implemented, you can take a deeper dive in <a href="https://github.com/pmorelli92/how-I-test-microservices-2023/blob/main/accept_test/case.go"  target="_blank" rel="noreferrer noopener" >the <code>case.go</code> file</a>
+.</p>
+<h3 id="codebase">Codebase</h3>
+<p>It is organized in a way that makes it easy to understand and navigate. Here&rsquo;s a breakdown of the main directories and files you&rsquo;ll find in the codebase:</p>
+<p><code>.github</code>: This directory contains Github actions that automatically execute acceptance tests using the <code>Makefile</code> every time there is a pull request or a push to the master branch.</p>
+<p><code>accept_test</code>: This directory contains the acceptance tests that will test the application from outside after starting the service using the <code>app</code> package.</p>
+<p><code>app</code>: This is where the application&rsquo;s configuration and wiring are defined.</p>
+<p><code>cmd</code>: The entrypoint of the application, which simply calls the <code>app</code> package.</p>
+<p><code>database</code>: This directory contains the database migrations.</p>
+<p><code>features</code>: This directory contains one folder for each feature of the application. In this case, the only feature is <code>create_post</code>, but there could be more such as <code>remove_post</code>, <code>like_post</code>, <code>share_post</code>, etc.</p>
+<p><code>Dockerfile.test</code>: This file defines the container used to start the app and run the acceptance tests on it.</p>
+<p><code>docker-compose-test.yaml</code>: This file builds and executes the container defined in <code>Dockerfile.test</code>.</p>
+<p><code>docker-compose.yaml</code>: This file defines the application&rsquo;s dependencies, in this case only Postgres.</p>
+<p><code>local.env</code>: This file contains default environment variables.</p>
+<p><code>Makefile</code>: This file contains instructions for running acceptance tests locally and with Docker.</p>
+<h3 id="acceptance-test">Acceptance test</h3>
+<p>The entrypoint for all the tests is a simple <code>accept_test/main_test.go</code> file. It starts by launching a go routine that runs the application code.
+Therefore the tests will serve the stimuli from the outside such as with REST API calls or consuming events.</p>
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">func</span> <span style="color:#88c0d0">TestMain</span><span style="color:#eceff4">(</span>m <span style="color:#81a1c1">*</span>testing<span style="color:#eceff4">.</span>M<span style="color:#eceff4">)</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">go</span> app<span style="color:#eceff4">.</span><span style="color:#88c0d0">Run</span><span style="color:#eceff4">()</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#88c0d0">readinessProbe</span><span style="color:#eceff4">()</span>
+</span></span><span style="display:flex;"><span>	os<span style="color:#eceff4">.</span><span style="color:#88c0d0">Exit</span><span style="color:#eceff4">(</span>m<span style="color:#eceff4">.</span><span style="color:#88c0d0">Run</span><span style="color:#eceff4">())</span>
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">}</span></span></span></code></pre></div>
+<p>By executing the same code that the application runs during normal operation, we can increase our confidence in the codebase, such as parsing environment variables and any initial startup code. Below you can visualize how similar the actual <code>main.go</code> is in comparison:</p>
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">func</span> <span style="color:#88c0d0">main</span><span style="color:#eceff4">()</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>	app<span style="color:#eceff4">.</span><span style="color:#88c0d0">Run</span><span style="color:#eceff4">()</span>
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">}</span>
+</span></span></code></pre></div><p>One key aspect of this main acceptance test is the use of a <code>readinessProbe()</code> function. Currently, it simply wraps a <code>time.Sleep</code> call, but it should be updated to use an exponential retry policy to verify that the service is up and running before running the actual test suite. This ensures that the acceptance test only runs when the application is fully ready to handle incoming requests.</p>
+<p>Overall, acceptance testing is a powerful way to ensure that your code is working correctly in the context of the entire system, and can help you catch issues before they make it to production.</p>
+<hr>
+<p>The <code>case.go</code> file that is also on the folder contains a helper structure that is used to implement the Given-When-Then approach in the tests. As mentioned before, this helps to make the tests more readable and easier to understand.</p>
+<p>Lastly, you can find the <code>create_post_test.go</code> file utilizing a common pattern in Go testing where the main test function (in this case <code>TestCreatePost</code>) runs multiple sub-tests using the <code>t.Run()</code> function. Each sub-test is a separate function that will be run independently and only the failed sub-tests will be reported. This allows for better organization and more granular test failure reporting. The sub-tests are named in a way that describes the scenario being tested, making it easy to understand the purpose of each test. In this example, the code is testing different scenarios for the <code>feature/create_post</code>.</p>
+<p>The idea of having all feature related concerns under the same folder is to enable easy discovery and extension, knowing that what it is touched should not affect other features. Of course this has its drawbacks such as code duplication (over bad abstractions) and it is not a silver bullet, but rarely something is.</p>
+<p>The sub tests are then organized in the following way:</p>
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">func</span> <span style="color:#88c0d0">TestCreatePost</span><span style="color:#eceff4">(</span>t <span style="color:#81a1c1">*</span>testing<span style="color:#eceff4">.</span>T<span style="color:#eceff4">)</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>	t<span style="color:#eceff4">.</span><span style="color:#88c0d0">Run</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;Create post without blacklisted terms&#34;</span><span style="color:#eceff4">,</span> <span style="color:#81a1c1;font-weight:bold">func</span><span style="color:#eceff4">(</span>t <span style="color:#81a1c1">*</span>testing<span style="color:#eceff4">.</span>T<span style="color:#eceff4">)</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#eceff4">})</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	t<span style="color:#eceff4">.</span><span style="color:#88c0d0">Run</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;Create post with blacklisted terms&#34;</span><span style="color:#eceff4">,</span> <span style="color:#81a1c1;font-weight:bold">func</span><span style="color:#eceff4">(</span>t <span style="color:#81a1c1">*</span>testing<span style="color:#eceff4">.</span>T<span style="color:#eceff4">)</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#eceff4">})</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	t<span style="color:#eceff4">.</span><span style="color:#88c0d0">Run</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;Create post for non existing user&#34;</span><span style="color:#eceff4">,</span> <span style="color:#81a1c1;font-weight:bold">func</span><span style="color:#eceff4">(</span>t <span style="color:#81a1c1">*</span>testing<span style="color:#eceff4">.</span>T<span style="color:#eceff4">)</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#eceff4">})</span>
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">}</span>
+</span></span></code></pre></div><p>However, one of the most attractive features of this architecture is the ease of running and debugging tests locally. The video below demonstrates this capability in action.</p>
+
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="https://www.youtube.com/embed/RgCwiBLtMHU" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+</div>
+
+<p>This is made possible by two main factors:</p>
+<ol>
+<li>The use of a <code>local.env</code> file that contains default, non-sensitive values required to run the service.</li>
+<li>The configuration of VS Code to read these values for running and debugging tests in the <code>settings.json</code> file:</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span><span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#81a1c1">&#34;go.buildTags&#34;</span><span style="color:#eceff4">:</span> <span style="color:#a3be8c">&#34;integration,accept&#34;</span><span style="color:#eceff4">,</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#81a1c1">&#34;go.testEnvFile&#34;</span><span style="color:#eceff4">:</span> <span style="color:#a3be8c">&#34;${workspaceFolder}/local.env&#34;</span><span style="color:#eceff4">,</span>
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">}</span>
+</span></span></code></pre></div><p>Additionally, if you wish to run the code without executing tests, the <code>.vscode/launch.json</code> file is also configured to support the environment file:</p>
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span><span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#81a1c1">&#34;version&#34;</span><span style="color:#eceff4">:</span> <span style="color:#a3be8c">&#34;0.2.0&#34;</span><span style="color:#eceff4">,</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#81a1c1">&#34;configurations&#34;</span><span style="color:#eceff4">:</span> <span style="color:#eceff4">[</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#81a1c1">&#34;name&#34;</span><span style="color:#eceff4">:</span> <span style="color:#a3be8c">&#34;Debug locally&#34;</span><span style="color:#eceff4">,</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#81a1c1">&#34;type&#34;</span><span style="color:#eceff4">:</span> <span style="color:#a3be8c">&#34;go&#34;</span><span style="color:#eceff4">,</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#81a1c1">&#34;request&#34;</span><span style="color:#eceff4">:</span> <span style="color:#a3be8c">&#34;launch&#34;</span><span style="color:#eceff4">,</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#81a1c1">&#34;mode&#34;</span><span style="color:#eceff4">:</span> <span style="color:#a3be8c">&#34;debug&#34;</span><span style="color:#eceff4">,</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#81a1c1">&#34;program&#34;</span><span style="color:#eceff4">:</span> <span style="color:#a3be8c">&#34;${workspaceFolder}/cmd/main.go&#34;</span><span style="color:#eceff4">,</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#81a1c1">&#34;envFile&#34;</span><span style="color:#eceff4">:</span> <span style="color:#a3be8c">&#34;${workspaceFolder}/local.env&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#eceff4">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#eceff4">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">}</span>
+</span></span></code></pre></div><p>If you prefer to work outside of the IDE, you can still run the code and tests from the terminal by prefixing the commands with <code>env $(cat local.env)</code>:</p>
+<ul>
+<li><code>env $(cat local.env) go run cmd/main.go</code></li>
+<li><code>env $(cat local.env) go test -tags=accept --count=1 ./accept_test/...</code></li>
+</ul>
+<p>The <code>app</code> package does the majority of the work, such as parsing the environment and starting the service, making it easy to ensure everything is wired up correctly with minimal effort.</p>
+<h3 id="what-about-ci">What about CI?</h3>
+<p>Setting up your continuous integration (CI) pipeline <a href="https://github.com/pmorelli92/how-I-test-microservices-2023/actions/runs/4032435378/jobs/6932311039"  target="_blank" rel="noreferrer noopener" >is a breeze</a>
+ with this architecture. Because all of the logic is housed within the service itself, there&rsquo;s no need to deal with complex configurations. This also means that you can easily run the same commands that your CI system is executing on your local machine. In this case, the only command you need to run is <code>make test/docker</code>.</p>
+<p>This command performs two key tasks:</p>
+<ol>
+<li>It composes and builds dependencies (in this case Postgres) and a <code>golang-alpine</code> container with the code and tests, then proceeds to run both.</li>
+<li>It attaches to the container running the tests to check the exit code and prints results, such as coverage.</li>
+</ol>
+<p>The actual command that runs the tests is located in the <code>Dockerfile.test</code>, here is the important part:</p>
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Dockerfile" data-lang="Dockerfile"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">CMD</span> <span style="color:#81a1c1;font-weight:bold">while</span> ! nc -z $DB_HOST $DB_PORT<span style="color:#eceff4">;</span> <span style="color:#81a1c1;font-weight:bold">do</span> sleep 1<span style="color:#eceff4">;</span> <span style="color:#81a1c1;font-weight:bold">done</span><span style="color:#eceff4">;</span> <span style="color:#ebcb8b">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ebcb8b"></span>    CGO_ENABLED<span style="color:#81a1c1">=</span><span style="color:#b48ead">0</span> go <span style="color:#81a1c1">test</span> -tags<span style="color:#81a1c1">=</span>accept ./accept_test/... <span style="color:#ebcb8b">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ebcb8b"></span>    -coverprofile<span style="color:#81a1c1">=</span>test.coverage.tmp <span style="color:#ebcb8b">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ebcb8b"></span>    -coverpkg<span style="color:#81a1c1">=</span><span style="color:#81a1c1;font-weight:bold">$(</span>go list ./... <span style="color:#eceff4">|</span> paste -sd <span style="color:#a3be8c">&#39;,&#39;</span> -<span style="color:#81a1c1;font-weight:bold">)</span> ./... <span style="color:#ebcb8b">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ebcb8b"></span>    <span style="color:#81a1c1">&amp;&amp;</span> cat test.coverage.tmp <span style="color:#eceff4">|</span> grep -v <span style="color:#a3be8c">&#39;_test.go&#39;</span> &gt; test.coverage <span style="color:#81a1c1">&amp;&amp;</span> <span style="color:#ebcb8b">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ebcb8b"></span>    go tool cover -func test.coverage.tmp<span style="color:#bf616a">
+</span></span></span></code></pre></div><p>Taking it slowly these bunch of lines do the following:</p>
+<ol>
+<li>Waits for Postgres to be up and running before executing the tests. There&rsquo;s no point in running the tests before the dependencies are ready.</li>
+<li>Executes the tests, including those marked with <code>//go:build accept</code>, and measures the coverage.</li>
+<li>Excludes test files (those with <code>_test.go</code> in their name) from the coverage report, as there&rsquo;s no need to see the coverage of our test files.</li>
+<li>Prints the coverage report.</li>
+</ol>
+<figure><img src="/posts/images/github-actions-ci.png"
+         alt="codebase test overview"/>
+</figure>
+
+<p>The image above is from the CI, but you can run the same command on your local machine by simply running <code>make test/docker</code>. This makes it easy to test and debug your code locally before pushing to the CI pipeline.</p>
+<h3 id="fight-against-repetition">Fight against repetition</h3>
+<p>A microservice architecture can lead to a lot of repetitive work, especially when it comes to managing files like <code>Dockerfile</code>, <code>Makefile</code>, and <code>docker-compose.yaml</code> across hundreds of repositories. This can be a real headache when it comes to making changes. To tackle this issue, I highly recommend checking out <a href="https://github.com/lunarway/shuttle"  target="_blank" rel="noreferrer noopener" ><code>shuttle</code></a>
+. This open-source tool, developed by <a href="https://lunar.app"  target="_blank" rel="noreferrer noopener" >Lunar</a>
+, is designed to simplify these scenarios. With shuttle, you can keep all of these files, that are prone to change together in all places at the same time; in a central repository, and then have other repositories pull them in before executing their scripts. This way, you&rsquo;ll be able to streamline your workflow and make updates much more efficiently.</p>
+<h3 id="things-to-keep-in-mind">Things to keep in mind</h3>
+<p>When it comes to testing microservices, there is no one-size-fits-all solution. Different types of services, teams, and organizational structures require different testing approaches. What works for one team or company may not work for another.</p>
+<p>I&rsquo;ve found a nice consensus on testing codebases with acceptance tests as the team is able to deliver microservices with quality and without sacrificing velocity.</p>
+<p>It&rsquo;s important to keep in mind that testing is not just about the codebase, but also about the people who will be using it. Therefore, it&rsquo;s important to consider the team&rsquo;s needs and goals when implementing any changes.</p>
+<p>Before making any sudden changes, it&rsquo;s important to do your own research and steer in a direction that benefits the team as a whole, rather than just an individual. This way, you can ensure that your testing approach aligns with the specific needs and goals of your team and organization.</p>
+
+    </div>
+  </article>
+
+  <hr />
+
+  <div class="post-info">
+    
+    <p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg>
+
+        <span class="tag"><a href="https://devandchill.com/tags/microservice/">microservice</a></span>
+        <span class="tag"><a href="https://devandchill.com/tags/architecture/">architecture</a></span>
+        <span class="tag"><a href="https://devandchill.com/tags/test/">test</a></span>
+        <span class="tag"><a href="https://devandchill.com/tags/acceptance/">acceptance</a></span>
+        <span class="tag"><a href="https://devandchill.com/tags/integration/">integration</a></span>
+        <span class="tag"><a href="https://devandchill.com/tags/unit/">unit</a></span>
+        <span class="tag"><a href="https://devandchill.com/tags/behavior/">behavior</a></span>
+        <span class="tag"><a href="https://devandchill.com/tags/service/">service</a></span>
+        <span class="tag"><a href="https://devandchill.com/tags/go/">go</a></span>
+        <span class="tag"><a href="https://devandchill.com/tags/vscode/">vscode</a></span>
+        <span class="tag"><a href="https://devandchill.com/tags/docker/">docker</a></span>
+        
+    </p>
+
+    
+
+    <p>
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="feather feather-file-text">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+        <line x1="16" y1="13" x2="8" y2="13"></line>
+        <line x1="16" y1="17" x2="8" y2="17"></line>
+        <polyline points="10 9 9 9 8 9"></polyline>
+      </svg>
+      2826 Words
+    </p>
+
+    <p>
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="feather feather-calendar">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
+      </svg>
+      
+      2023-01-29 18:30 &#43;0100
+      
+
+      
+      
+      
+    </p>
+  </div>
+
+  
+  <div class="pagination">
+    <div class="pagination__title">
+      <span class="pagination__title-h">Read other posts</span>
+      <hr />
+    </div>
+
+    <div class="pagination__buttons">
+      
+
+      
+      <span class="button next">
+        <a href="https://devandchill.com/posts/2022/03/keep-it-simple-stupid-lessons-learned/">
+          <span class="button__text">Keep it simple stupid, lessons learned</span>
+          <span class="button__icon">→</span>
+        </a>
+      </span>
+      
+    </div>
+  </div>
+  
+
+  
+  
+
+  
+  
+
+</main>
+
+            </div>
+
+            
+                <footer class="footer">
+    
+    
+</footer>
+
+            
+        </div>
+
+        
+
+
+<script type="text/javascript" src="/bundle.min.69fb501ac7bace7c0ca982d98573883fe084cb258084917289a51bc0bc04868a1b91b95a34c641d2854f64b4b0245430430f86fa70e19f7425062100c9b69215.js" integrity="sha512-aftQGse6znwMqYLZhXOIP&#43;CEyyWAhJFyiaUbwLwEhoobkblaNMZB0oVPZLSwJFQwQw&#43;G&#43;nDhn3QlBiEAybaSFQ=="></script>
+
+
+
+    </body>
+</html>
