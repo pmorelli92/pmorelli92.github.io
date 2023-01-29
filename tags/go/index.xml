@@ -7,7 +7,17 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Pablo Morelli</copyright>
-    <lastBuildDate>Tue, 15 Mar 2022 18:30:00 +0100</lastBuildDate><atom:link href="https://devandchill.com/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 29 Jan 2023 18:30:00 +0100</lastBuildDate><atom:link href="https://devandchill.com/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>How I approach microservice testing in 2023</title>
+      <link>https://devandchill.com/posts/2023/01/how-i-approach-microservice-testing-in-2023/</link>
+      <pubDate>Sun, 29 Jan 2023 18:30:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/posts/2023/01/how-i-approach-microservice-testing-in-2023/</guid>
+      <description>👉 The codebase used in this post can be found in my Github. 👈
+Introduction As a software engineer, I&amp;rsquo;ve had the opportunity to work with microservices in various companies and each one had its own unique approach to testing the codebase. From my experience, I&amp;rsquo;ve come to realize that there&amp;rsquo;s no one-size-fits-all solution when it comes to testing microservices. Should there be only unit test? What about the external dependencies?</description>
+    </item>
+    
     <item>
       <title>Keep it simple stupid, lessons learned</title>
       <link>https://devandchill.com/posts/2022/03/keep-it-simple-stupid-lessons-learned/</link>
@@ -56,7 +66,7 @@ However, there was a little something that my mind keep thinking: it would be su
       <guid>https://devandchill.com/posts/2020/05/go-lib/pq-or-pgx-which-performs-better/</guid>
       <description>Some days ago a coworker of mine linked me to the source code of Google&amp;rsquo;s exposure notifications API and of course is a good chance to see how Google is doing Go related codebases.
 Continuing with the topic of Postgres and benchmarking, I decided to check out how Postgres configuration was done and this line got my attention:
-import ( 	... 	&amp;#34;github.com/jackc/pgx/v4/pgxpool&amp;#34; ) What is pgx, and why should we care?</description>
+import ( ... &amp;#34;github.com/jackc/pgx/v4/pgxpool&amp;#34; ) What is pgx, and why should we care?</description>
     </item>
     
     <item>
@@ -67,7 +77,7 @@ import ( 	... 	&amp;#34;github.com/jackc/pgx/v4/pgxpool&amp;#34; ) What is pgx, 
       <guid>https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/</guid>
       <description>In my previous post I covered how to build concurrently safe upsert queries .
 This post serves as a continuation where different approaches will be battle tested to expose the performance of each one:
- Advisory lock On conflict update On conflict do nothing CTE queries  Without further ado, let&amp;rsquo;s start:
+Advisory lock On conflict update On conflict do nothing CTE queries Without further ado, let&amp;rsquo;s start:
 The application In order to emulate the scenario described on the previous post, an HTTP API is required. This one will connect to a database to perform the calls.</description>
     </item>
     
@@ -88,8 +98,8 @@ Every company has a different way to work and configure CI/CD, and all of them h
       
       <guid>https://devandchill.com/posts/2019/04/word-counter-sync-concurrent-or-streams/</guid>
       <description>One day I was given the task of doing a whiteboard word counter algorithm. The requirements were:
- Print on console all the words and the quantity of times they appear on a 40.000 lines input. Make it as fast as possible.  For a start one can do it as simple as possible instead, and then try to see whether it can be made faster:
-func wordCounter() (words map[string]int) { 	b, err := ioutil.</description>
+Print on console all the words and the quantity of times they appear on a 40.000 lines input. Make it as fast as possible. For a start one can do it as simple as possible instead, and then try to see whether it can be made faster:
+func wordCounter() (words map[string]int) { b, err := ioutil.</description>
     </item>
     
     <item>

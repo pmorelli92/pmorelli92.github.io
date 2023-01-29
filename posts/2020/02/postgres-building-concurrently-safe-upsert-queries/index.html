@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="author" content="Pablo Morelli">
-<meta name="description" content="Devandchill is a coding and tech blog oriented to go, .net and databases made by Pablo Morelli" />
+<meta name="description" content="Devandchill is a coding blog where I share my ideas and insights on various programming topics." />
 <meta name="keywords"
     content="blog, development, programming, tech, postgres, database, sql, benchmark, upsert, queries, cte, concurrency" />
 <meta name="robots" content="noodp" />
@@ -26,7 +26,7 @@
 
 
 
-<link rel="stylesheet" type="text/css" href="/main.a2b8a4b0f7c324e63653aa57eb9d5d028042ae2d3adf01fbcff08c375b752437.css">
+<link rel="stylesheet" type="text/css" href="/main.045f18da88f8cb42336977558c8919c77ba0afb78827b7a1250d971d6cfd080e.css">
 
 
 
@@ -51,7 +51,6 @@ The suggestion then was to have a service which creates an unique integer for a 
 <meta name="twitter:title" content="Postgres: Building concurrently safe upsert queries"/>
 <meta name="twitter:description" content="Recently at the company I am working for, there was a need to communicate with an external service which required us to send some data along with an integer identifier. The problem is that IDs in our domain are not integers but uuid.
 The suggestion then was to have a service which creates an unique integer for a certain uuid. This way the int identifier won&rsquo;t be leaked to any other part of the system."/>
-
 
 
 
@@ -99,7 +98,7 @@ The suggestion then was to have a service which creates an unique integer for a 
         <span class="header__right">
             
             <nav class="menu">
-    <ul class="menu__inner"><li><a href="/about">About</a></li><li><a href="/resume">Resume</a></li><li><a href="/posts">Posts</a></li>
+    <ul class="menu__inner"><li><a href="/blog">The blog</a></li><li><a href="/resume">Resume</a></li><li><a href="/posts">Posts</a></li>
     </ul>
 </nav>
 
@@ -165,41 +164,41 @@ The suggestion then was to have a service which creates an unique integer for a 
 <p>In this part of the series, different approaches are being listed. For obvious reasons these ones are not based on real business. Benchmarking is going to be displayed on the next part for the approaches 3, 4 and 5.</p>
 <h3 id="data-model">Data Model</h3>
 <p>Just to have more context on the snippets below, the database model will be the following:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> customers
-</span></span><span style="display:flex;"><span>(
-</span></span><span style="display:flex;"><span>  id SERIAL,
-</span></span><span style="display:flex;"><span>  customer_id UUID <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span>
-</span></span><span style="display:flex;"><span>);
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">CREATE</span> <span style="color:#81a1c1;font-weight:bold">TABLE</span> customers
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">(</span>
+</span></span><span style="display:flex;"><span>  id <span style="color:#81a1c1">SERIAL</span><span style="color:#eceff4">,</span>
+</span></span><span style="display:flex;"><span>  customer_id UUID <span style="color:#81a1c1;font-weight:bold">NOT</span> <span style="color:#81a1c1;font-weight:bold">NULL</span> <span style="color:#81a1c1;font-weight:bold">PRIMARY</span> <span style="color:#81a1c1;font-weight:bold">KEY</span>
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">);</span>
 </span></span></code></pre></div><p>The approaches below are possible implementations for the <code>integer-generator</code>.</p>
 <h3 id="1-read--write">1. Read + write</h3>
 <ol>
 <li>Receive the <code>POST</code> request, parse the uuid.</li>
 <li>Execute query:</li>
 </ol>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> id
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> customers
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">SELECT</span> id
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">FROM</span> customers
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">WHERE</span> customer_id <span style="color:#81a1c1">=</span> <span style="color:#a3be8c">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>
 </span></span></code></pre></div><ol start="3">
 <li>If the previous query returned a row, return the id.</li>
 <li>If not, insert the row and return the id:</li>
 </ol>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>)
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">INSERT</span> <span style="color:#81a1c1;font-weight:bold">INTO</span> customers<span style="color:#eceff4">(</span>customer_id<span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">VALUES</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span><span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>RETURNING id
 </span></span></code></pre></div><p>The problem with this approach is that if we get two consecutive calls hitting the <code>SELECT</code> at the same time while there is no row, both will try to add the row in the database. One will succeed and the other is going to fail.</p>
 <p>This can be fixed changing the insert to the following:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>)
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ON</span> CONFLICT <span style="color:#66d9ef">DO</span> <span style="color:#66d9ef">NOTHING</span>
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">INSERT</span> <span style="color:#81a1c1;font-weight:bold">INTO</span> customers<span style="color:#eceff4">(</span>customer_id<span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">VALUES</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span><span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">ON</span> CONFLICT <span style="color:#81a1c1;font-weight:bold">DO</span> <span style="color:#81a1c1;font-weight:bold">NOTHING</span>
 </span></span><span style="display:flex;"><span>RETURNING id
 </span></span></code></pre></div><p><code>ON CONFLICT DO NOTHING</code> will avoid the primary key exception! Yes, that is true, but when this clause does not update the row (<code>DO NOTHING</code>) the <code>RETURNING</code> row will be empty.</p>
 <p>This can be tested by executing several times the statement in point 4.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>| id |
-</span></span><span style="display:flex;"><span>| -- |
-</span></span><span style="display:flex;"><span>| <span style="color:#ae81ff">1</span>  |
-</span></span><span style="display:flex;"><span>|    |
-</span></span><span style="display:flex;"><span>|    |
-</span></span><span style="display:flex;"><span>|    |
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#eceff4">|</span> id <span style="color:#eceff4">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">|</span> -- <span style="color:#eceff4">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">|</span> <span style="color:#b48ead">1</span>  <span style="color:#eceff4">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">|</span>    <span style="color:#eceff4">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">|</span>    <span style="color:#eceff4">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">|</span>    <span style="color:#eceff4">|</span>
 </span></span></code></pre></div><hr>
 <h3 id="2-enter-transaction-read--write">2. Enter transaction: read + write</h3>
 <p>Same scenario than the one detailed above, but starting a transaction before executing the <code>SELECT</code>, and committing after the insert succeed.</p>
@@ -210,28 +209,28 @@ The suggestion then was to have a service which creates an unique integer for a 
 <li>Receive the <code>POST</code> request, parse the uuid.</li>
 <li>Begin the transaction:</li>
 </ol>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">BEGIN</span>
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">BEGIN</span>
 </span></span></code></pre></div><ol start="3">
 <li>Get a lock using a numeric hash that represents x uuid in a deterministic way:</li>
 </ol>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> pg_advisory_xact_lock(<span style="color:#f92672">&lt;</span>bigint<span style="color:#f92672">&gt;</span>)
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">SELECT</span> pg_advisory_xact_lock<span style="color:#eceff4">(</span><span style="color:#81a1c1">&lt;</span><span style="color:#81a1c1">bigint</span><span style="color:#81a1c1">&gt;</span><span style="color:#eceff4">)</span>
 </span></span></code></pre></div><ol start="4">
 <li>Execute query:</li>
 </ol>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> id
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> customers
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">SELECT</span> id
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">FROM</span> customers
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">WHERE</span> customer_id <span style="color:#81a1c1">=</span> <span style="color:#a3be8c">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>
 </span></span></code></pre></div><ol start="5">
 <li>If the previous query returned a row, return the id.</li>
 <li>If not, insert the row and return the id:</li>
 </ol>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>)
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">INSERT</span> <span style="color:#81a1c1;font-weight:bold">INTO</span> customers<span style="color:#eceff4">(</span>customer_id<span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">VALUES</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span><span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>RETURNING id
 </span></span></code></pre></div><ol start="6">
 <li>Commit transaction:</li>
 </ol>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">COMMIT</span>
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">COMMIT</span>
 </span></span></code></pre></div><p>Ok, now this works. But this is still far away from a good design. In the previous approach, the race condition existed because there was nothing to lock when there was no row to be found.</p>
 <p>In this approach, for certain uuid the same numeric hash will be generated. When starting a transaction, an exclusive transaction level advisory lock is obtained. If another transaction wants to execute the lock query using the same hash, it will have to wait until the first transaction ends with a commit or rollback.</p>
 <p>How to try this out?</p>
@@ -239,14 +238,14 @@ The suggestion then was to have a service which creates an unique integer for a 
 <li>Open a database connection.</li>
 <li>Execute:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">BEGIN</span>;
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> pg_advisory_xact_lock(<span style="color:#ae81ff">12345</span>);
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">BEGIN</span><span style="color:#eceff4">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">SELECT</span> pg_advisory_xact_lock<span style="color:#eceff4">(</span><span style="color:#b48ead">12345</span><span style="color:#eceff4">);</span>
 </span></span></code></pre></div><ul>
 <li>Open another database connection.</li>
 <li>Execute:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">BEGIN</span>;
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> pg_advisory_xact_lock(<span style="color:#ae81ff">12345</span>);
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">BEGIN</span><span style="color:#eceff4">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">SELECT</span> pg_advisory_xact_lock<span style="color:#eceff4">(</span><span style="color:#b48ead">12345</span><span style="color:#eceff4">);</span>
 </span></span></code></pre></div><ul>
 <li>This last query will not respond until the first transaction finishes.</li>
 </ul>
@@ -259,18 +258,18 @@ The suggestion then was to have a service which creates an unique integer for a 
 <li>Receive the <code>POST</code> request, parse the uuid.</li>
 <li>Execute the query and return the result. This query will insert the row if it does not exist; and in case it does, it will just return the id. The update is required to return the desired id.</li>
 </ol>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>)
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ON</span> CONFLICT (customer_id)
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">DO</span> <span style="color:#66d9ef">UPDATE</span> <span style="color:#66d9ef">SET</span> customer_id <span style="color:#f92672">=</span> excluded.customer_id
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">INSERT</span> <span style="color:#81a1c1;font-weight:bold">INTO</span> customers<span style="color:#eceff4">(</span>customer_id<span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">VALUES</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span><span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">ON</span> CONFLICT <span style="color:#eceff4">(</span>customer_id<span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">DO</span> <span style="color:#81a1c1;font-weight:bold">UPDATE</span> <span style="color:#81a1c1;font-weight:bold">SET</span> customer_id <span style="color:#81a1c1">=</span> excluded<span style="color:#eceff4">.</span>customer_id
 </span></span><span style="display:flex;"><span>RETURNING id
 </span></span></code></pre></div><p>The difference between the first example and this one, is that now the <code>DO NOTHING</code> is replaced by <code>DO UPDATE</code> and since an update is being executed; the returning row will never be empty. Moreover the concurrency problems are gone because they are handled by the database and not by code. This can be tested by executing several times the query.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>| id |
-</span></span><span style="display:flex;"><span>| -- |
-</span></span><span style="display:flex;"><span>| <span style="color:#ae81ff">3</span>  |
-</span></span><span style="display:flex;"><span>| <span style="color:#ae81ff">3</span>  |
-</span></span><span style="display:flex;"><span>| <span style="color:#ae81ff">3</span>  |
-</span></span><span style="display:flex;"><span>| <span style="color:#ae81ff">3</span>  |
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#eceff4">|</span> id <span style="color:#eceff4">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">|</span> -- <span style="color:#eceff4">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">|</span> <span style="color:#b48ead">3</span>  <span style="color:#eceff4">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">|</span> <span style="color:#b48ead">3</span>  <span style="color:#eceff4">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">|</span> <span style="color:#b48ead">3</span>  <span style="color:#eceff4">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">|</span> <span style="color:#b48ead">3</span>  <span style="color:#eceff4">|</span>
 </span></span></code></pre></div><p>As simple as that. Looks great doesn&rsquo;t it? Well I thought so until a colleague proved me wrong when he linked this <a href="https://stackoverflow.com/a/42217872"  target="_blank" rel="noreferrer noopener" >awesome stack overflow answer</a>
 .</p>
 <blockquote>
@@ -283,19 +282,19 @@ The suggestion then was to have a service which creates an unique integer for a 
 </blockquote>
 <p>How can one be sure that this is true?
 Executing the following query 5 times!</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d269&#39;</span>)
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ON</span> CONFLICT (customer_id)
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">DO</span> <span style="color:#66d9ef">UPDATE</span> <span style="color:#66d9ef">SET</span> customer_id <span style="color:#f92672">=</span> excluded.customer_id
-</span></span><span style="display:flex;"><span>RETURNING ctid, xmin, xmax, id
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">INSERT</span> <span style="color:#81a1c1;font-weight:bold">INTO</span> customers<span style="color:#eceff4">(</span>customer_id<span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">VALUES</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#39;1796b892-c988-4f96-8eb8-a7f6f965d269&#39;</span><span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">ON</span> CONFLICT <span style="color:#eceff4">(</span>customer_id<span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">DO</span> <span style="color:#81a1c1;font-weight:bold">UPDATE</span> <span style="color:#81a1c1;font-weight:bold">SET</span> customer_id <span style="color:#81a1c1">=</span> excluded<span style="color:#eceff4">.</span>customer_id
+</span></span><span style="display:flex;"><span>RETURNING ctid<span style="color:#eceff4">,</span> xmin<span style="color:#eceff4">,</span> xmax<span style="color:#eceff4">,</span> id
 </span></span></code></pre></div><p>Results:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>| ctid  | xmin | xmax | id |
-</span></span><span style="display:flex;"><span>| ----- | ---- | ---- | -- |
-</span></span><span style="display:flex;"><span>| <span style="color:#f92672">(</span>0,1<span style="color:#f92672">)</span> | <span style="color:#ae81ff">5876</span> | <span style="color:#ae81ff">0</span>    | <span style="color:#ae81ff">2</span>  |
-</span></span><span style="display:flex;"><span>| <span style="color:#f92672">(</span>0,2<span style="color:#f92672">)</span> | <span style="color:#ae81ff">5877</span> | <span style="color:#ae81ff">5877</span> | <span style="color:#ae81ff">2</span>  |
-</span></span><span style="display:flex;"><span>| <span style="color:#f92672">(</span>0,3<span style="color:#f92672">)</span> | <span style="color:#ae81ff">5878</span> | <span style="color:#ae81ff">5878</span> | <span style="color:#ae81ff">2</span>  |
-</span></span><span style="display:flex;"><span>| <span style="color:#f92672">(</span>0,4<span style="color:#f92672">)</span> | <span style="color:#ae81ff">5879</span> | <span style="color:#ae81ff">5879</span> | <span style="color:#ae81ff">2</span>  |
-</span></span><span style="display:flex;"><span>| <span style="color:#f92672">(</span>0,5<span style="color:#f92672">)</span> | <span style="color:#ae81ff">5880</span> | <span style="color:#ae81ff">5880</span> | <span style="color:#ae81ff">2</span>  |
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#eceff4">|</span> ctid  <span style="color:#eceff4">|</span> xmin <span style="color:#eceff4">|</span> xmax <span style="color:#eceff4">|</span> id <span style="color:#eceff4">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">|</span> ----- <span style="color:#eceff4">|</span> ---- <span style="color:#eceff4">|</span> ---- <span style="color:#eceff4">|</span> -- <span style="color:#eceff4">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">|</span> <span style="color:#81a1c1">(</span>0,1<span style="color:#81a1c1">)</span> <span style="color:#eceff4">|</span> <span style="color:#b48ead">5876</span> <span style="color:#eceff4">|</span> <span style="color:#b48ead">0</span>    <span style="color:#eceff4">|</span> <span style="color:#b48ead">2</span>  <span style="color:#eceff4">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">|</span> <span style="color:#81a1c1">(</span>0,2<span style="color:#81a1c1">)</span> <span style="color:#eceff4">|</span> <span style="color:#b48ead">5877</span> <span style="color:#eceff4">|</span> <span style="color:#b48ead">5877</span> <span style="color:#eceff4">|</span> <span style="color:#b48ead">2</span>  <span style="color:#eceff4">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">|</span> <span style="color:#81a1c1">(</span>0,3<span style="color:#81a1c1">)</span> <span style="color:#eceff4">|</span> <span style="color:#b48ead">5878</span> <span style="color:#eceff4">|</span> <span style="color:#b48ead">5878</span> <span style="color:#eceff4">|</span> <span style="color:#b48ead">2</span>  <span style="color:#eceff4">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">|</span> <span style="color:#81a1c1">(</span>0,4<span style="color:#81a1c1">)</span> <span style="color:#eceff4">|</span> <span style="color:#b48ead">5879</span> <span style="color:#eceff4">|</span> <span style="color:#b48ead">5879</span> <span style="color:#eceff4">|</span> <span style="color:#b48ead">2</span>  <span style="color:#eceff4">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">|</span> <span style="color:#81a1c1">(</span>0,5<span style="color:#81a1c1">)</span> <span style="color:#eceff4">|</span> <span style="color:#b48ead">5880</span> <span style="color:#eceff4">|</span> <span style="color:#b48ead">5880</span> <span style="color:#eceff4">|</span> <span style="color:#b48ead">2</span>  <span style="color:#eceff4">|</span>
 </span></span></code></pre></div><p>What is the definition of <code>ctid</code>, <code>xmin</code> and <code>xmax</code>, and why do they keep increasing?
 <a href="https://www.postgresql.org/docs/8.2/ddl-system-columns.html"  target="_blank" rel="noreferrer noopener" >Documentation</a>
 </p>
@@ -326,34 +325,34 @@ Executing the following query 5 times!</p>
 <p>The main advantage of using the MVCC model of concurrency control rather than locking is [&hellip;] reading never blocks writing and writing never blocks reading.</p>
 </blockquote>
 <p>With that explained, lets introduce how an UPDATE works on postgres:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">CREATE</span> EXTENSION pageinspect;
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">CREATE</span> EXTENSION pageinspect<span style="color:#eceff4">;</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d271&#39;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">INSERT</span> <span style="color:#81a1c1;font-weight:bold">INTO</span> customers<span style="color:#eceff4">(</span>customer_id<span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">VALUES</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#39;1796b892-c988-4f96-8eb8-a7f6f965d271&#39;</span><span style="color:#eceff4">);</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> t_ctid, t_xmin, t_xmax
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> heap_page_items(get_raw_page(<span style="color:#e6db74">&#39;customers&#39;</span>, <span style="color:#ae81ff">0</span>));
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">SELECT</span> t_ctid<span style="color:#eceff4">,</span> t_xmin<span style="color:#eceff4">,</span> t_xmax
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">FROM</span> heap_page_items<span style="color:#eceff4">(</span>get_raw_page<span style="color:#eceff4">(</span><span style="color:#a3be8c">&#39;customers&#39;</span><span style="color:#eceff4">,</span> <span style="color:#b48ead">0</span><span style="color:#eceff4">));</span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">|</span> t_ctid  <span style="color:#f92672">|</span> t_xmin <span style="color:#f92672">|</span> t_xmax <span style="color:#f92672">|</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">|</span> <span style="color:#75715e">------- | ------ | ------ |
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#f92672">|</span> (<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">1</span>)   <span style="color:#f92672">|</span> <span style="color:#ae81ff">5919</span>   <span style="color:#f92672">|</span> <span style="color:#ae81ff">0</span>      <span style="color:#f92672">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">|</span> t_ctid  <span style="color:#81a1c1">|</span> t_xmin <span style="color:#81a1c1">|</span> t_xmax <span style="color:#81a1c1">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">|</span> <span style="color:#616e87;font-style:italic">------- | ------ | ------ |
+</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span><span style="color:#81a1c1">|</span> <span style="color:#eceff4">(</span><span style="color:#b48ead">0</span><span style="color:#eceff4">,</span><span style="color:#b48ead">1</span><span style="color:#eceff4">)</span>   <span style="color:#81a1c1">|</span> <span style="color:#b48ead">5919</span>   <span style="color:#81a1c1">|</span> <span style="color:#b48ead">0</span>      <span style="color:#81a1c1">|</span>
 </span></span></code></pre></div><ul>
 <li><code>t_ctid</code> indicates that the row is stored on page 0 and block 1.</li>
 <li>The transaction id used for the creation of the row (<code>t_xmin</code>) is 5919.</li>
 <li>The destruction transaction id (<code>t_xmax</code>) is 0 because no changes happened to the row.</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">UPDATE</span> customers
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">SET</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d271&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d271&#39;</span>
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">UPDATE</span> customers
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">SET</span> customer_id <span style="color:#81a1c1">=</span> <span style="color:#a3be8c">&#39;1796b892-c988-4f96-8eb8-a7f6f965d271&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">WHERE</span> customer_id <span style="color:#81a1c1">=</span> <span style="color:#a3be8c">&#39;1796b892-c988-4f96-8eb8-a7f6f965d271&#39;</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> t_ctid, t_xmin, t_xmax
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> heap_page_items(get_raw_page(<span style="color:#e6db74">&#39;customers&#39;</span>, <span style="color:#ae81ff">0</span>));
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">SELECT</span> t_ctid<span style="color:#eceff4">,</span> t_xmin<span style="color:#eceff4">,</span> t_xmax
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">FROM</span> heap_page_items<span style="color:#eceff4">(</span>get_raw_page<span style="color:#eceff4">(</span><span style="color:#a3be8c">&#39;customers&#39;</span><span style="color:#eceff4">,</span> <span style="color:#b48ead">0</span><span style="color:#eceff4">));</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">|</span> t_ctid  <span style="color:#f92672">|</span> t_xmin <span style="color:#f92672">|</span> t_xmax <span style="color:#f92672">|</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">|</span> <span style="color:#75715e">------- | ------ | ------ |
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#f92672">|</span> (<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">2</span>)   <span style="color:#f92672">|</span> <span style="color:#ae81ff">5919</span>   <span style="color:#f92672">|</span> <span style="color:#ae81ff">5920</span>   <span style="color:#f92672">|</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">|</span> (<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">2</span>)   <span style="color:#f92672">|</span> <span style="color:#ae81ff">5920</span>   <span style="color:#f92672">|</span> <span style="color:#ae81ff">0</span>      <span style="color:#f92672">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">|</span> t_ctid  <span style="color:#81a1c1">|</span> t_xmin <span style="color:#81a1c1">|</span> t_xmax <span style="color:#81a1c1">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">|</span> <span style="color:#616e87;font-style:italic">------- | ------ | ------ |
+</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span><span style="color:#81a1c1">|</span> <span style="color:#eceff4">(</span><span style="color:#b48ead">0</span><span style="color:#eceff4">,</span><span style="color:#b48ead">2</span><span style="color:#eceff4">)</span>   <span style="color:#81a1c1">|</span> <span style="color:#b48ead">5919</span>   <span style="color:#81a1c1">|</span> <span style="color:#b48ead">5920</span>   <span style="color:#81a1c1">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">|</span> <span style="color:#eceff4">(</span><span style="color:#b48ead">0</span><span style="color:#eceff4">,</span><span style="color:#b48ead">2</span><span style="color:#eceff4">)</span>   <span style="color:#81a1c1">|</span> <span style="color:#b48ead">5920</span>   <span style="color:#81a1c1">|</span> <span style="color:#b48ead">0</span>      <span style="color:#81a1c1">|</span>
 </span></span></code></pre></div><p>Row #1</p>
 <ul>
 <li><code>t_ctid</code> indicates that the row is stored on page 0 and block 2.</li>
@@ -377,34 +376,34 @@ Executing the following query 5 times!</p>
 <li>Receive the <code>POST</code> request, parse the uuid.</li>
 <li>Execute query:</li>
 </ol>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers(customer_id)
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">VALUES</span>(<span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>)
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ON</span> CONFLICT <span style="color:#66d9ef">DO</span> <span style="color:#66d9ef">NOTHING</span>;
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">INSERT</span> <span style="color:#81a1c1;font-weight:bold">INTO</span> customers<span style="color:#eceff4">(</span>customer_id<span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">VALUES</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span><span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">ON</span> CONFLICT <span style="color:#81a1c1;font-weight:bold">DO</span> <span style="color:#81a1c1;font-weight:bold">NOTHING</span><span style="color:#eceff4">;</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> id
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> customers
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">SELECT</span> id
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">FROM</span> customers
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">WHERE</span> customer_id <span style="color:#81a1c1">=</span> <span style="color:#a3be8c">&#39;1796b892-c988-4f96-8eb8-a7f6f965d266&#39;</span>
 </span></span></code></pre></div><p>It does not matter how many concurrent inserts are triggered at the same time, only the first one will get through and insert the row. Since the row is never updated (<code>ON CONFLICT DO NOTHING</code>) the <code>ctid</code>, <code>xmin</code>, and <code>xmax</code> will remain the same.</p>
 <p>After the <code>INSERT</code> is executed, the <code>SELECT</code> statement will return the id for the recently created / already existing row.</p>
 <p>But is this performing? For that lets <code>EXPLAIN ANALYZE</code> the queries:</p>
 <p>Insert (when there is no row):</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Insert on customers
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Insert on customers
 </span></span><span style="display:flex;"><span>  Conflict Resolution: NOTHING
-</span></span><span style="display:flex;"><span>  Tuples Inserted: <span style="color:#ae81ff">1</span>
-</span></span><span style="display:flex;"><span>  Conflicting Tuples: <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>  Tuples Inserted: <span style="color:#b48ead">1</span>
+</span></span><span style="display:flex;"><span>  Conflicting Tuples: <span style="color:#b48ead">0</span>
 </span></span><span style="display:flex;"><span>Planning Time: 0.032 ms
 </span></span><span style="display:flex;"><span>Execution Time: 0.190 ms
 </span></span></code></pre></div><p>Insert (when there is a conflict):</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Insert on customers
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Insert on customers
 </span></span><span style="display:flex;"><span>  Conflict Resolution: NOTHING
-</span></span><span style="display:flex;"><span>  Tuples Inserted: <span style="color:#ae81ff">0</span>
-</span></span><span style="display:flex;"><span>  Conflicting Tuples: <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>  Tuples Inserted: <span style="color:#b48ead">0</span>
+</span></span><span style="display:flex;"><span>  Conflicting Tuples: <span style="color:#b48ead">1</span>
 </span></span><span style="display:flex;"><span>  -&gt;  Result
 </span></span><span style="display:flex;"><span>Planning Time: 0.032 ms
 </span></span><span style="display:flex;"><span>Execution Time: 0.244 ms
 </span></span></code></pre></div><p>Select query:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Index Scan using customers_pkey on customers
-</span></span><span style="display:flex;"><span>  Index Cond: <span style="color:#f92672">(</span>customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;...&#39;</span>::uuid<span style="color:#f92672">)</span>
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Index Scan using customers_pkey on customers
+</span></span><span style="display:flex;"><span>  Index Cond: <span style="color:#81a1c1">(</span>customer_id <span style="color:#81a1c1">=</span> <span style="color:#a3be8c">&#39;...&#39;</span>::uuid<span style="color:#81a1c1">)</span>
 </span></span><span style="display:flex;"><span>Planning Time: 0.069 ms
 </span></span><span style="display:flex;"><span>Execution Time: 0.111 ms
 </span></span></code></pre></div><p>The summarization between the insert and the select is less than a millisecond for both cases. Don&rsquo;t worry, on the next part this is proven.</p>
@@ -415,28 +414,28 @@ Executing the following query 5 times!</p>
 <p>CTE means Common Table Expression and documentation can be found <a href="https://www.postgresql.org/docs/current/queries-with.html"  target="_blank" rel="noreferrer noopener" >here</a>
 </p>
 <p>These kind of expressions are also useful when the database engine  does not support <code>ON CONFLICT DO NOTHING</code>.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">WITH</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">search</span> <span style="color:#66d9ef">AS</span> (<span style="color:#66d9ef">SELECT</span> ctid, xmax, id <span style="color:#66d9ef">FROM</span> customers <span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;8a57f8f4-aeed-412c-a6f6-5f9a03b17bc5&#39;</span> <span style="color:#66d9ef">LIMIT</span> <span style="color:#ae81ff">1</span>),
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">add</span> <span style="color:#66d9ef">AS</span> (<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers (customer_id) <span style="color:#66d9ef">SELECT</span> <span style="color:#e6db74">&#39;8a57f8f4-aeed-412c-a6f6-5f9a03b17bc5&#39;</span> <span style="color:#66d9ef">WHERE</span> <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">EXISTS</span>(<span style="color:#66d9ef">SELECT</span> id <span style="color:#66d9ef">from</span> <span style="color:#66d9ef">search</span>) RETURNING ctid, xmax, id)
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> ctid, xmax, id <span style="color:#66d9ef">from</span> <span style="color:#66d9ef">add</span>	<span style="color:#66d9ef">UNION</span> <span style="color:#66d9ef">ALL</span> <span style="color:#66d9ef">SELECT</span> ctid, xmax, id <span style="color:#66d9ef">from</span> <span style="color:#66d9ef">search</span>
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">WITH</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">search</span> <span style="color:#81a1c1;font-weight:bold">AS</span> <span style="color:#eceff4">(</span><span style="color:#81a1c1;font-weight:bold">SELECT</span> ctid<span style="color:#eceff4">,</span> xmax<span style="color:#eceff4">,</span> id <span style="color:#81a1c1;font-weight:bold">FROM</span> customers <span style="color:#81a1c1;font-weight:bold">WHERE</span> customer_id <span style="color:#81a1c1">=</span> <span style="color:#a3be8c">&#39;8a57f8f4-aeed-412c-a6f6-5f9a03b17bc5&#39;</span> <span style="color:#81a1c1;font-weight:bold">LIMIT</span> <span style="color:#b48ead">1</span><span style="color:#eceff4">),</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">add</span> <span style="color:#81a1c1;font-weight:bold">AS</span> <span style="color:#eceff4">(</span><span style="color:#81a1c1;font-weight:bold">INSERT</span> <span style="color:#81a1c1;font-weight:bold">INTO</span> customers <span style="color:#eceff4">(</span>customer_id<span style="color:#eceff4">)</span> <span style="color:#81a1c1;font-weight:bold">SELECT</span> <span style="color:#a3be8c">&#39;8a57f8f4-aeed-412c-a6f6-5f9a03b17bc5&#39;</span> <span style="color:#81a1c1;font-weight:bold">WHERE</span> <span style="color:#81a1c1;font-weight:bold">NOT</span> <span style="color:#81a1c1;font-weight:bold">EXISTS</span><span style="color:#eceff4">(</span><span style="color:#81a1c1;font-weight:bold">SELECT</span> id <span style="color:#81a1c1;font-weight:bold">from</span> <span style="color:#81a1c1;font-weight:bold">search</span><span style="color:#eceff4">)</span> RETURNING ctid<span style="color:#eceff4">,</span> xmax<span style="color:#eceff4">,</span> id<span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">SELECT</span> ctid<span style="color:#eceff4">,</span> xmax<span style="color:#eceff4">,</span> id <span style="color:#81a1c1;font-weight:bold">from</span> <span style="color:#81a1c1;font-weight:bold">add</span>	<span style="color:#81a1c1;font-weight:bold">UNION</span> <span style="color:#81a1c1;font-weight:bold">ALL</span> <span style="color:#81a1c1;font-weight:bold">SELECT</span> ctid<span style="color:#eceff4">,</span> xmax<span style="color:#eceff4">,</span> id <span style="color:#81a1c1;font-weight:bold">from</span> <span style="color:#81a1c1;font-weight:bold">search</span>
 </span></span></code></pre></div><ul>
 <li>Prepare the <code>search</code> statement, it will be responsible of finding a customer given an id.</li>
 <li>Prepare the <code>add</code> statement, it will insert the customer if it is not found on the search expression.</li>
 <li>Execute both statements, only one will return a result.</li>
 </ul>
 <p>Running <code>EXPLAIN ANALYZE</code> on the query:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>HashAggregate
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>HashAggregate
 </span></span><span style="display:flex;"><span>  Group Key: add.ctid, add.xmax, add.id
 </span></span><span style="display:flex;"><span>  CTE search
 </span></span><span style="display:flex;"><span>    -&gt;  Limit
 </span></span><span style="display:flex;"><span>          -&gt;  Index Scan using customers_pkey on customers
-</span></span><span style="display:flex;"><span>                Index Cond: <span style="color:#f92672">(</span>customer_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;...&#39;</span>::uuid<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                Index Cond: <span style="color:#81a1c1">(</span>customer_id <span style="color:#81a1c1">=</span> <span style="color:#a3be8c">&#39;...&#39;</span>::uuid<span style="color:#81a1c1">)</span>
 </span></span><span style="display:flex;"><span>  CTE add
 </span></span><span style="display:flex;"><span>    -&gt;  Insert on customers customers_1
-</span></span><span style="display:flex;"><span>          InitPlan <span style="color:#ae81ff">2</span> <span style="color:#f92672">(</span>returns $1<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>          InitPlan <span style="color:#b48ead">2</span> <span style="color:#81a1c1">(</span>returns $1<span style="color:#81a1c1">)</span>
 </span></span><span style="display:flex;"><span>            -&gt;  CTE Scan on search search_1
 </span></span><span style="display:flex;"><span>          -&gt;  Result
-</span></span><span style="display:flex;"><span>                One-Time Filter: <span style="color:#f92672">(</span>NOT $1<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                One-Time Filter: <span style="color:#81a1c1">(</span>NOT $1<span style="color:#81a1c1">)</span>
 </span></span><span style="display:flex;"><span>  -&gt;  Append
 </span></span><span style="display:flex;"><span>        -&gt;  CTE Scan on add
 </span></span><span style="display:flex;"><span>        -&gt;  CTE Scan on search
@@ -508,99 +507,6 @@ Executing the following query 5 times!</p>
       
     </p>
   </div>
-  <hr />
-  <div class="sharing-buttons">
-    
-<a class="resp-sharing-button__link" href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fdevandchill.com%2fposts%2f2020%2f02%2fpostgres-building-concurrently-safe-upsert-queries%2f" target="_blank" rel="noopener" aria-label="" title="Share on facebook">
-  <div class="resp-sharing-button resp-sharing-button--facebook resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://twitter.com/intent/tweet/?url=https%3a%2f%2fdevandchill.com%2fposts%2f2020%2f02%2fpostgres-building-concurrently-safe-upsert-queries%2f" target="_blank" rel="noopener" aria-label="" title="Share on twitter">
-  <div class="resp-sharing-button resp-sharing-button--twitter resp-sharing-button--small">
-      <div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://www.tumblr.com/widgets/share/tool?posttype=link&amp;title=Postgres%3a%20Building%20concurrently%20safe%20upsert%20queries&amp;caption=Postgres%3a%20Building%20concurrently%20safe%20upsert%20queries&amp;canonicalUrl=https%3a%2f%2fdevandchill.com%2fposts%2f2020%2f02%2fpostgres-building-concurrently-safe-upsert-queries%2f" target="_blank" rel="noopener" aria-label="" title="Share on tumblr">
-  <div class="resp-sharing-button resp-sharing-button--tumblr resp-sharing-button--small">
-    <div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.563 24c-5.093 0-7.031-3.756-7.031-6.411V9.747H5.116V6.648c3.63-1.313 4.512-4.596 4.71-6.469C9.84.051 9.941 0 9.999 0h3.517v6.114h4.801v3.633h-4.82v7.47c.016 1.001.375 2.371 2.207 2.371h.09c.631-.02 1.486-.205 1.936-.419l1.156 3.425c-.436.636-2.4 1.374-4.156 1.404h-.178l.011.002z"/></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="mailto:?subject=Postgres%3a%20Building%20concurrently%20safe%20upsert%20queries&amp;body=https%3a%2f%2fdevandchill.com%2fposts%2f2020%2f02%2fpostgres-building-concurrently-safe-upsert-queries%2f" target="_self" rel="noopener" aria-label="" title="Share via email">
-  <div class="resp-sharing-button resp-sharing-button--email resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://pinterest.com/pin/create/button/?url=https%3a%2f%2fdevandchill.com%2fposts%2f2020%2f02%2fpostgres-building-concurrently-safe-upsert-queries%2f&amp;media=https%3a%2f%2fdevandchill.com%2fposts%2f2020%2f02%2fpostgres-building-concurrently-safe-upsert-queries%2f;description=Postgres%3a%20Building%20concurrently%20safe%20upsert%20queries" target="_blank" rel="noopener" aria-label="" title="Share on pinterest">
-  <div class="resp-sharing-button resp-sharing-button--pinterest resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026L12.017 0z"/></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2fdevandchill.com%2fposts%2f2020%2f02%2fpostgres-building-concurrently-safe-upsert-queries%2f&amp;title=Postgres%3a%20Building%20concurrently%20safe%20upsert%20queries&amp;summary=Postgres%3a%20Building%20concurrently%20safe%20upsert%20queries&amp;source=https%3a%2f%2fdevandchill.com%2fposts%2f2020%2f02%2fpostgres-building-concurrently-safe-upsert-queries%2f" target="_blank" rel="noopener" aria-label="" title="Share on linkedin">
-  <div class="resp-sharing-button resp-sharing-button--linkedin resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://reddit.com/submit/?url=https%3a%2f%2fdevandchill.com%2fposts%2f2020%2f02%2fpostgres-building-concurrently-safe-upsert-queries%2f&amp;resubmit=true&amp;title=Postgres%3a%20Building%20concurrently%20safe%20upsert%20queries" target="_blank" rel="noopener" aria-label="" title="Share on reddit">
-  <div class="resp-sharing-button resp-sharing-button--reddit resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://www.xing.com/app/user?op=share;url=https%3a%2f%2fdevandchill.com%2fposts%2f2020%2f02%2fpostgres-building-concurrently-safe-upsert-queries%2f;title=Postgres%3a%20Building%20concurrently%20safe%20upsert%20queries" target="_blank" rel="noopener" aria-label="" title="Share on xing">
-  <div class="resp-sharing-button resp-sharing-button--xing resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M18.188 0c-.517 0-.741.325-.927.66 0 0-7.455 13.224-7.702 13.657.015.024 4.919 9.023 4.919 9.023.17.308.436.66.967.66h3.454c.211 0 .375-.078.463-.22.089-.151.089-.346-.009-.536l-4.879-8.916c-.004-.006-.004-.016 0-.022L22.139.756c.095-.191.097-.387.006-.535C22.056.078 21.894 0 21.686 0h-3.498zM3.648 4.74c-.211 0-.385.074-.473.216-.09.149-.078.339.02.531l2.34 4.05c.004.01.004.016 0 .021L1.86 16.051c-.099.188-.093.381 0 .529.085.142.239.234.45.234h3.461c.518 0 .766-.348.945-.667l3.734-6.609-2.378-4.155c-.172-.315-.434-.659-.962-.659H3.648v.016z"/></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="whatsapp://send?text=Postgres%3a%20Building%20concurrently%20safe%20upsert%20queries%20https%3a%2f%2fdevandchill.com%2fposts%2f2020%2f02%2fpostgres-building-concurrently-safe-upsert-queries%2f" target="_blank" rel="noopener" aria-label="" title="Share on whatsapp">
-  <div class="resp-sharing-button resp-sharing-button--whatsapp resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://news.ycombinator.com/submitlink?u=https%3a%2f%2fdevandchill.com%2fposts%2f2020%2f02%2fpostgres-building-concurrently-safe-upsert-queries%2f&amp;t=Postgres%3a%20Building%20concurrently%20safe%20upsert%20queries" target="_blank" rel="noopener" aria-label="" title="Share on hacker news">
-  <div class="resp-sharing-button resp-sharing-button--hackernews resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M0 24V0h24v24H0zM6.951 5.896l4.112 7.708v5.064h1.583v-4.972l4.148-7.799h-1.749l-2.457 4.875c-.372.745-.688 1.434-.688 1.434s-.297-.708-.651-1.434L8.831 5.896h-1.88z"/></svg>
-    </div>
-  </div>
-</a>
-
-
-<a class="resp-sharing-button__link" href="https://telegram.me/share/url?text=Postgres%3a%20Building%20concurrently%20safe%20upsert%20queries&amp;url=https%3a%2f%2fdevandchill.com%2fposts%2f2020%2f02%2fpostgres-building-concurrently-safe-upsert-queries%2f" target="_blank" rel="noopener" aria-label="" title="Share on telegram">
-  <div class="resp-sharing-button resp-sharing-button--telegram resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-    </div>
-  </div>
-</a>
-
-  </div>
 
   
   <div class="pagination">
@@ -653,8 +559,7 @@ Executing the following query 5 times!</p>
         
 
 
-
-<script type="text/javascript" src="/bundle.min.e073c6bca809af5c516c3777e3441958267b377fb29e3c9471c558a6711b62d7819807a126e3378f03763928ef7b09a6cdcb1693bf5719e81e15e60176854b26.js" integrity="sha512-4HPGvKgJr1xRbDd340QZWCZ7N3&#43;ynjyUccVYpnEbYteBmAehJuM3jwN2OSjvewmmzcsWk79XGegeFeYBdoVLJg=="></script>
+<script type="text/javascript" src="/bundle.min.69fb501ac7bace7c0ca982d98573883fe084cb258084917289a51bc0bc04868a1b91b95a34c641d2854f64b4b0245430430f86fa70e19f7425062100c9b69215.js" integrity="sha512-aftQGse6znwMqYLZhXOIP&#43;CEyyWAhJFyiaUbwLwEhoobkblaNMZB0oVPZLSwJFQwQw&#43;G&#43;nDhn3QlBiEAybaSFQ=="></script>
 
 
 

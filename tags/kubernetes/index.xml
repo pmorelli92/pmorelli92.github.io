@@ -15,7 +15,7 @@
       
       <guid>https://devandchill.com/posts/2020/08/stop-storing-secrets-on-environment-variables-enter-gcp-secret-manager/</guid>
       <description>The other day I encountered the following post where Seth Vargo was doing some statements regarding the usage of environment variables:
- [&amp;hellip;] While this approach is simple and straightforward, it comes with considerable security drawbacks - the secrets exist in plaintext in the environment. Any other process, library, or dependency running inside the process has access to the environment which has already been exploited multiple times. Unfortunately, it is trivial for a malicious library author to inject this type of vulnerability into an otherwise helpful utility package.</description>
+[&amp;hellip;] While this approach is simple and straightforward, it comes with considerable security drawbacks - the secrets exist in plaintext in the environment. Any other process, library, or dependency running inside the process has access to the environment which has already been exploited multiple times. Unfortunately, it is trivial for a malicious library author to inject this type of vulnerability into an otherwise helpful utility package.</description>
     </item>
     
     <item>
