@@ -7,11 +7,11 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Pablo Morelli</copyright>
-    <lastBuildDate>Sun, 29 Jan 2023 18:30:00 +0100</lastBuildDate><atom:link href="https://devandchill.com/tags/behavior/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 29 Jan 2023 20:30:00 +0100</lastBuildDate><atom:link href="https://devandchill.com/tags/behavior/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>How I approach microservice testing in 2023</title>
       <link>https://devandchill.com/posts/2023/01/how-i-approach-microservice-testing-in-2023/</link>
-      <pubDate>Sun, 29 Jan 2023 18:30:00 +0100</pubDate>
+      <pubDate>Sun, 29 Jan 2023 20:30:00 +0100</pubDate>
       
       <guid>https://devandchill.com/posts/2023/01/how-i-approach-microservice-testing-in-2023/</guid>
       <description>👉 The codebase used in this post can be found in my Github. 👈

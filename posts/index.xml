@@ -6,13 +6,13 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
         <copyright>Pablo Morelli</copyright>
-        <lastBuildDate>Sun, 29 Jan 2023 18:30:00 +0100</lastBuildDate>
+        <lastBuildDate>Sun, 29 Jan 2023 20:30:00 +0100</lastBuildDate>
         <atom:link href="https://devandchill.com/posts/index.xml" rel="self" type="application/rss+xml" />
         
         <item>
             <title>How I approach microservice testing in 2023</title>
             <link>https://devandchill.com/posts/2023/01/how-i-approach-microservice-testing-in-2023/</link>
-            <pubDate>Sun, 29 Jan 2023 18:30:00 +0100</pubDate>
+            <pubDate>Sun, 29 Jan 2023 20:30:00 +0100</pubDate>
             
             <guid>https://devandchill.com/posts/2023/01/how-i-approach-microservice-testing-in-2023/</guid>
             <description>👉 The codebase used in this post can be found in my Github. 👈
@@ -181,7 +181,7 @@ Therefore the tests will serve the stimuli from the outside such as with REST AP
 </span></span></code></pre></div><p>However, one of the most attractive features of this architecture is the ease of running and debugging tests locally. The video below demonstrates this capability in action.</p>
 
 <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
-  <iframe src="https://www.youtube.com/embed/RgCwiBLtMHU" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+  <iframe src="https://www.youtube.com/embed/S9osxvVJnC8" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
 </div>
 
 <p>This is made possible by two main factors:</p>
