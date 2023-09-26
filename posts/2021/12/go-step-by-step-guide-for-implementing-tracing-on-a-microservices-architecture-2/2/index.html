@@ -21,12 +21,9 @@
 
 
 
-<link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" rel="stylesheet"
-    type="text/css">
 
 
-
-<link rel="stylesheet" type="text/css" href="/main.045f18da88f8cb42336977558c8919c77ba0afb78827b7a1250d971d6cfd080e.css">
+<link rel="stylesheet" href="/main.3a0b97c6880e06dd6e902af4b4a6ae5146594dbe1d4035fd2190f9c6f7eb949d.css" integrity="sha256-OguXxogOBt1ukCr0tKauUUZZTb4dQDX9IZD5xvfrlJ0=">
 
 
 
@@ -40,17 +37,17 @@
 
 
 <meta itemprop="name" content="Go - Step by step guide for implementing tracing on a microservices architecture (2/2)">
-<meta itemprop="description" content="This article is the second of a series of two. If you had not read the first one, you can do it here. In this post we are going to finish the implementation of the checkout-service and the stock-service and wrap up the proof of concept.
-Revisiting the flow In the previous article we finished with the gateway, and while doing so we defined the proto files required for both gateway and checkout-service."><meta itemprop="datePublished" content="2021-12-31T16:00:00+02:00" />
+<meta itemprop="description" content="Update 2023: The repository with the source code is still having some traction on Github some I decided to update the dependencies as some of them were deprecated and the tracer exporter now uses a different port.
+If you just want to jump into the repository with all the code, 👉 check it out here 👈 This article is the second of a series of two. If you had not read the first one, you can do it here."><meta itemprop="datePublished" content="2021-12-31T16:00:00+02:00" />
 <meta itemprop="dateModified" content="2021-12-31T16:00:00+02:00" />
-<meta itemprop="wordCount" content="1999"><meta itemprop="image" content="https://devandchill.com/og-image.png"/>
+<meta itemprop="wordCount" content="2032"><meta itemprop="image" content="https://devandchill.com/og-image.png"/>
 <meta itemprop="keywords" content="go,opentracing,opentelemetry,tracing,telemetry,jaeger," />
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://devandchill.com/og-image.png"/>
 
 <meta name="twitter:title" content="Go - Step by step guide for implementing tracing on a microservices architecture (2/2)"/>
-<meta name="twitter:description" content="This article is the second of a series of two. If you had not read the first one, you can do it here. In this post we are going to finish the implementation of the checkout-service and the stock-service and wrap up the proof of concept.
-Revisiting the flow In the previous article we finished with the gateway, and while doing so we defined the proto files required for both gateway and checkout-service."/>
+<meta name="twitter:description" content="Update 2023: The repository with the source code is still having some traction on Github some I decided to update the dependencies as some of them were deprecated and the tracer exporter now uses a different port.
+If you just want to jump into the repository with all the code, 👉 check it out here 👈 This article is the second of a series of two. If you had not read the first one, you can do it here."/>
 
 
 
@@ -74,6 +71,8 @@ Revisiting the flow In the previous article we finished with the gateway, and wh
 
   gtag('config', 'UA-138171880-1');
 </script>
+
+
 
 
 
@@ -144,7 +143,11 @@ Revisiting the flow In the previous article we finished with the gateway, and wh
     
 
     <div class="post-content">
-      <p>This article is the second of a series of two. If you had not read the first one, <a href="https://devandchill.com/posts/2021/12/go-step-by-step-guide-for-implementing-tracing-on-a-microservices-architecture-1/2/"  target="_blank" rel="noreferrer noopener" >you can do it here.</a>
+      <p>Update 2023: The repository with the source code is still having some traction on Github some I decided to update the dependencies as some of them were deprecated and the tracer exporter now uses a different port.</p>
+<p>If you just want to jump into the repository with all the code, <a href="https://github.com/pmorelli92/open-telemetry-go"  target="_blank" rel="noreferrer noopener" >👉 check it out here 👈</a>
+</p>
+<hr>
+<p>This article is the second of a series of two. If you had not read the first one, <a href="https://devandchill.com/posts/2021/12/go-step-by-step-guide-for-implementing-tracing-on-a-microservices-architecture-1/2/"  target="_blank" rel="noreferrer noopener" >you can do it here.</a>
 
 In this post we are going to finish the implementation of the <code>checkout-service</code> and the <code>stock-service</code> and wrap up the proof of concept.</p>
 <h3 id="revisiting-the-flow">Revisiting the flow</h3>
@@ -161,14 +164,15 @@ In this post we are going to finish the implementation of the <code>checkout-ser
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">import</span> <span style="color:#eceff4">(</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#a3be8c">&#34;fmt&#34;</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#a3be8c">&#34;github.com/streadway/amqp&#34;</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#a3be8c">&#34;log&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a3be8c">&#34;github.com/rabbitmq/amqp091-go&#34;</span>
 </span></span><span style="display:flex;"><span><span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">func</span> <span style="color:#88c0d0">ConnectAmqp</span><span style="color:#eceff4">(</span>user<span style="color:#eceff4">,</span> pass<span style="color:#eceff4">,</span> host<span style="color:#eceff4">,</span> port <span style="color:#81a1c1">string</span><span style="color:#eceff4">)</span> <span style="color:#eceff4">(</span><span style="color:#81a1c1">*</span>amqp<span style="color:#eceff4">.</span>Channel<span style="color:#eceff4">,</span> <span style="color:#81a1c1;font-weight:bold">func</span><span style="color:#eceff4">()</span> <span style="color:#81a1c1">error</span><span style="color:#eceff4">)</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">func</span> <span style="color:#88c0d0">ConnectAmqp</span><span style="color:#eceff4">(</span>user<span style="color:#eceff4">,</span> pass<span style="color:#eceff4">,</span> host<span style="color:#eceff4">,</span> port <span style="color:#81a1c1">string</span><span style="color:#eceff4">)</span> <span style="color:#eceff4">(</span><span style="color:#81a1c1">*</span>amqp091<span style="color:#eceff4">.</span>Channel<span style="color:#eceff4">,</span> <span style="color:#81a1c1;font-weight:bold">func</span><span style="color:#eceff4">()</span> <span style="color:#81a1c1">error</span><span style="color:#eceff4">)</span> <span style="color:#eceff4">{</span>
 </span></span><span style="display:flex;"><span>	address <span style="color:#81a1c1">:=</span> fmt<span style="color:#eceff4">.</span><span style="color:#88c0d0">Sprintf</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;amqp://%s:%s@%s:%s/&#34;</span><span style="color:#eceff4">,</span> user<span style="color:#eceff4">,</span> pass<span style="color:#eceff4">,</span> host<span style="color:#eceff4">,</span> port<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	connection<span style="color:#eceff4">,</span> err <span style="color:#81a1c1">:=</span> amqp<span style="color:#eceff4">.</span><span style="color:#88c0d0">Dial</span><span style="color:#eceff4">(</span>address<span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span>	connection<span style="color:#eceff4">,</span> err <span style="color:#81a1c1">:=</span> amqp091<span style="color:#eceff4">.</span><span style="color:#88c0d0">Dial</span><span style="color:#eceff4">(</span>address<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">if</span> err <span style="color:#81a1c1">!=</span> <span style="color:#81a1c1;font-weight:bold">nil</span> <span style="color:#eceff4">{</span>
 </span></span><span style="display:flex;"><span>		log<span style="color:#eceff4">.</span><span style="color:#88c0d0">Fatal</span><span style="color:#eceff4">(</span>err<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#eceff4">}</span>
@@ -185,10 +189,10 @@ In this post we are going to finish the implementation of the <code>checkout-ser
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">return</span> channel<span style="color:#eceff4">,</span> connection<span style="color:#eceff4">.</span>Close
 </span></span><span style="display:flex;"><span><span style="color:#eceff4">}</span>
-</span></span></code></pre></div><p>Run <code>go get github.com/streadway/amqp</code> and <code>go mod tidy</code> to ensure the dependencies behave as expected.</p>
+</span></span></code></pre></div><p>Run <code>go get github.com/rabbitmq/amqp091-go</code> and <code>go mod tidy</code> to ensure the dependencies behave as expected.</p>
 <h4 id="propagating-the-trace">Propagating the trace</h4>
 <p>When working with HTTP and gRPC calls, the trace can be propagated using go&rsquo;s built-in <code>context</code>, but for RabbitMQ this is not as straightforward. A RabbitMQ message contains both payload and headers, and in this case the headers are an excellent candidate to solve the propagation.</p>
-<p>The library <code>streadway/amqp</code> defines the headers as a <code>map[string]interface{}</code>, so we are going to define our own type that is compliance with that:</p>
+<p>The library <code>rabbitmq/amqp091-go</code> defines the headers as a <code>map[string]interface{}</code>, so we are going to define our own type that is compliance with that:</p>
 <div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">type</span> AmqpHeadersCarrier <span style="color:#81a1c1;font-weight:bold">map</span><span style="color:#eceff4">[</span><span style="color:#81a1c1">string</span><span style="color:#eceff4">]</span><span style="color:#81a1c1;font-weight:bold">interface</span><span style="color:#eceff4">{}</span>
 </span></span></code></pre></div><p>The <code>open-telemetry</code> library then will handle the injection and extraction of the trace using the map, but in order to do that our defined type needs to implement the <code>TextMapCarrier</code> interface. This means that the functions <code>Get</code>, <code>Set</code>, and <code>Keys</code> have to be defined.</p>
 <p>Create the <code>carriers.go</code> file and add the piece of code below:</p>
@@ -218,7 +222,7 @@ In this post we are going to finish the implementation of the <code>checkout-ser
 </span></span><span style="display:flex;"><span>	i <span style="color:#81a1c1">:=</span> <span style="color:#b48ead">0</span>
 </span></span><span style="display:flex;"><span>	r <span style="color:#81a1c1">:=</span> <span style="color:#81a1c1">make</span><span style="color:#eceff4">([]</span><span style="color:#81a1c1">string</span><span style="color:#eceff4">,</span> <span style="color:#81a1c1">len</span><span style="color:#eceff4">(</span>a<span style="color:#eceff4">))</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">for</span> k<span style="color:#eceff4">,</span> _ <span style="color:#81a1c1">:=</span> <span style="color:#81a1c1;font-weight:bold">range</span> a <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">for</span> k <span style="color:#81a1c1">:=</span> <span style="color:#81a1c1;font-weight:bold">range</span> a <span style="color:#eceff4">{</span>
 </span></span><span style="display:flex;"><span>		r<span style="color:#eceff4">[</span>i<span style="color:#eceff4">]</span> <span style="color:#eceff4">=</span> k
 </span></span><span style="display:flex;"><span>		i<span style="color:#81a1c1">++</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#eceff4">}</span>
@@ -238,14 +242,11 @@ In this post we are going to finish the implementation of the <code>checkout-ser
 </span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">return</span> otel<span style="color:#eceff4">.</span><span style="color:#88c0d0">GetTextMapPropagator</span><span style="color:#eceff4">().</span><span style="color:#88c0d0">Extract</span><span style="color:#eceff4">(</span>ctx<span style="color:#eceff4">,</span> <span style="color:#88c0d0">AmqpHeadersCarrier</span><span style="color:#eceff4">(</span>headers<span style="color:#eceff4">))</span>
 </span></span><span style="display:flex;"><span><span style="color:#eceff4">}</span>
 </span></span></code></pre></div><p>Commit and push these changes so the other services can reference these utilities.</p>
-<p><a href="https://github.com/pmorelli92/open-telemetry-go/commit/87d73983f1cf0aff48436b5a230e1a52b3137290"  target="_blank" rel="noreferrer noopener" >👉 Commit reference 👈</a>
-</p>
 <h3 id="checkout-service">Checkout service</h3>
 <p>This component has two responsibilities. First, is going to contain the gRPC server logic, in other words, is going to receive the call from the <code>gateway</code>. Second, is going to publish a RabbitMQ message named <code>checkout.processed</code> that other services may listen to.</p>
 <p>In order to do so, these environment variables are needed:</p>
 <ul>
-<li>JAEGER_ADDRESS</li>
-<li>JAEGER_PORT</li>
+<li>JAEGER_ENDPOINT</li>
 <li>GRPC_ADDRESS</li>
 <li>RABBITMQ_USER</li>
 <li>RABBITMQ_PASS</li>
@@ -261,17 +262,22 @@ go get go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgr
 <div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">package</span> main
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">import</span> <span style="color:#eceff4">(</span>
-</span></span><span style="display:flex;"><span>	pb <span style="color:#a3be8c">&#34;github.com/pmorelli92/open-telemetry-go/proto&#34;</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#a3be8c">&#34;github.com/pmorelli92/open-telemetry-go/utils&#34;</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#a3be8c">&#34;github.com/streadway/amqp&#34;</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#a3be8c">&#34;go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc&#34;</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#a3be8c">&#34;google.golang.org/grpc&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a3be8c">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a3be8c">&#34;fmt&#34;</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#a3be8c">&#34;log&#34;</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#a3be8c">&#34;net&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	pb <span style="color:#a3be8c">&#34;github.com/pmorelli92/open-telemetry-go/proto&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a3be8c">&#34;github.com/pmorelli92/open-telemetry-go/utils&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a3be8c">&#34;github.com/rabbitmq/amqp091-go&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a3be8c">&#34;go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a3be8c">&#34;go.opentelemetry.io/otel&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a3be8c">&#34;go.opentelemetry.io/otel/trace&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a3be8c">&#34;google.golang.org/grpc&#34;</span>
 </span></span><span style="display:flex;"><span><span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">func</span> <span style="color:#88c0d0">main</span><span style="color:#eceff4">()</span> <span style="color:#eceff4">{</span>
-</span></span><span style="display:flex;"><span>	jaegerAddress <span style="color:#81a1c1">:=</span> utils<span style="color:#eceff4">.</span><span style="color:#88c0d0">EnvString</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;JAEGER_ADDRESS&#34;</span><span style="color:#eceff4">,</span> <span style="color:#a3be8c">&#34;localhost&#34;</span><span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span>	jaegerEndpoint <span style="color:#81a1c1">:=</span> utils<span style="color:#eceff4">.</span><span style="color:#88c0d0">EnvString</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;JAEGER_ENDPOINT&#34;</span><span style="color:#eceff4">,</span> <span style="color:#a3be8c">&#34;localhost:4318&#34;</span><span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>	jaegerPort <span style="color:#81a1c1">:=</span> utils<span style="color:#eceff4">.</span><span style="color:#88c0d0">EnvString</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;JAEGER_PORT&#34;</span><span style="color:#eceff4">,</span> <span style="color:#a3be8c">&#34;6831&#34;</span><span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>	grpcAddress <span style="color:#81a1c1">:=</span> utils<span style="color:#eceff4">.</span><span style="color:#88c0d0">EnvString</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;GRPC_ADDRESS&#34;</span><span style="color:#eceff4">,</span> <span style="color:#a3be8c">&#34;localhost:8080&#34;</span><span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>	amqpUser <span style="color:#81a1c1">:=</span> utils<span style="color:#eceff4">.</span><span style="color:#88c0d0">EnvString</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;RABBITMQ_USER&#34;</span><span style="color:#eceff4">,</span> <span style="color:#a3be8c">&#34;guest&#34;</span><span style="color:#eceff4">)</span>
@@ -279,13 +285,15 @@ go get go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgr
 </span></span><span style="display:flex;"><span>	amqpHost <span style="color:#81a1c1">:=</span> utils<span style="color:#eceff4">.</span><span style="color:#88c0d0">EnvString</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;RABBITMQ_HOST&#34;</span><span style="color:#eceff4">,</span> <span style="color:#a3be8c">&#34;localhost&#34;</span><span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>	amqpPort <span style="color:#81a1c1">:=</span> utils<span style="color:#eceff4">.</span><span style="color:#88c0d0">EnvString</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;RABBITMQ_PORT&#34;</span><span style="color:#eceff4">,</span> <span style="color:#a3be8c">&#34;5672&#34;</span><span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	err <span style="color:#81a1c1">:=</span> utils<span style="color:#eceff4">.</span><span style="color:#88c0d0">SetGlobalTracer</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;checkout&#34;</span><span style="color:#eceff4">,</span> jaegerAddress<span style="color:#eceff4">,</span> jaegerPort<span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span>	err <span style="color:#81a1c1">:=</span> utils<span style="color:#eceff4">.</span><span style="color:#88c0d0">SetGlobalTracer</span><span style="color:#eceff4">(</span>context<span style="color:#eceff4">.</span><span style="color:#88c0d0">Background</span><span style="color:#eceff4">(),</span> <span style="color:#a3be8c">&#34;checkout&#34;</span><span style="color:#eceff4">,</span> jaegerAddress<span style="color:#eceff4">,</span> jaegerPort<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">if</span> err <span style="color:#81a1c1">!=</span> <span style="color:#81a1c1;font-weight:bold">nil</span> <span style="color:#eceff4">{</span>
 </span></span><span style="display:flex;"><span>		log<span style="color:#eceff4">.</span><span style="color:#88c0d0">Fatalf</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;failed to create tracer: %v&#34;</span><span style="color:#eceff4">,</span> err<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#eceff4">}</span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>	channel<span style="color:#eceff4">,</span> closeConn <span style="color:#81a1c1">:=</span> utils<span style="color:#eceff4">.</span><span style="color:#88c0d0">ConnectAmqp</span><span style="color:#eceff4">(</span>amqpUser<span style="color:#eceff4">,</span> amqpPass<span style="color:#eceff4">,</span> amqpHost<span style="color:#eceff4">,</span> amqpPort<span style="color:#eceff4">)</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">defer</span> <span style="color:#88c0d0">closeConn</span><span style="color:#eceff4">()</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">defer</span> <span style="color:#81a1c1;font-weight:bold">func</span><span style="color:#eceff4">()</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>		_ <span style="color:#eceff4">=</span> <span style="color:#88c0d0">closeConn</span><span style="color:#eceff4">()</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#eceff4">}()</span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>	lis<span style="color:#eceff4">,</span> err <span style="color:#81a1c1">:=</span> net<span style="color:#eceff4">.</span><span style="color:#88c0d0">Listen</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;tcp&#34;</span><span style="color:#eceff4">,</span> grpcAddress<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">if</span> err <span style="color:#81a1c1">!=</span> <span style="color:#81a1c1;font-weight:bold">nil</span> <span style="color:#eceff4">{</span>
@@ -306,7 +314,7 @@ go get go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgr
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">type</span> server <span style="color:#81a1c1;font-weight:bold">struct</span> <span style="color:#eceff4">{</span>
 </span></span><span style="display:flex;"><span>	pb<span style="color:#eceff4">.</span>UnimplementedCheckoutServer
-</span></span><span style="display:flex;"><span>	channel <span style="color:#81a1c1">*</span>amqp<span style="color:#eceff4">.</span>Channel
+</span></span><span style="display:flex;"><span>	channel <span style="color:#81a1c1">*</span>amqp091<span style="color:#eceff4">.</span>Channel
 </span></span><span style="display:flex;"><span><span style="color:#eceff4">}</span>
 </span></span></code></pre></div><p>So far, the code is doing most of the things needed:</p>
 <ul>
@@ -326,7 +334,7 @@ go get go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgr
 </span></span><span style="display:flex;"><span>	<span style="color:#616e87;font-style:italic">// Inject the context in the headers
 </span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span>	headers <span style="color:#81a1c1">:=</span> utils<span style="color:#eceff4">.</span><span style="color:#88c0d0">InjectAMQPHeaders</span><span style="color:#eceff4">(</span>amqpContext<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>	msg <span style="color:#81a1c1">:=</span> amqp<span style="color:#eceff4">.</span>Publishing<span style="color:#eceff4">{</span>Headers<span style="color:#eceff4">:</span> headers<span style="color:#eceff4">}</span>
-</span></span><span style="display:flex;"><span>	err <span style="color:#81a1c1">:=</span> s<span style="color:#eceff4">.</span>channel<span style="color:#eceff4">.</span><span style="color:#88c0d0">Publish</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;exchange&#34;</span><span style="color:#eceff4">,</span> messageName<span style="color:#eceff4">,</span> <span style="color:#81a1c1;font-weight:bold">false</span><span style="color:#eceff4">,</span> <span style="color:#81a1c1;font-weight:bold">false</span><span style="color:#eceff4">,</span> msg<span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span>	err <span style="color:#81a1c1">:=</span> s<span style="color:#eceff4">.</span>channel<span style="color:#eceff4">.</span><span style="color:#88c0d0">PublishWithContext</span><span style="color:#eceff4">(</span>ctx<span style="color:#eceff4">,</span> <span style="color:#a3be8c">&#34;exchange&#34;</span><span style="color:#eceff4">,</span> messageName<span style="color:#eceff4">,</span> <span style="color:#81a1c1;font-weight:bold">false</span><span style="color:#eceff4">,</span> <span style="color:#81a1c1;font-weight:bold">false</span><span style="color:#eceff4">,</span> msg<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">if</span> err <span style="color:#81a1c1">!=</span> <span style="color:#81a1c1;font-weight:bold">nil</span> <span style="color:#eceff4">{</span>
 </span></span><span style="display:flex;"><span>		log<span style="color:#eceff4">.</span><span style="color:#88c0d0">Fatal</span><span style="color:#eceff4">(</span>err<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#eceff4">}</span>
@@ -343,7 +351,7 @@ go get go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgr
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">return</span> response<span style="color:#eceff4">,</span> <span style="color:#81a1c1;font-weight:bold">nil</span>
 </span></span></code></pre></div><p>Code is then finished, now add a Dockerfile:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Dockerfile" data-lang="Dockerfile"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">FROM</span><span style="color:#a3be8c"> golang:alpine3.14 AS compiler</span><span style="color:#bf616a">
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Dockerfile" data-lang="Dockerfile"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">FROM</span><span style="color:#a3be8c"> golang:alpine3.18 AS compiler</span><span style="color:#bf616a">
 </span></span></span><span style="display:flex;"><span><span style="color:#bf616a"></span><span style="color:#81a1c1;font-weight:bold">RUN</span> apk --update --no-cache add git<span style="color:#bf616a">
 </span></span></span><span style="display:flex;"><span><span style="color:#bf616a"></span><span style="color:#81a1c1;font-weight:bold">WORKDIR</span><span style="color:#a3be8c"> /checkout</span><span style="color:#bf616a">
 </span></span></span><span style="display:flex;"><span><span style="color:#bf616a">
@@ -357,8 +365,6 @@ go get go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgr
 </span></span></span><span style="display:flex;"><span><span style="color:#bf616a"></span><span style="color:#81a1c1;font-weight:bold">COPY</span> --from<span style="color:#81a1c1">=</span>compiler /bin/goapp /checkout<span style="color:#bf616a">
 </span></span></span><span style="display:flex;"><span><span style="color:#bf616a"></span><span style="color:#81a1c1;font-weight:bold">ENTRYPOINT</span> <span style="color:#eceff4">[</span><span style="color:#a3be8c">&#34;/checkout&#34;</span><span style="color:#eceff4">]</span><span style="color:#bf616a">
 </span></span></span></code></pre></div><p>Execute a <code>go mod tidy</code> and you can commit and push.</p>
-<p><a href="https://github.com/pmorelli92/open-telemetry-go/commit/4e260ea04980b5c8a52a349d234d9e6c4ddaf3c5"  target="_blank" rel="noreferrer noopener" >👉 Commit reference 👈</a>
-</p>
 <h4 id="modifying-the-docker-compose">Modifying the docker-compose</h4>
 <p>On the docker-compose file, now add a RabbitMQ instance, and the checkout service:</p>
 <pre tabindex="0"><code class="language-docker-compose" data-lang="docker-compose">rabbitmq:
@@ -373,8 +379,7 @@ restart: on-failure
 ports:
 	- &#34;8080:8080&#34;
 environment:
-	- JAEGER_ADDRESS=jaeger
-	- JAEGER_PORT=6831
+    - JAEGER_ENDPOINT=jaeger:4318
 	- GRPC_ADDRESS=checkout:8080
 	- RABBITMQ_USER=guest
 	- RABBITMQ_PASS=guest
@@ -383,9 +388,7 @@ environment:
 depends_on:
 	- jaeger
 	- rabbitmq
-</code></pre><p><a href="https://github.com/pmorelli92/open-telemetry-go/commit/227367fb1aa19ceb3bcba46d6d5a31497f8853f9"  target="_blank" rel="noreferrer noopener" >👉 Commit reference 👈</a>
-</p>
-<h3 id="trying-things-out">Trying things out</h3>
+</code></pre><h3 id="trying-things-out">Trying things out</h3>
 <p>You should be able to start all the components executing from the root of the repository: <code>docker-compose up --build</code>. After the services are up and running you can try calling the gateway with cURL:</p>
 <pre tabindex="0"><code>curl -v -X POST http://localhost:8081/api/checkout
 
@@ -408,8 +411,7 @@ depends_on:
 <h3 id="stock-service">Stock service</h3>
 <p>This component has only one responsibility that is listening to the <code>checkout.processed</code> message. In order to do so, these environment variables are needed:</p>
 <ul>
-<li>JAEGER_ADDRESS</li>
-<li>JAEGER_PORT</li>
+<li>JAEGER_ENDPOINT</li>
 <li>RABBITMQ_USER</li>
 <li>RABBITMQ_PASS</li>
 <li>RABBITMQ_HOST</li>
@@ -419,35 +421,33 @@ depends_on:
 <pre tabindex="0"><code>go mod init github.com/pmorelli92/open-telemetry-go/stock
 go get github.com/pmorelli92/open-telemetry-go/utils
 </code></pre><p>Then, create the <code>main.go</code> file with the following content:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">package</span> main
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">import</span> <span style="color:#eceff4">(</span>
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">import</span> <span style="color:#eceff4">(</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#a3be8c">&#34;context&#34;</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#a3be8c">&#34;github.com/pmorelli92/open-telemetry-go/utils&#34;</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#a3be8c">&#34;github.com/streadway/amqp&#34;</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#a3be8c">&#34;go.opentelemetry.io/otel&#34;</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#a3be8c">&#34;go.opentelemetry.io/otel/attribute&#34;</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#a3be8c">&#34;go.opentelemetry.io/otel/trace&#34;</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#a3be8c">&#34;log&#34;</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#a3be8c">&#34;sync&#34;</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#a3be8c">&#34;time&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a3be8c">&#34;github.com/pmorelli92/open-telemetry-go/utils&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a3be8c">&#34;github.com/rabbitmq/amqp091-go&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a3be8c">&#34;go.opentelemetry.io/otel&#34;</span>
 </span></span><span style="display:flex;"><span><span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">func</span> <span style="color:#88c0d0">main</span><span style="color:#eceff4">()</span> <span style="color:#eceff4">{</span>
-</span></span><span style="display:flex;"><span>	jaegerAddress <span style="color:#81a1c1">:=</span> utils<span style="color:#eceff4">.</span><span style="color:#88c0d0">EnvString</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;JAEGER_ADDRESS&#34;</span><span style="color:#eceff4">,</span> <span style="color:#a3be8c">&#34;localhost&#34;</span><span style="color:#eceff4">)</span>
-</span></span><span style="display:flex;"><span>	jaegerPort <span style="color:#81a1c1">:=</span> utils<span style="color:#eceff4">.</span><span style="color:#88c0d0">EnvString</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;JAEGER_PORT&#34;</span><span style="color:#eceff4">,</span> <span style="color:#a3be8c">&#34;6831&#34;</span><span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span>	jaegerEndpoint <span style="color:#81a1c1">:=</span> utils<span style="color:#eceff4">.</span><span style="color:#88c0d0">EnvString</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;JAEGER_ENDPOINT&#34;</span><span style="color:#eceff4">,</span> <span style="color:#a3be8c">&#34;localhost:4318&#34;</span><span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>	amqpUser <span style="color:#81a1c1">:=</span> utils<span style="color:#eceff4">.</span><span style="color:#88c0d0">EnvString</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;RABBITMQ_USER&#34;</span><span style="color:#eceff4">,</span> <span style="color:#a3be8c">&#34;guest&#34;</span><span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>	amqpPass <span style="color:#81a1c1">:=</span> utils<span style="color:#eceff4">.</span><span style="color:#88c0d0">EnvString</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;RABBITMQ_PASS&#34;</span><span style="color:#eceff4">,</span> <span style="color:#a3be8c">&#34;guest&#34;</span><span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>	amqpHost <span style="color:#81a1c1">:=</span> utils<span style="color:#eceff4">.</span><span style="color:#88c0d0">EnvString</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;RABBITMQ_HOST&#34;</span><span style="color:#eceff4">,</span> <span style="color:#a3be8c">&#34;localhost&#34;</span><span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>	amqpPort <span style="color:#81a1c1">:=</span> utils<span style="color:#eceff4">.</span><span style="color:#88c0d0">EnvString</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;RABBITMQ_PORT&#34;</span><span style="color:#eceff4">,</span> <span style="color:#a3be8c">&#34;5672&#34;</span><span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	err <span style="color:#81a1c1">:=</span> utils<span style="color:#eceff4">.</span><span style="color:#88c0d0">SetGlobalTracer</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;stock&#34;</span><span style="color:#eceff4">,</span> jaegerAddress<span style="color:#eceff4">,</span> jaegerPort<span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span>	err <span style="color:#81a1c1">:=</span> utils<span style="color:#eceff4">.</span><span style="color:#88c0d0">SetGlobalTracer</span><span style="color:#eceff4">(</span>context<span style="color:#eceff4">.</span><span style="color:#88c0d0">Background</span><span style="color:#eceff4">(),</span> <span style="color:#a3be8c">&#34;stock&#34;</span><span style="color:#eceff4">,</span> jaegerEndpoint<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">if</span> err <span style="color:#81a1c1">!=</span> <span style="color:#81a1c1;font-weight:bold">nil</span> <span style="color:#eceff4">{</span>
 </span></span><span style="display:flex;"><span>		log<span style="color:#eceff4">.</span><span style="color:#88c0d0">Fatalf</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;failed to create tracer: %v&#34;</span><span style="color:#eceff4">,</span> err<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#eceff4">}</span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>	channel<span style="color:#eceff4">,</span> closeConn <span style="color:#81a1c1">:=</span> utils<span style="color:#eceff4">.</span><span style="color:#88c0d0">ConnectAmqp</span><span style="color:#eceff4">(</span>amqpUser<span style="color:#eceff4">,</span> amqpPass<span style="color:#eceff4">,</span> amqpHost<span style="color:#eceff4">,</span> amqpPort<span style="color:#eceff4">)</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">defer</span> <span style="color:#88c0d0">closeConn</span><span style="color:#eceff4">()</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">defer</span> <span style="color:#81a1c1;font-weight:bold">func</span><span style="color:#eceff4">()</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>		_ <span style="color:#eceff4">=</span> <span style="color:#88c0d0">closeConn</span><span style="color:#eceff4">()</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#eceff4">}()</span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>	<span style="color:#616e87;font-style:italic">// Create queue and binding
 </span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span>	_<span style="color:#eceff4">,</span> err <span style="color:#eceff4">=</span> channel<span style="color:#eceff4">.</span><span style="color:#88c0d0">QueueDeclare</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;stock-queue&#34;</span><span style="color:#eceff4">,</span> <span style="color:#81a1c1;font-weight:bold">true</span><span style="color:#eceff4">,</span> <span style="color:#81a1c1;font-weight:bold">false</span><span style="color:#eceff4">,</span> <span style="color:#81a1c1;font-weight:bold">false</span><span style="color:#eceff4">,</span> <span style="color:#81a1c1;font-weight:bold">false</span><span style="color:#eceff4">,</span> <span style="color:#81a1c1;font-weight:bold">nil</span><span style="color:#eceff4">)</span>
@@ -488,31 +488,29 @@ go get github.com/pmorelli92/open-telemetry-go/utils
 </span></span><span style="display:flex;"><span>	<span style="color:#eceff4">}</span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">for</span> <span style="color:#eceff4">{</span>
-</span></span><span style="display:flex;"><span>		<span style="color:#81a1c1;font-weight:bold">select</span> <span style="color:#eceff4">{</span>
 </span></span><span style="display:flex;"><span>		<span style="color:#616e87;font-style:italic">// For each message
-</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span>		<span style="color:#81a1c1;font-weight:bold">case</span> d <span style="color:#81a1c1">:=</span> <span style="color:#81a1c1">&lt;-</span>deliveries<span style="color:#eceff4">:</span>
+</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span>		d <span style="color:#81a1c1">:=</span> <span style="color:#81a1c1">&lt;-</span>deliveries
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>			<span style="color:#616e87;font-style:italic">// Extract headers
-</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span>			ctx <span style="color:#81a1c1">:=</span> utils<span style="color:#eceff4">.</span><span style="color:#88c0d0">ExtractAMQPHeaders</span><span style="color:#eceff4">(</span>context<span style="color:#eceff4">.</span><span style="color:#88c0d0">Background</span><span style="color:#eceff4">(),</span> d<span style="color:#eceff4">.</span>Headers<span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#616e87;font-style:italic">// Extract headers
+</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span>		ctx <span style="color:#81a1c1">:=</span> utils<span style="color:#eceff4">.</span><span style="color:#88c0d0">ExtractAMQPHeaders</span><span style="color:#eceff4">(</span>context<span style="color:#eceff4">.</span><span style="color:#88c0d0">Background</span><span style="color:#eceff4">(),</span> d<span style="color:#eceff4">.</span>Headers<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>			<span style="color:#616e87;font-style:italic">// Create a new span
-</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span>			tr <span style="color:#81a1c1">:=</span> otel<span style="color:#eceff4">.</span><span style="color:#88c0d0">Tracer</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;amqp&#34;</span><span style="color:#eceff4">)</span>
-</span></span><span style="display:flex;"><span>			ctx<span style="color:#eceff4">,</span> messageSpan <span style="color:#81a1c1">:=</span> tr<span style="color:#eceff4">.</span><span style="color:#88c0d0">Start</span><span style="color:#eceff4">(</span>ctx<span style="color:#eceff4">,</span> <span style="color:#a3be8c">&#34;AMQP - consume - checkout.processed&#34;</span><span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#616e87;font-style:italic">// Create a new span
+</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span>		tr <span style="color:#81a1c1">:=</span> otel<span style="color:#eceff4">.</span><span style="color:#88c0d0">Tracer</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;amqp&#34;</span><span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span>		_<span style="color:#eceff4">,</span> messageSpan <span style="color:#81a1c1">:=</span> tr<span style="color:#eceff4">.</span><span style="color:#88c0d0">Start</span><span style="color:#eceff4">(</span>ctx<span style="color:#eceff4">,</span> <span style="color:#a3be8c">&#34;AMQP - consume - checkout.processed&#34;</span><span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>			<span style="color:#616e87;font-style:italic">// Cannot use defer inside a for loop
-</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span>			time<span style="color:#eceff4">.</span><span style="color:#88c0d0">Sleep</span><span style="color:#eceff4">(</span><span style="color:#b48ead">1</span> <span style="color:#81a1c1">*</span> time<span style="color:#eceff4">.</span>Millisecond<span style="color:#eceff4">)</span>
-</span></span><span style="display:flex;"><span>			messageSpan<span style="color:#eceff4">.</span><span style="color:#88c0d0">End</span><span style="color:#eceff4">()</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#616e87;font-style:italic">// Cannot use defer inside a for loop
+</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span>		time<span style="color:#eceff4">.</span><span style="color:#88c0d0">Sleep</span><span style="color:#eceff4">(</span><span style="color:#b48ead">1</span> <span style="color:#81a1c1">*</span> time<span style="color:#eceff4">.</span>Millisecond<span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span>		messageSpan<span style="color:#eceff4">.</span><span style="color:#88c0d0">End</span><span style="color:#eceff4">()</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>			<span style="color:#616e87;font-style:italic">// ACK the message
-</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span>			err <span style="color:#eceff4">=</span> d<span style="color:#eceff4">.</span><span style="color:#88c0d0">Ack</span><span style="color:#eceff4">(</span><span style="color:#81a1c1;font-weight:bold">false</span><span style="color:#eceff4">)</span>
-</span></span><span style="display:flex;"><span>			<span style="color:#81a1c1;font-weight:bold">if</span> err <span style="color:#81a1c1">!=</span> <span style="color:#81a1c1;font-weight:bold">nil</span> <span style="color:#eceff4">{</span>
-</span></span><span style="display:flex;"><span>				log<span style="color:#eceff4">.</span><span style="color:#88c0d0">Fatal</span><span style="color:#eceff4">(</span>err<span style="color:#eceff4">)</span>
-</span></span><span style="display:flex;"><span>			<span style="color:#eceff4">}</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#616e87;font-style:italic">// ACK the message
+</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span>		err <span style="color:#eceff4">=</span> d<span style="color:#eceff4">.</span><span style="color:#88c0d0">Ack</span><span style="color:#eceff4">(</span><span style="color:#81a1c1;font-weight:bold">false</span><span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#81a1c1;font-weight:bold">if</span> err <span style="color:#81a1c1">!=</span> <span style="color:#81a1c1;font-weight:bold">nil</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>			log<span style="color:#eceff4">.</span><span style="color:#88c0d0">Fatal</span><span style="color:#eceff4">(</span>err<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>		<span style="color:#eceff4">}</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#eceff4">}</span>
 </span></span><span style="display:flex;"><span><span style="color:#eceff4">}</span>
 </span></span></code></pre></div><p>Code is then finished, now add a Dockerfile:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Dockerfile" data-lang="Dockerfile"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">FROM</span><span style="color:#a3be8c"> golang:alpine3.14 AS compiler</span><span style="color:#bf616a">
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Dockerfile" data-lang="Dockerfile"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">FROM</span><span style="color:#a3be8c"> golang:alpine3.18 AS compiler</span><span style="color:#bf616a">
 </span></span></span><span style="display:flex;"><span><span style="color:#bf616a"></span><span style="color:#81a1c1;font-weight:bold">RUN</span> apk --update --no-cache add git<span style="color:#bf616a">
 </span></span></span><span style="display:flex;"><span><span style="color:#bf616a"></span><span style="color:#81a1c1;font-weight:bold">WORKDIR</span><span style="color:#a3be8c"> /stock</span><span style="color:#bf616a">
 </span></span></span><span style="display:flex;"><span><span style="color:#bf616a">
@@ -526,8 +524,6 @@ go get github.com/pmorelli92/open-telemetry-go/utils
 </span></span></span><span style="display:flex;"><span><span style="color:#bf616a"></span><span style="color:#81a1c1;font-weight:bold">COPY</span> --from<span style="color:#81a1c1">=</span>compiler /bin/goapp /stock<span style="color:#bf616a">
 </span></span></span><span style="display:flex;"><span><span style="color:#bf616a"></span><span style="color:#81a1c1;font-weight:bold">ENTRYPOINT</span> <span style="color:#eceff4">[</span><span style="color:#a3be8c">&#34;/stock&#34;</span><span style="color:#eceff4">]</span><span style="color:#bf616a">
 </span></span></span></code></pre></div><p>Execute a <code>go mod tidy</code> and you can commit and push.</p>
-<p><a href="https://github.com/pmorelli92/open-telemetry-go/commit/eb6fce94a8111b5d9aef18f59fb59081e2e06115"  target="_blank" rel="noreferrer noopener" >👉 Commit reference 👈</a>
-</p>
 <h3 id="updating-the-docker-compose">Updating the docker-compose</h3>
 <p>Last modification on this file, add the <code>stock-service</code>:</p>
 <pre tabindex="0"><code class="language-docker-compose" data-lang="docker-compose">stock:
@@ -535,8 +531,7 @@ build:
 	context: stock
 restart: on-failure
 environment:
-	- JAEGER_ADDRESS=jaeger
-	- JAEGER_PORT=6831
+    - JAEGER_ENDPOINT=jaeger:4318
 	- RABBITMQ_USER=guest
 	- RABBITMQ_PASS=guest
 	- RABBITMQ_HOST=rabbitmq
@@ -544,9 +539,7 @@ environment:
 depends_on:
 	- jaeger
 	- rabbitmq
-</code></pre><p><a href="https://github.com/pmorelli92/open-telemetry-go/commit/371e8f8145f9c9124c097d17da56c2a44128484e"  target="_blank" rel="noreferrer noopener" >👉 Commit reference 👈</a>
-</p>
-<h3 id="trying-things-out-again">Trying things out, again</h3>
+</code></pre><h3 id="trying-things-out-again">Trying things out, again</h3>
 <p>From the root of the repository, run: <code>docker-compose up --build</code>. Invoke the gateway again with cURL:</p>
 <pre tabindex="0"><code>curl -v -X POST http://localhost:8081/api/checkout
 
@@ -608,7 +601,7 @@ depends_on:
         <line x1="16" y1="17" x2="8" y2="17"></line>
         <polyline points="10 9 9 9 8 9"></polyline>
       </svg>
-      1999 Words
+      2032 Words
     </p>
 
     <p>
@@ -631,38 +624,38 @@ depends_on:
   </div>
 
   
-  <div class="pagination">
-    <div class="pagination__title">
-      <span class="pagination__title-h">Read other posts</span>
-      <hr />
+    <div class="pagination">
+        
+        <div class="pagination__title">
+            <span class="pagination__title-h">Read other posts</span>
+            <hr />
+        </div>
+        
+
+        <div class="pagination__buttons">
+            
+            <span class="button previous">
+                <a href="https://devandchill.com/posts/2022/01/set-up-the-same-terminal-regardless-your-os-and-more/">
+                    <span class="button__icon">←</span>
+                    <span class="button__text">Set up the same terminal regardless your OS - and more</span>
+                </a>
+            </span>
+            
+
+            
+            <span class="button next">
+                <a href="https://devandchill.com/posts/2021/12/go-step-by-step-guide-for-implementing-tracing-on-a-microservices-architecture-1/2/">
+                    <span class="button__text">Go - Step by step guide for implementing tracing on a microservices architecture (1/2)</span>
+                    <span class="button__icon">→</span>
+                </a>
+            </span>
+            
+        </div>
     </div>
 
-    <div class="pagination__buttons">
-      
-      <span class="button previous">
-        <a href="https://devandchill.com/posts/2022/01/set-up-the-same-terminal-regardless-your-os-and-more/">
-          <span class="button__icon">←</span>
-          <span class="button__text">Set up the same terminal regardless your OS - and more</span>
-        </a>
-      </span>
-      
-
-      
-      <span class="button next">
-        <a href="https://devandchill.com/posts/2021/12/go-step-by-step-guide-for-implementing-tracing-on-a-microservices-architecture-1/2/">
-          <span class="button__text">Go - Step by step guide for implementing tracing on a microservices architecture (1/2)</span>
-          <span class="button__icon">→</span>
-        </a>
-      </span>
-      
-    </div>
-  </div>
-  
 
   
-  
 
-  
   
 
 </main>
@@ -681,7 +674,7 @@ depends_on:
         
 
 
-<script type="text/javascript" src="/bundle.min.69fb501ac7bace7c0ca982d98573883fe084cb258084917289a51bc0bc04868a1b91b95a34c641d2854f64b4b0245430430f86fa70e19f7425062100c9b69215.js" integrity="sha512-aftQGse6znwMqYLZhXOIP&#43;CEyyWAhJFyiaUbwLwEhoobkblaNMZB0oVPZLSwJFQwQw&#43;G&#43;nDhn3QlBiEAybaSFQ=="></script>
+<script type="text/javascript" src="/bundle.min.aeeac2e3fc44c0f169410d068267bfbb1e20bd2201904f0598d7edc9bc0fea2b24912dbd3ff8f23aed618aab8a9e0b2d091cba7d09142aa77050ff84b88ab4f5.js" integrity="sha512-rurC4/xEwPFpQQ0Ggme/ux4gvSIBkE8FmNftybwP6iskkS29P/jyOu1hiquKngstCRy6fQkUKqdwUP&#43;EuIq09Q=="></script>
 
 
 

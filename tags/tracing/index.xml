@@ -5,7 +5,7 @@
     <link>https://devandchill.com/tags/tracing/</link>
     <description>Recent content in tracing on Dev &amp; Chill</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
+    <language>en</language>
     <copyright>Pablo Morelli</copyright>
     <lastBuildDate>Fri, 31 Dec 2021 16:00:00 +0200</lastBuildDate><atom:link href="https://devandchill.com/tags/tracing/index.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -14,8 +14,8 @@
       <pubDate>Fri, 31 Dec 2021 16:00:00 +0200</pubDate>
       
       <guid>https://devandchill.com/posts/2021/12/go-step-by-step-guide-for-implementing-tracing-on-a-microservices-architecture-2/2/</guid>
-      <description>This article is the second of a series of two. If you had not read the first one, you can do it here. In this post we are going to finish the implementation of the checkout-service and the stock-service and wrap up the proof of concept.
-Revisiting the flow In the previous article we finished with the gateway, and while doing so we defined the proto files required for both gateway and checkout-service.</description>
+      <description>Update 2023: The repository with the source code is still having some traction on Github some I decided to update the dependencies as some of them were deprecated and the tracer exporter now uses a different port.
+If you just want to jump into the repository with all the code, 👉 check it out here 👈 This article is the second of a series of two. If you had not read the first one, you can do it here.</description>
     </item>
     
     <item>
@@ -24,8 +24,8 @@ Revisiting the flow In the previous article we finished with the gateway, and wh
       <pubDate>Fri, 03 Dec 2021 13:00:00 +0200</pubDate>
       
       <guid>https://devandchill.com/posts/2021/12/go-step-by-step-guide-for-implementing-tracing-on-a-microservices-architecture-1/2/</guid>
-      <description>This article is the first of a series of two. In this first one we are going to talk about what is tracing is used for, the scope of this proof of concept and implement the first service.
-What is the problem? Nowadays everyone wants to do microservices, it is a buzzword on every tech start up and while it brings a lot of benefits into the table it also brings some drawbacks that not everyone is aware at first.</description>
+      <description>Update 2023: The repository with the source code is still having some traction on Github some I decided to update the dependencies as some of them were deprecated and the tracer exporter now uses a different port.
+This article is the first of a series of two. In this first one we are going to talk about what is tracing is used for, the scope of this proof of concept and implement the first service.</description>
     </item>
     
   </channel>
