@@ -6,8 +6,25 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
         <copyright>Pablo Morelli</copyright>
-        <lastBuildDate>Sun, 29 Jan 2023 20:30:00 +0100</lastBuildDate>
+        <lastBuildDate>Thu, 26 Oct 2023 14:30:00 +0100</lastBuildDate>
         <atom:link href="https://devandchill.com/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>VBlog: Unlock the power of AWS Cognito: IDP and Triggers.</title>
+            <link>https://devandchill.com/posts/2023/10/vblog-unlock-the-power-of-aws-cognito-idp-and-triggers./</link>
+            <pubDate>Thu, 26 Oct 2023 14:30:00 +0100</pubDate>
+            
+            <guid>https://devandchill.com/posts/2023/10/vblog-unlock-the-power-of-aws-cognito-idp-and-triggers./</guid>
+            <description>👉 The codebase used in this post can be found in my Github. 👈</description>
+            <content type="html"><![CDATA[<p>👉 <a href="https://github.com/pmorelli92/poc-aws-cognito-idp"  target="_blank" rel="noreferrer noopener" >The codebase used in this post can be found in my Github.</a>
+ 👈</p>
+
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="https://www.youtube.com/embed/s5VTyRYXMJI" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+</div>
+
+]]></content>
+        </item>
         
         <item>
             <title>How I approach microservice testing in 2023</title>

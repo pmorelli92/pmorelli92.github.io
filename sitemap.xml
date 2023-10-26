@@ -2,6 +2,45 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://devandchill.com/tags/authentication/</loc>
+    <lastmod>2023-10-26T14:30:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/authorization/</loc>
+    <lastmod>2023-10-26T14:30:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/callback/</loc>
+    <lastmod>2023-10-26T14:30:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/cognito/</loc>
+    <lastmod>2023-10-26T14:30:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/</loc>
+    <lastmod>2023-10-26T14:30:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/go/</loc>
+    <lastmod>2023-10-26T14:30:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/idp/</loc>
+    <lastmod>2023-10-26T14:30:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/lambda/</loc>
+    <lastmod>2023-10-26T14:30:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/merge/</loc>
+    <lastmod>2023-10-26T14:30:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/posts/</loc>
+    <lastmod>2023-10-26T14:30:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/</loc>
+    <lastmod>2023-10-26T14:30:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/trigger/</loc>
+    <lastmod>2023-10-26T14:30:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/posts/2023/10/vblog-unlock-the-power-of-aws-cognito-idp-and-triggers./</loc>
+    <lastmod>2023-10-26T14:30:00+01:00</lastmod>
+  </url><url>
     <loc>https://devandchill.com/tags/acceptance/</loc>
     <lastmod>2023-01-29T20:30:00+01:00</lastmod>
   </url><url>
@@ -11,13 +50,7 @@
     <loc>https://devandchill.com/tags/behavior/</loc>
     <lastmod>2023-01-29T20:30:00+01:00</lastmod>
   </url><url>
-    <loc>https://devandchill.com/</loc>
-    <lastmod>2023-01-29T20:30:00+01:00</lastmod>
-  </url><url>
     <loc>https://devandchill.com/tags/docker/</loc>
-    <lastmod>2023-01-29T20:30:00+01:00</lastmod>
-  </url><url>
-    <loc>https://devandchill.com/tags/go/</loc>
     <lastmod>2023-01-29T20:30:00+01:00</lastmod>
   </url><url>
     <loc>https://devandchill.com/posts/2023/01/how-i-approach-microservice-testing-in-2023/</loc>
@@ -29,13 +62,7 @@
     <loc>https://devandchill.com/tags/microservice/</loc>
     <lastmod>2023-01-29T20:30:00+01:00</lastmod>
   </url><url>
-    <loc>https://devandchill.com/posts/</loc>
-    <lastmod>2023-01-29T20:30:00+01:00</lastmod>
-  </url><url>
     <loc>https://devandchill.com/tags/service/</loc>
-    <lastmod>2023-01-29T20:30:00+01:00</lastmod>
-  </url><url>
-    <loc>https://devandchill.com/tags/</loc>
     <lastmod>2023-01-29T20:30:00+01:00</lastmod>
   </url><url>
     <loc>https://devandchill.com/tags/test/</loc>

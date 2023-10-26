@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>cognito on Dev &amp; Chill</title>
+    <link>https://devandchill.com/tags/cognito/</link>
+    <description>Recent content in cognito on Dev &amp; Chill</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <copyright>Pablo Morelli</copyright>
+    <lastBuildDate>Thu, 26 Oct 2023 14:30:00 +0100</lastBuildDate><atom:link href="https://devandchill.com/tags/cognito/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>VBlog: Unlock the power of AWS Cognito: IDP and Triggers.</title>
+      <link>https://devandchill.com/posts/2023/10/vblog-unlock-the-power-of-aws-cognito-idp-and-triggers./</link>
+      <pubDate>Thu, 26 Oct 2023 14:30:00 +0100</pubDate>
+      
+      <guid>https://devandchill.com/posts/2023/10/vblog-unlock-the-power-of-aws-cognito-idp-and-triggers./</guid>
+      <description>👉 The codebase used in this post can be found in my Github. 👈</description>
+    </item>
+    
+  </channel>
+</rss>
