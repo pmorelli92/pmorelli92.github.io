@@ -1,23 +1,20 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>libpq on Dev &amp; Chill</title>
+    <title>Libpq on Dev &amp; Chill</title>
     <link>https://devandchill.com/tags/libpq/</link>
-    <description>Recent content in libpq on Dev &amp; Chill</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <description>Recent content in Libpq on Dev &amp; Chill</description>
+    <generator>Hugo</generator>
     <language>en</language>
     <copyright>Pablo Morelli</copyright>
-    <lastBuildDate>Wed, 27 May 2020 15:40:29 +0100</lastBuildDate><atom:link href="https://devandchill.com/tags/libpq/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 27 May 2020 15:40:29 +0100</lastBuildDate>
+    <atom:link href="https://devandchill.com/tags/libpq/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Go - lib/pq or pgx - which performs better?</title>
       <link>https://devandchill.com/posts/2020/05/go-lib/pq-or-pgx-which-performs-better/</link>
       <pubDate>Wed, 27 May 2020 15:40:29 +0100</pubDate>
-      
       <guid>https://devandchill.com/posts/2020/05/go-lib/pq-or-pgx-which-performs-better/</guid>
-      <description>Some days ago a coworker of mine linked me to the source code of Google&amp;rsquo;s exposure notifications API and of course is a good chance to see how Google is doing Go related codebases.
-Continuing with the topic of Postgres and benchmarking, I decided to check out how Postgres configuration was done and this line got my attention:
-import ( ... &amp;#34;github.com/jackc/pgx/v4/pgxpool&amp;#34; ) What is pgx, and why should we care?</description>
+      <description>&lt;p&gt;Some days ago a coworker of mine linked me to the source code of &lt;a href=&#34;https://github.com/google/exposure-notifications-server&#34;  target=&#34;_blank&#34; rel=&#34;noreferrer noopener&#34; &gt;Google&amp;rsquo;s exposure notifications API&lt;/a&gt;&#xA; and of course is a good chance to see how Google is doing Go related codebases.&lt;/p&gt;&#xA;&lt;p&gt;Continuing with the topic of Postgres and benchmarking, I decided to check out how Postgres configuration was done and this &lt;a href=&#34;https://github.com/google/exposure-notifications-server/blob/master/internal/database/connection.go#L27&#34;  target=&#34;_blank&#34; rel=&#34;noreferrer noopener&#34; &gt;line&lt;/a&gt;&#xA; got my attention:&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#81a1c1;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#eceff4&#34;&gt;(&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#x9;&lt;span style=&#34;color:#81a1c1&#34;&gt;...&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#x9;&lt;span style=&#34;color:#a3be8c&#34;&gt;&amp;#34;github.com/jackc/pgx/v4/pgxpool&amp;#34;&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#eceff4&#34;&gt;)&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;what-is-pgx-and-why-should-we-care&#34;&gt;What is pgx, and why should we care?&lt;/h2&gt;&#xA;&lt;p&gt;&lt;code&gt;Pgx&lt;/code&gt; is a library that implements postgres connection without relying on the &lt;code&gt;database/sql&lt;/code&gt; standard package. The source code can be found &lt;a href=&#34;https://github.com/jackc/pgx&#34;  target=&#34;_blank&#34; rel=&#34;noreferrer noopener&#34; &gt;here&lt;/a&gt;&#xA;; and as the readme states:&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

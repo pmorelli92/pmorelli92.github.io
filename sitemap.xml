@@ -2,6 +2,45 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://devandchill.com/tags/alb/</loc>
+    <lastmod>2025-03-30T12:10:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/auto/</loc>
+    <lastmod>2025-03-30T12:10:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/aws/</loc>
+    <lastmod>2025-03-30T12:10:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/bottlerocket/</loc>
+    <lastmod>2025-03-30T12:10:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/</loc>
+    <lastmod>2025-03-30T12:10:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/eks/</loc>
+    <lastmod>2025-03-30T12:10:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/posts/2025/03/eks-auto-mode-i-was-using-it-before-it-even-launched/</loc>
+    <lastmod>2025-03-30T12:10:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/karpenter/</loc>
+    <lastmod>2025-03-30T12:10:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/mode/</loc>
+    <lastmod>2025-03-30T12:10:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/posts/</loc>
+    <lastmod>2025-03-30T12:10:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/</loc>
+    <lastmod>2025-03-30T12:10:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/tags/vm/</loc>
+    <lastmod>2025-03-30T12:10:00+01:00</lastmod>
+  </url><url>
+    <loc>https://devandchill.com/resume/</loc>
+    <lastmod>2025-03-29T13:00:00+02:00</lastmod>
+  </url><url>
     <loc>https://devandchill.com/tags/authentication/</loc>
     <lastmod>2023-10-26T14:30:00+01:00</lastmod>
   </url><url>
@@ -14,9 +53,6 @@
     <loc>https://devandchill.com/tags/cognito/</loc>
     <lastmod>2023-10-26T14:30:00+01:00</lastmod>
   </url><url>
-    <loc>https://devandchill.com/</loc>
-    <lastmod>2023-10-26T14:30:00+01:00</lastmod>
-  </url><url>
     <loc>https://devandchill.com/tags/go/</loc>
     <lastmod>2023-10-26T14:30:00+01:00</lastmod>
   </url><url>
@@ -27,12 +63,6 @@
     <lastmod>2023-10-26T14:30:00+01:00</lastmod>
   </url><url>
     <loc>https://devandchill.com/tags/merge/</loc>
-    <lastmod>2023-10-26T14:30:00+01:00</lastmod>
-  </url><url>
-    <loc>https://devandchill.com/posts/</loc>
-    <lastmod>2023-10-26T14:30:00+01:00</lastmod>
-  </url><url>
-    <loc>https://devandchill.com/tags/</loc>
     <lastmod>2023-10-26T14:30:00+01:00</lastmod>
   </url><url>
     <loc>https://devandchill.com/tags/trigger/</loc>
@@ -73,12 +103,6 @@
   </url><url>
     <loc>https://devandchill.com/tags/vscode/</loc>
     <lastmod>2023-01-29T20:30:00+01:00</lastmod>
-  </url><url>
-    <loc>https://devandchill.com/resume/</loc>
-    <lastmod>2023-01-27T13:00:00+02:00</lastmod>
-  </url><url>
-    <loc>https://devandchill.com/blog/</loc>
-    <lastmod>2023-01-27T13:00:00+02:00</lastmod>
   </url><url>
     <loc>https://devandchill.com/tags/.net/</loc>
     <lastmod>2022-03-15T18:30:00+01:00</lastmod>

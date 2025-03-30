@@ -1,22 +1,20 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>optimization on Dev &amp; Chill</title>
+    <title>Optimization on Dev &amp; Chill</title>
     <link>https://devandchill.com/tags/optimization/</link>
-    <description>Recent content in optimization on Dev &amp; Chill</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <description>Recent content in Optimization on Dev &amp; Chill</description>
+    <generator>Hugo</generator>
     <language>en</language>
     <copyright>Pablo Morelli</copyright>
-    <lastBuildDate>Sun, 21 Mar 2021 12:31:00 +0100</lastBuildDate><atom:link href="https://devandchill.com/tags/optimization/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 21 Mar 2021 12:31:00 +0100</lastBuildDate>
+    <atom:link href="https://devandchill.com/tags/optimization/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Reducing loading times by a tenfold with Postgres aggregations</title>
       <link>https://devandchill.com/posts/2021/03/reducing-loading-times-by-a-tenfold-with-postgres-aggregations/</link>
       <pubDate>Sun, 21 Mar 2021 12:31:00 +0100</pubDate>
-      
       <guid>https://devandchill.com/posts/2021/03/reducing-loading-times-by-a-tenfold-with-postgres-aggregations/</guid>
-      <description>Time to market is a very important part of the life of the developers. In the agile world, a team must make a balance between speed and code quality. This does not necessarily mean that the code will not be good nor tested, but sometimes it limits exploration. A limited exploration means that a developer will do things the way he/she is used to.
-At least from my experience, SQL is taught in university/courses in an outdated way, where a lot of new features are never explored and people are not aware of this.</description>
+      <description>&lt;p&gt;Time to market is a very important part of the life of the developers. In the agile world, a team must make a balance between speed and code quality. This does not necessarily mean that the code will not be good nor tested, but sometimes it limits exploration. A limited exploration means that a developer will do things the way he/she is used to.&lt;/p&gt;&#xA;&lt;p&gt;At least from my experience, SQL is taught in university/courses in an outdated way, where a lot of new features are never explored and people are not aware of this. In 2013, Postgres released version 9.3 which introduced json aggregations, however not a lot of people are aware of this functionality.&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

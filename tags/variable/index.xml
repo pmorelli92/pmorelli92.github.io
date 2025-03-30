@@ -1,22 +1,20 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>variable on Dev &amp; Chill</title>
+    <title>Variable on Dev &amp; Chill</title>
     <link>https://devandchill.com/tags/variable/</link>
-    <description>Recent content in variable on Dev &amp; Chill</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <description>Recent content in Variable on Dev &amp; Chill</description>
+    <generator>Hugo</generator>
     <language>en</language>
     <copyright>Pablo Morelli</copyright>
-    <lastBuildDate>Mon, 31 Aug 2020 20:00:00 +0100</lastBuildDate><atom:link href="https://devandchill.com/tags/variable/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 31 Aug 2020 20:00:00 +0100</lastBuildDate>
+    <atom:link href="https://devandchill.com/tags/variable/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Stop storing secrets on environment variables: Enter GCP Secret Manager</title>
       <link>https://devandchill.com/posts/2020/08/stop-storing-secrets-on-environment-variables-enter-gcp-secret-manager/</link>
       <pubDate>Mon, 31 Aug 2020 20:00:00 +0100</pubDate>
-      
       <guid>https://devandchill.com/posts/2020/08/stop-storing-secrets-on-environment-variables-enter-gcp-secret-manager/</guid>
-      <description>The other day I encountered the following post where Seth Vargo was doing some statements regarding the usage of environment variables:
-[&amp;hellip;] While this approach is simple and straightforward, it comes with considerable security drawbacks - the secrets exist in plaintext in the environment. Any other process, library, or dependency running inside the process has access to the environment which has already been exploited multiple times. Unfortunately, it is trivial for a malicious library author to inject this type of vulnerability into an otherwise helpful utility package.</description>
+      <description>&lt;p&gt;The other day I encountered the &lt;a href=&#34;https://www.sethvargo.com/secrets-in-serverless/&#34;  target=&#34;_blank&#34; rel=&#34;noreferrer noopener&#34; &gt;following post&lt;/a&gt;&#xA; where Seth Vargo was doing some statements regarding the usage of environment variables:&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;[&amp;hellip;] While this approach is simple and straightforward, it comes with considerable security drawbacks - the secrets exist in plaintext in the environment. Any other process, library, or dependency running inside the process has access to the environment which has already been exploited multiple times.&#xA;Unfortunately, it is trivial for a malicious library author to inject this type of vulnerability into an otherwise helpful utility package.&#xA;To be absolutely, unequivocally clear, you should not store secret or sensitive information in environment variables in plaintext.&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

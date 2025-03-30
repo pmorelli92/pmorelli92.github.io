@@ -1,22 +1,20 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>ci on Dev &amp; Chill</title>
+    <title>Ci on Dev &amp; Chill</title>
     <link>https://devandchill.com/tags/ci/</link>
-    <description>Recent content in ci on Dev &amp; Chill</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <description>Recent content in Ci on Dev &amp; Chill</description>
+    <generator>Hugo</generator>
     <language>en</language>
     <copyright>Pablo Morelli</copyright>
-    <lastBuildDate>Sat, 19 Oct 2019 22:22:29 +0200</lastBuildDate><atom:link href="https://devandchill.com/tags/ci/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 19 Oct 2019 22:22:29 +0200</lastBuildDate>
+    <atom:link href="https://devandchill.com/tags/ci/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Azure Pipelines: Build a dockerized app and deploy to kubernetes</title>
       <link>https://devandchill.com/posts/2019/10/azure-pipelines-build-a-dockerized-app-and-deploy-to-kubernetes/</link>
       <pubDate>Sat, 19 Oct 2019 22:22:29 +0200</pubDate>
-      
       <guid>https://devandchill.com/posts/2019/10/azure-pipelines-build-a-dockerized-app-and-deploy-to-kubernetes/</guid>
-      <description>2021 update: Since KubeSail was not working as expected, the solution is now hosted in Okteto which offers a free namespace for developers to try out a hosted Kubernetes service.
-Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&amp;rsquo;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files).</description>
+      <description>&lt;p&gt;&lt;em&gt;2021 update: Since KubeSail was not working as expected, the solution is now hosted in Okteto which offers a free namespace for developers to try out a hosted Kubernetes service.&lt;/em&gt;&lt;/p&gt;&#xA;&lt;p&gt;Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&amp;rsquo;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files). Now I am currently working with Travis for CI and Flux for CD but I think it is always good to keep an eye on how the competitors are doing and what they have to offer.&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

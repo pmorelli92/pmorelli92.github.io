@@ -3,27 +3,31 @@
     <head>
         <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="author" content="Pablo Morelli">
-<meta name="description" content="Devandchill is a coding blog where I share my ideas and insights on various programming topics." />
-<meta name="keywords"
-    content="blog, development, programming, tech, go, opentracing, opentelemetry, tracing, telemetry, jaeger" />
+<meta name="author" content="">
+<meta name="description" content="Update 2023: The repository with the source code is still having some traction on Github some I decided to update the dependencies as some of them were deprecated and the tracer exporter now uses a different port.
+This article is the first of a series of two. In this first one we are going to talk about what is tracing is used for, the scope of this proof of concept and implement the first service.
+" />
+<meta name="keywords" content="blog, development, programming, tech, go, opentracing, opentelemetry, tracing, telemetry, jaeger" />
 <meta name="robots" content="noodp" />
 <meta name="theme-color" content="" />
 <link rel="canonical" href="https://devandchill.com/posts/2021/12/go-step-by-step-guide-for-implementing-tracing-on-a-microservices-architecture-1/2/" />
 
 
-<title>
-    
-    Go - Step by step guide for implementing tracing on a microservices architecture (1/2) :: Dev &amp; Chill  — A blog about coding
-    
-</title>
+    <title>
+        
+            Go - Step by step guide for implementing tracing on a microservices architecture (1/2) :: Dev &amp; Chill  — A blog about coding
+        
+    </title>
 
 
 
 
 
-<link rel="stylesheet" href="/main.3a0b97c6880e06dd6e902af4b4a6ae5146594dbe1d4035fd2190f9c6f7eb949d.css" integrity="sha256-OguXxogOBt1ukCr0tKauUUZZTb4dQDX9IZD5xvfrlJ0=">
+  <link rel="stylesheet" href="/main.min.281d505ee8507eb85ef5449b3db01c39b07094fe7fedb4f92a730b1d5e143020.css" integrity="sha256-KB1QXuhQfrhe9USbPbAcObBwlP5/7bT5KnMLHV4UMCA=" crossorigin="anonymous">
+
+
 
 
 
@@ -36,26 +40,21 @@
     <meta name="msapplication-TileColor" content="">
 
 
-<meta itemprop="name" content="Go - Step by step guide for implementing tracing on a microservices architecture (1/2)">
-<meta itemprop="description" content="Update 2023: The repository with the source code is still having some traction on Github some I decided to update the dependencies as some of them were deprecated and the tracer exporter now uses a different port.
-This article is the first of a series of two. In this first one we are going to talk about what is tracing is used for, the scope of this proof of concept and implement the first service."><meta itemprop="datePublished" content="2021-12-03T13:00:00+02:00" />
-<meta itemprop="dateModified" content="2021-12-03T13:00:00+02:00" />
-<meta itemprop="wordCount" content="2428"><meta itemprop="image" content="https://devandchill.com/og-image.png"/>
-<meta itemprop="keywords" content="go,opentracing,opentelemetry,tracing,telemetry,jaeger," />
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://devandchill.com/og-image.png"/>
 
-<meta name="twitter:title" content="Go - Step by step guide for implementing tracing on a microservices architecture (1/2)"/>
-<meta name="twitter:description" content="Update 2023: The repository with the source code is still having some traction on Github some I decided to update the dependencies as some of them were deprecated and the tracer exporter now uses a different port.
-This article is the first of a series of two. In this first one we are going to talk about what is tracing is used for, the scope of this proof of concept and implement the first service."/>
+  <meta itemprop="name" content="Go - Step by step guide for implementing tracing on a microservices architecture (1/2)">
+  <meta itemprop="description" content="Update 2023: The repository with the source code is still having some traction on Github some I decided to update the dependencies as some of them were deprecated and the tracer exporter now uses a different port.
+This article is the first of a series of two. In this first one we are going to talk about what is tracing is used for, the scope of this proof of concept and implement the first service.">
+  <meta itemprop="datePublished" content="2021-12-03T13:00:00+02:00">
+  <meta itemprop="dateModified" content="2021-12-03T13:00:00+02:00">
+  <meta itemprop="wordCount" content="2428">
+  <meta itemprop="image" content="https://devandchill.com/og-image.png">
+  <meta itemprop="keywords" content="Go,Opentracing,Opentelemetry,Tracing,Telemetry,Jaeger">
 
-
-
-
-
-
-
-<meta property="article:published_time" content="2021-12-03 13:00:00 &#43;0200 &#43;0200" />
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://devandchill.com/og-image.png">
+  <meta name="twitter:title" content="Go - Step by step guide for implementing tracing on a microservices architecture (1/2)">
+  <meta name="twitter:description" content="Update 2023: The repository with the source code is still having some traction on Github some I decided to update the dependencies as some of them were deprecated and the tracer exporter now uses a different port.
+This article is the first of a series of two. In this first one we are going to talk about what is tracing is used for, the scope of this proof of concept and implement the first service.">
 
 
 
@@ -63,16 +62,29 @@ This article is the first of a series of two. In this first one we are going to 
 
 
 
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138171880-1"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'UA-138171880-1');
-</script>
+    <meta property="article:published_time" content="2021-12-03 13:00:00 &#43;0200 &#43;0200" />
 
 
+
+
+
+
+
+    
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-7X0TBDP4QB"></script>
+      <script>
+        var doNotTrack = false;
+        if ( false ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-7X0TBDP4QB');
+        }
+      </script>
 
 
 
@@ -95,19 +107,17 @@ This article is the first of a series of two. In this first one we are going to 
 
 
         <span class="header__right">
-            
-            <nav class="menu">
-    <ul class="menu__inner"><li><a href="/blog">The blog</a></li><li><a href="/resume">Resume</a></li><li><a href="/posts">Posts</a></li>
+                <nav class="menu">
+    <ul class="menu__inner"><li><a href="/posts">Posts</a></li><li><a href="/resume">Resume</a></li>
     </ul>
 </nav>
 
-            <span class="menu-trigger">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path d="M0 0h24v24H0z" fill="none" />
-                    <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
-                </svg>
-            </span>
-            
+                <span class="menu-trigger">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                    </svg>
+                </span>
         </span>
     </span>
 </header>
@@ -115,35 +125,33 @@ This article is the first of a series of two. In this first one we are going to 
 
             <div class="content">
                 
-<main class="post">
+  <main class="post">
 
-  <div class="post-info">
-    <p>
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-        class="feather feather-clock">
-        <circle cx="12" cy="12" r="10"></circle>
-        <polyline points="12 6 12 12 16 14"></polyline>
-      </svg>
-      12 minutes
+    <div class="post-info">
+      <p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        12 minutes
+
+        
+      </p>
+    </div>
+
+    <article>
+      <h1 class="post-title">
+        <a href="https://devandchill.com/posts/2021/12/go-step-by-step-guide-for-implementing-tracing-on-a-microservices-architecture-1/2/">Go - Step by step guide for implementing tracing on a microservices architecture (1/2)</a>
+      </h1>
 
       
-    </p>
-  </div>
 
-  <article>
-    <h1 class="post-title">
-      <a href="https://devandchill.com/posts/2021/12/go-step-by-step-guide-for-implementing-tracing-on-a-microservices-architecture-1/2/">Go - Step by step guide for implementing tracing on a microservices architecture (1/2)</a>
-    </h1>
+      
 
-    
+      
 
-    
-
-    
-
-    <div class="post-content">
-      <p>Update 2023: The repository with the source code is still having some traction on Github some I decided to update the dependencies as some of them were deprecated and the tracer exporter now uses a different port.</p>
+      <div class="post-content">
+        <p>Update 2023: The repository with the source code is still having some traction on Github some I decided to update the dependencies as some of them were deprecated and the tracer exporter now uses a different port.</p>
 <hr>
 <p>This article is the first of a series of two. In this first one we are going to talk about what is tracing is used for, the scope of this proof of concept and implement the first service.</p>
 <h4 id="it-works-on-my-machine">It works on my machine</h4>
@@ -167,7 +175,7 @@ This article is the first of a series of two. In this first one we are going to 
 <em>The gateway communicates via gRPC with the <code>checkout-service</code>. This service will do some processing and when it is done it will publish an AMQP message which name is <code>checkout.processed</code>.</em>
 <em>The mentioned message is consumed with the <code>stock-service</code> that will adjust the stock quantities.</em></p>
 <figure><img src="/posts/images/checkout_user_journey.svg"
-         alt="checkout-user-journey"/>
+    alt="checkout-user-journey">
 </figure>
 
 <p>In order to keep things simple, the gateway validation, the checkout processing and the stock adjustment of quantities is going to be ignored. The only important part here is to generate the trace and to propagate via different transports.</p>
@@ -176,8 +184,7 @@ This article is the first of a series of two. In this first one we are going to 
 <p>Three microservices and two additional libraries will be used for this example, and to keep things simple they will be under the same repository.</p>
 <blockquote>
 <p>If using VS Code, make sure to enable multiple workspaces so <code>gopls</code> will not throw an error about having multiple module files (one for each folder). <a href="https://code.visualstudio.com/docs/editor/multi-root-workspaces"  target="_blank" rel="noreferrer noopener" >More info here.</a>
-</p>
-</blockquote>
+</p></blockquote>
 <h3 id="introducing-jaeger">Introducing Jaeger</h3>
 <p>Jaeger is an open tracing tool that let us monitor and troubleshoot distributed transactions. It is also a project from CNCF. For an easy start up, it provides a docker image that contains the UI, collector, query, and agent, with an in memory storage component.</p>
 <p>Create a repository and in the root add the <code>docker-compose.yaml</code>. In this file we are going to add all the services, but for now let&rsquo;s add Jaeger:</p>
@@ -288,9 +295,9 @@ go get github.com/pmorelli92/open-telemetry-go/utils
 </span></span><span style="display:flex;"><span>		log<span style="color:#eceff4">.</span><span style="color:#88c0d0">Fatalf</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;failed to create tracer: %v&#34;</span><span style="color:#eceff4">,</span> err<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#eceff4">}</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#616e87;font-style:italic">// Add GRPC
-</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span>	<span style="color:#616e87;font-style:italic">// Add HTTP
-</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span><span style="color:#eceff4">}</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#616e87;font-style:italic">// Add GRPC</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#616e87;font-style:italic">// Add HTTP</span>
+</span></span><span style="display:flex;"><span><span style="color:#eceff4">}</span>
 </span></span></code></pre></div><p>So far, the code is just parsing the environment variables and invoking the <code>SetGlobalTracer</code> supplying the service name and the agent endpoint. Then, replace the <code>// Add GRPC</code> comment with the following content:</p>
 <div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>conn<span style="color:#eceff4">,</span> err <span style="color:#81a1c1">:=</span> grpc<span style="color:#eceff4">.</span><span style="color:#88c0d0">Dial</span><span style="color:#eceff4">(</span>
 </span></span><span style="display:flex;"><span>	checkoutAddress<span style="color:#eceff4">,</span>
@@ -313,40 +320,40 @@ go get github.com/pmorelli92/open-telemetry-go/utils
 </ul>
 <pre tabindex="0"><code>pb &#34;github.com/pmorelli92/open-telemetry-go/proto&#34;
 </code></pre><p>Lastly, replace the <code>Add HTTP</code> comment with the following content:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#616e87;font-style:italic">// HTTP config
-</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span>router <span style="color:#81a1c1">:=</span> http<span style="color:#eceff4">.</span><span style="color:#88c0d0">NewServeMux</span><span style="color:#eceff4">()</span>
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#616e87;font-style:italic">// HTTP config</span>
+</span></span><span style="display:flex;"><span>router <span style="color:#81a1c1">:=</span> http<span style="color:#eceff4">.</span><span style="color:#88c0d0">NewServeMux</span><span style="color:#eceff4">()</span>
 </span></span><span style="display:flex;"><span>router<span style="color:#eceff4">.</span><span style="color:#88c0d0">HandleFunc</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;/api/checkout&#34;</span><span style="color:#eceff4">,</span> <span style="color:#88c0d0">checkoutHandler</span><span style="color:#eceff4">(</span>c<span style="color:#eceff4">))</span>
 </span></span><span style="display:flex;"><span>fmt<span style="color:#eceff4">.</span><span style="color:#88c0d0">Println</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;HTTP server listening at &#34;</span><span style="color:#eceff4">,</span> httpAddress<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>log<span style="color:#eceff4">.</span><span style="color:#88c0d0">Fatal</span><span style="color:#eceff4">(</span>http<span style="color:#eceff4">.</span><span style="color:#88c0d0">ListenAndServe</span><span style="color:#eceff4">(</span>httpAddress<span style="color:#eceff4">,</span> router<span style="color:#eceff4">))</span>
 </span></span></code></pre></div><p>This piece of code is creating a router and starting the HTTP server. It is also defining that for the route <code>/api/checkout</code> it is going to use the <code>checkoutHandler</code> that will take the checkout gRPC client as parameter. The checkout handler looks as follow:</p>
 <div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">func</span> <span style="color:#88c0d0">checkoutHandler</span><span style="color:#eceff4">(</span>c pb<span style="color:#eceff4">.</span>CheckoutClient<span style="color:#eceff4">)</span> <span style="color:#81a1c1;font-weight:bold">func</span><span style="color:#eceff4">(</span>http<span style="color:#eceff4">.</span>ResponseWriter<span style="color:#eceff4">,</span> <span style="color:#81a1c1">*</span>http<span style="color:#eceff4">.</span>Request<span style="color:#eceff4">)</span> <span style="color:#eceff4">{</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">return</span> <span style="color:#81a1c1;font-weight:bold">func</span><span style="color:#eceff4">(</span>w http<span style="color:#eceff4">.</span>ResponseWriter<span style="color:#eceff4">,</span> r <span style="color:#81a1c1">*</span>http<span style="color:#eceff4">.</span>Request<span style="color:#eceff4">)</span> <span style="color:#eceff4">{</span>
-</span></span><span style="display:flex;"><span>		<span style="color:#616e87;font-style:italic">// Allow only POST
-</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span>		<span style="color:#81a1c1;font-weight:bold">if</span> r<span style="color:#eceff4">.</span>Method <span style="color:#81a1c1">!=</span> http<span style="color:#eceff4">.</span>MethodPost <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#616e87;font-style:italic">// Allow only POST</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#81a1c1;font-weight:bold">if</span> r<span style="color:#eceff4">.</span>Method <span style="color:#81a1c1">!=</span> http<span style="color:#eceff4">.</span>MethodPost <span style="color:#eceff4">{</span>
 </span></span><span style="display:flex;"><span>			w<span style="color:#eceff4">.</span><span style="color:#88c0d0">WriteHeader</span><span style="color:#eceff4">(</span>http<span style="color:#eceff4">.</span>StatusMethodNotAllowed<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>			<span style="color:#81a1c1;font-weight:bold">return</span>
 </span></span><span style="display:flex;"><span>		<span style="color:#eceff4">}</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>		<span style="color:#616e87;font-style:italic">// Create a tracer span
-</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span>		tr <span style="color:#81a1c1">:=</span> otel<span style="color:#eceff4">.</span><span style="color:#88c0d0">Tracer</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;http&#34;</span><span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#616e87;font-style:italic">// Create a tracer span</span>
+</span></span><span style="display:flex;"><span>		tr <span style="color:#81a1c1">:=</span> otel<span style="color:#eceff4">.</span><span style="color:#88c0d0">Tracer</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;http&#34;</span><span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>		ctx<span style="color:#eceff4">,</span> span <span style="color:#81a1c1">:=</span> tr<span style="color:#eceff4">.</span><span style="color:#88c0d0">Start</span><span style="color:#eceff4">(</span>r<span style="color:#eceff4">.</span><span style="color:#88c0d0">Context</span><span style="color:#eceff4">(),</span> fmt<span style="color:#eceff4">.</span><span style="color:#88c0d0">Sprintf</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;%s %s&#34;</span><span style="color:#eceff4">,</span> r<span style="color:#eceff4">.</span>Method<span style="color:#eceff4">,</span> r<span style="color:#eceff4">.</span>RequestURI<span style="color:#eceff4">))</span>
 </span></span><span style="display:flex;"><span>		<span style="color:#81a1c1;font-weight:bold">defer</span> span<span style="color:#eceff4">.</span><span style="color:#88c0d0">End</span><span style="color:#eceff4">()</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>		<span style="color:#616e87;font-style:italic">// Make the GRPC call to checkout-service
-</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span>		_<span style="color:#eceff4">,</span> err <span style="color:#81a1c1">:=</span> c<span style="color:#eceff4">.</span><span style="color:#88c0d0">DoCheckout</span><span style="color:#eceff4">(</span>ctx<span style="color:#eceff4">,</span> <span style="color:#81a1c1">&amp;</span>pb<span style="color:#eceff4">.</span>CheckoutRequest<span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#616e87;font-style:italic">// Make the GRPC call to checkout-service</span>
+</span></span><span style="display:flex;"><span>		_<span style="color:#eceff4">,</span> err <span style="color:#81a1c1">:=</span> c<span style="color:#eceff4">.</span><span style="color:#88c0d0">DoCheckout</span><span style="color:#eceff4">(</span>ctx<span style="color:#eceff4">,</span> <span style="color:#81a1c1">&amp;</span>pb<span style="color:#eceff4">.</span>CheckoutRequest<span style="color:#eceff4">{</span>
 </span></span><span style="display:flex;"><span>			ItemsID<span style="color:#eceff4">:</span> <span style="color:#eceff4">[]</span><span style="color:#81a1c1">int32</span><span style="color:#eceff4">{</span><span style="color:#b48ead">1</span><span style="color:#eceff4">,</span> <span style="color:#b48ead">2</span><span style="color:#eceff4">,</span> <span style="color:#b48ead">3</span><span style="color:#eceff4">,</span> <span style="color:#b48ead">4</span><span style="color:#eceff4">},</span>
 </span></span><span style="display:flex;"><span>		<span style="color:#eceff4">})</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>		<span style="color:#616e87;font-style:italic">// Check for errors
-</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span>		rStatus <span style="color:#81a1c1">:=</span> status<span style="color:#eceff4">.</span><span style="color:#88c0d0">Convert</span><span style="color:#eceff4">(</span>err<span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#616e87;font-style:italic">// Check for errors</span>
+</span></span><span style="display:flex;"><span>		rStatus <span style="color:#81a1c1">:=</span> status<span style="color:#eceff4">.</span><span style="color:#88c0d0">Convert</span><span style="color:#eceff4">(</span>err<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>		<span style="color:#81a1c1;font-weight:bold">if</span> rStatus <span style="color:#81a1c1">!=</span> <span style="color:#81a1c1;font-weight:bold">nil</span> <span style="color:#eceff4">{</span>
 </span></span><span style="display:flex;"><span>			span<span style="color:#eceff4">.</span><span style="color:#88c0d0">SetStatus</span><span style="color:#eceff4">(</span>codes<span style="color:#eceff4">.</span>Error<span style="color:#eceff4">,</span> err<span style="color:#eceff4">.</span><span style="color:#88c0d0">Error</span><span style="color:#eceff4">())</span>
 </span></span><span style="display:flex;"><span>			w<span style="color:#eceff4">.</span><span style="color:#88c0d0">WriteHeader</span><span style="color:#eceff4">(</span>http<span style="color:#eceff4">.</span>StatusInternalServerError<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>			<span style="color:#81a1c1;font-weight:bold">return</span>
 </span></span><span style="display:flex;"><span>		<span style="color:#eceff4">}</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>		<span style="color:#616e87;font-style:italic">// Success
-</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span>		w<span style="color:#eceff4">.</span><span style="color:#88c0d0">WriteHeader</span><span style="color:#eceff4">(</span>http<span style="color:#eceff4">.</span>StatusAccepted<span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#616e87;font-style:italic">// Success</span>
+</span></span><span style="display:flex;"><span>		w<span style="color:#eceff4">.</span><span style="color:#88c0d0">WriteHeader</span><span style="color:#eceff4">(</span>http<span style="color:#eceff4">.</span>StatusAccepted<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#eceff4">}</span>
 </span></span><span style="display:flex;"><span><span style="color:#eceff4">}</span>
 </span></span></code></pre></div><p>The only thing that may look unfamiliar here is the creation of a trace. As mentioned before, the trace is the distributed transaction. It will be created wherever the user journey starts and be propagated until the user journey ends. In order to create a trace one needs a <code>Tracer</code> that will be provided by the global tracing provider that the <code>utils.SetGlobalTracer</code> set for us.</p>
@@ -398,7 +405,7 @@ services:
 </code></pre><p>The response is 500 due to the checkout service not being up yet. But the trace should have been created, and with then two spans: one created with the trace and one with the gRPC client.</p>
 <p>Go to <code>http://localhost:16686</code>, on the UI select the service <code>gateway</code> and click Find Traces. You should be able to see a trace, click on it to see more details:</p>
 <figure><img src="/posts/images/trace-1.png"
-         alt="tracing-details"/>
+    alt="tracing-details">
 </figure>
 
 <p>As mentioned before, the trace has two spans. Both of the spans are decorated with a red exclamation mark indicating the operation failed. The first one has it as it was added with the <code>span.SetStatus</code> function on the <code>checkoutHandler</code>. The second span has it as the gRPC call failed.</p>
@@ -407,13 +414,13 @@ services:
 <h3 id="summary">Summary</h3>
 <p>In this first article we have done quite a lot from discussing what the problematic is, what tools do we have to solve it, and even implementing a service that uses tracing. In the second part we will implement the <code>checkout-service</code> and the <code>stock-service</code> and explore Jaeger a bit more. Stay tuned!</p>
 
-    </div>
-  </article>
+      </div>
+    </article>
 
-  <hr />
+    <hr />
 
-  <div class="post-info">
-    
+    <div class="post-info">
+      
     <p>
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg>
 
@@ -426,41 +433,37 @@ services:
         
     </p>
 
+      
+
+      <p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        2428 Words
+      </p>
+
+      <p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+        
+          2021-12-03 12:00 &#43;0100
+        
+
+         
+          
+        
+      </p>
+    </div>
+
     
-
-    <p>
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-        class="feather feather-file-text">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-        <polyline points="14 2 14 8 20 8"></polyline>
-        <line x1="16" y1="13" x2="8" y2="13"></line>
-        <line x1="16" y1="17" x2="8" y2="17"></line>
-        <polyline points="10 9 9 9 8 9"></polyline>
-      </svg>
-      2428 Words
-    </p>
-
-    <p>
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-        class="feather feather-calendar">
-        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-        <line x1="16" y1="2" x2="16" y2="6"></line>
-        <line x1="8" y1="2" x2="8" y2="6"></line>
-        <line x1="3" y1="10" x2="21" y2="10"></line>
-      </svg>
-      
-      2021-12-03 12:00 &#43;0100
-      
-
-      
-      
-      
-    </p>
-  </div>
-
-  
     <div class="pagination">
         
         <div class="pagination__title">
@@ -491,11 +494,13 @@ services:
     </div>
 
 
-  
+    
 
-  
+    
 
-</main>
+    
+
+  </main>
 
             </div>
 
@@ -511,7 +516,8 @@ services:
         
 
 
-<script type="text/javascript" src="/bundle.min.aeeac2e3fc44c0f169410d068267bfbb1e20bd2201904f0598d7edc9bc0fea2b24912dbd3ff8f23aed618aab8a9e0b2d091cba7d09142aa77050ff84b88ab4f5.js" integrity="sha512-rurC4/xEwPFpQQ0Ggme/ux4gvSIBkE8FmNftybwP6iskkS29P/jyOu1hiquKngstCRy6fQkUKqdwUP&#43;EuIq09Q=="></script>
+<script type="text/javascript" src="/bundle.min.d6fc0b7baf099142ae73441220c2ee226564feab1a98908a0e1cfc89cb54302ca08d4be61c21e7bbe0c0daa0879f8f16715660118d1e14b4d323c48ec43f92fe.js" integrity="sha512-1vwLe68JkUKuc0QSIMLuImVk/qsamJCKDhz8ictUMCygjUvmHCHnu&#43;DA2qCHn48WcVZgEY0eFLTTI8SOxD&#43;S/g=="></script>
+
 
 
 

@@ -1,126 +1,90 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>go on Dev &amp; Chill</title>
+    <title>Go on Dev &amp; Chill</title>
     <link>https://devandchill.com/tags/go/</link>
-    <description>Recent content in go on Dev &amp; Chill</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <description>Recent content in Go on Dev &amp; Chill</description>
+    <generator>Hugo</generator>
     <language>en</language>
     <copyright>Pablo Morelli</copyright>
-    <lastBuildDate>Thu, 26 Oct 2023 14:30:00 +0100</lastBuildDate><atom:link href="https://devandchill.com/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 26 Oct 2023 14:30:00 +0100</lastBuildDate>
+    <atom:link href="https://devandchill.com/tags/go/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>VBlog: Unlock the power of AWS Cognito: IDP and Triggers.</title>
       <link>https://devandchill.com/posts/2023/10/vblog-unlock-the-power-of-aws-cognito-idp-and-triggers./</link>
       <pubDate>Thu, 26 Oct 2023 14:30:00 +0100</pubDate>
-      
       <guid>https://devandchill.com/posts/2023/10/vblog-unlock-the-power-of-aws-cognito-idp-and-triggers./</guid>
-      <description>👉 The codebase used in this post can be found in my Github. 👈</description>
+      <description>&lt;p&gt;👉 &lt;a href=&#34;https://github.com/pmorelli92/poc-aws-cognito-idp&#34;  target=&#34;_blank&#34; rel=&#34;noreferrer noopener&#34; &gt;The codebase used in this post can be found in my Github.&lt;/a&gt;&#xA; 👈&lt;/p&gt;&#xA;&lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;&#xA;      &lt;iframe allow=&#34;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&#34; allowfullscreen=&#34;allowfullscreen&#34; loading=&#34;eager&#34; referrerpolicy=&#34;strict-origin-when-cross-origin&#34; src=&#34;https://www.youtube.com/embed/s5VTyRYXMJI?autoplay=0&amp;amp;controls=1&amp;amp;end=0&amp;amp;loop=0&amp;amp;mute=0&amp;amp;start=0&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; title=&#34;YouTube video&#34;&gt;&lt;/iframe&gt;&#xA;    &lt;/div&gt;</description>
     </item>
-    
     <item>
       <title>How I approach microservice testing in 2023</title>
       <link>https://devandchill.com/posts/2023/01/how-i-approach-microservice-testing-in-2023/</link>
       <pubDate>Sun, 29 Jan 2023 20:30:00 +0100</pubDate>
-      
       <guid>https://devandchill.com/posts/2023/01/how-i-approach-microservice-testing-in-2023/</guid>
-      <description>👉 The codebase used in this post can be found in my Github. 👈
-Introduction As a software engineer, I&amp;rsquo;ve had the opportunity to work with microservices in various companies and each one had its own unique approach to testing the codebase. From my experience, I&amp;rsquo;ve come to realize that there&amp;rsquo;s no one-size-fits-all solution when it comes to testing microservices. Should there be only unit test? What about the external dependencies?</description>
+      <description>&lt;p&gt;👉 &lt;a href=&#34;https://github.com/pmorelli92/how-I-test-microservices-2023&#34;  target=&#34;_blank&#34; rel=&#34;noreferrer noopener&#34; &gt;The codebase used in this post can be found in my Github.&lt;/a&gt;&#xA; 👈&lt;/p&gt;&#xA;&lt;h3 id=&#34;introduction&#34;&gt;Introduction&lt;/h3&gt;&#xA;&lt;p&gt;As a software engineer, I&amp;rsquo;ve had the opportunity to work with microservices in various companies and each one had its own unique approach to testing the codebase. From my experience, I&amp;rsquo;ve come to realize that there&amp;rsquo;s no one-size-fits-all solution when it comes to testing microservices. Should there be only unit test? What about the external dependencies? Do we care about what happen if a third party returns a response that is not expected? Is contract testing needed? So, what do we do?&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Keep it simple stupid, lessons learned</title>
       <link>https://devandchill.com/posts/2022/03/keep-it-simple-stupid-lessons-learned/</link>
       <pubDate>Tue, 15 Mar 2022 18:30:00 +0100</pubDate>
-      
       <guid>https://devandchill.com/posts/2022/03/keep-it-simple-stupid-lessons-learned/</guid>
-      <description>We as humans are always changing and evolving, sometimes for the best and sometimes not. In our professional life this is expected, one gains experience, learns new tools, knowns different people with different background, etc.
-Back when I was working for a consultancy company in 2016 I met a wonderful person who at that time was an architect, and right now one of my best friends. Our main topic of conversation was technology, and we always dug deeper and deeper into it.</description>
+      <description>&lt;p&gt;We as humans are always changing and evolving, sometimes for the best and sometimes not. In our professional life this is expected, one gains experience, learns new tools, knowns different people with different background, etc.&lt;/p&gt;&#xA;&lt;p&gt;Back when I was working for a consultancy company in 2016 I met a wonderful person who at that time was an architect, and right now one of my best friends. Our main topic of conversation was technology, and we always dug deeper and deeper into it. Since we were both working on .NET a lot of the following words appeared at least once in every conversation: &lt;code&gt;patterns&lt;/code&gt;, &lt;code&gt;reflection&lt;/code&gt;, &lt;code&gt;expressions&lt;/code&gt;.&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Go - Step by step guide for implementing tracing on a microservices architecture (2/2)</title>
       <link>https://devandchill.com/posts/2021/12/go-step-by-step-guide-for-implementing-tracing-on-a-microservices-architecture-2/2/</link>
       <pubDate>Fri, 31 Dec 2021 16:00:00 +0200</pubDate>
-      
       <guid>https://devandchill.com/posts/2021/12/go-step-by-step-guide-for-implementing-tracing-on-a-microservices-architecture-2/2/</guid>
-      <description>Update 2023: The repository with the source code is still having some traction on Github some I decided to update the dependencies as some of them were deprecated and the tracer exporter now uses a different port.
-If you just want to jump into the repository with all the code, 👉 check it out here 👈 This article is the second of a series of two. If you had not read the first one, you can do it here.</description>
+      <description>&lt;p&gt;Update 2023: The repository with the source code is still having some traction on Github some I decided to update the dependencies as some of them were deprecated and the tracer exporter now uses a different port.&lt;/p&gt;&#xA;&lt;p&gt;If you just want to jump into the repository with all the code, &lt;a href=&#34;https://github.com/pmorelli92/open-telemetry-go&#34;  target=&#34;_blank&#34; rel=&#34;noreferrer noopener&#34; &gt;👉 check it out here 👈&lt;/a&gt;&#xA;&lt;/p&gt;&#xA;&lt;hr&gt;&#xA;&lt;p&gt;This article is the second of a series of two. If you had not read the first one, &lt;a href=&#34;https://devandchill.com/posts/2021/12/go-step-by-step-guide-for-implementing-tracing-on-a-microservices-architecture-1/2/&#34;  target=&#34;_blank&#34; rel=&#34;noreferrer noopener&#34; &gt;you can do it here.&lt;/a&gt;&#xA;&#xA;In this post we are going to finish the implementation of the &lt;code&gt;checkout-service&lt;/code&gt; and the &lt;code&gt;stock-service&lt;/code&gt; and wrap up the proof of concept.&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Go - Step by step guide for implementing tracing on a microservices architecture (1/2)</title>
       <link>https://devandchill.com/posts/2021/12/go-step-by-step-guide-for-implementing-tracing-on-a-microservices-architecture-1/2/</link>
       <pubDate>Fri, 03 Dec 2021 13:00:00 +0200</pubDate>
-      
       <guid>https://devandchill.com/posts/2021/12/go-step-by-step-guide-for-implementing-tracing-on-a-microservices-architecture-1/2/</guid>
-      <description>Update 2023: The repository with the source code is still having some traction on Github some I decided to update the dependencies as some of them were deprecated and the tracer exporter now uses a different port.
-This article is the first of a series of two. In this first one we are going to talk about what is tracing is used for, the scope of this proof of concept and implement the first service.</description>
+      <description>&lt;p&gt;Update 2023: The repository with the source code is still having some traction on Github some I decided to update the dependencies as some of them were deprecated and the tracer exporter now uses a different port.&lt;/p&gt;&#xA;&lt;hr&gt;&#xA;&lt;p&gt;This article is the first of a series of two. In this first one we are going to talk about what is tracing is used for, the scope of this proof of concept and implement the first service.&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Go - Generate and serve swagger without code dependencies</title>
       <link>https://devandchill.com/posts/2021/09/go-generate-and-serve-swagger-without-code-dependencies/</link>
       <pubDate>Fri, 10 Sep 2021 13:00:00 +0200</pubDate>
-      
       <guid>https://devandchill.com/posts/2021/09/go-generate-and-serve-swagger-without-code-dependencies/</guid>
-      <description>One of the things that shocked me the most when I changed from C# to Golang is that developers are reluctant of adding libraries to solve problems unless it is strictly needed. This sentiment, at first annoying, turned out to be one of the things I liked the most about Go. The standard library alone is very powerful and you can achieve most of the stuff just with it.
-However, there was a little something that my mind keep thinking: it would be super good to have swagger docs out of the box like in C#.</description>
+      <description>&lt;p&gt;One of the things that shocked me the most when I changed from C# to Golang is that developers are reluctant of adding libraries to solve problems unless it is strictly needed. This sentiment, at first annoying, turned out to be one of the things I liked the most about Go. The standard library alone is very powerful and you can achieve most of the stuff just with it.&lt;/p&gt;&#xA;&lt;p&gt;However, there was a little something that my mind keep thinking: &lt;em&gt;it would be super good to have swagger docs out of the box like in C#&lt;/em&gt;. Then, when I started researching I found out two different approaches:&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Go - lib/pq or pgx - which performs better?</title>
       <link>https://devandchill.com/posts/2020/05/go-lib/pq-or-pgx-which-performs-better/</link>
       <pubDate>Wed, 27 May 2020 15:40:29 +0100</pubDate>
-      
       <guid>https://devandchill.com/posts/2020/05/go-lib/pq-or-pgx-which-performs-better/</guid>
-      <description>Some days ago a coworker of mine linked me to the source code of Google&amp;rsquo;s exposure notifications API and of course is a good chance to see how Google is doing Go related codebases.
-Continuing with the topic of Postgres and benchmarking, I decided to check out how Postgres configuration was done and this line got my attention:
-import ( ... &amp;#34;github.com/jackc/pgx/v4/pgxpool&amp;#34; ) What is pgx, and why should we care?</description>
+      <description>&lt;p&gt;Some days ago a coworker of mine linked me to the source code of &lt;a href=&#34;https://github.com/google/exposure-notifications-server&#34;  target=&#34;_blank&#34; rel=&#34;noreferrer noopener&#34; &gt;Google&amp;rsquo;s exposure notifications API&lt;/a&gt;&#xA; and of course is a good chance to see how Google is doing Go related codebases.&lt;/p&gt;&#xA;&lt;p&gt;Continuing with the topic of Postgres and benchmarking, I decided to check out how Postgres configuration was done and this &lt;a href=&#34;https://github.com/google/exposure-notifications-server/blob/master/internal/database/connection.go#L27&#34;  target=&#34;_blank&#34; rel=&#34;noreferrer noopener&#34; &gt;line&lt;/a&gt;&#xA; got my attention:&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#81a1c1;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#eceff4&#34;&gt;(&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#x9;&lt;span style=&#34;color:#81a1c1&#34;&gt;...&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#x9;&lt;span style=&#34;color:#a3be8c&#34;&gt;&amp;#34;github.com/jackc/pgx/v4/pgxpool&amp;#34;&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#eceff4&#34;&gt;)&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;what-is-pgx-and-why-should-we-care&#34;&gt;What is pgx, and why should we care?&lt;/h2&gt;&#xA;&lt;p&gt;&lt;code&gt;Pgx&lt;/code&gt; is a library that implements postgres connection without relying on the &lt;code&gt;database/sql&lt;/code&gt; standard package. The source code can be found &lt;a href=&#34;https://github.com/jackc/pgx&#34;  target=&#34;_blank&#34; rel=&#34;noreferrer noopener&#34; &gt;here&lt;/a&gt;&#xA;; and as the readme states:&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Postgres: Benchmarking concurrently safe upsert queries</title>
       <link>https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/</link>
       <pubDate>Wed, 13 May 2020 16:40:29 +0100</pubDate>
-      
       <guid>https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/</guid>
-      <description>In my previous post I covered how to build concurrently safe upsert queries .
-This post serves as a continuation where different approaches will be battle tested to expose the performance of each one:
-Advisory lock On conflict update On conflict do nothing CTE queries Without further ado, let&amp;rsquo;s start:
-The application In order to emulate the scenario described on the previous post, an HTTP API is required. This one will connect to a database to perform the calls.</description>
+      <description>&lt;p&gt;In my previous post I covered how to &lt;a href=&#34;https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries&#34;  target=&#34;_blank&#34; rel=&#34;noreferrer noopener&#34; &gt;build concurrently safe upsert queries&lt;/a&gt;&#xA;.&lt;/p&gt;&#xA;&lt;p&gt;This post serves as a continuation where different approaches will be battle tested to expose the performance of each one:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Advisory lock&lt;/li&gt;&#xA;&lt;li&gt;On conflict update&lt;/li&gt;&#xA;&lt;li&gt;On conflict do nothing&lt;/li&gt;&#xA;&lt;li&gt;CTE queries&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;Without further ado, let&amp;rsquo;s start:&lt;/p&gt;&#xA;&lt;h2 id=&#34;the-application&#34;&gt;The application&lt;/h2&gt;&#xA;&lt;p&gt;In order to emulate the scenario described on the previous post, an HTTP API is required. This one will connect to a database to perform the calls.&#xA;The application is written in Go and can be found &lt;a href=&#34;https://github.com/pmorelli92/pg-upsert-returning&#34;  target=&#34;_blank&#34; rel=&#34;noreferrer noopener&#34; &gt;here&lt;/a&gt;&#xA;.&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Azure Pipelines: Build a dockerized app and deploy to kubernetes</title>
       <link>https://devandchill.com/posts/2019/10/azure-pipelines-build-a-dockerized-app-and-deploy-to-kubernetes/</link>
       <pubDate>Sat, 19 Oct 2019 22:22:29 +0200</pubDate>
-      
       <guid>https://devandchill.com/posts/2019/10/azure-pipelines-build-a-dockerized-app-and-deploy-to-kubernetes/</guid>
-      <description>2021 update: Since KubeSail was not working as expected, the solution is now hosted in Okteto which offers a free namespace for developers to try out a hosted Kubernetes service.
-Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&amp;rsquo;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files).</description>
+      <description>&lt;p&gt;&lt;em&gt;2021 update: Since KubeSail was not working as expected, the solution is now hosted in Okteto which offers a free namespace for developers to try out a hosted Kubernetes service.&lt;/em&gt;&lt;/p&gt;&#xA;&lt;p&gt;Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&amp;rsquo;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files). Now I am currently working with Travis for CI and Flux for CD but I think it is always good to keep an eye on how the competitors are doing and what they have to offer.&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Word counter: Sync, concurrent or streams?</title>
       <link>https://devandchill.com/posts/2019/04/word-counter-sync-concurrent-or-streams/</link>
       <pubDate>Wed, 10 Apr 2019 20:59:47 +0200</pubDate>
-      
       <guid>https://devandchill.com/posts/2019/04/word-counter-sync-concurrent-or-streams/</guid>
-      <description>One day I was given the task of doing a whiteboard word counter algorithm. The requirements were:
-Print on console all the words and the quantity of times they appear on a 40.000 lines input. Make it as fast as possible. For a start one can do it as simple as possible instead, and then try to see whether it can be made faster:
-func wordCounter() (words map[string]int) { b, err := ioutil.</description>
+      <description>&lt;p&gt;One day I was given the task of doing a whiteboard &lt;code&gt;word counter&lt;/code&gt; algorithm. The requirements were:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Print on console all the words and the quantity of times they appear on a 40.000 lines input.&lt;/li&gt;&#xA;&lt;li&gt;Make it as fast as possible.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;For a start one can do it as simple as possible instead, and then try to see whether it can be made faster:&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#81a1c1;font-weight:bold&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#88c0d0&#34;&gt;wordCounter&lt;/span&gt;&lt;span style=&#34;color:#eceff4&#34;&gt;()&lt;/span&gt; &lt;span style=&#34;color:#eceff4&#34;&gt;(&lt;/span&gt;words &lt;span style=&#34;color:#81a1c1;font-weight:bold&#34;&gt;map&lt;/span&gt;&lt;span style=&#34;color:#eceff4&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#81a1c1&#34;&gt;string&lt;/span&gt;&lt;span style=&#34;color:#eceff4&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#81a1c1&#34;&gt;int&lt;/span&gt;&lt;span style=&#34;color:#eceff4&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#eceff4&#34;&gt;{&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#x9;b&lt;span style=&#34;color:#eceff4&#34;&gt;,&lt;/span&gt; err &lt;span style=&#34;color:#81a1c1&#34;&gt;:=&lt;/span&gt; ioutil&lt;span style=&#34;color:#eceff4&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#88c0d0&#34;&gt;ReadFile&lt;/span&gt;&lt;span style=&#34;color:#eceff4&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#a3be8c&#34;&gt;&amp;#34;input.txt&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#eceff4&#34;&gt;)&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#x9;&lt;span style=&#34;color:#81a1c1;font-weight:bold&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#81a1c1&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#81a1c1;font-weight:bold&#34;&gt;nil&lt;/span&gt; &lt;span style=&#34;color:#eceff4&#34;&gt;{&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#x9;&#x9;log&lt;span style=&#34;color:#eceff4&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#88c0d0&#34;&gt;Fatal&lt;/span&gt;&lt;span style=&#34;color:#eceff4&#34;&gt;(&lt;/span&gt;err&lt;span style=&#34;color:#eceff4&#34;&gt;)&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#x9;&lt;span style=&#34;color:#eceff4&#34;&gt;}&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#x9;removeLineBreaks &lt;span style=&#34;color:#81a1c1&#34;&gt;:=&lt;/span&gt; regexp&lt;span style=&#34;color:#eceff4&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#88c0d0&#34;&gt;MustCompile&lt;/span&gt;&lt;span style=&#34;color:#eceff4&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#a3be8c&#34;&gt;`\r?\n`&lt;/span&gt;&lt;span style=&#34;color:#eceff4&#34;&gt;)&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#x9;inputText &lt;span style=&#34;color:#81a1c1&#34;&gt;:=&lt;/span&gt; removeLineBreaks&lt;span style=&#34;color:#eceff4&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#88c0d0&#34;&gt;ReplaceAllString&lt;/span&gt;&lt;span style=&#34;color:#eceff4&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#81a1c1&#34;&gt;string&lt;/span&gt;&lt;span style=&#34;color:#eceff4&#34;&gt;(&lt;/span&gt;b&lt;span style=&#34;color:#eceff4&#34;&gt;),&lt;/span&gt;&lt;span style=&#34;color:#a3be8c&#34;&gt;&amp;#34; &amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#eceff4&#34;&gt;)&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#x9;words &lt;span style=&#34;color:#eceff4&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#81a1c1&#34;&gt;make&lt;/span&gt;&lt;span style=&#34;color:#eceff4&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#81a1c1;font-weight:bold&#34;&gt;map&lt;/span&gt;&lt;span style=&#34;color:#eceff4&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#81a1c1&#34;&gt;string&lt;/span&gt;&lt;span style=&#34;color:#eceff4&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#81a1c1&#34;&gt;int&lt;/span&gt;&lt;span style=&#34;color:#eceff4&#34;&gt;)&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#x9;removeSpecial &lt;span style=&#34;color:#81a1c1&#34;&gt;:=&lt;/span&gt; regexp&lt;span style=&#34;color:#eceff4&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#88c0d0&#34;&gt;MustCompile&lt;/span&gt;&lt;span style=&#34;color:#eceff4&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#a3be8c&#34;&gt;`(?m)[^a-z]`&lt;/span&gt;&lt;span style=&#34;color:#eceff4&#34;&gt;)&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#x9;&lt;span style=&#34;color:#81a1c1;font-weight:bold&#34;&gt;for&lt;/span&gt; _&lt;span style=&#34;color:#eceff4&#34;&gt;,&lt;/span&gt; w &lt;span style=&#34;color:#81a1c1&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#81a1c1;font-weight:bold&#34;&gt;range&lt;/span&gt; strings&lt;span style=&#34;color:#eceff4&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#88c0d0&#34;&gt;Split&lt;/span&gt;&lt;span style=&#34;color:#eceff4&#34;&gt;(&lt;/span&gt;inputText&lt;span style=&#34;color:#eceff4&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color:#a3be8c&#34;&gt;&amp;#34; &amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#eceff4&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#eceff4&#34;&gt;{&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#x9;&#x9;w &lt;span style=&#34;color:#eceff4&#34;&gt;=&lt;/span&gt; strings&lt;span style=&#34;color:#eceff4&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#88c0d0&#34;&gt;ToLower&lt;/span&gt;&lt;span style=&#34;color:#eceff4&#34;&gt;(&lt;/span&gt;w&lt;span style=&#34;color:#eceff4&#34;&gt;)&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#x9;&#x9;w &lt;span style=&#34;color:#eceff4&#34;&gt;=&lt;/span&gt; removeSpecial&lt;span style=&#34;color:#eceff4&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#88c0d0&#34;&gt;ReplaceAllString&lt;/span&gt;&lt;span style=&#34;color:#eceff4&#34;&gt;(&lt;/span&gt;w&lt;span style=&#34;color:#eceff4&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color:#a3be8c&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#eceff4&#34;&gt;)&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#x9;&#x9;&lt;span style=&#34;color:#81a1c1;font-weight:bold&#34;&gt;if&lt;/span&gt; w &lt;span style=&#34;color:#81a1c1&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#a3be8c&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#eceff4&#34;&gt;{&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#x9;&#x9;&#x9;words&lt;span style=&#34;color:#eceff4&#34;&gt;[&lt;/span&gt;w&lt;span style=&#34;color:#eceff4&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#81a1c1&#34;&gt;++&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#x9;&#x9;&lt;span style=&#34;color:#eceff4&#34;&gt;}&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#x9;&lt;span style=&#34;color:#eceff4&#34;&gt;}&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#x9;&lt;span style=&#34;color:#81a1c1;font-weight:bold&#34;&gt;return&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#eceff4&#34;&gt;}&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;What the code does is the following:&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Go Modules: Working outside GOPATH</title>
       <link>https://devandchill.com/posts/2019/03/go-modules-working-outside-gopath/</link>
       <pubDate>Wed, 13 Mar 2019 17:07:15 +0100</pubDate>
-      
       <guid>https://devandchill.com/posts/2019/03/go-modules-working-outside-gopath/</guid>
-      <description>When I started learning Golang (a couple of months ago) one of the things that I concerned most with was the project structure.
-It may sound irrelevant to bother with this when you are learning the language; but, every time I am browsing .net core applications or libraries on GitHub, I find it extremely unappealing when certain projects are not structured in a conventional way.
-My starting point was the following talk:</description>
+      <description>&lt;p&gt;When I started learning Golang (a couple of months ago) one of the things that I concerned most with was the &lt;strong&gt;project structure&lt;/strong&gt;.&lt;/p&gt;&#xA;&lt;p&gt;It may sound irrelevant to bother with this when you are learning the language; but, every time I am browsing .net core applications or libraries on GitHub, I find it extremely unappealing when certain projects are not structured in a conventional way.&lt;/p&gt;&#xA;&lt;p&gt;My starting point was the following talk:&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

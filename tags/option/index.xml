@@ -1,22 +1,20 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>option on Dev &amp; Chill</title>
+    <title>Option on Dev &amp; Chill</title>
     <link>https://devandchill.com/tags/option/</link>
-    <description>Recent content in option on Dev &amp; Chill</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <description>Recent content in Option on Dev &amp; Chill</description>
+    <generator>Hugo</generator>
     <language>en</language>
     <copyright>Pablo Morelli</copyright>
-    <lastBuildDate>Fri, 30 Apr 2021 12:40:00 +0200</lastBuildDate><atom:link href="https://devandchill.com/tags/option/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 30 Apr 2021 12:40:00 +0200</lastBuildDate>
+    <atom:link href="https://devandchill.com/tags/option/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Introducing Maybe package, bring functional to Go</title>
       <link>https://devandchill.com/posts/2021/04/introducing-maybe-package-bring-functional-to-go/</link>
       <pubDate>Fri, 30 Apr 2021 12:40:00 +0200</pubDate>
-      
       <guid>https://devandchill.com/posts/2021/04/introducing-maybe-package-bring-functional-to-go/</guid>
-      <description>One of the advantages of Go is that null (nil) values are rarer than in some other languages. The following snippet will fail: func getDay() string { return nil } In order to make that snippet work, a pointer is needed as null values are the zero value for pointers (the same applies for interfaces, channels and function types).
-func getDay() *string { return nil } Being that pointers can introduce null and hence panics, and knowing that null is considered to be &amp;ldquo;The billion dollar mistake&amp;rdquo;, why is still so common in Go to use pointers for everything?</description>
+      <description>&lt;p&gt;One of the advantages of Go is that null (&lt;code&gt;nil&lt;/code&gt;) values are rarer than in some other languages. &lt;a href=&#34;https://play.golang.org/p/m_Q6CVtLFjK&#34;  target=&#34;_blank&#34; rel=&#34;noreferrer noopener&#34; &gt;The following snippet will fail:&lt;/a&gt;&#xA;&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;func getDay&lt;span style=&#34;color:#eceff4&#34;&gt;()&lt;/span&gt; string &lt;span style=&#34;color:#bf616a&#34;&gt;{&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#81a1c1;font-weight:bold&#34;&gt;return&lt;/span&gt; nil&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bf616a&#34;&gt;}&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In order to make that snippet work, a pointer is needed as null values are the zero value for pointers (the same applies for interfaces, channels and function types).&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;func getDay&lt;span style=&#34;color:#eceff4&#34;&gt;()&lt;/span&gt; &lt;span style=&#34;color:#81a1c1&#34;&gt;*&lt;/span&gt;string &lt;span style=&#34;color:#bf616a&#34;&gt;{&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#81a1c1;font-weight:bold&#34;&gt;return&lt;/span&gt; nil&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bf616a&#34;&gt;}&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Being that pointers can introduce null and hence panics, and knowing that null is considered to be &lt;em&gt;&amp;ldquo;The billion dollar mistake&amp;rdquo;&lt;/em&gt;, why is still so common in Go to use pointers for everything? Below are some arguments that I faced:&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

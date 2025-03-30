@@ -1,22 +1,20 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>swagger on Dev &amp; Chill</title>
+    <title>Swagger on Dev &amp; Chill</title>
     <link>https://devandchill.com/tags/swagger/</link>
-    <description>Recent content in swagger on Dev &amp; Chill</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <description>Recent content in Swagger on Dev &amp; Chill</description>
+    <generator>Hugo</generator>
     <language>en</language>
     <copyright>Pablo Morelli</copyright>
-    <lastBuildDate>Fri, 10 Sep 2021 13:00:00 +0200</lastBuildDate><atom:link href="https://devandchill.com/tags/swagger/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 10 Sep 2021 13:00:00 +0200</lastBuildDate>
+    <atom:link href="https://devandchill.com/tags/swagger/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Go - Generate and serve swagger without code dependencies</title>
       <link>https://devandchill.com/posts/2021/09/go-generate-and-serve-swagger-without-code-dependencies/</link>
       <pubDate>Fri, 10 Sep 2021 13:00:00 +0200</pubDate>
-      
       <guid>https://devandchill.com/posts/2021/09/go-generate-and-serve-swagger-without-code-dependencies/</guid>
-      <description>One of the things that shocked me the most when I changed from C# to Golang is that developers are reluctant of adding libraries to solve problems unless it is strictly needed. This sentiment, at first annoying, turned out to be one of the things I liked the most about Go. The standard library alone is very powerful and you can achieve most of the stuff just with it.
-However, there was a little something that my mind keep thinking: it would be super good to have swagger docs out of the box like in C#.</description>
+      <description>&lt;p&gt;One of the things that shocked me the most when I changed from C# to Golang is that developers are reluctant of adding libraries to solve problems unless it is strictly needed. This sentiment, at first annoying, turned out to be one of the things I liked the most about Go. The standard library alone is very powerful and you can achieve most of the stuff just with it.&lt;/p&gt;&#xA;&lt;p&gt;However, there was a little something that my mind keep thinking: &lt;em&gt;it would be super good to have swagger docs out of the box like in C#&lt;/em&gt;. Then, when I started researching I found out two different approaches:&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

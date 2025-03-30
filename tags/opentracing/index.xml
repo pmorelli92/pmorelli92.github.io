@@ -1,32 +1,27 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>opentracing on Dev &amp; Chill</title>
+    <title>Opentracing on Dev &amp; Chill</title>
     <link>https://devandchill.com/tags/opentracing/</link>
-    <description>Recent content in opentracing on Dev &amp; Chill</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <description>Recent content in Opentracing on Dev &amp; Chill</description>
+    <generator>Hugo</generator>
     <language>en</language>
     <copyright>Pablo Morelli</copyright>
-    <lastBuildDate>Fri, 31 Dec 2021 16:00:00 +0200</lastBuildDate><atom:link href="https://devandchill.com/tags/opentracing/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 31 Dec 2021 16:00:00 +0200</lastBuildDate>
+    <atom:link href="https://devandchill.com/tags/opentracing/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Go - Step by step guide for implementing tracing on a microservices architecture (2/2)</title>
       <link>https://devandchill.com/posts/2021/12/go-step-by-step-guide-for-implementing-tracing-on-a-microservices-architecture-2/2/</link>
       <pubDate>Fri, 31 Dec 2021 16:00:00 +0200</pubDate>
-      
       <guid>https://devandchill.com/posts/2021/12/go-step-by-step-guide-for-implementing-tracing-on-a-microservices-architecture-2/2/</guid>
-      <description>Update 2023: The repository with the source code is still having some traction on Github some I decided to update the dependencies as some of them were deprecated and the tracer exporter now uses a different port.
-If you just want to jump into the repository with all the code, 👉 check it out here 👈 This article is the second of a series of two. If you had not read the first one, you can do it here.</description>
+      <description>&lt;p&gt;Update 2023: The repository with the source code is still having some traction on Github some I decided to update the dependencies as some of them were deprecated and the tracer exporter now uses a different port.&lt;/p&gt;&#xA;&lt;p&gt;If you just want to jump into the repository with all the code, &lt;a href=&#34;https://github.com/pmorelli92/open-telemetry-go&#34;  target=&#34;_blank&#34; rel=&#34;noreferrer noopener&#34; &gt;👉 check it out here 👈&lt;/a&gt;&#xA;&lt;/p&gt;&#xA;&lt;hr&gt;&#xA;&lt;p&gt;This article is the second of a series of two. If you had not read the first one, &lt;a href=&#34;https://devandchill.com/posts/2021/12/go-step-by-step-guide-for-implementing-tracing-on-a-microservices-architecture-1/2/&#34;  target=&#34;_blank&#34; rel=&#34;noreferrer noopener&#34; &gt;you can do it here.&lt;/a&gt;&#xA;&#xA;In this post we are going to finish the implementation of the &lt;code&gt;checkout-service&lt;/code&gt; and the &lt;code&gt;stock-service&lt;/code&gt; and wrap up the proof of concept.&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Go - Step by step guide for implementing tracing on a microservices architecture (1/2)</title>
       <link>https://devandchill.com/posts/2021/12/go-step-by-step-guide-for-implementing-tracing-on-a-microservices-architecture-1/2/</link>
       <pubDate>Fri, 03 Dec 2021 13:00:00 +0200</pubDate>
-      
       <guid>https://devandchill.com/posts/2021/12/go-step-by-step-guide-for-implementing-tracing-on-a-microservices-architecture-1/2/</guid>
-      <description>Update 2023: The repository with the source code is still having some traction on Github some I decided to update the dependencies as some of them were deprecated and the tracer exporter now uses a different port.
-This article is the first of a series of two. In this first one we are going to talk about what is tracing is used for, the scope of this proof of concept and implement the first service.</description>
+      <description>&lt;p&gt;Update 2023: The repository with the source code is still having some traction on Github some I decided to update the dependencies as some of them were deprecated and the tracer exporter now uses a different port.&lt;/p&gt;&#xA;&lt;hr&gt;&#xA;&lt;p&gt;This article is the first of a series of two. In this first one we are going to talk about what is tracing is used for, the scope of this proof of concept and implement the first service.&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

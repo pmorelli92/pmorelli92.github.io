@@ -3,27 +3,31 @@
     <head>
         <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="author" content="Pablo Morelli">
-<meta name="description" content="Devandchill is a coding blog where I share my ideas and insights on various programming topics." />
-<meta name="keywords"
-    content="blog, development, programming, tech, secrets, environment, env, variable, gcp, manager, secret manager, kubernetes, gcloud, iam, gke" />
+<meta name="author" content="">
+<meta name="description" content="The other day I encountered the following post where Seth Vargo was doing some statements regarding the usage of environment variables:
+[&hellip;] While this approach is simple and straightforward, it comes with considerable security drawbacks - the secrets exist in plaintext in the environment. Any other process, library, or dependency running inside the process has access to the environment which has already been exploited multiple times. Unfortunately, it is trivial for a malicious library author to inject this type of vulnerability into an otherwise helpful utility package. To be absolutely, unequivocally clear, you should not store secret or sensitive information in environment variables in plaintext.
+" />
+<meta name="keywords" content="blog, development, programming, tech, secrets, environment, env, variable, gcp, manager, secret manager, kubernetes, gcloud, iam, gke" />
 <meta name="robots" content="noodp" />
 <meta name="theme-color" content="" />
 <link rel="canonical" href="https://devandchill.com/posts/2020/08/stop-storing-secrets-on-environment-variables-enter-gcp-secret-manager/" />
 
 
-<title>
-    
-    Stop storing secrets on environment variables: Enter GCP Secret Manager :: Dev &amp; Chill  — A blog about coding
-    
-</title>
+    <title>
+        
+            Stop storing secrets on environment variables: Enter GCP Secret Manager :: Dev &amp; Chill  — A blog about coding
+        
+    </title>
 
 
 
 
 
-<link rel="stylesheet" href="/main.3a0b97c6880e06dd6e902af4b4a6ae5146594dbe1d4035fd2190f9c6f7eb949d.css" integrity="sha256-OguXxogOBt1ukCr0tKauUUZZTb4dQDX9IZD5xvfrlJ0=">
+  <link rel="stylesheet" href="/main.min.281d505ee8507eb85ef5449b3db01c39b07094fe7fedb4f92a730b1d5e143020.css" integrity="sha256-KB1QXuhQfrhe9USbPbAcObBwlP5/7bT5KnMLHV4UMCA=" crossorigin="anonymous">
+
+
 
 
 
@@ -36,26 +40,21 @@
     <meta name="msapplication-TileColor" content="">
 
 
-<meta itemprop="name" content="Stop storing secrets on environment variables: Enter GCP Secret Manager">
-<meta itemprop="description" content="The other day I encountered the following post where Seth Vargo was doing some statements regarding the usage of environment variables:
-[&hellip;] While this approach is simple and straightforward, it comes with considerable security drawbacks - the secrets exist in plaintext in the environment. Any other process, library, or dependency running inside the process has access to the environment which has already been exploited multiple times. Unfortunately, it is trivial for a malicious library author to inject this type of vulnerability into an otherwise helpful utility package."><meta itemprop="datePublished" content="2020-08-31T20:00:00+01:00" />
-<meta itemprop="dateModified" content="2020-08-31T20:00:00+01:00" />
-<meta itemprop="wordCount" content="2008"><meta itemprop="image" content="https://devandchill.com/og-image.png"/>
-<meta itemprop="keywords" content="secrets,environment,env,variable,gcp,manager,secret manager,kubernetes,gcloud,iam,gke," />
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://devandchill.com/og-image.png"/>
 
-<meta name="twitter:title" content="Stop storing secrets on environment variables: Enter GCP Secret Manager"/>
-<meta name="twitter:description" content="The other day I encountered the following post where Seth Vargo was doing some statements regarding the usage of environment variables:
-[&hellip;] While this approach is simple and straightforward, it comes with considerable security drawbacks - the secrets exist in plaintext in the environment. Any other process, library, or dependency running inside the process has access to the environment which has already been exploited multiple times. Unfortunately, it is trivial for a malicious library author to inject this type of vulnerability into an otherwise helpful utility package."/>
+  <meta itemprop="name" content="Stop storing secrets on environment variables: Enter GCP Secret Manager">
+  <meta itemprop="description" content="The other day I encountered the following post where Seth Vargo was doing some statements regarding the usage of environment variables:
+[…] While this approach is simple and straightforward, it comes with considerable security drawbacks - the secrets exist in plaintext in the environment. Any other process, library, or dependency running inside the process has access to the environment which has already been exploited multiple times. Unfortunately, it is trivial for a malicious library author to inject this type of vulnerability into an otherwise helpful utility package. To be absolutely, unequivocally clear, you should not store secret or sensitive information in environment variables in plaintext.">
+  <meta itemprop="datePublished" content="2020-08-31T20:00:00+01:00">
+  <meta itemprop="dateModified" content="2020-08-31T20:00:00+01:00">
+  <meta itemprop="wordCount" content="2008">
+  <meta itemprop="image" content="https://devandchill.com/og-image.png">
+  <meta itemprop="keywords" content="Secrets,Environment,Env,Variable,Gcp,Manager,Secret Manager,Kubernetes,Gcloud,Iam,Gke">
 
-
-
-
-
-
-
-<meta property="article:published_time" content="2020-08-31 20:00:00 &#43;0100 &#43;0100" />
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://devandchill.com/og-image.png">
+  <meta name="twitter:title" content="Stop storing secrets on environment variables: Enter GCP Secret Manager">
+  <meta name="twitter:description" content="The other day I encountered the following post where Seth Vargo was doing some statements regarding the usage of environment variables:
+[…] While this approach is simple and straightforward, it comes with considerable security drawbacks - the secrets exist in plaintext in the environment. Any other process, library, or dependency running inside the process has access to the environment which has already been exploited multiple times. Unfortunately, it is trivial for a malicious library author to inject this type of vulnerability into an otherwise helpful utility package. To be absolutely, unequivocally clear, you should not store secret or sensitive information in environment variables in plaintext.">
 
 
 
@@ -63,16 +62,29 @@
 
 
 
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138171880-1"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'UA-138171880-1');
-</script>
+    <meta property="article:published_time" content="2020-08-31 20:00:00 &#43;0100 &#43;0100" />
 
 
+
+
+
+
+
+    
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-7X0TBDP4QB"></script>
+      <script>
+        var doNotTrack = false;
+        if ( false ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-7X0TBDP4QB');
+        }
+      </script>
 
 
 
@@ -95,19 +107,17 @@
 
 
         <span class="header__right">
-            
-            <nav class="menu">
-    <ul class="menu__inner"><li><a href="/blog">The blog</a></li><li><a href="/resume">Resume</a></li><li><a href="/posts">Posts</a></li>
+                <nav class="menu">
+    <ul class="menu__inner"><li><a href="/posts">Posts</a></li><li><a href="/resume">Resume</a></li>
     </ul>
 </nav>
 
-            <span class="menu-trigger">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path d="M0 0h24v24H0z" fill="none" />
-                    <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
-                </svg>
-            </span>
-            
+                <span class="menu-trigger">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                    </svg>
+                </span>
         </span>
     </span>
 </header>
@@ -115,41 +125,38 @@
 
             <div class="content">
                 
-<main class="post">
+  <main class="post">
 
-  <div class="post-info">
-    <p>
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-        class="feather feather-clock">
-        <circle cx="12" cy="12" r="10"></circle>
-        <polyline points="12 6 12 12 16 14"></polyline>
-      </svg>
-      10 minutes
+    <div class="post-info">
+      <p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        10 minutes
+
+        
+      </p>
+    </div>
+
+    <article>
+      <h1 class="post-title">
+        <a href="https://devandchill.com/posts/2020/08/stop-storing-secrets-on-environment-variables-enter-gcp-secret-manager/">Stop storing secrets on environment variables: Enter GCP Secret Manager</a>
+      </h1>
 
       
-    </p>
-  </div>
 
-  <article>
-    <h1 class="post-title">
-      <a href="https://devandchill.com/posts/2020/08/stop-storing-secrets-on-environment-variables-enter-gcp-secret-manager/">Stop storing secrets on environment variables: Enter GCP Secret Manager</a>
-    </h1>
+      
 
-    
+      
 
-    
-
-    
-
-    <div class="post-content">
-      <p>The other day I encountered the <a href="https://www.sethvargo.com/secrets-in-serverless/"  target="_blank" rel="noreferrer noopener" >following post</a>
+      <div class="post-content">
+        <p>The other day I encountered the <a href="https://www.sethvargo.com/secrets-in-serverless/"  target="_blank" rel="noreferrer noopener" >following post</a>
  where Seth Vargo was doing some statements regarding the usage of environment variables:</p>
 <blockquote>
 <p>[&hellip;] While this approach is simple and straightforward, it comes with considerable security drawbacks - the secrets exist in plaintext in the environment. Any other process, library, or dependency running inside the process has access to the environment which has already been exploited multiple times.
 Unfortunately, it is trivial for a malicious library author to inject this type of vulnerability into an otherwise helpful utility package.
-To be absolutely, unequivocally clear, you should not store secret or sensitive information in environment variables in plaintext.</p>
-</blockquote>
+To be absolutely, unequivocally clear, you should not store secret or sensitive information in environment variables in plaintext.</p></blockquote>
 <p>Then, the author, states some alternatives like using KMS to cypher values for the environment variables; using <a href="https://github.com/GoogleCloudPlatform/berglas"  target="_blank" rel="noreferrer noopener" >Berglas library</a>
  and also suggesting Hashicorp Vault.</p>
 <p>At the time of that post, GCP was not offering a direct rival to Hashicorp Vault but a few months ago <a href="https://cloud.google.com/blog/products/identity-security/improving-your-security-posture-with-centralized-secrets-management"  target="_blank" rel="noreferrer noopener" >Google announced Secret Manager being GA</a>
@@ -166,8 +173,7 @@ To be absolutely, unequivocally clear, you should not store secret or sensitive 
 <p><strong>Let&rsquo;s start.</strong></p>
 <p>Make sure the correct project is selected:</p>
 <blockquote>
-<p>From now on, replace pablo-test-project with your GCP project identifier when executing the commands.</p>
-</blockquote>
+<p>From now on, replace pablo-test-project with your GCP project identifier when executing the commands.</p></blockquote>
 <div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>gcloud config <span style="color:#81a1c1">set</span> project pablo-test-project
 </span></span></code></pre></div><p>For accessing Secret Manager API from our Google Kubernetes Engine there are three things that needs to be done.</p>
 <h4 id="enable-secret-manager-api">Enable Secret Manager API</h4>
@@ -179,8 +185,7 @@ To be absolutely, unequivocally clear, you should not store secret or sensitive 
 </p>
 <blockquote>
 <p>When you set up an instance to run as a service account, you determine the level of access the service account has by the IAM roles that you grant to the service account. If the service account has no IAM roles, then no API methods can be run by the service account on that instance.
-Furthermore, an instance&rsquo;s access scopes determine the default OAuth scopes for requests made through the gcloud tool and client libraries on the instance. As a result, access scopes potentially further limit access to API methods when authenticating through OAuth. [&hellip;]</p>
-</blockquote>
+Furthermore, an instance&rsquo;s access scopes determine the default OAuth scopes for requests made through the gcloud tool and client libraries on the instance. As a result, access scopes potentially further limit access to API methods when authenticating through OAuth. [&hellip;]</p></blockquote>
 <p>In order to assign the corresponding IAM roles to the service account, the account should be created first:</p>
 <div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>gcloud iam service-accounts create demo-service-account <span style="color:#ebcb8b">\
 </span></span></span><span style="display:flex;"><span><span style="color:#ebcb8b"></span>--description<span style="color:#81a1c1">=</span><span style="color:#a3be8c">&#39;Service account used for our demo cluster&#39;</span> <span style="color:#ebcb8b">\
@@ -194,8 +199,7 @@ Furthermore, an instance&rsquo;s access scopes determine the default OAuth scope
 <p><a href="https://cloud.google.com/secret-manager/docs/access-control"  target="_blank" rel="noreferrer noopener" >From access control documentation.</a>
 </p>
 <blockquote>
-<p>To access the Secret Manager API from within a Compute Engine instance or a Google Kubernetes Engine node (which is also a Compute Engine instance), the instance must have the cloud-platform OAuth scope. For more information about access scopes in Compute Engine, see Service account permissions in the Compute Engine documentation.</p>
-</blockquote>
+<p>To access the Secret Manager API from within a Compute Engine instance or a Google Kubernetes Engine node (which is also a Compute Engine instance), the instance must have the cloud-platform OAuth scope. For more information about access scopes in Compute Engine, see Service account permissions in the Compute Engine documentation.</p></blockquote>
 <p>As mentioned before, an instance&rsquo;s access scopes determine the default OAuth2 scopes for requests made. So the Kubernetes instance that is going to be created needs the <code>cloud-platform</code> scope. And also don&rsquo;t forget to indicate the service account created before.</p>
 <div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>gcloud container clusters create demo-cluster <span style="color:#ebcb8b">\
 </span></span></span><span style="display:flex;"><span><span style="color:#ebcb8b"></span>--zone<span style="color:#81a1c1">=</span>europe-west3-a <span style="color:#ebcb8b">\
@@ -230,8 +234,7 @@ Furthermore, an instance&rsquo;s access scopes determine the default OAuth scope
 </p>
 <blockquote>
 <p>For some applications, you might need to request an OAuth2 access token and use it directly without going through a client library or using the gcloud or gsutil tools. There are several options for obtaining and using these access tokens to authenticate your applications. [&hellip;]
-On the instance where your application runs, query the metadata server for an access token. [&hellip;]</p>
-</blockquote>
+On the instance where your application runs, query the metadata server for an access token. [&hellip;]</p></blockquote>
 <p>When inside the deployed container:</p>
 <div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>curl http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token -H <span style="color:#a3be8c">&#34;Metadata-Flavor: Google&#34;</span>
 </span></span></code></pre></div><p>Since the OAuth2 scopes defined for the instances contains the <code>cloud-platform</code> one, the service account will be able to send requests towards Secret Manager API.</p>
@@ -328,17 +331,17 @@ This worked fine, but then do we need the IAM permission or is it just enough wi
 </span></span><span style="display:flex;"><span>	GoogleCloudProject <span style="color:#81a1c1">string</span>
 </span></span><span style="display:flex;"><span><span style="color:#eceff4">}</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic">// GetSecret gets a secret either from environment variable or from GCP Secret Manager
-</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span><span style="color:#81a1c1;font-weight:bold">func</span> <span style="color:#eceff4">(</span>sg SecretGetter<span style="color:#eceff4">)</span> <span style="color:#88c0d0">GetSecret</span><span style="color:#eceff4">(</span>name <span style="color:#81a1c1">string</span><span style="color:#eceff4">,</span> fallback <span style="color:#81a1c1">string</span><span style="color:#eceff4">)</span> <span style="color:#81a1c1">string</span> <span style="color:#eceff4">{</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#616e87;font-style:italic">// If GCP project is not present, get value from environment variables
-</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span>	<span style="color:#81a1c1;font-weight:bold">if</span> sg<span style="color:#eceff4">.</span>GoogleCloudProject <span style="color:#81a1c1">==</span> <span style="color:#a3be8c">&#34;&#34;</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic">// GetSecret gets a secret either from environment variable or from GCP Secret Manager</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">func</span> <span style="color:#eceff4">(</span>sg SecretGetter<span style="color:#eceff4">)</span> <span style="color:#88c0d0">GetSecret</span><span style="color:#eceff4">(</span>name <span style="color:#81a1c1">string</span><span style="color:#eceff4">,</span> fallback <span style="color:#81a1c1">string</span><span style="color:#eceff4">)</span> <span style="color:#81a1c1">string</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#616e87;font-style:italic">// If GCP project is not present, get value from environment variables</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">if</span> sg<span style="color:#eceff4">.</span>GoogleCloudProject <span style="color:#81a1c1">==</span> <span style="color:#a3be8c">&#34;&#34;</span> <span style="color:#eceff4">{</span>
 </span></span><span style="display:flex;"><span>		<span style="color:#81a1c1;font-weight:bold">return</span> <span style="color:#88c0d0">getEnv</span><span style="color:#eceff4">(</span>name<span style="color:#eceff4">,</span> fallback<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>  <span style="color:#eceff4">}</span>
 </span></span><span style="display:flex;"><span>  <span style="color:#81a1c1">...</span>
 </span></span><span style="display:flex;"><span><span style="color:#eceff4">}</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic">// getEnv returns the value for an environment value, or a fallback if not found
-</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span><span style="color:#81a1c1;font-weight:bold">func</span> <span style="color:#88c0d0">getEnv</span><span style="color:#eceff4">(</span>name <span style="color:#81a1c1">string</span><span style="color:#eceff4">,</span> fallback <span style="color:#81a1c1">string</span><span style="color:#eceff4">)</span> <span style="color:#81a1c1">string</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic">// getEnv returns the value for an environment value, or a fallback if not found</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">func</span> <span style="color:#88c0d0">getEnv</span><span style="color:#eceff4">(</span>name <span style="color:#81a1c1">string</span><span style="color:#eceff4">,</span> fallback <span style="color:#81a1c1">string</span><span style="color:#eceff4">)</span> <span style="color:#81a1c1">string</span> <span style="color:#eceff4">{</span>
 </span></span><span style="display:flex;"><span>	value<span style="color:#eceff4">,</span> ok <span style="color:#81a1c1">:=</span> syscall<span style="color:#eceff4">.</span><span style="color:#88c0d0">Getenv</span><span style="color:#eceff4">(</span>name<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">if</span> <span style="color:#eceff4">!</span>ok <span style="color:#eceff4">{</span>
 </span></span><span style="display:flex;"><span>		<span style="color:#81a1c1;font-weight:bold">return</span> fallback
@@ -347,13 +350,13 @@ This worked fine, but then do we need the IAM permission or is it just enough wi
 </span></span><span style="display:flex;"><span><span style="color:#eceff4">}</span>
 </span></span></code></pre></div><p>If <code>GoogleCloudProject</code> is empty, then the value will be taken from environment variables. Otherwise it does the following, shorten for brevity:</p>
 <div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">func</span> <span style="color:#eceff4">(</span>sg SecretGetter<span style="color:#eceff4">)</span> <span style="color:#88c0d0">GetSecret</span><span style="color:#eceff4">(</span>name <span style="color:#81a1c1">string</span><span style="color:#eceff4">,</span> fallback <span style="color:#81a1c1">string</span><span style="color:#eceff4">)</span> <span style="color:#81a1c1">string</span> <span style="color:#eceff4">{</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#616e87;font-style:italic">// If GCP project is not present, get value from environment variables
-</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span>	<span style="color:#81a1c1;font-weight:bold">if</span> sg<span style="color:#eceff4">.</span>GoogleCloudProject <span style="color:#81a1c1">==</span> <span style="color:#a3be8c">&#34;&#34;</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#616e87;font-style:italic">// If GCP project is not present, get value from environment variables</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">if</span> sg<span style="color:#eceff4">.</span>GoogleCloudProject <span style="color:#81a1c1">==</span> <span style="color:#a3be8c">&#34;&#34;</span> <span style="color:#eceff4">{</span>
 </span></span><span style="display:flex;"><span>		<span style="color:#81a1c1;font-weight:bold">return</span> <span style="color:#88c0d0">getEnv</span><span style="color:#eceff4">(</span>name<span style="color:#eceff4">,</span> fallback<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#eceff4">}</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#616e87;font-style:italic">// Get the token for the service account that runs the node pool
-</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span>	tokenUrl <span style="color:#81a1c1">:=</span> <span style="color:#a3be8c">&#34;http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#616e87;font-style:italic">// Get the token for the service account that runs the node pool</span>
+</span></span><span style="display:flex;"><span>	tokenUrl <span style="color:#81a1c1">:=</span> <span style="color:#a3be8c">&#34;http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token&#34;</span>
 </span></span><span style="display:flex;"><span>	rq<span style="color:#eceff4">,</span> err <span style="color:#81a1c1">:=</span> http<span style="color:#eceff4">.</span><span style="color:#88c0d0">NewRequest</span><span style="color:#eceff4">(</span>http<span style="color:#eceff4">.</span>MethodGet<span style="color:#eceff4">,</span> tokenUrl<span style="color:#eceff4">,</span> <span style="color:#81a1c1;font-weight:bold">nil</span><span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">if</span> err <span style="color:#81a1c1">!=</span> <span style="color:#81a1c1;font-weight:bold">nil</span> <span style="color:#eceff4">{</span>
 </span></span><span style="display:flex;"><span>		fmt<span style="color:#eceff4">.</span><span style="color:#88c0d0">Println</span><span style="color:#eceff4">(</span>err<span style="color:#eceff4">)</span>
@@ -362,8 +365,8 @@ This worked fine, but then do we need the IAM permission or is it just enough wi
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#81a1c1">...</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#616e87;font-style:italic">// Get the secret value using the access_token that we fetched above
-</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span>	secretUrl <span style="color:#81a1c1">:=</span> fmt<span style="color:#eceff4">.</span><span style="color:#88c0d0">Sprintf</span><span style="color:#eceff4">(</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#616e87;font-style:italic">// Get the secret value using the access_token that we fetched above</span>
+</span></span><span style="display:flex;"><span>	secretUrl <span style="color:#81a1c1">:=</span> fmt<span style="color:#eceff4">.</span><span style="color:#88c0d0">Sprintf</span><span style="color:#eceff4">(</span>
 </span></span><span style="display:flex;"><span>		<span style="color:#a3be8c">&#34;https://content-secretmanager.googleapis.com/v1beta1/projects/%s/secrets/%s/versions/latest:access&#34;</span><span style="color:#eceff4">,</span>
 </span></span><span style="display:flex;"><span>		sg<span style="color:#eceff4">.</span>GoogleCloudProject<span style="color:#eceff4">,</span> name<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>	rq<span style="color:#eceff4">,</span> err <span style="color:#eceff4">=</span> http<span style="color:#eceff4">.</span><span style="color:#88c0d0">NewRequest</span><span style="color:#eceff4">(</span>http<span style="color:#eceff4">.</span>MethodGet<span style="color:#eceff4">,</span> secretUrl<span style="color:#eceff4">,</span> <span style="color:#81a1c1;font-weight:bold">nil</span><span style="color:#eceff4">)</span>
@@ -389,14 +392,14 @@ This worked fine, but then do we need the IAM permission or is it just enough wi
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>	<span style="color:#81a1c1">...</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#616e87;font-style:italic">// In case there is an error because of privileges or oauth scopes, return the fallback
-</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span>	<span style="color:#81a1c1;font-weight:bold">if</span> secretResponse<span style="color:#eceff4">.</span>Error <span style="color:#81a1c1">!=</span> <span style="color:#b48ead">0</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#616e87;font-style:italic">// In case there is an error because of privileges or oauth scopes, return the fallback</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">if</span> secretResponse<span style="color:#eceff4">.</span>Error <span style="color:#81a1c1">!=</span> <span style="color:#b48ead">0</span> <span style="color:#eceff4">{</span>
 </span></span><span style="display:flex;"><span>		fmt<span style="color:#eceff4">.</span><span style="color:#88c0d0">Println</span><span style="color:#eceff4">(</span>fmt<span style="color:#eceff4">.</span><span style="color:#88c0d0">Sprintf</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;error %d - status %s&#34;</span><span style="color:#eceff4">,</span> secretResponse<span style="color:#eceff4">.</span>Error<span style="color:#eceff4">,</span> secretResponse<span style="color:#eceff4">.</span>Status<span style="color:#eceff4">))</span>
 </span></span><span style="display:flex;"><span>		<span style="color:#81a1c1;font-weight:bold">return</span> fallback
 </span></span><span style="display:flex;"><span>	<span style="color:#eceff4">}</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#616e87;font-style:italic">// Secret Manager returns the secret on base64
-</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span>	data<span style="color:#eceff4">,</span> err <span style="color:#81a1c1">:=</span> base64<span style="color:#eceff4">.</span>StdEncoding<span style="color:#eceff4">.</span><span style="color:#88c0d0">DecodeString</span><span style="color:#eceff4">(</span>secretResponse<span style="color:#eceff4">.</span>Payload<span style="color:#eceff4">.</span>Data<span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#616e87;font-style:italic">// Secret Manager returns the secret on base64</span>
+</span></span><span style="display:flex;"><span>	data<span style="color:#eceff4">,</span> err <span style="color:#81a1c1">:=</span> base64<span style="color:#eceff4">.</span>StdEncoding<span style="color:#eceff4">.</span><span style="color:#88c0d0">DecodeString</span><span style="color:#eceff4">(</span>secretResponse<span style="color:#eceff4">.</span>Payload<span style="color:#eceff4">.</span>Data<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">if</span> err <span style="color:#81a1c1">!=</span> <span style="color:#81a1c1;font-weight:bold">nil</span> <span style="color:#eceff4">{</span>
 </span></span><span style="display:flex;"><span>		fmt<span style="color:#eceff4">.</span><span style="color:#88c0d0">Println</span><span style="color:#eceff4">(</span>err<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>		<span style="color:#81a1c1;font-weight:bold">return</span> fallback
@@ -405,38 +408,38 @@ This worked fine, but then do we need the IAM permission or is it just enough wi
 </span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">return</span> <span style="color:#81a1c1">string</span><span style="color:#eceff4">(</span>data<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span><span style="color:#eceff4">}</span>
 </span></span></code></pre></div><p>And then for the API handler:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#616e87;font-style:italic">// getSecretHandler gets the secret value according to the name sent on the header
-</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span><span style="color:#81a1c1;font-weight:bold">func</span> <span style="color:#88c0d0">getSecretHandler</span><span style="color:#eceff4">(</span>secretGetter SecretGetter<span style="color:#eceff4">)</span> http<span style="color:#eceff4">.</span>HandlerFunc <span style="color:#eceff4">{</span>
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#616e87;font-style:italic">// getSecretHandler gets the secret value according to the name sent on the header</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1;font-weight:bold">func</span> <span style="color:#88c0d0">getSecretHandler</span><span style="color:#eceff4">(</span>secretGetter SecretGetter<span style="color:#eceff4">)</span> http<span style="color:#eceff4">.</span>HandlerFunc <span style="color:#eceff4">{</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#81a1c1;font-weight:bold">return</span> <span style="color:#81a1c1;font-weight:bold">func</span><span style="color:#eceff4">(</span>w http<span style="color:#eceff4">.</span>ResponseWriter<span style="color:#eceff4">,</span> rq <span style="color:#81a1c1">*</span>http<span style="color:#eceff4">.</span>Request<span style="color:#eceff4">)</span> <span style="color:#eceff4">{</span>
-</span></span><span style="display:flex;"><span>		<span style="color:#616e87;font-style:italic">// Only work with GET requests
-</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span>		<span style="color:#81a1c1;font-weight:bold">if</span> rq<span style="color:#eceff4">.</span>Method <span style="color:#81a1c1">!=</span> http<span style="color:#eceff4">.</span>MethodGet <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#616e87;font-style:italic">// Only work with GET requests</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#81a1c1;font-weight:bold">if</span> rq<span style="color:#eceff4">.</span>Method <span style="color:#81a1c1">!=</span> http<span style="color:#eceff4">.</span>MethodGet <span style="color:#eceff4">{</span>
 </span></span><span style="display:flex;"><span>			w<span style="color:#eceff4">.</span><span style="color:#88c0d0">WriteHeader</span><span style="color:#eceff4">(</span>http<span style="color:#eceff4">.</span>StatusMethodNotAllowed<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>			<span style="color:#81a1c1;font-weight:bold">return</span>
 </span></span><span style="display:flex;"><span>		<span style="color:#eceff4">}</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>		<span style="color:#616e87;font-style:italic">// Fetch the secret name on the header
-</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span>		secretName <span style="color:#81a1c1">:=</span> rq<span style="color:#eceff4">.</span>Header<span style="color:#eceff4">.</span><span style="color:#88c0d0">Get</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;secret&#34;</span><span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#616e87;font-style:italic">// Fetch the secret name on the header</span>
+</span></span><span style="display:flex;"><span>		secretName <span style="color:#81a1c1">:=</span> rq<span style="color:#eceff4">.</span>Header<span style="color:#eceff4">.</span><span style="color:#88c0d0">Get</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;secret&#34;</span><span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>		<span style="color:#81a1c1;font-weight:bold">if</span> secretName <span style="color:#81a1c1">==</span> <span style="color:#a3be8c">&#34;&#34;</span> <span style="color:#eceff4">{</span>
 </span></span><span style="display:flex;"><span>			w<span style="color:#eceff4">.</span><span style="color:#88c0d0">WriteHeader</span><span style="color:#eceff4">(</span>http<span style="color:#eceff4">.</span>StatusBadRequest<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>			<span style="color:#81a1c1;font-weight:bold">return</span>
 </span></span><span style="display:flex;"><span>		<span style="color:#eceff4">}</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>		<span style="color:#616e87;font-style:italic">// Create the struct definition for the response
-</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span>		bytes<span style="color:#eceff4">,</span> err <span style="color:#81a1c1">:=</span> json<span style="color:#eceff4">.</span><span style="color:#88c0d0">Marshal</span><span style="color:#eceff4">(</span><span style="color:#81a1c1;font-weight:bold">struct</span> <span style="color:#eceff4">{</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#616e87;font-style:italic">// Create the struct definition for the response</span>
+</span></span><span style="display:flex;"><span>		bytes<span style="color:#eceff4">,</span> err <span style="color:#81a1c1">:=</span> json<span style="color:#eceff4">.</span><span style="color:#88c0d0">Marshal</span><span style="color:#eceff4">(</span><span style="color:#81a1c1;font-weight:bold">struct</span> <span style="color:#eceff4">{</span>
 </span></span><span style="display:flex;"><span>			Name  <span style="color:#81a1c1">string</span> <span style="color:#a3be8c">`json:&#34;name&#34;`</span>
 </span></span><span style="display:flex;"><span>			Value <span style="color:#81a1c1">string</span> <span style="color:#a3be8c">`json:&#34;value&#34;`</span>
 </span></span><span style="display:flex;"><span>		<span style="color:#eceff4">}{</span>
 </span></span><span style="display:flex;"><span>			Name<span style="color:#eceff4">:</span> secretName<span style="color:#eceff4">,</span>
-</span></span><span style="display:flex;"><span>			<span style="color:#616e87;font-style:italic">// Use the secret getter to get the secret or the fallback
-</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span>			Value<span style="color:#eceff4">:</span> secretGetter<span style="color:#eceff4">.</span><span style="color:#88c0d0">GetSecret</span><span style="color:#eceff4">(</span>secretName<span style="color:#eceff4">,</span> fmt<span style="color:#eceff4">.</span><span style="color:#88c0d0">Sprintf</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;default-for-%s&#34;</span><span style="color:#eceff4">,</span> secretName<span style="color:#eceff4">)),</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#616e87;font-style:italic">// Use the secret getter to get the secret or the fallback</span>
+</span></span><span style="display:flex;"><span>			Value<span style="color:#eceff4">:</span> secretGetter<span style="color:#eceff4">.</span><span style="color:#88c0d0">GetSecret</span><span style="color:#eceff4">(</span>secretName<span style="color:#eceff4">,</span> fmt<span style="color:#eceff4">.</span><span style="color:#88c0d0">Sprintf</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;default-for-%s&#34;</span><span style="color:#eceff4">,</span> secretName<span style="color:#eceff4">)),</span>
 </span></span><span style="display:flex;"><span>		<span style="color:#eceff4">})</span>
 </span></span><span style="display:flex;"><span>		<span style="color:#81a1c1;font-weight:bold">if</span> err <span style="color:#81a1c1">!=</span> <span style="color:#81a1c1;font-weight:bold">nil</span> <span style="color:#eceff4">{</span>
 </span></span><span style="display:flex;"><span>			w<span style="color:#eceff4">.</span><span style="color:#88c0d0">WriteHeader</span><span style="color:#eceff4">(</span>http<span style="color:#eceff4">.</span>StatusInternalServerError<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>			<span style="color:#81a1c1;font-weight:bold">return</span>
 </span></span><span style="display:flex;"><span>		<span style="color:#eceff4">}</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>		<span style="color:#616e87;font-style:italic">// Return the secret value
-</span></span></span><span style="display:flex;"><span><span style="color:#616e87;font-style:italic"></span>		w<span style="color:#eceff4">.</span><span style="color:#88c0d0">Header</span><span style="color:#eceff4">().</span><span style="color:#88c0d0">Set</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;Content-Type&#34;</span><span style="color:#eceff4">,</span> <span style="color:#a3be8c">&#34;application/json&#34;</span><span style="color:#eceff4">)</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#616e87;font-style:italic">// Return the secret value</span>
+</span></span><span style="display:flex;"><span>		w<span style="color:#eceff4">.</span><span style="color:#88c0d0">Header</span><span style="color:#eceff4">().</span><span style="color:#88c0d0">Set</span><span style="color:#eceff4">(</span><span style="color:#a3be8c">&#34;Content-Type&#34;</span><span style="color:#eceff4">,</span> <span style="color:#a3be8c">&#34;application/json&#34;</span><span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>		w<span style="color:#eceff4">.</span><span style="color:#88c0d0">WriteHeader</span><span style="color:#eceff4">(</span>http<span style="color:#eceff4">.</span>StatusOK<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>		_<span style="color:#eceff4">,</span> _ <span style="color:#eceff4">=</span> w<span style="color:#eceff4">.</span><span style="color:#88c0d0">Write</span><span style="color:#eceff4">(</span>bytes<span style="color:#eceff4">)</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#eceff4">}</span>
@@ -454,13 +457,13 @@ This worked fine, but then do we need the IAM permission or is it just enough wi
 <p><a href="https://github.com/pmorelli92/secret-manager-demo"  target="_blank" rel="noreferrer noopener" >👉 Repository 👈</a>
 </p>
 
-    </div>
-  </article>
+      </div>
+    </article>
 
-  <hr />
+    <hr />
 
-  <div class="post-info">
-    
+    <div class="post-info">
+      
     <p>
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg>
 
@@ -478,41 +481,37 @@ This worked fine, but then do we need the IAM permission or is it just enough wi
         
     </p>
 
+      
+
+      <p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        2008 Words
+      </p>
+
+      <p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+        
+          2020-08-31 21:00 &#43;0200
+        
+
+         
+          
+        
+      </p>
+    </div>
+
     
-
-    <p>
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-        class="feather feather-file-text">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-        <polyline points="14 2 14 8 20 8"></polyline>
-        <line x1="16" y1="13" x2="8" y2="13"></line>
-        <line x1="16" y1="17" x2="8" y2="17"></line>
-        <polyline points="10 9 9 9 8 9"></polyline>
-      </svg>
-      2008 Words
-    </p>
-
-    <p>
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-        class="feather feather-calendar">
-        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-        <line x1="16" y1="2" x2="16" y2="6"></line>
-        <line x1="8" y1="2" x2="8" y2="6"></line>
-        <line x1="3" y1="10" x2="21" y2="10"></line>
-      </svg>
-      
-      2020-08-31 21:00 &#43;0200
-      
-
-      
-      
-      
-    </p>
-  </div>
-
-  
     <div class="pagination">
         
         <div class="pagination__title">
@@ -543,11 +542,13 @@ This worked fine, but then do we need the IAM permission or is it just enough wi
     </div>
 
 
-  
+    
 
-  
+    
 
-</main>
+    
+
+  </main>
 
             </div>
 
@@ -563,7 +564,8 @@ This worked fine, but then do we need the IAM permission or is it just enough wi
         
 
 
-<script type="text/javascript" src="/bundle.min.aeeac2e3fc44c0f169410d068267bfbb1e20bd2201904f0598d7edc9bc0fea2b24912dbd3ff8f23aed618aab8a9e0b2d091cba7d09142aa77050ff84b88ab4f5.js" integrity="sha512-rurC4/xEwPFpQQ0Ggme/ux4gvSIBkE8FmNftybwP6iskkS29P/jyOu1hiquKngstCRy6fQkUKqdwUP&#43;EuIq09Q=="></script>
+<script type="text/javascript" src="/bundle.min.d6fc0b7baf099142ae73441220c2ee226564feab1a98908a0e1cfc89cb54302ca08d4be61c21e7bbe0c0daa0879f8f16715660118d1e14b4d323c48ec43f92fe.js" integrity="sha512-1vwLe68JkUKuc0QSIMLuImVk/qsamJCKDhz8ictUMCygjUvmHCHnu&#43;DA2qCHn48WcVZgEY0eFLTTI8SOxD&#43;S/g=="></script>
+
 
 
 

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Aws on Dev &amp; Chill</title>
+    <link>https://devandchill.com/tags/aws/</link>
+    <description>Recent content in Aws on Dev &amp; Chill</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <copyright>Pablo Morelli</copyright>
+    <lastBuildDate>Sun, 30 Mar 2025 12:10:00 +0100</lastBuildDate>
+    <atom:link href="https://devandchill.com/tags/aws/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>EKS Auto Mode? I was using it before it even launched</title>
+      <link>https://devandchill.com/posts/2025/03/eks-auto-mode-i-was-using-it-before-it-even-launched/</link>
+      <pubDate>Sun, 30 Mar 2025 12:10:00 +0100</pubDate>
+      <guid>https://devandchill.com/posts/2025/03/eks-auto-mode-i-was-using-it-before-it-even-launched/</guid>
+      <description>&lt;p&gt;The &lt;a href=&#34;https://aws.amazon.com/about-aws/whats-new/2024/12/amazon-eks-auto-mode/&#34;  target=&#34;_blank&#34; rel=&#34;noreferrer noopener&#34; &gt;1st of December 2024&lt;/a&gt;&#xA; AWS announced EKS Auto Mode. Their aim is, as usual, to get your company a working Kubernetes cluster running as quickly and seamless as possible, and no, I am not going to argue whether you need Kubernetes or not, at least not in this post.&lt;/p&gt;&#xA;&lt;p&gt;From installing Kubernetes on EC2 and having to manage the control plane yourself, to being able to use AWS Fargate, and the latest iteration: EKS Auto Mode.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

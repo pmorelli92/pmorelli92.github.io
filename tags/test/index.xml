@@ -1,32 +1,27 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>test on Dev &amp; Chill</title>
+    <title>Test on Dev &amp; Chill</title>
     <link>https://devandchill.com/tags/test/</link>
-    <description>Recent content in test on Dev &amp; Chill</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <description>Recent content in Test on Dev &amp; Chill</description>
+    <generator>Hugo</generator>
     <language>en</language>
     <copyright>Pablo Morelli</copyright>
-    <lastBuildDate>Sun, 29 Jan 2023 20:30:00 +0100</lastBuildDate><atom:link href="https://devandchill.com/tags/test/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 29 Jan 2023 20:30:00 +0100</lastBuildDate>
+    <atom:link href="https://devandchill.com/tags/test/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>How I approach microservice testing in 2023</title>
       <link>https://devandchill.com/posts/2023/01/how-i-approach-microservice-testing-in-2023/</link>
       <pubDate>Sun, 29 Jan 2023 20:30:00 +0100</pubDate>
-      
       <guid>https://devandchill.com/posts/2023/01/how-i-approach-microservice-testing-in-2023/</guid>
-      <description>👉 The codebase used in this post can be found in my Github. 👈
-Introduction As a software engineer, I&amp;rsquo;ve had the opportunity to work with microservices in various companies and each one had its own unique approach to testing the codebase. From my experience, I&amp;rsquo;ve come to realize that there&amp;rsquo;s no one-size-fits-all solution when it comes to testing microservices. Should there be only unit test? What about the external dependencies?</description>
+      <description>&lt;p&gt;👉 &lt;a href=&#34;https://github.com/pmorelli92/how-I-test-microservices-2023&#34;  target=&#34;_blank&#34; rel=&#34;noreferrer noopener&#34; &gt;The codebase used in this post can be found in my Github.&lt;/a&gt;&#xA; 👈&lt;/p&gt;&#xA;&lt;h3 id=&#34;introduction&#34;&gt;Introduction&lt;/h3&gt;&#xA;&lt;p&gt;As a software engineer, I&amp;rsquo;ve had the opportunity to work with microservices in various companies and each one had its own unique approach to testing the codebase. From my experience, I&amp;rsquo;ve come to realize that there&amp;rsquo;s no one-size-fits-all solution when it comes to testing microservices. Should there be only unit test? What about the external dependencies? Do we care about what happen if a third party returns a response that is not expected? Is contract testing needed? So, what do we do?&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Keep it simple stupid, lessons learned</title>
       <link>https://devandchill.com/posts/2022/03/keep-it-simple-stupid-lessons-learned/</link>
       <pubDate>Tue, 15 Mar 2022 18:30:00 +0100</pubDate>
-      
       <guid>https://devandchill.com/posts/2022/03/keep-it-simple-stupid-lessons-learned/</guid>
-      <description>We as humans are always changing and evolving, sometimes for the best and sometimes not. In our professional life this is expected, one gains experience, learns new tools, knowns different people with different background, etc.
-Back when I was working for a consultancy company in 2016 I met a wonderful person who at that time was an architect, and right now one of my best friends. Our main topic of conversation was technology, and we always dug deeper and deeper into it.</description>
+      <description>&lt;p&gt;We as humans are always changing and evolving, sometimes for the best and sometimes not. In our professional life this is expected, one gains experience, learns new tools, knowns different people with different background, etc.&lt;/p&gt;&#xA;&lt;p&gt;Back when I was working for a consultancy company in 2016 I met a wonderful person who at that time was an architect, and right now one of my best friends. Our main topic of conversation was technology, and we always dug deeper and deeper into it. Since we were both working on .NET a lot of the following words appeared at least once in every conversation: &lt;code&gt;patterns&lt;/code&gt;, &lt;code&gt;reflection&lt;/code&gt;, &lt;code&gt;expressions&lt;/code&gt;.&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

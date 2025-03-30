@@ -1,22 +1,20 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>verified on Dev &amp; Chill</title>
+    <title>Verified on Dev &amp; Chill</title>
     <link>https://devandchill.com/tags/verified/</link>
-    <description>Recent content in verified on Dev &amp; Chill</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <description>Recent content in Verified on Dev &amp; Chill</description>
+    <generator>Hugo</generator>
     <language>en</language>
     <copyright>Pablo Morelli</copyright>
-    <lastBuildDate>Sun, 09 Jun 2019 20:22:29 +0200</lastBuildDate><atom:link href="https://devandchill.com/tags/verified/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 09 Jun 2019 20:22:29 +0200</lastBuildDate>
+    <atom:link href="https://devandchill.com/tags/verified/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Sign GitHub commits (using Mac)</title>
       <link>https://devandchill.com/posts/2019/06/sign-github-commits-using-mac/</link>
       <pubDate>Sun, 09 Jun 2019 20:22:29 +0200</pubDate>
-      
       <guid>https://devandchill.com/posts/2019/06/sign-github-commits-using-mac/</guid>
-      <description>Generally speaking, most organisations do not check if a commit is signed or not. Even worse, more companies do not care about this. It might subjective but I like to have the verified badge.
-If you commit from GitHub, for example: adding or editing a README, you will get the verified bagde. The same will happen with the client GitKraken, but if you commit using the git cli this will not happen unless you configure it.</description>
+      <description>&lt;p&gt;Generally speaking, most organisations do not check if a commit is signed or not. Even worse, more companies do not care about this. It might subjective but I like to have the &lt;code&gt;verified&lt;/code&gt; badge.&lt;/p&gt;&#xA;&lt;figure&gt;&lt;img src=&#34;https://devandchill.com/posts/images/verified-commit.png&#34;&gt;&#xA;&lt;/figure&gt;&#xA;&#xA;&lt;p&gt;If you commit from GitHub, for example: adding or editing a README, you will get the verified bagde. The same will happen with the client &lt;code&gt;GitKraken&lt;/code&gt;, but if you commit using the &lt;code&gt;git cli&lt;/code&gt; this will not happen unless you configure it.&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

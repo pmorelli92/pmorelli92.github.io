@@ -3,27 +3,31 @@
     <head>
         <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="author" content="Pablo Morelli">
-<meta name="description" content="Devandchill is a coding blog where I share my ideas and insights on various programming topics." />
-<meta name="keywords"
-    content="blog, development, programming, tech, go, golang, azure, ci, cd, kubernetes, docker, azure pipelines, okteto" />
+<meta name="author" content="">
+<meta name="description" content="2021 update: Since KubeSail was not working as expected, the solution is now hosted in Okteto which offers a free namespace for developers to try out a hosted Kubernetes service.
+Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&rsquo;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files). Now I am currently working with Travis for CI and Flux for CD but I think it is always good to keep an eye on how the competitors are doing and what they have to offer.
+" />
+<meta name="keywords" content="blog, development, programming, tech, go, golang, azure, ci, cd, kubernetes, docker, azure pipelines, okteto" />
 <meta name="robots" content="noodp" />
 <meta name="theme-color" content="" />
 <link rel="canonical" href="https://devandchill.com/posts/2019/10/azure-pipelines-build-a-dockerized-app-and-deploy-to-kubernetes/" />
 
 
-<title>
-    
-    Azure Pipelines: Build a dockerized app and deploy to kubernetes :: Dev &amp; Chill  — A blog about coding
-    
-</title>
+    <title>
+        
+            Azure Pipelines: Build a dockerized app and deploy to kubernetes :: Dev &amp; Chill  — A blog about coding
+        
+    </title>
 
 
 
 
 
-<link rel="stylesheet" href="/main.3a0b97c6880e06dd6e902af4b4a6ae5146594dbe1d4035fd2190f9c6f7eb949d.css" integrity="sha256-OguXxogOBt1ukCr0tKauUUZZTb4dQDX9IZD5xvfrlJ0=">
+  <link rel="stylesheet" href="/main.min.281d505ee8507eb85ef5449b3db01c39b07094fe7fedb4f92a730b1d5e143020.css" integrity="sha256-KB1QXuhQfrhe9USbPbAcObBwlP5/7bT5KnMLHV4UMCA=" crossorigin="anonymous">
+
+
 
 
 
@@ -36,26 +40,21 @@
     <meta name="msapplication-TileColor" content="">
 
 
-<meta itemprop="name" content="Azure Pipelines: Build a dockerized app and deploy to kubernetes">
-<meta itemprop="description" content="2021 update: Since KubeSail was not working as expected, the solution is now hosted in Okteto which offers a free namespace for developers to try out a hosted Kubernetes service.
-Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&rsquo;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files)."><meta itemprop="datePublished" content="2019-10-19T22:22:29+02:00" />
-<meta itemprop="dateModified" content="2019-10-19T22:22:29+02:00" />
-<meta itemprop="wordCount" content="1169"><meta itemprop="image" content="https://devandchill.com/og-image.png"/>
-<meta itemprop="keywords" content="go,golang,azure,ci,cd,kubernetes,docker,azure pipelines,okteto," />
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://devandchill.com/og-image.png"/>
 
-<meta name="twitter:title" content="Azure Pipelines: Build a dockerized app and deploy to kubernetes"/>
-<meta name="twitter:description" content="2021 update: Since KubeSail was not working as expected, the solution is now hosted in Okteto which offers a free namespace for developers to try out a hosted Kubernetes service.
-Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&rsquo;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files)."/>
+  <meta itemprop="name" content="Azure Pipelines: Build a dockerized app and deploy to kubernetes">
+  <meta itemprop="description" content="2021 update: Since KubeSail was not working as expected, the solution is now hosted in Okteto which offers a free namespace for developers to try out a hosted Kubernetes service.
+Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I’ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files). Now I am currently working with Travis for CI and Flux for CD but I think it is always good to keep an eye on how the competitors are doing and what they have to offer.">
+  <meta itemprop="datePublished" content="2019-10-19T22:22:29+02:00">
+  <meta itemprop="dateModified" content="2019-10-19T22:22:29+02:00">
+  <meta itemprop="wordCount" content="1169">
+  <meta itemprop="image" content="https://devandchill.com/og-image.png">
+  <meta itemprop="keywords" content="Go,Golang,Azure,Ci,Cd,Kubernetes,Docker,Azure Pipelines,Okteto">
 
-
-
-
-
-
-
-<meta property="article:published_time" content="2019-10-19 22:22:29 &#43;0200 CEST" />
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://devandchill.com/og-image.png">
+  <meta name="twitter:title" content="Azure Pipelines: Build a dockerized app and deploy to kubernetes">
+  <meta name="twitter:description" content="2021 update: Since KubeSail was not working as expected, the solution is now hosted in Okteto which offers a free namespace for developers to try out a hosted Kubernetes service.
+Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I’ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files). Now I am currently working with Travis for CI and Flux for CD but I think it is always good to keep an eye on how the competitors are doing and what they have to offer.">
 
 
 
@@ -63,16 +62,29 @@ Every company has a different way to work and configure CI/CD, and all of them h
 
 
 
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138171880-1"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'UA-138171880-1');
-</script>
+    <meta property="article:published_time" content="2019-10-19 22:22:29 &#43;0200 CEST" />
 
 
+
+
+
+
+
+    
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-7X0TBDP4QB"></script>
+      <script>
+        var doNotTrack = false;
+        if ( false ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-7X0TBDP4QB');
+        }
+      </script>
 
 
 
@@ -95,19 +107,17 @@ Every company has a different way to work and configure CI/CD, and all of them h
 
 
         <span class="header__right">
-            
-            <nav class="menu">
-    <ul class="menu__inner"><li><a href="/blog">The blog</a></li><li><a href="/resume">Resume</a></li><li><a href="/posts">Posts</a></li>
+                <nav class="menu">
+    <ul class="menu__inner"><li><a href="/posts">Posts</a></li><li><a href="/resume">Resume</a></li>
     </ul>
 </nav>
 
-            <span class="menu-trigger">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path d="M0 0h24v24H0z" fill="none" />
-                    <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
-                </svg>
-            </span>
-            
+                <span class="menu-trigger">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                    </svg>
+                </span>
         </span>
     </span>
 </header>
@@ -115,35 +125,33 @@ Every company has a different way to work and configure CI/CD, and all of them h
 
             <div class="content">
                 
-<main class="post">
+  <main class="post">
 
-  <div class="post-info">
-    <p>
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-        class="feather feather-clock">
-        <circle cx="12" cy="12" r="10"></circle>
-        <polyline points="12 6 12 12 16 14"></polyline>
-      </svg>
-      6 minutes
+    <div class="post-info">
+      <p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        6 minutes
+
+        
+      </p>
+    </div>
+
+    <article>
+      <h1 class="post-title">
+        <a href="https://devandchill.com/posts/2019/10/azure-pipelines-build-a-dockerized-app-and-deploy-to-kubernetes/">Azure Pipelines: Build a dockerized app and deploy to kubernetes</a>
+      </h1>
 
       
-    </p>
-  </div>
 
-  <article>
-    <h1 class="post-title">
-      <a href="https://devandchill.com/posts/2019/10/azure-pipelines-build-a-dockerized-app-and-deploy-to-kubernetes/">Azure Pipelines: Build a dockerized app and deploy to kubernetes</a>
-    </h1>
+      
 
-    
+      
 
-    
-
-    
-
-    <div class="post-content">
-      <p><em>2021 update: Since KubeSail was not working as expected, the solution is now hosted in Okteto which offers a free namespace for developers to try out a hosted Kubernetes service.</em></p>
+      <div class="post-content">
+        <p><em>2021 update: Since KubeSail was not working as expected, the solution is now hosted in Okteto which offers a free namespace for developers to try out a hosted Kubernetes service.</em></p>
 <p>Every company has a different way to work and configure CI/CD, and all of them have pros and cons. I&rsquo;ve worked with Azure Pipelines before (but when it was called VSTS and the configuration was done in a more visual way and not with yaml files). Now I am currently working with Travis for CI and Flux for CD but I think it is always good to keep an eye on how the competitors are doing and what they have to offer.</p>
 <p>For this tutorial, I only had to link my github account to Azure Devops in order to use its functionality. That being said, I did not have to put my credit card or billing information so it is safe to say that it is free, at least for hobby usages.</p>
 <p>The tutorial will cover:</p>
@@ -163,7 +171,7 @@ The only functionality that exposes is a <code>GET /health</code> endpoint which
 <p>An account is needed in order to get access on Azure Pipelines. Linking the github account and giving access to the demo repository should be enough, after this step a project should be set up.</p>
 <p>Inside the project, the project settings button should be visible on the bottom left corner.
 Scroll down to service connections and you should see something like this:</p>
-<figure><img src="/posts/images/project-settings.png"/>
+<figure><img src="/posts/images/project-settings.png">
 </figure>
 
 <p>This is where the credentials for docker and kubernetes are stored.</p>
@@ -172,7 +180,7 @@ Scroll down to service connections and you should see something like this:</p>
 <h2 id="adding-build-pipeline">Adding build pipeline</h2>
 <p>Under the pipeline menu, pick <code>build</code> and <code>add a new pipeline</code>. Follow the steps and give access to the repository (it does not matter if it is public or private). Pick starter pipeline when prompted and proceed to click save and run.</p>
 <p>If everything went well a commit should be added to the repository and this will appear on the commit history of the repository:</p>
-<figure><img src="/posts/images/built-commit.png"/>
+<figure><img src="/posts/images/built-commit.png">
 </figure>
 
 <p>The ✔️ indicates that the CI process ran successfully, when the build is ongoing a yellow circle will appear, and if the build fails ❌ will be shown.</p>
@@ -203,7 +211,7 @@ Scroll down to service connections and you should see something like this:</p>
 </span></span><span style="display:flex;"><span>    <span style="color:#81a1c1">Dockerfile</span><span style="color:#eceff4">:</span> <span style="color:#a3be8c">&#39;**/Dockerfile&#39;</span>
 </span></span><span style="display:flex;"><span>    <span style="color:#81a1c1">tags</span><span style="color:#eceff4">:</span> <span style="color:#eceff4">|</span><span style="color:#616e87">
 </span></span></span><span style="display:flex;"><span><span style="color:#616e87">      $(buildNumber)
-</span></span></span><span style="display:flex;"><span><span style="color:#616e87">      latest</span>      
+</span></span></span><span style="display:flex;"><span><span style="color:#616e87">      latest</span>
 </span></span><span style="display:flex;"><span>- <span style="color:#81a1c1">bash</span><span style="color:#eceff4">:</span> sed -i &#34;s/latest/$(buildNumber)/g&#34; kubernetes/k8s-deployment.yml
 </span></span><span style="display:flex;"><span>- <span style="color:#81a1c1">task</span><span style="color:#eceff4">:</span> Kubernetes@0
 </span></span><span style="display:flex;"><span>  <span style="color:#81a1c1">inputs</span><span style="color:#eceff4">:</span>
@@ -239,7 +247,7 @@ In this case, the example repository is using semver for building versions.</p>
 </span></span><span style="display:flex;"><span>    <span style="color:#81a1c1">Dockerfile</span><span style="color:#eceff4">:</span> <span style="color:#a3be8c">&#39;**/Dockerfile&#39;</span>
 </span></span><span style="display:flex;"><span>    <span style="color:#81a1c1">tags</span><span style="color:#eceff4">:</span> <span style="color:#eceff4">|</span><span style="color:#616e87">
 </span></span></span><span style="display:flex;"><span><span style="color:#616e87">      $(buildNumber)
-</span></span></span><span style="display:flex;"><span><span style="color:#616e87">      latest</span>      
+</span></span></span><span style="display:flex;"><span><span style="color:#616e87">      latest</span>
 </span></span></code></pre></div><p>This is a built-in command of pipelines, where we can (among other things) build and push docker images.</p>
 <p>The input named repository indicates the name of the repository on the container registry (which was set up on the project settings).</p>
 <p>If this command fails, the other ones will not be invoked.</p>
@@ -263,7 +271,7 @@ In this case, the example repository is using semver for building versions.</p>
 </span></span><span style="display:flex;"><span>    <span style="color:#81a1c1">containerPort</span><span style="color:#eceff4">:</span> <span style="color:#b48ead">80</span>
 </span></span></code></pre></div><p>It is definitely not good to use <code>:latest</code> image on stage / production so the sed script will replace <code>:latest</code> with <code>0.0.X</code> (which will be the build number). This is also the same version that will be pushed to the selected docker registry: <a href="https://cloud.docker.com/u/pmorelli92/repository/docker/pmorelli92/go-with-azure"  target="_blank" rel="noreferrer noopener" >example</a>
 .</p>
-<figure><img src="/posts/images/docker-tags.png"/>
+<figure><img src="/posts/images/docker-tags.png">
 </figure>
 
 <div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span>- <span style="color:#81a1c1">task</span><span style="color:#eceff4">:</span> Kubernetes@0
@@ -275,11 +283,11 @@ In this case, the example repository is using semver for building versions.</p>
 </span></span></code></pre></div><p>Finally, <code>kubernetesServiceConnection</code> is for indicating the connection created on the project settings; the namespace refers to a kubernetes namespace, and the command combined with arguments will be the equivalent of: <code>kubectl apply -f kubernetes/k8s-deployment.yml</code></p>
 <p>This will create / update the specifications that are living on the folder or file; in this case: the deployment, service and ingress.</p>
 <p>If everything goes green, we can check that the pod version matches the latest one added on the docker registry.</p>
-<figure><img src="/posts/images/pod-version.png"/>
+<figure><img src="/posts/images/pod-version.png">
 </figure>
 
 <p>The logs should display something like this:</p>
-<figure><img src="/posts/images/cicd-logs.png"/>
+<figure><img src="/posts/images/cicd-logs.png">
 </figure>
 
 <p>And the demo app is now accessible from the following <a href="https://gwa-service-pmorelli92.cloud.okteto.net/health"  target="_blank" rel="noreferrer noopener" >link</a>
@@ -300,13 +308,13 @@ If I were to give a verdict on Azure Pipelines:</p>
 <li>Vendor lock in with some commands, that would need to be refactored in order to change CI/CD provider.</li>
 </ul>
 
-    </div>
-  </article>
+      </div>
+    </article>
 
-  <hr />
+    <hr />
 
-  <div class="post-info">
-    
+    <div class="post-info">
+      
     <p>
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg>
 
@@ -322,41 +330,37 @@ If I were to give a verdict on Azure Pipelines:</p>
         
     </p>
 
+      
+
+      <p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        1169 Words
+      </p>
+
+      <p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+        
+          2019-10-19 22:22 &#43;0200
+        
+
+         
+          
+        
+      </p>
+    </div>
+
     
-
-    <p>
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-        class="feather feather-file-text">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-        <polyline points="14 2 14 8 20 8"></polyline>
-        <line x1="16" y1="13" x2="8" y2="13"></line>
-        <line x1="16" y1="17" x2="8" y2="17"></line>
-        <polyline points="10 9 9 9 8 9"></polyline>
-      </svg>
-      1169 Words
-    </p>
-
-    <p>
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-        class="feather feather-calendar">
-        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-        <line x1="16" y1="2" x2="16" y2="6"></line>
-        <line x1="8" y1="2" x2="8" y2="6"></line>
-        <line x1="3" y1="10" x2="21" y2="10"></line>
-      </svg>
-      
-      2019-10-19 22:22 &#43;0200
-      
-
-      
-      
-      
-    </p>
-  </div>
-
-  
     <div class="pagination">
         
         <div class="pagination__title">
@@ -387,11 +391,13 @@ If I were to give a verdict on Azure Pipelines:</p>
     </div>
 
 
-  
+    
 
-  
+    
 
-</main>
+    
+
+  </main>
 
             </div>
 
@@ -407,7 +413,8 @@ If I were to give a verdict on Azure Pipelines:</p>
         
 
 
-<script type="text/javascript" src="/bundle.min.aeeac2e3fc44c0f169410d068267bfbb1e20bd2201904f0598d7edc9bc0fea2b24912dbd3ff8f23aed618aab8a9e0b2d091cba7d09142aa77050ff84b88ab4f5.js" integrity="sha512-rurC4/xEwPFpQQ0Ggme/ux4gvSIBkE8FmNftybwP6iskkS29P/jyOu1hiquKngstCRy6fQkUKqdwUP&#43;EuIq09Q=="></script>
+<script type="text/javascript" src="/bundle.min.d6fc0b7baf099142ae73441220c2ee226564feab1a98908a0e1cfc89cb54302ca08d4be61c21e7bbe0c0daa0879f8f16715660118d1e14b4d323c48ec43f92fe.js" integrity="sha512-1vwLe68JkUKuc0QSIMLuImVk/qsamJCKDhz8ictUMCygjUvmHCHnu&#43;DA2qCHn48WcVZgEY0eFLTTI8SOxD&#43;S/g=="></script>
+
 
 
 

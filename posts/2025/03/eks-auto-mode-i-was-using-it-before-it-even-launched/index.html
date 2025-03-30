@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="author" content="">
+<meta name="description" content="The 1st of December 2024 AWS announced EKS Auto Mode. Their aim is, as usual, to get your company a working Kubernetes cluster running as quickly and seamless as possible, and no, I am not going to argue whether you need Kubernetes or not, at least not in this post.
+From installing Kubernetes on EC2 and having to manage the control plane yourself, to being able to use AWS Fargate, and the latest iteration: EKS Auto Mode.
+" />
+<meta name="keywords" content="blog, development, programming, tech, aws, eks, auto, mode, karpenter, vm, bottlerocket, alb" />
+<meta name="robots" content="noodp" />
+<meta name="theme-color" content="" />
+<link rel="canonical" href="https://devandchill.com/posts/2025/03/eks-auto-mode-i-was-using-it-before-it-even-launched/" />
+
+
+    <title>
+        
+            EKS Auto Mode? I was using it before it even launched :: Dev &amp; Chill  — A blog about coding
+        
+    </title>
+
+
+
+
+
+  <link rel="stylesheet" href="/main.min.281d505ee8507eb85ef5449b3db01c39b07094fe7fedb4f92a730b1d5e143020.css" integrity="sha256-KB1QXuhQfrhe9USbPbAcObBwlP5/7bT5KnMLHV4UMCA=" crossorigin="anonymous">
+
+
+
+
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <meta name="msapplication-TileColor" content="">
+
+
+
+  <meta itemprop="name" content="EKS Auto Mode? I was using it before it even launched">
+  <meta itemprop="description" content="The 1st of December 2024 AWS announced EKS Auto Mode. Their aim is, as usual, to get your company a working Kubernetes cluster running as quickly and seamless as possible, and no, I am not going to argue whether you need Kubernetes or not, at least not in this post.
+From installing Kubernetes on EC2 and having to manage the control plane yourself, to being able to use AWS Fargate, and the latest iteration: EKS Auto Mode.">
+  <meta itemprop="datePublished" content="2025-03-30T12:10:00+01:00">
+  <meta itemprop="dateModified" content="2025-03-30T12:10:00+01:00">
+  <meta itemprop="wordCount" content="1335">
+  <meta itemprop="image" content="https://devandchill.com/og-image.png">
+  <meta itemprop="keywords" content="Aws,Eks,Auto,Mode,Karpenter,Vm,Bottlerocket,Alb">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://devandchill.com/og-image.png">
+  <meta name="twitter:title" content="EKS Auto Mode? I was using it before it even launched">
+  <meta name="twitter:description" content="The 1st of December 2024 AWS announced EKS Auto Mode. Their aim is, as usual, to get your company a working Kubernetes cluster running as quickly and seamless as possible, and no, I am not going to argue whether you need Kubernetes or not, at least not in this post.
+From installing Kubernetes on EC2 and having to manage the control plane yourself, to being able to use AWS Fargate, and the latest iteration: EKS Auto Mode.">
+
+
+
+
+
+
+
+    <meta property="article:published_time" content="2025-03-30 12:10:00 &#43;0100 &#43;0100" />
+
+
+
+
+
+
+
+    
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-7X0TBDP4QB"></script>
+      <script>
+        var doNotTrack = false;
+        if ( false ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-7X0TBDP4QB');
+        }
+      </script>
+
+
+
+    </head>
+
+    
+        <body>
+    
+    
+        <div class="container">
+            <header class="header">
+    <span class="header__inner">
+        <a href="/" style="text-decoration: none;">
+    <div class="logo">
+        
+            <img src="/dev-n-chill-logo.svg" alt="Dev &amp; Chill" />
+        
+    </div>
+</a>
+
+
+        <span class="header__right">
+                <nav class="menu">
+    <ul class="menu__inner"><li><a href="/posts">Posts</a></li><li><a href="/resume">Resume</a></li>
+    </ul>
+</nav>
+
+                <span class="menu-trigger">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                    </svg>
+                </span>
+        </span>
+    </span>
+</header>
+
+
+            <div class="content">
+                
+  <main class="post">
+
+    <div class="post-info">
+      <p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        7 minutes
+
+        
+      </p>
+    </div>
+
+    <article>
+      <h1 class="post-title">
+        <a href="https://devandchill.com/posts/2025/03/eks-auto-mode-i-was-using-it-before-it-even-launched/">EKS Auto Mode? I was using it before it even launched</a>
+      </h1>
+
+      
+
+      
+
+      
+
+      <div class="post-content">
+        <p>The <a href="https://aws.amazon.com/about-aws/whats-new/2024/12/amazon-eks-auto-mode/"  target="_blank" rel="noreferrer noopener" >1st of December 2024</a>
+ AWS announced EKS Auto Mode. Their aim is, as usual, to get your company a working Kubernetes cluster running as quickly and seamless as possible, and no, I am not going to argue whether you need Kubernetes or not, at least not in this post.</p>
+<p>From installing Kubernetes on EC2 and having to manage the control plane yourself, to being able to use AWS Fargate, and the latest iteration: EKS Auto Mode.</p>
+<p>The idea this time is for you to run your workloads without needing to care about:</p>
+<ul>
+<li>
+<p><em>Scalability:</em> Even though auto scaling groups existed before, EKS Auto Mode is using  Karpenter under the hood to make this simpler than ever.</p>
+</li>
+<li>
+<p><em>VMs (Nodes) Running Your Containers:</em> Are they running the latest OS version? What happens if there is a new vulnerability?</p>
+</li>
+<li>
+<p><em>Networking, Storage, Identity, and Load Balancing:</em> These are almost always handled via a quick helm install if you do not choose auto mode, but now it is simple than ever. For example, they offer a simple way to deploy an application load balancer:</p>
+<div class="highlight"><pre tabindex="0" style="color:#d8dee9;background-color:#2e3440;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#81a1c1">apiVersion</span><span style="color:#eceff4">:</span> networking.k8s.io/v1
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">kind</span><span style="color:#eceff4">:</span> IngressClass
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">metadata</span><span style="color:#eceff4">:</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#81a1c1">labels</span><span style="color:#eceff4">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#81a1c1">app.kubernetes.io/name</span><span style="color:#eceff4">:</span> LoadBalancerController
+</span></span><span style="display:flex;"><span>  <span style="color:#81a1c1">name</span><span style="color:#eceff4">:</span> alb
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">spec</span><span style="color:#eceff4">:</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#81a1c1">controller</span><span style="color:#eceff4">:</span> eks.amazonaws.com/alb
+</span></span><span style="display:flex;"><span><span style="color:#8fbcbb">---</span>
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">apiVersion</span><span style="color:#eceff4">:</span> networking.k8s.io/v1
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">kind</span><span style="color:#eceff4">:</span> Ingress
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">metadata</span><span style="color:#eceff4">:</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#81a1c1">namespace</span><span style="color:#eceff4">:</span> game-2048
+</span></span><span style="display:flex;"><span>  <span style="color:#81a1c1">name</span><span style="color:#eceff4">:</span> ingress-2048
+</span></span><span style="display:flex;"><span>  <span style="color:#81a1c1">annotations</span><span style="color:#eceff4">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#81a1c1">alb.ingress.kubernetes.io/scheme</span><span style="color:#eceff4">:</span> internet-facing
+</span></span><span style="display:flex;"><span>    <span style="color:#81a1c1">alb.ingress.kubernetes.io/target-type</span><span style="color:#eceff4">:</span> ip
+</span></span><span style="display:flex;"><span><span style="color:#81a1c1">spec</span><span style="color:#eceff4">:</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#81a1c1">ingressClassName</span><span style="color:#eceff4">:</span> alb
+</span></span><span style="display:flex;"><span>  <span style="color:#81a1c1">rules</span><span style="color:#eceff4">:</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#81a1c1">http</span><span style="color:#eceff4">:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#81a1c1">paths</span><span style="color:#eceff4">:</span>
+</span></span><span style="display:flex;"><span>          - <span style="color:#81a1c1">path</span><span style="color:#eceff4">:</span> /
+</span></span><span style="display:flex;"><span>            <span style="color:#81a1c1">pathType</span><span style="color:#eceff4">:</span> Prefix
+</span></span><span style="display:flex;"><span>            <span style="color:#81a1c1">backend</span><span style="color:#eceff4">:</span>
+</span></span><span style="display:flex;"><span>              <span style="color:#81a1c1">service</span><span style="color:#eceff4">:</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#81a1c1">name</span><span style="color:#eceff4">:</span> service-2048
+</span></span><span style="display:flex;"><span>                <span style="color:#81a1c1">port</span><span style="color:#eceff4">:</span>
+</span></span><span style="display:flex;"><span>                  <span style="color:#81a1c1">number</span><span style="color:#eceff4">:</span> <span style="color:#b48ead">80</span>
+</span></span></code></pre></div><p>But this is the same as if you would have installed the <a href="https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.8/guide/ingress/ingress_class/"  target="_blank" rel="noreferrer noopener" >AWS Load Balancer Controller yourself.</a>
+</p>
+</li>
+</ul>
+<h3 id="how-was-i-able-to-try-it-before-it-released">How was I able to try it before it released</h3>
+<p>Well, I did not. And now you can complain about a clickbait title, which you of course can. The reality is that by the end of 2023 I was tasked with bootstrapping the infrastructure for my team. Since nothing was reusable (the rest of the infrastructure was not in the cloud) and we were going to use AWS, I started from scratch.</p>
+<p>At that time, the team consisted solely of me. The iterations were crazy fast, supported sometimes by colleagues from other teams, prior knowledge, and but sometimes by the internet: seeing what people were talking about, what was the new hotness, etc. Some of the most important things I ended up adding to the infrastructure were:</p>
+<h3 id="bottlerocket">Bottlerocket</h3>
+<p>Bottlerocket is an operating system for hosting containers that is open source and Linux-based. If you are a developer, you might draw a parallel by saying it’s like the <code>scratch</code> image but for your nodes. Of course, this is not 100% true as the latter is totally empty and this image includes some essential components, but the concept is to minimize the attack surface as much as possible.</p>
+<h3 id="load-balancer-controller">Load Balancer controller</h3>
+<p>When running such a complex infrastructure, one should always exercise failover routines. In the worst-case scenario of no recovery, one strategy I have seen previously is to plan and exercise the release of a new cluster and have the traffic routed to it. Either <code>application</code> or <code>network</code> load balancer helps us big time with this, as you can quickly change a target group to point to different nodes. You can even do A/B testing for new clusters where you want to redirect a percentage of the traffic and more.</p>
+<h3 id="karpenter">Karpenter</h3>
+<p>This is the golden player, and I went from not knowing about it to almost having a Karpenter poster in my bedroom. In a nutshell, the idea is that you define a manifest describing what a node pool should look like for you, including all the possible instance types, architecture, taints (tells the scheduler if something can be placed in a given node), availability zones, etc. Karpenter then spawns nodes that respect your manifest, allowing you to run your workloads on them. Karpenter will also scale, using limits that you can configure, when the Kubernetes scheduler fails to allocate new pods. It will also do bidding for you in case there are cheaper machines available (for example <code>spot</code> instances) and can consolidate your workloads so you are not left with idle memory or CPU.</p>
+<h3 id="does-it-sound-familiar">Does it sound familiar?</h3>
+<p>In practice, I have essentially been running what EKS Auto Mode offers but without using the feature. So how is it?</p>
+<p>In one year, we never actually had to fail over the cluster for any reason other than practicing and refining the process in case we needed it. Even though we had some cases of rogue nodes in a node pool, the only times we need to be careful is when we are performing updates to Kubernetes, which would trigger an update on the managed node group where Karpenter is running. This causes Karpenter to also start replacing nodes with the new AMI version for the nodes it manages.</p>
+<p>This can be tricky, as updating the Kubernetes version without first updating the Karpenter version can break compatibility matrix (which happened last week).</p>
+<p>Therefore, I had two thoughts regarding this new AWS release:</p>
+<ol>
+<li>They are releasing something that looks like what I have been using for a year, I feel reassured.</li>
+<li>I want to share my thoughts with the community, since EKS Auto Mode has been out for 4 months and some people might still be skeptical about using it.</li>
+</ol>
+<h3 id="limitations">Limitations</h3>
+<p>There are two things to consider before clicking the &ldquo;Create cluster&rdquo; button.</p>
+<p><strong>Vendor lock-in:</strong> This is unavoidable. If you are in for the pros, you are in for the cons. However, the only way to avoid vendor lock-in is to host everything yourself. Buying your own machines is quite cheap, but then you need to hire people with the knowledge to maintain everything. I consider myself a good asset for cloud infrastructure, but ask me to patch a Linux kernel and I will definitely need to search how to do that. Hiring competent people will end up costing a lot of money anyway.</p>
+<p>Then again, you might want to set a common ground where you still use the cloud but avoid overly specific features from provider A or B. This is also super tricky because one of the reasons to use the cloud is its ease of getting started; as soon as you start doing workarounds, you end up paying a lot more and might not reap the benefits.</p>
+<p>Using cloud but trying to avoid provider-tailored functionality is the equivalent of building an abstraction layer over your database so you can swap it out later. Do not do that. First, it will probably never happen. Second, it will likely require work anyway, as you might be switching from a provider that supports transactions to one that does not, or does it differently. So what are you going to do with your <code>BeginTx()</code> func?</p>
+<p>All big cloud companies are running in the same direction, so as AWS has Karpenter, there is an open source project aiming to bring an equivalent of Karpenter for GCP, and so on.</p>
+<p><strong>Pricing:</strong> As of the day this post is written, you can see on the price calculator that the additional cost of Auto Mode is 12% more than doing everything yourself. Does it cost a lot more? That is up to you to decide, but it definitely adds up over time.</p>
+<h3 id="veredict">Veredict</h3>
+<p>As with all new products, you need to consider whether this will help you for your specific use case. If I would need start something from scratch and have no time but money is not an issue I would just jump into it. But some of the questions you need to ask yourself are:</p>
+<ol>
+<li>Do you have the FTE capacity to do this with IaC to achieve reproducible cluster creations?</li>
+<li>Are you short on money, or do you have a budget that can accommodate this? Support your decision with the pricing calculators.</li>
+<li>Do you have some custom loads that might not be supported by running EKS Auto Mode?</li>
+<li>What is your time-to-market target? Maybe this solution can help you bootstrap your operations, and then later you can replace it by deploying everything yourself.</li>
+</ol>
+<p>If you like the post you can buy me a cup of coffee here :)</p>
+<script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button"
+    data-slug="devandchill" data-color="#1b1c1d" data-emoji="☕" data-font="Poppins" data-text="Buy me a coffee"
+    data-outline-color="#ffffff" data-font-color="#ffffff" data-coffee-color="#FFDD00"></script>
+
+<style>
+    .bmc-btn {
+        font-size: 20px !important;
+        height: 45px !important;
+    }
+</style>
+
+
+      </div>
+    </article>
+
+    <hr />
+
+    <div class="post-info">
+      
+    <p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg>
+
+        <span class="tag"><a href="https://devandchill.com/tags/aws/">aws</a></span>
+        <span class="tag"><a href="https://devandchill.com/tags/eks/">eks</a></span>
+        <span class="tag"><a href="https://devandchill.com/tags/auto/">auto</a></span>
+        <span class="tag"><a href="https://devandchill.com/tags/mode/">mode</a></span>
+        <span class="tag"><a href="https://devandchill.com/tags/karpenter/">karpenter</a></span>
+        <span class="tag"><a href="https://devandchill.com/tags/vm/">vm</a></span>
+        <span class="tag"><a href="https://devandchill.com/tags/bottlerocket/">bottlerocket</a></span>
+        <span class="tag"><a href="https://devandchill.com/tags/alb/">alb</a></span>
+        
+    </p>
+
+      
+
+      <p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        1335 Words
+      </p>
+
+      <p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+        
+          2025-03-30 13:10 &#43;0200
+        
+
+         
+          
+        
+      </p>
+    </div>
+
+    
+    <div class="pagination">
+        
+        <div class="pagination__title">
+            <span class="pagination__title-h">Read other posts</span>
+            <hr />
+        </div>
+        
+
+        <div class="pagination__buttons">
+            
+
+            
+            <span class="button next">
+                <a href="https://devandchill.com/posts/2023/10/vblog-unlock-the-power-of-aws-cognito-idp-and-triggers./">
+                    <span class="button__text">VBlog: Unlock the power of AWS Cognito: IDP and Triggers.</span>
+                    <span class="button__icon">→</span>
+                </a>
+            </span>
+            
+        </div>
+    </div>
+
+
+    
+
+    
+
+    
+
+  </main>
+
+            </div>
+
+            
+                <footer class="footer">
+    
+    
+</footer>
+
+            
+        </div>
+
+        
+
+
+<script type="text/javascript" src="/bundle.min.d6fc0b7baf099142ae73441220c2ee226564feab1a98908a0e1cfc89cb54302ca08d4be61c21e7bbe0c0daa0879f8f16715660118d1e14b4d323c48ec43f92fe.js" integrity="sha512-1vwLe68JkUKuc0QSIMLuImVk/qsamJCKDhz8ictUMCygjUvmHCHnu&#43;DA2qCHn48WcVZgEY0eFLTTI8SOxD&#43;S/g=="></script>
+
+
+
+
+    </body>
+</html>

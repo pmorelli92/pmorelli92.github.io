@@ -1,34 +1,27 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>queries on Dev &amp; Chill</title>
+    <title>Queries on Dev &amp; Chill</title>
     <link>https://devandchill.com/tags/queries/</link>
-    <description>Recent content in queries on Dev &amp; Chill</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <description>Recent content in Queries on Dev &amp; Chill</description>
+    <generator>Hugo</generator>
     <language>en</language>
     <copyright>Pablo Morelli</copyright>
-    <lastBuildDate>Wed, 13 May 2020 16:40:29 +0100</lastBuildDate><atom:link href="https://devandchill.com/tags/queries/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 13 May 2020 16:40:29 +0100</lastBuildDate>
+    <atom:link href="https://devandchill.com/tags/queries/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Postgres: Benchmarking concurrently safe upsert queries</title>
       <link>https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/</link>
       <pubDate>Wed, 13 May 2020 16:40:29 +0100</pubDate>
-      
       <guid>https://devandchill.com/posts/2020/05/postgres-benchmarking-concurrently-safe-upsert-queries/</guid>
-      <description>In my previous post I covered how to build concurrently safe upsert queries .
-This post serves as a continuation where different approaches will be battle tested to expose the performance of each one:
-Advisory lock On conflict update On conflict do nothing CTE queries Without further ado, let&amp;rsquo;s start:
-The application In order to emulate the scenario described on the previous post, an HTTP API is required. This one will connect to a database to perform the calls.</description>
+      <description>&lt;p&gt;In my previous post I covered how to &lt;a href=&#34;https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries&#34;  target=&#34;_blank&#34; rel=&#34;noreferrer noopener&#34; &gt;build concurrently safe upsert queries&lt;/a&gt;&#xA;.&lt;/p&gt;&#xA;&lt;p&gt;This post serves as a continuation where different approaches will be battle tested to expose the performance of each one:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Advisory lock&lt;/li&gt;&#xA;&lt;li&gt;On conflict update&lt;/li&gt;&#xA;&lt;li&gt;On conflict do nothing&lt;/li&gt;&#xA;&lt;li&gt;CTE queries&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;Without further ado, let&amp;rsquo;s start:&lt;/p&gt;&#xA;&lt;h2 id=&#34;the-application&#34;&gt;The application&lt;/h2&gt;&#xA;&lt;p&gt;In order to emulate the scenario described on the previous post, an HTTP API is required. This one will connect to a database to perform the calls.&#xA;The application is written in Go and can be found &lt;a href=&#34;https://github.com/pmorelli92/pg-upsert-returning&#34;  target=&#34;_blank&#34; rel=&#34;noreferrer noopener&#34; &gt;here&lt;/a&gt;&#xA;.&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Postgres: Building concurrently safe upsert queries</title>
       <link>https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries/</link>
       <pubDate>Sun, 16 Feb 2020 09:22:29 +0100</pubDate>
-      
       <guid>https://devandchill.com/posts/2020/02/postgres-building-concurrently-safe-upsert-queries/</guid>
-      <description>Recently at the company I am working for, there was a need to communicate with an external service which required us to send some data along with an integer identifier. The problem is that IDs in our domain are not integers but uuid.
-The suggestion then was to have a service which creates an unique integer for a certain uuid. This way the int identifier won&amp;rsquo;t be leaked to any other part of the system.</description>
+      <description>&lt;p&gt;Recently at the company I am working for, there was a need to communicate with an external service which required us to send some data along with an integer identifier. The problem is that IDs in our domain are not integers but uuid.&lt;/p&gt;&#xA;&lt;p&gt;The suggestion then was to have a service which creates an unique integer for a certain uuid. This way the int identifier won&amp;rsquo;t be leaked to any other part of the system.&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>
